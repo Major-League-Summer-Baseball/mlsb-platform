@@ -14,14 +14,16 @@ from datetime import date, datetime
 roster = DB.Table('roster',
                   DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
                   DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id')),
-                  DB.Column('year', DB.Integer)
+                  DB.Column('year', DB.Integer),
+                  DB.Column('captain', DB.Boolean)
                 )
 
-def insertPlayer(team_id, player_id, year):
+def insertPlayer(team_id, player_id, year, captain=False):
     if year > 2013 and year <= date.today().year:
         DB.session.execute(roster.insert(), params={"player_id": player_id,
                                             "team_id": team_id,
-                                            "year": year})
+                                            "year": year,
+                                            "captain": captain})
         DB.session.commit()
     else:
         raise Exception("Invalid year")
