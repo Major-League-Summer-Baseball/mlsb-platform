@@ -1,7 +1,8 @@
 '''
-Created on Aug 21, 2015
-
-@author: Dallas
+@author: Dallas Fraser
+@author: 2014-08-25
+@organization: MLSB API
+@summary: Holds the model for the database
 '''
 from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -33,7 +34,6 @@ class Player(DB.Model):
     password = DB.Column(DB.String(120))
     bats = DB.relationship('Bat',
                              backref='player', lazy='dynamic')
- 
     def __init__(self, name, email, gender=None, password="default"):
         self.name = name
         self.email = email
@@ -53,7 +53,6 @@ class Player(DB.Model):
         return self.name + " email:" + self.email
   
 class Team(DB.Model):
-     
     id = DB.Column(DB.Integer, primary_key=True)
     color = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
@@ -91,10 +90,10 @@ class Sponsor(DB.Model):
                                 lazy='dynamic')
     def __init__(self, name):
         self.name = name
-  
+
     def __repr__(self):
         return self.name
-  
+
 class League(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120))
@@ -163,7 +162,8 @@ class Bat(DB.Model):
   
     def __repr__(self):
         player = Player.query.get(self.player_id)
-        return player.name  + "-" + self.classification + " in " + str(self.inning)
+        return (player.name  + "-" + self.classification + " in " 
+                + str(self.inning))
 
 import unittest
 class BaseTest(unittest.TestCase):
@@ -186,7 +186,10 @@ class BaseTest(unittest.TestCase):
 class TestPlayer(BaseTest):
     def testPlayerInsert(self):
         print("Player Test")
-        test = Player("Dallas", "fras2560@mylaurier.ca", gender="m", password="Password")
+        test = Player("Dallas",
+                      "fras2560@mylaurier.ca",
+                      gender="m",
+                      password="Password")
         DB.session.add(test)
         DB.session.commit()
         
@@ -202,7 +205,10 @@ class TestPlayer(BaseTest):
         DB.sessision.delete(test)
     
     def testPlayerPassword(self):
-        test = Player("Dallas", "fras2560@mylaurier.ca", gender="m", password="Password")
+        test = Player("Dallas",
+                      "fras2560@mylaurier.ca",
+                      gender="m",
+                      password="Password")
         DB.session.add(test)
         DB.session.commit()
         dallas = Player.query.get(1)
