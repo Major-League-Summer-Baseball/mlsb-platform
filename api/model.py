@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2014-08-25
+@author: 2015-08-27
 @organization: MLSB API
 @summary: Holds the model for the database
 '''
@@ -53,7 +53,12 @@ class Player(DB.Model):
  
     def __repr__(self):
         return self.name + " email:" + self.email
-  
+
+    def json(self):
+        return {"player_id": self.id,
+                "player_name":self.name,
+                "email": self.email,
+                "gender": self.gender}
 class Team(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     color = DB.Column(DB.String(120))
@@ -83,6 +88,8 @@ class Team(DB.Model):
         if self.sponsor_id is not None:
             result.append(str( Sponsor.query.get(self.sponsor_id)))
         return " ".join(result)
+
+
 
 class Sponsor(DB.Model):
     __tablename__ = 'sponsor'

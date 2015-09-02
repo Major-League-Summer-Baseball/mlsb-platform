@@ -1,7 +1,8 @@
 '''
-Created on Aug 21, 2015
-
-@author: Dallas
+@author: Dallas Fraser
+@author: 2015-08-27
+@organization: MLSB API
+@summary: Holds the model for the database
 '''
 import os
 from flask import Flask, g, request
@@ -20,3 +21,27 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 api = Api(app)
 api.decorators=[cors.crossdomain(origin='*',headers=['accept', 'Content-Type'])]
+
+@app.after_request
+def add_cors(resp):
+    """ Ensure all responses have the CORS headers. 
+        This ensures any failures are also accessible
+        by the client. 
+    """
+    resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin','*')
+    resp.headers['Access-Control-Allow-Credentials'] = 'true'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET'
+    resp.headers['Access-Control-Allow-Headers'] = request.headers.get( 
+        'Access-Control-Request-Headers', 'Authorization' )
+    # set low for debugging
+    if app.debug:
+        resp.headers['Access-Control-Max-Age'] = '1'
+    return resp
+
+from api.basic.player import PlayerAPI, PlayerListAPI
+
+from api.routes import Routes
+
+api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
+api.add_resource(PlayerAPI, Routes['player'] + "/<int:player_id>", 
+                 endpoint="player")
