@@ -162,8 +162,7 @@ class TestSponsor(BaseTest):
         params = {}
         rv = self.app.post(Routes['sponsor'], data=params)
         result ={"sponsor_id": None,
-                 "failures": ['Missing header sponsor_name',
-                              'Missing header sponsor_picture_id'],
+                 "failures": ['Invalid sponsor name'],
                  "message": "Failed to properly supply the required fields",
                  "success": False
                  }
@@ -176,8 +175,7 @@ class TestSponsor(BaseTest):
         params = {'sponsor_name':1, 'sponsor_picture_id':1}
         rv = self.app.post(Routes['sponsor'], data=params)
         result = {"sponsor_id": None, 
-                  "failures": ['Invalid data for header sponsor_name',
-                               'Invalid data for header sponsor_picture_id'],
+                  "failures": ['Invalid sponsor name'],
                   "message": "Failed to properly supply the required fields",
                   "success": False
                   }
@@ -187,13 +185,23 @@ class TestSponsor(BaseTest):
                          + " POST: POST request with invalid parameters"
                          )
         # proper insertion with post
-        self.addSponsor()
+        params = {'sponsor_name':"Domus"}
+        rv = self.app.post(Routes['sponsor'], data=params)
+        result = {  'data': {
+                              'sponsor_id': 1,
+                              'sponsor_name': 'Domus'},
+                    'failures': [],
+                    'message': '',
+                    'sponsor_id': 1,
+                    'success': True}
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with valid data"
+                         )
+       
         #test a get with sponsors
         rv = self.app.get(Routes['sponsor'])
-        result = [   {  'photo_file': 'pictures\\test.jpg',
-                        'sponsor_id': 1,
-                        'sponsor_name': 'League',
-                        'sponsor_picture_id': 1}
+        result = [   {  'sponsor_id': 1,
+                        'sponsor_name': 'Domus'}
                  ]
         self.output(loads(rv.data))
         self.output(result)
@@ -206,7 +214,7 @@ class TestSponsor(BaseTest):
         # invalid sponsor
         rv = self.app.get(Routes['sponsor']+ "/2")
         expect = {'failures': [],
-                  "message": "Not a valid Sponsor ID",
+                  "message": "Not a valid sponsor ID",
                   'success': False}
         self.output(loads(rv.data))
         self.output(expect)
@@ -214,10 +222,8 @@ class TestSponsor(BaseTest):
                          Routes['sponsor'] + " Get: Invalid Sponsor")
         # valid sponsor
         rv = self.app.get(Routes['sponsor']+ "/1")
-        data = {  'photo_file': 'pictures\\test.jpg',
-                        'sponsor_id': 1,
-                        'sponsor_name': 'League',
-                        'sponsor_picture_id': 1}
+        data = { 'sponsor_id': 1,
+                 'sponsor_name': 'Domus',}
         expect = {'data': data,
                   'failures': [],
                   'message': '',
@@ -247,24 +253,23 @@ class TestSponsor(BaseTest):
         self.assertEqual(loads(rv.data),result,
                          Routes['photo'] + ' DELETE Valid sponsor id')
 
-
     def testSponsorAPIPut(self):
         #proper insertion with post
+        self.show_results = True
         self.addSponsor()
         #invalid sponsor id
-        params = {'sponsor_name': 'New League', 'sponsor_picture_id': 1}
+        params = {'sponsor_name': 'New League'}
         rv = self.app.put(Routes['sponsor'] + '/2', data=params)
-        expect = {'failures': [], 'message': 'Not a valid Sponsor ID',
+        expect = {'failures': [], 'message': 'Not a valid sponsor ID',
                   'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['sponsor'] + " PUT: given invalid sponsor ID")
         #invalid parameters
-        params = {'sponsor_name': 1, 'sponsor_picture_id': 2}
+        params = {'sponsor_name': 1}
         rv = self.app.put(Routes['sponsor'] + '/1', data=params)
-        expect = {'failures': ['Invalid data for header sponsor_name',
-                               'Invalid data for header sponsor_picture_id'],
+        expect = {'failures': ['Invalid sponsor name'],
                   'message': 'Failed to properly supply the required fields',
                   'success': False}
         self.output(loads(rv.data))
@@ -272,22 +277,10 @@ class TestSponsor(BaseTest):
         self.assertEqual(expect, loads(rv.data),
                          Routes['sponsor'] + " PUT: given invalid parameters")
         #successful update
-        #insert second picture
-        fp = os.path.join("pictures", "test2.jpg")
-        params = {'file_path':fp}
-        rv = self.app.post(Routes['photo'], data=params)
-        expect = {"photo_id": 2, "failures": [],
-                  "message": "Successfully created photo", "success": True
-                 }
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['photo'] + " POST: Failed to create a photo"
-                         )
-        params = {'sponsor_name': 'New League', 'sponsor_picture_id': 2}
+        params = {'sponsor_name': 'New League'}
         rv = self.app.put(Routes['sponsor'] + '/1', data=params)
         expect = {  'failures': [],
-                    'message': 'Successfully updated the Sponsor',
+                    'message': '',
                     'success': True}
         self.output(loads(rv.data))
         self.output(expect)
@@ -386,7 +379,6 @@ class TestPlayer(BaseTest):
         self.assertEqual(loads(rv.data),result, Routes['player'] +
                          ' PUT: Valid player update')
 
-
     def testPlayerListApi(self):
         # test an empty get
         rv = self.app.get(Routes['player'])
@@ -449,7 +441,28 @@ class TestPlayer(BaseTest):
                       "gender": "M",
                       "email": "fras2560@mylaurier.ca",
                       "password":"Suck it"}
-        self.app.post(Routes['player'], data=params)
+        rv = self.app.post(Routes['player'], data=params)
+        result = {  'data': {
+                              'email': 'fras2560@mylaurier.ca',
+                              'gender': 'm',
+                              'player_id': 1,
+                              'player_name': 'Dallas Fraser'},
+                    'failures': [],
+                    'message': '',
+                    'player_id': 1,
+                    'success': True}
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with valid data"
+                         )
+        rv = self.app.get(Routes['player'])
+        empty = loads(rv.data)
+        expect = [{'email': 'fras2560@mylaurier.ca',
+                   'gender': 'm',
+                   'player_id': 1,
+                   'player_name': 'Dallas Fraser'}]
+        self.assertEqual(expect, empty,Routes['player'] +
+                         " GET: did not receive player list")
+        
 
 class TestTournament(BaseTest):
     def testTournamentAPIGet(self):

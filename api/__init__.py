@@ -39,9 +39,13 @@ def add_cors(resp):
     return resp
 
 from api.basic.player import PlayerAPI, PlayerListAPI
+from api.basic.sponsor import SponsorAPI, SponsorListAPI
 
 from api.routes import Routes
 
 api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
 api.add_resource(PlayerAPI, Routes['player'] + "/<int:player_id>", 
                  endpoint="player")
+api.add_resource(SponsorListAPI, Routes['sponsor'], endpoint="sponsors")
+api.add_resource(SponsorAPI, Routes['sponsor'] + "/<int:sponsor_id>", 
+                 endpoint="sponsor")

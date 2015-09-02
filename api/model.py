@@ -103,6 +103,10 @@ class Sponsor(DB.Model):
     def __repr__(self):
         return self.name
 
+    def json(self):
+        return {'sponsor_id': self.id,
+                'sponsor_name': self.name}
+
 class League(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120))
