@@ -42,7 +42,7 @@ class PlayerAPI(Resource):
         entry  = Player.query.get(player_id)
         if entry is None:
             result['message'] = 'Not a valid player ID'
-            return Response(dumps(result), status=200, 
+            return Response(dumps(result), status=404, 
                             mimetype="application/json")
         result['success'] = True
         result['data'] = entry.json()
@@ -138,8 +138,9 @@ class PlayerListAPI(Resource):
                             ]
         """
         # return a list of users
-        
         players = Player.query.all()
+        for i in range(0, len(players)):
+            players[i] = players[i].json()
         resp = Response(dumps(players), status=200, mimetype="application/json")
         return resp
 
@@ -193,6 +194,7 @@ class PlayerListAPI(Resource):
             DB.session.commit()
             result['player_id'] = player.id
             result['data'] = player.json()
+            result['success'] = True
             return Response(dumps(result), status=200,
                         mimetype="application/json")
         else:
