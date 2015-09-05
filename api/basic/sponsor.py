@@ -65,7 +65,7 @@ class SponsorAPI(Resource):
         if sponsor is None:
             #Sponsor is not in the table
             result['message'] = 'Not a valid Sponsor ID'
-            return Response(dumps(result), status=400,
+            return Response(dumps(result), status=404,
                             mimetype="application/json")
         DB.session.delete(sponsor)
         DB.session.commit()
@@ -108,6 +108,7 @@ class SponsorAPI(Resource):
             DB.session.commit()
         elif args['sponsor_name'] and not string_validator(args['sponsor_name']):
             result['failures'].append("Invalid sponsor name")
+            return Response(dumps(result), status=400, mimetype="application/json") 
         return Response(dumps(result), status=200, mimetype="application/json")
 
 
