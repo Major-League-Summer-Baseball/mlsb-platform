@@ -118,6 +118,10 @@ class League(DB.Model):
     def __repr__(self):
         return self.name
 
+    def json(self):
+        return {'league_id': self.id,
+                'league_name': self.name}
+
 class Game(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     home_team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id',

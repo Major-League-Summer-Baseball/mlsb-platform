@@ -114,7 +114,7 @@ class BaseTest(unittest.TestCase):
         self.league = League("Monday & Wedneday")
         DB.session.add(self.league)
         DB.session.commit()
-        self.assertEqual(0, self.league.id)
+        self.assertEqual(1, self.league.id)
 
     def addGame(self):
         self.addTeams()
@@ -255,7 +255,6 @@ class TestSponsor(BaseTest):
 
     def testSponsorAPIPut(self):
         #proper insertion with post
-        self.show_results = True
         self.addSponsor()
         #invalid sponsor id
         params = {'sponsor_name': 'New League'}
@@ -463,70 +462,67 @@ class TestPlayer(BaseTest):
         self.assertEqual(expect, empty,Routes['player'] +
                          " GET: did not receive player list")
         
-
-class TestTournament(BaseTest):
-    def testTournamentAPIGet(self):
+class TestLeague(BaseTest):
+    def testLeagueAPIGet(self):
         # proper insertion with post
         self.addLeague()
-        # invalid tournament id
-        rv = self.app.get(Routes['tournament'] + "/2")
+        # invalid league id
+        rv = self.app.get(Routes['league'] + "/2")
         result = {'failures': [],
-                  'message': 'Not a valid tournament ID',
+                  'message': 'Not a valid league ID',
                   'success': False}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data), result,Routes['tournament'] +
-                         " GET invalid tournament id")
-        # valid tournament id
-        rv = self.app.get(Routes['tournament'] + "/1")
-        result = {'data': {"tournament_id": 1, "tournament_name": "League"},
+        self.assertEqual(loads(rv.data), result,Routes['league'] +
+                         " GET invalid league id")
+        # valid league id
+        rv = self.app.get(Routes['league'] + "/1")
+        result = {'data': {"league_id": 1, "league_name": "Monday & Wedneday"},
                   'failures': [],
                   'message': '',
                   'success': True}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data), result,Routes['tournament'] +
-                         " GET valid tournament id")
+        self.assertEqual(loads(rv.data), result,Routes['league'] +
+                         " GET valid league id")
 
-
-    def testTournamentAPIDelete(self):
+    def testLeagueAPIDelete(self):
         # proper insertion with post
         self.addLeague()
-        # delete of invalid tournament id
-        rv = self.app.delete(Routes['tournament'] + "/2")
-        result = {'message': 'Not a valid Tournament ID',
+        # delete of invalid league id
+        rv = self.app.delete(Routes['league'] + "/2")
+        result = {'message': 'Not a valid league ID',
                   'success': False}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['tournament']+
-                         " DELETE Invalid tournament id ")
-        rv = self.app.delete(Routes['tournament'] + "/1")
-        result = {  'message': 'Tournament was deleted', 
+        self.assertEqual(loads(rv.data),result, Routes['league']+
+                         " DELETE Invalid league id ")
+        rv = self.app.delete(Routes['league'] + "/1")
+        result = {  'message': 'League was deleted', 
                     'success': True}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['tournament'] +
-                         ' DELETE Valid tournament id')
+        self.assertEqual(loads(rv.data),result, Routes['league'] +
+                         ' DELETE Valid league id')
 
-
-    def testTournamentAPIPut(self):
-        # must add a tournament
+    def testLeagueAPIPut(self):
+        # must add a League
         self.addLeague()
-        # invalid tournament id
-        params = {'tournament_name':'Chainsaw Classic'}
-        rv = self.app.put(Routes['tournament'] + '/2', data=params)
+        # invalid league id
+        params = {'league_name':'Chainsaw Classic'}
+        rv = self.app.put(Routes['league'] + '/2', data=params)
         result = {"failures": [],
-                  "message": "Not a valid tournament ID",
+                  "message": "Not a valid league ID",
                   "success": False
                  }
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['tournament'] + 
-                         ' PUT: Invalid tournament ID')
-        # invalid tournament_name type
-        params = {'tournament_name':1}
-        rv = self.app.put(Routes['tournament'] + '/1', data=params)
-        result = {"failures": ["Invalid data for header tournament_name"],
+        self.assertEqual(loads(rv.data),result, Routes['league'] + 
+                         ' PUT: Invalid league ID')
+        # invalid league_name type
+        params = {'league_name':1}
+        rv = self.app.put(Routes['league'] + '/1', data=params)
+        result = {"failures": ["Invalid league name"],
                   "message": "Failed to properly supply the required fields",
                   "success": False
                  }
@@ -534,58 +530,57 @@ class TestTournament(BaseTest):
         self.output(result)
         self.assertEqual(loads(rv.data),result)
         # successfully update
-        params = {'tournament_name':"Chainsaw Classic"}
-        rv = self.app.put(Routes['tournament'] + '/1', data=params)
+        params = {'league_name':"Chainsaw Classic"}
+        rv = self.app.put(Routes['league'] + '/1', data=params)
         result = {"failures": [],
-                  "message": "Successfully updated the tournament",
+                  "message": "",
                   "success": True
                  }
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data),result)
 
-
     def testTournamentListAPI(self):
         # test an empty get
-        rv = self.app.get(Routes['tournament'])
+        rv = self.app.get(Routes['league'])
         empty = loads(rv.data)
-        self.assertEqual([], empty,Routes['tournament'] +
+        self.assertEqual([], empty,Routes['league'] +
                          " GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['tournament'], data=params)
-        result ={"tournament_id": None,
-                 "failures": ['Missing header tournament_name'],
+        rv = self.app.post(Routes['league'], data=params)
+        result ={"league_id": None,
+                 "failures": ['Invalid league name'],
                  "message": "Failed to properly supply the required fields",
                  "success": False
                 }
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data), result , Routes['tournament'] +
+        self.assertEqual(loads(rv.data), result , Routes['league'] +
                          " POST: request with missing parameter"
                          )
-        # testing a gender parameter
-        params = {'tournament_name':1}
-        rv = self.app.post(Routes['tournament'], data=params)
-        result = {"tournament_id": None,
-                  "failures": ['Invalid data for header tournament_name'],
+        # testing a league name parameter
+        params = {'league_name':1}
+        rv = self.app.post(Routes['league'], data=params)
+        result = {"league_id": None,
+                  "failures": ['Invalid league name'],
                   "message": "Failed to properly supply the required fields",
                   "success": False
                  }
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['tournament'] + 
-                         " POST: request with invalid tournament_name"
+        self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         " POST: request with invalid league_name"
                          )
         # proper insertion with post
         self.addLeague()
-        # test a get with tournaments
-        rv = self.app.get(Routes['tournament'])
-        result = [{'tournament_id': 1,'tournament_name':"League"}]
+        # test a get with league
+        rv = self.app.get(Routes['league'])
+        result = [{'league_id': 1,'league_name':"Monday & Wedneday"}]
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(result, loads(rv.data), Routes['tournament'] + 
-                         " GET: Failed to return list of tournaments")
+        self.assertEqual(result, loads(rv.data), Routes['league'] + 
+                         " GET: Failed to return list of leagues")
 
 class TestTeam(BaseTest):
     def testTeamListAPI(self):

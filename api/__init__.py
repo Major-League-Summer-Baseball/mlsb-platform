@@ -40,7 +40,7 @@ def add_cors(resp):
 
 from api.basic.player import PlayerAPI, PlayerListAPI
 from api.basic.sponsor import SponsorAPI, SponsorListAPI
-
+from api.basic.league import LeagueAPI, LeagueListAPI
 from api.routes import Routes
 
 api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
@@ -49,3 +49,6 @@ api.add_resource(PlayerAPI, Routes['player'] + "/<int:player_id>",
 api.add_resource(SponsorListAPI, Routes['sponsor'], endpoint="sponsors")
 api.add_resource(SponsorAPI, Routes['sponsor'] + "/<int:sponsor_id>", 
                  endpoint="sponsor")
+api.add_resource(LeagueListAPI, Routes['league'], endpoint="leagues")
+api.add_resource(LeagueAPI, Routes['league'] + "/<int:league_id>", 
+                 endpoint="league")

@@ -8,7 +8,7 @@ Routes = {}
 # basic routes
 Routes['player'] = "/api/players"
 Routes['sponsor'] = "/api/sponsors"
-Routes['tournament'] = "/api/tournaments"
+Routes['league'] = "/api/leagues"
 Routes['photo'] = "/api/photos"
 Routes['team'] = "/api/teams"
 Routes['game'] = "/api/games"
@@ -39,7 +39,7 @@ Routes['dbgame'] = "/documentation/basic/game"
 Routes['dbsponsor'] = "/documentation/basic/sponsor"
 Routes['dbteam'] = "/documentation/basic/team"
 Routes['dbteamroster'] = "/documentation/basic/teamroster"
-Routes['dbtournament'] = "/documentation/basic/tournament"
+Routes['dbleague'] = "/documentation/basic/league"
 # dv = documentation view
 Routes['dvgame'] = "/documentation/views/game"
 Routes['dvplayer'] = "/documentation/views/player"
