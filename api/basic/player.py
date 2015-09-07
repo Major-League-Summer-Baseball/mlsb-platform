@@ -46,7 +46,6 @@ class PlayerAPI(Resource):
                             mimetype="application/json")
         result['success'] = True
         result['data'] = entry.json()
-        print(entry)
         return Response(dumps(result), status=200, mimetype="application/json")
 
     def delete(self, player_id):
@@ -98,8 +97,7 @@ class PlayerAPI(Resource):
         args = parser.parse_args()
         if player is None:
             result['message'] = 'Not a valid player ID'
-            return Response(dumps(result), status=404,
-                            mimetype="application/json")
+            return result
         if args['player_name'] and string_validator(args['player_name']):
             player.player_name = args['player_name']
         elif args['player_name'] and not string_validator(args['player_name']):

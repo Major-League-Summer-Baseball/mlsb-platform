@@ -55,14 +55,14 @@ class BaseTest(unittest.TestCase):
         DB.session.commit()
         self.assertEqual(self.sponsor.id, 1, "Could not add sponsor")
 
-    def addSpsonors(self):
+    def addSponsors(self):
+        print("Adding sponsor")
         self.sponsors = [Sponsor("Domus"),
                          Sponsor("Chainsaw")
                          ]
         for s in range(0,len(self.sponsors)):
             DB.session.add(self.sponsors[s])
-            DB.session.commit()
-            self.assertEqual(s, self.sponsors[s].id)
+        DB.session.commit()
 
     def addPlayer(self):
         p = Player("Dallas Fraser",
@@ -108,13 +108,23 @@ class BaseTest(unittest.TestCase):
         for t in range(0, len(self.teams)):
             DB.session.add(self.teams[t])
             DB.sesssion.commit()
-            self.assertEqual(t, self.teams[t].id)
+            self.assertEqual(t+1, self.teams[t].id)
 
     def addLeague(self):
         self.league = League("Monday & Wedneday")
         DB.session.add(self.league)
         DB.session.commit()
         self.assertEqual(1, self.league.id)
+
+    def addLeagues(self):
+        print("Adding leagues")
+        self.leagues = [League("Monday & Wedneday"), League("Tuesday & Thursday")]
+        for t in range(0, len(self.leagues)):
+            DB.session.add(self.leagues[t])
+            DB.session.commit()
+            self.assertEqual(t+1, self.leagues[t].id)
+        print("Added Leagues")
+
 
     def addGame(self):
         self.addTeams()
@@ -593,7 +603,7 @@ class TestTeam(BaseTest):
         params = {}
         rv = self.app.post(Routes['team'], data=params)
         result ={"team_id": None,
-                 "failures": ['Missing header team_name'],
+                 "failures": ['Missing color'],
                  "message": "Failed to properly supply the required fields",
                  "success": False
                 }
@@ -603,18 +613,15 @@ class TestTeam(BaseTest):
                          + " POST: request with missing parameter"
                          )
         # testing a all invalid parameters
-        params = {'team_name': 1,
-                  'captain_id': 1,
+        params = {'color': 1,
                   'sponsor_id': 1,
-                  'team_photo_id': 1,
-                  'color': 1}
+                  'league_id': 1}
         rv = self.app.post(Routes['team'], data=params)
         result = {"team_id": None,
-                  "failures": ['Invalid data for header team_name',
-                               'Invalid data for header captain_id',
-                               'Invalid data for header sponsor_id',
-                               'Invalid data for header color',
-                               'Invalid data for header team_photo_id'], 
+                  "failures": ['Invalid color',
+                               'Invalid sponsor ID',
+                               'Invalid league ID'
+                               ], 
                   "message": "Failed to properly supply the required fields", 
                   "success": False
                   }
@@ -623,16 +630,33 @@ class TestTeam(BaseTest):
         self.assertEqual(loads(rv.data), result, Routes['team']
                          + " POST: request with invalid parameters"
                          )
-        # proper insertion with post
-        self.addTeam()
+        # testing with all valid parameters
+        self.addSponsor()
+        self.addLeague()
+        params = {'color':"Black",
+                  'sponsor_id': 1,
+                  'league_id': 1}
+        rv = self.app.post(Routes['team'], data=params)
+        result = {"team_id": 1,
+                  "failures": [], 
+                  "message": "", 
+                  "success": True
+                  }
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['team']
+                         + " POST: request with invalid parameters"
+                         )
+ 
         # test a get with team
         rv = self.app.get(Routes['team'])
-        expect = [{ 'captain_id': 1,
-                    'color': 'Green',
-                    'sponsor_id': 1,
-                    'team_id': 1,
-                    'team_name': 'Domus Green',
-                    'team_photo_id': 1}]
+        expect = [
+                  {
+                   'team_id': 1,
+                   'color': "Black",
+                   'sponsor_id': 1,
+                   'league_id': 1}
+                ]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team']
@@ -651,12 +675,10 @@ class TestTeam(BaseTest):
                          " GET: invalid team id")
         # test valid team id
         rv = self.app.get(Routes['team'] + "/1")
-        data = {'captain_id': 1,
+        data = {'team_id': 1,
                 'color': 'Green',
                 'sponsor_id': 1,
-                'team_id': 1,
-                'team_name': 'Domus Green',
-                'team_photo_id': 1}
+                'league_id': None}
         expect = {'data': data,
                 'failures': [],
                 'message': '',
@@ -671,7 +693,7 @@ class TestTeam(BaseTest):
         self.addTeam()
         # delete of invalid team id
         rv = self.app.delete(Routes['team'] + "/2")
-        result = {'message': 'Not a valid Team ID', 'success': False}
+        result = {'message': 'Not a valid team ID', 'success': False}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data),result, Routes['team'] +
@@ -687,30 +709,27 @@ class TestTeam(BaseTest):
         # proper insertion with post
         self.addTeam()
         # invalid team id
-        params = {'team_name': "Chainsaw Black",
-                  'captain_id': 1,
-                  'sponsor_id': 1,
-                  'team_photo_id': 1,
+        params = {'sponsor_id': 1,
+                  'league_id': 1,
                   'color': "Black"}
         rv = self.app.put(Routes['team'] + '/2', data=params)
-        expect = {'failures': [], 'message': 'Not a valid Team ID',
+        expect = {'failures': [], 'message': 'Not a valid team ID',
                   'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['team'] + " PUT: given invalid team ID")
         # invalid parameters
-        params = {'team_name': 1,
-                  'captain_id': 2,
+        params = {
                   'sponsor_id': 2,
-                  'team_photo_id': 2,
+                  'league_id': 2,
                   'color': 1}
         rv = self.app.put(Routes['team'] + '/1', data=params)
-        expect = {  'failures': ['Invalid data for header team_name',
-                               'Invalid data for header captain_id',
-                               'Invalid data for header sponsor_id',
-                               'Invalid data for header color',
-                               'Invalid data for header team_photo_id'],
+        expect = {  'failures': [
+                               'Invalid color',
+                               'Invalid sponsor ID',
+                               'Invalid league ID'
+                               ],
                     'message': 'Failed to properly supply the required fields',
                     'success': False}
         self.output(loads(rv.data))
@@ -718,48 +737,15 @@ class TestTeam(BaseTest):
         self.assertEqual(expect, loads(rv.data),
                          Routes['team'] + " PUT: given invalid parameters")
         # successful update
-        # insert second picture
-        fp = os.path.join("pictures", "test2.jpg")
-        params = {'file_path':fp}
-        rv = self.app.post(Routes['photo'], data=params)
-        expect = {"photo_id": 2, "failures": [],
-                  "message": "Successfully created photo", "success": True
-                 }
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect, 
-                         Routes['photo'] + " POST: Failed to create a photo"
-                         )
-        # insert second sponsor
-        params = {'sponsor_name': 'New League', 'sponsor_picture_id': 2}
-        rv = self.app.post(Routes['sponsor'], data=params)
-        expect = {"sponsor_id": 2, "failures": [], 
-                                "message": "Successfully created Sponsor", 
-                                "success": True
-                             }
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " PUT: Failed to update Sponsor")
-        # insert second captain
-        params = {'player_name':'Barry Bonds','gender':'M'}
-        rv = self.app.post('/players', data=params)
-        expect = {"player_id": 2, "failures": [], 
-                  "message": "Successfully created player", "success": True
-                 }
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect, 
-                         Routes['player'] + " POST: Failed to create a player"
-                         )
+        self.addSponsors()
+        self.addLeagues()
         # valid update
-        params = {'team_name': "Chainsaw Black",
-                  'captain_id': 2,
+        params = {
                   'sponsor_id': 2,
-                  'team_photo_id': 2,
+                  'league_id': 2,
                   'color': "Black"}
         rv = self.app.put(Routes['team'] + '/1', data=params)
-        expect = {'failures': [], 'message': 'Successfully updated the Team',
+        expect = {'failures': [], 'message': '',
                   'success': True}
         self.output(loads(rv.data))
         self.output(expect)

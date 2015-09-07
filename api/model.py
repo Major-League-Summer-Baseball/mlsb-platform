@@ -78,8 +78,10 @@ class Team(DB.Model):
                             backref='team',
                             lazy = 'dynamic')
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
-    def __init__(self, color=None):
+    def __init__(self, color=None, sponsor_id=None, league_id=None):
         self.color = color
+        self.sponsor_id = sponsor_id
+        self.league_id = league_id
 
     def __repr__(self):
         result = []
@@ -89,6 +91,12 @@ class Team(DB.Model):
             result.append(str( Sponsor.query.get(self.sponsor_id)))
         return " ".join(result)
 
+    def json(self):
+        return{
+               'team_id': self.id,
+               'color': self.color,
+               'sponsor_id': self.sponsor_id,
+               'league_id': self.league_id}
 
 
 class Sponsor(DB.Model):
