@@ -13,13 +13,16 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
-from datetime import datetime
+from datetime import datetime, date, time
+
 class BaseTest(unittest.TestCase):
 
     def setUp(self):
         self.show_results = False
         self.pp = PrettyPrinter(indent=4)
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
+        self.d = date(2014, 8, 23)
+        self.t = time(11, 37)
         app.config['TESTING'] = True
         self.app = app.test_client()
         DB.engine.execute('''   
@@ -56,7 +59,6 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(self.sponsor.id, 1, "Could not add sponsor")
 
     def addSponsors(self):
-        print("Adding sponsor")
         self.sponsors = [Sponsor("Domus"),
                          Sponsor("Chainsaw")
                          ]
@@ -73,7 +75,7 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(p.id, 1, "Could not add player")
 
     def addPlayers(self):
-        players = [Player("Dallas Fraser",
+        self.players = [Player("Dallas Fraser",
                    "fras2560@mylaurier.ca",
                    gender="m"),
                    Player("My Dream Girl",
@@ -82,10 +84,9 @@ class BaseTest(unittest.TestCase):
                    Player("Barry Bonds",
                           "bonds@hallOfFame.ca",
                           gender="M")]
-        for player in range(0, len(players)):
-            DB.session.add(players[player])
-            DB.session.commit()
-            self.assertEqual(player, players[player].id)
+        for player in range(0, len(self.players)):
+            DB.session.add(self.players[player])
+        DB.session.commit()
 
     def addTeam(self):
         self.addPlayer()
@@ -107,8 +108,7 @@ class BaseTest(unittest.TestCase):
         self.teams[1].sponsor_id = self.sponsors[1].id
         for t in range(0, len(self.teams)):
             DB.session.add(self.teams[t])
-            DB.sesssion.commit()
-            self.assertEqual(t+1, self.teams[t].id)
+        DB.session.commit()
 
     def addLeague(self):
         self.league = League("Monday & Wedneday")
@@ -117,25 +117,37 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(1, self.league.id)
 
     def addLeagues(self):
-        print("Adding leagues")
         self.leagues = [League("Monday & Wedneday"), League("Tuesday & Thursday")]
         for t in range(0, len(self.leagues)):
             DB.session.add(self.leagues[t])
-            DB.session.commit()
-            self.assertEqual(t+1, self.leagues[t].id)
-        print("Added Leagues")
-
+        DB.session.commit()
 
     def addGame(self):
         self.addTeams()
         self.addLeague()
-        self.game = Game(datetime.now(),
+        self.game = Game(datetime.combine(self.d, self.t),
                          self.teams[0].id,
                          self.teams[1].id,
                          self.league.id)
         DB.session.add(self.game)
         DB.session.commit()
-        self.assertEqual(0, self.game.id)
+        self.assertEqual(1, self.game.id)
+
+    def addGames(self):
+        self.addTeams()
+        self.addLeagues()
+        self.games = [Game(datetime.combine(self.d, self.t),
+                         self.teams[0].id,
+                         self.teams[1].id,
+                         self.leagues[0].id),
+                      Game(datetime.combine(self.d, self.t),
+                         self.teams[0].id,
+                         self.teams[1].id,
+                         self.leagues[1].id)
+                      ]
+        DB.session.add(self.games[0])
+        DB.session.add(self.games[1])
+        DB.session.commit()
 
     def addBat(self):
         self.addGame()
@@ -762,9 +774,11 @@ class TestGame(BaseTest):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['game'], data=params)
-        expect = {'failures': ['Missing header date',
-                               'Missing header tournament_id',
-                               'Missing header time'],
+        expect = {'failures': ['Invalid home team ID',
+                               'Invalid away team ID',
+                               'Invalid time & date',
+                               
+                               'Invalid league ID'],
                   'game_id': None,
                   'message': 'Failed to properly supply the required fields',
                   'success': False
@@ -779,14 +793,13 @@ class TestGame(BaseTest):
                   'away_team_id': 2,
                   'date': "2014-02-2014", 
                   'time': "25:61",
-                  'tournament_id': 1
+                  'league_id': 1
                               }
         rv = self.app.post(Routes['game'], data=params)
-        expect = {'failures': [ 'Invalid data for header home_team_id',
-                                'Invalid data for header away_team_id',
-                                'Invalid data for header date',
-                                'Invalid data for header tournament_id',
-                                'Invalid data for header time'],
+        expect = {'failures': [ 'Invalid home team ID',
+                                'Invalid away team ID',
+                                'Invalid time & date',
+                                'Invalid league ID'],
                   'game_id': None,
                   'message': 'Failed to properly supply the required fields',
                   'success': False
@@ -796,8 +809,25 @@ class TestGame(BaseTest):
         self.assertEqual(expect, loads(rv.data), Routes['game']
                          + " POST: request with missing parameters")
         # test valid parameters
-        self.addGame()
-
+        self.addTeams()
+        self.addLeague()
+        params = {
+                  'home_team_id': 1,
+                  'away_team_id': 2,
+                  'date': "2014-02-01", 
+                  'time': "23:59",
+                  'league_id': 1
+                              }
+        rv = self.app.post(Routes['game'], data=params)
+        expect = {'failures': [],
+                  'game_id': 1,
+                  'message': '',
+                  'success': True
+                 }
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['game']
+                         + " POST: request with missing parameters")
     def testGameGet(self):
         # proper insertion
         self.addGame()
@@ -812,11 +842,10 @@ class TestGame(BaseTest):
         # valid id
         rv = self.app.get(Routes['game'] + "/1")
         data = {'away_team_id': 2,
-                'date': '2014-08-23',
+                'date': '2014-08-23 11:37',
                 'game_id': 1,
                 'home_team_id': 1,
-                'time': '11:38',
-                'tournament_id': 1}
+                'league_id': 1}
         expect = {'data': data,
                   'failures': [],
                   'message': '',
@@ -832,7 +861,7 @@ class TestGame(BaseTest):
         self.addGame()
         # delete invalid game id
         rv = self.app.delete(Routes['game'] + "/2")
-        expect = {'message': 'Not a valid Game ID', 'success': False}
+        expect = {'message': 'Not a valid game ID', 'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['game'] + 
@@ -847,29 +876,17 @@ class TestGame(BaseTest):
 
     def testGamePut(self):
         # proper insertion
-        self.addGame()
-        # add second tournament
-        params = {'tournament_name':'Chainswa Classic'}
-        rv = self.app.post(Routes['tournament'], data=params)
-        result = {"tournament_id": 2, "failures": [],
-                  "message": "Successfully created tournament",
-                  "success": True
-                 }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['tournament']
-                         + " POST: Failed to create a tournament"
-                         )
+        self.addGames()
         # invalid game id
         params = {
                   'home_team_id': 2,
                   'away_team_id': 1,
                   'date': "2014-08-22",
                   'time': "11:37",
-                  'tournament_id': 2
+                  'league_id': 2
                  }
-        rv = self.app.put(Routes['game'] + "/2", data=params)
-        expect = {'failures': [], 'message': 'Not a valid Game ID',
+        rv = self.app.put(Routes['game'] + "/3", data=params)
+        expect = {'failures': [], 'message': 'Invalid game ID',
                   'success': False}
         self.output(loads(rv.data))
         self.output(expect)
@@ -884,11 +901,9 @@ class TestGame(BaseTest):
                   'tournament_id': 3
                  }
         rv = self.app.put(Routes['game'] + "/1", data=params)
-        expect = {'failures': ['Invalid data for header home_team_id',
-                               'Invalid data for header away_team_id',
-                               'Invalid data for header date',
-                               'Invalid data for header tournament_id',
-                               'Invalid data for header time'],
+        expect = {'failures': ['Invalid home team ID',
+                               'Invalid away team ID',
+                               'Invalid time & date'],
                   'message': 'Failed to properly supply the required fields',
                   'success': False}
         self.output(loads(rv.data))
@@ -901,10 +916,10 @@ class TestGame(BaseTest):
                   'away_team_id': 1,
                   'date': "2014-08-22",
                   'time': "11:37",
-                  'tournament_id': 2
+                  'league_id': 2
                  }
         rv = self.app.put(Routes['game'] + "/1", data=params)
-        expect = {'failures': [], 'message': 'Successfully updated the Game',
+        expect = {'failures': [], 'message': '',
                   'success': True}
         self.output(loads(rv.data))
         self.output(expect)

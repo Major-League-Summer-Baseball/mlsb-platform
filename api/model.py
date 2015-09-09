@@ -146,13 +146,20 @@ class Game(DB.Model):
         self.date = date
         self.home_team_id = home_team_id
         self.away_team_id = away_team_id
-        self.leaue_id = league_id
+        self.league_id = league_id
 
     def __repr__(self):
         home = str(Team.query.get(self.home_team_id))
         away = str(Team.query.get(self.away_team_id))
-        
         return home + " vs " + away + " on " + self.date.strftime("%Y-%m-%d %H:%M")
+    
+    def json(self):
+        return {
+                'game_id': self.id,
+                'home_team_id': self.home_team_id,
+                'away_team_id': self.away_team_id,
+                'league_id': self.league_id,
+                'date': self.date.strftime("%Y-%m-%d %H:%M")}
 
 class Bat(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
