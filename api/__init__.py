@@ -43,6 +43,7 @@ from api.basic.sponsor import SponsorAPI, SponsorListAPI
 from api.basic.league import LeagueAPI, LeagueListAPI
 from api.basic.team import TeamAPI, TeamListAPI
 from api.basic.game import GameAPI, GameListAPI
+from api.basic.bat import BatAPI, BatListAPI
 from api.routes import Routes
 
 api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
@@ -60,5 +61,9 @@ api.add_resource(TeamAPI, Routes['team'] + "/<int:team_id>",
 api.add_resource(GameListAPI, Routes['game'], endpoint="games")
 api.add_resource(GameAPI, Routes['game'] + "/<int:game_id>", 
                  endpoint="game")
+api.add_resource(BatListAPI, Routes['bat'], endpoint="bats")
+api.add_resource(BatAPI, Routes['bat'] + "/<int:bat_id>", 
+                 endpoint="bat")
+
 
 

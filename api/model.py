@@ -197,6 +197,17 @@ class Bat(DB.Model):
         return (player.name  + "-" + self.classification + " in " 
                 + str(self.inning))
 
+    def json(self):
+        return{
+               'bat_id': self.id,
+               'game_id':self.game_id,
+               'team_id': self.team_id,
+               'rbi': self.rbi,
+               'hit': self.classification,
+               'inning':self.inning,
+               'player_id': self.player_id
+               }
+
 import unittest
 class BaseTest(unittest.TestCase):
     def setUp(self):
