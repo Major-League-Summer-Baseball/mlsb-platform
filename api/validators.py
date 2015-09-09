@@ -68,27 +68,6 @@ def gender_validator(value):
     return validated
 
 
-def file_validator(file_path):
-    '''
-    file_validator
-        a function that validates if a file exist inside static folder
-        Parameters:
-            file_path: the file path to validate (string)
-        Returns:
-            True if valid
-            False otherwise
-    '''
-    valid = False
-    cd = os.getcwd()
-    app_folder = os.path.dirname(cd)
-    while "api" in app_folder:
-        #need to move up one more level
-        app_folder = os.path.dirname(app_folder)
-    file = os.path.join(app_folder,'api', 'static', file_path)
-    if os.path.isfile(file):
-        valid = True
-    return valid
-
 import datetime
 def date_validator(date):
     '''
@@ -157,6 +136,21 @@ def hit_validator(hit):
     if string_validator(hit):
         if hit in HITS:
             valid = True
+    return valid
+
+def inning_validator(inning):
+    '''
+    inning_validator
+        a function that check if the inning is valid
+        Parameters:
+            inning: the inning (int)
+        Returns:
+            True if valid
+            False otherwise
+    '''
+    valid = False
+    if inning > 0:
+        valid = True
     return valid
 
 def validated(x):
@@ -228,18 +222,6 @@ class Test(unittest.TestCase):
         test = "Bob Saget"
         self.assertEqual(string_validator(test), True,
                          'String Validator: Bob Saget was a invalid string')
-
-    def testFileValidator(self):
-        # test invalid file
-        test = "BobSagetPornShoot.jpg"
-        fp = os.path.join('pictures', test)
-        self.assertEqual(file_validator(fp), False, 
-                         'File Valdiator: BobSatePOrnShoot.jpg was valid file')
-        #test valid file
-        test = "test.jpg"
-        fp = os.path.join('pictures', test)
-        self.assertEqual(file_validator(fp), True, 
-                         'File Valdiator: test.jpg was invalid file')
 
     def testDateValidator(self):
         self.assertEqual(False, date_validator('01-01-2014'),
