@@ -13,20 +13,18 @@ from datetime import date, datetime
 
 roster = DB.Table('roster',
                   DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
-                  DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id')),
-                  DB.Column('year', DB.Integer),
-                  DB.Column('captain', DB.Boolean)
+                  DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
                 )
 
-def insertPlayer(team_id, player_id, year, captain=False):
-    if year > 2013 and year <= date.today().year:
-        DB.session.execute(roster.insert(), params={"player_id": player_id,
-                                            "team_id": team_id,
-                                            "year": year,
-                                            "captain": captain})
-        DB.session.commit()
-    else:
-        raise Exception("Invalid year")
+def insertPlayer(team_id, player_id, captain=False):
+        if captain:
+            team = Team.query.get(team_id)
+            team.player_id = player_id
+            DB.session.commit()
+        else:
+            DB.session.execute(roster.insert(), params={"player_id": player_id,
+                                                "team_id": team_id})
+            DB.session.commit()
 
 class Player(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
@@ -36,6 +34,9 @@ class Player(DB.Model):
     password = DB.Column(DB.String(120))
     bats = DB.relationship('Bat',
                              backref='player', lazy='dynamic')
+    team = DB.relationship('Team',
+                              backref='player',
+                              lazy='dynamic')
     def __init__(self, name, email, gender=None, password="default"):
         self.name = name
         self.email = email
@@ -78,11 +79,19 @@ class Team(DB.Model):
                             backref='team',
                             lazy = 'dynamic')
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
-    def __init__(self, color=None, sponsor_id=None, league_id=None):
+    year = DB.Column(DB.Integer)
+    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
+    def __init__(self,
+                 color=None,
+                 sponsor_id=None,
+                 league_id=None,
+                 year=date.today().year):
+        if year < 2013 and year >= date.today().year:
+            raise Exception("Invalid year")
         self.color = color
         self.sponsor_id = sponsor_id
         self.league_id = league_id
-
+        self.year = year
     def __repr__(self):
         result = []
         if self.color is not None:
@@ -96,8 +105,8 @@ class Team(DB.Model):
                'team_id': self.id,
                'color': self.color,
                'sponsor_id': self.sponsor_id,
-               'league_id': self.league_id}
-
+               'league_id': self.league_id,
+               'year': self.year}
 
 class Sponsor(DB.Model):
     __tablename__ = 'sponsor'
@@ -208,167 +217,6 @@ class Bat(DB.Model):
                'player_id': self.player_id
                }
 
-import unittest
-class BaseTest(unittest.TestCase):
-    def setUp(self):
-        DB.engine.execute('''   
-                                DROP TABLE IF EXISTS roster;
-                                DROP TABLE IF EXISTS bat;
-                                DROP TABLE IF EXISTS game;
-                                DROP TABLE IF EXISTS team;
-                                DROP TABLE IF EXISTS player;
-                                DROP TABLE IF EXISTS sponsor;
-                                DROP TABLE IF EXISTS league;
-                        ''')
-        print("Starting Test")
-        DB.create_all()
-
-    def tearDown(self):
-        pass
-
-class TestPlayer(BaseTest):
-    def testPlayerInsert(self):
-        print("Player Test")
-        test = Player("Dallas",
-                      "fras2560@mylaurier.ca",
-                      gender="m",
-                      password="Password")
-        DB.session.add(test)
-        DB.session.commit()
-        
-        print("Player Added")
-        self.assertEqual(str(test), "Dallas email:fras2560@mylaurier.ca")
-        try:
-            test = Player("Dallas", "fras2560@mylaurier.ca", gender="fuck")
-            DB.session.add(test)
-            DB.session.commit()
-            self.assertEqual(False, True, "Should have raised exception")
-        except:
-            pass
-        DB.sessision.delete(test)
-    
-    def testPlayerPassword(self):
-        test = Player("Dallas",
-                      "fras2560@mylaurier.ca",
-                      gender="m",
-                      password="Password")
-        DB.session.add(test)
-        DB.session.commit()
-        dallas = Player.query.get(1)
-        self.assertEqual(dallas.check_password("shit"), False)
-        self.assertEqual(dallas.check_password("Password"), True)
-        DB.session.delete(test)
-
-class TestTeam(BaseTest):
-    def insertData(self):
-        self.player = Player("Dallas",
-                             "fras2560@mylaurier.ca",
-                             gender="m",
-                             password="Password")
-        DB.session.add(self.player)
-        self.team = Team(color="Green")
-        DB.session.add(self.team)
-        self.sponsor = Sponsor("Domus")
-        DB.session.add(self.sponsor)
-        DB.session.commit()
-        self.team.sponsor_id = self.sponsor.id
-
-    def testRep(self):
-        self.insertData()
-        print(self.team)
-
-    def testAddPlayer(self):
-        self.insertData()
-        insertPlayer(1, 1, 2015)
-        self.assertEqual(self.team.players, [self.player])
-        self.assertEqual(self.player.teams.all(), [self.team])
-
-class TestGame(BaseTest):
-    def insertData(self):
-        self.teams = [Team(color="Green"), Team(color="Black")]
-        for team in self.teams:
-            DB.session.add(team)
-        self.sponsors = [Sponsor("Domus"), Sponsor("Fat Bastards")]
-        for sponsor in self.sponsors:
-            DB.session.add(sponsor)
-        DB.session.commit()
-        for i in range(len(self.teams)):
-            self.teams[i].sponsor_id = self.sponsors[i].id
-        self.league = League(name="Monday/Wednesday")
-        DB.session.add(self.league)
-        DB.session.commit()
-        
-    def testGame(self):
-        self.insertData()
-        game = Game(datetime.now(),
-                    self.teams[0].id,
-                    self.teams[1].id,
-                     self.league,id)
-        DB.session.add(game)
-        DB.session.commit()
-        self.assertEqual("Green Domus vs Black Fat Bastards" in str(game), True)
-
-class TestBat(BaseTest):
-    def insertData(self):
-        self.players = [Player("Dallas", "fras2560@mylaurier.ca", gender="m"),
-                        Player("Girl", "rockon@hotmail.com", gender="f")]
-        for player in self.players:
-            DB.session.add(player)
-        self.teams = [Team(color="Green"), Team(color="Black")]
-        for team in self.teams:
-            DB.session.add(team)
-        self.sponsors = [Sponsor("Domus"), Sponsor("Fat Bastards")]
-        for sponsor in self.sponsors:
-            DB.session.add(sponsor)
-        DB.session.commit()
-        for i in range(len(self.teams)):
-            self.teams[i].sponsor_id = self.sponsors[i].id
-        self.league = League(name="Monday/Wednesday")
-        DB.session.add(self.league)
-        DB.session.commit()
-        self.game = Game(datetime.now(),
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.league.id)
-        DB.session.add(self.game)
-        DB.session.commit()
-    
-    def testBat(self):
-        self.insertData()
-        bat = Bat(self.players[0].id,
-                  self.teams[0].id,
-                   self.game.id,
-                   "HR",
-                   1,
-                   rbi=1)
-        DB.session.add(bat)
-        DB.session.commit()
-        self.assertEqual("Dallas-hr in 1", str(bat))
-
-    def testBadBat(self):
-        self.insertData()
-        try:
-            bat = Bat(self.players[0].id,
-                      self.teams[0].id,
-                       self.game.id,
-                       "SS",
-                       1,
-                       rbi=1)
-            self.assertEqual(True, False, "Should have raised an exception")
-        except:
-            pass
-    def testGoodBat(self):
-        self.insertData()
-        try:
-            bat = Bat(self.players[1].id,
-                      self.teams[0].id,
-                       self.game.id,
-                       "SS",
-                       1,
-                       rbi=1)
-            self.assertEqual(True, True, "Should have raised an exception")
-        except:
-            self.assertEqual(True, False, "Should have not raised an exception")
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

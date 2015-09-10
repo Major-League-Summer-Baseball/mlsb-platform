@@ -6,6 +6,7 @@ Purpose: Holds data validators
 '''
 import unittest
 import os
+from datetime import date
 HITS = ['S', 'D', 'SS', 'HR', 'K', 'E','FC', 'FO','GO']
 def string_validator(value):
     '''
@@ -29,6 +30,12 @@ def string_validator(value):
             validated = True
     except:
         pass
+    return validated
+
+def year_validator(year):
+    validated = False
+    if year > 2014 and year <= date.today().year:
+        validated = True
     return validated
 
 def int_validator(value):

@@ -13,6 +13,7 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
+from api.model import insertPlayer
 from datetime import datetime, date, time
 
 class BaseTest(unittest.TestCase):
@@ -179,18 +180,16 @@ class BaseTest(unittest.TestCase):
             DB.session.add(self.bats[i])
         DB.session.commit()
 
-    def addPlayerToTeam(self):
-        self.addLeague()
+    def addCaptainToTeam(self):
         self.addTeam()
-        params = {'team_id': 1, "player_id": 1, 
-                  "start_date": "2014-08-28", 'tournament_id': 1}
-        rv = self.app.post(Routes['team_roster'], data=params)
-        expect = {'failures': [], 'message': 'Successful roster addition',
-                  'success': True}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['team_roster'] + " POST: valid data")
+        print("Team was added")
+        insertPlayer(1, 1, captain=True)
+        print("Done")
+    
+    def addPlayersToTeam(self):
+        self.addTeams()
+        insertPlayer(1, 1, captain=True)
+        insertPlayer(1, 2, captain=False)
 
 class TestSponsor(BaseTest):
     def testSponsorListAPI(self):
@@ -633,7 +632,7 @@ class TestTeam(BaseTest):
         params = {}
         rv = self.app.post(Routes['team'], data=params)
         result ={"team_id": None,
-                 "failures": ['Missing color'],
+                 "failures": ['Invalid color'],
                  "message": "Failed to properly supply the required fields",
                  "success": False
                 }
@@ -645,12 +644,14 @@ class TestTeam(BaseTest):
         # testing a all invalid parameters
         params = {'color': 1,
                   'sponsor_id': 1,
-                  'league_id': 1}
+                  'league_id': 1,
+                  'year': 9999}
         rv = self.app.post(Routes['team'], data=params)
         result = {"team_id": None,
                   "failures": ['Invalid color',
                                'Invalid sponsor ID',
-                               'Invalid league ID'
+                               'Invalid league ID',
+                               'Invalid year'
                                ], 
                   "message": "Failed to properly supply the required fields", 
                   "success": False
@@ -665,7 +666,8 @@ class TestTeam(BaseTest):
         self.addLeague()
         params = {'color':"Black",
                   'sponsor_id': 1,
-                  'league_id': 1}
+                  'league_id': 1,
+                  'year': 2015}
         rv = self.app.post(Routes['team'], data=params)
         result = {"team_id": 1,
                   "failures": [], 
@@ -685,7 +687,8 @@ class TestTeam(BaseTest):
                    'team_id': 1,
                    'color': "Black",
                    'sponsor_id': 1,
-                   'league_id': 1}
+                   'league_id': 1,
+                   'year': 2015}
                 ]
         self.output(loads(rv.data))
         self.output(expect)
@@ -708,7 +711,8 @@ class TestTeam(BaseTest):
         data = {'team_id': 1,
                 'color': 'Green',
                 'sponsor_id': 1,
-                'league_id': None}
+                'league_id': None,
+                'year': 2015}
         expect = {'data': data,
                 'failures': [],
                 'message': '',
@@ -753,12 +757,14 @@ class TestTeam(BaseTest):
         params = {
                   'sponsor_id': 2,
                   'league_id': 2,
-                  'color': 1}
+                  'color': 1,
+                  'year': 9999}
         rv = self.app.put(Routes['team'] + '/1', data=params)
         expect = {  'failures': [
                                'Invalid color',
                                'Invalid sponsor ID',
-                               'Invalid league ID'
+                               'Invalid league ID',
+                               'Invalid year'
                                ],
                     'message': 'Failed to properly supply the required fields',
                     'success': False}
@@ -1173,21 +1179,38 @@ class TestTeamRoster(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
                          " GET: on empty set")
-        self.addPlayerToTeam()
+        self.addPlayersToTeam()
         rv = self.app.get(Routes['team_roster'])
-        expect = [
-                   {'end_date': None,
-                   'player_id': 1,
-                   'start_date': '2014-08-28',
-                   'team_id': 1,
-                   'tournament_id': 1
-                   }
-                 ]
+        expect = [{  '0': {'color': 'Black',
+                           'league_id': None,
+                           'sponsor_id': 2,
+                           'team_id': 2,
+                           'year': 2015},
+                    'captain': None,
+                    'players': []},
+                  {  '1': {'color': 'Green',
+                         'league_id': None,
+                         'sponsor_id': 1,
+                         'team_id': 1,
+                         'year': 2015},
+                    'captain': {'email': 'fras2560@mylaurier.ca',
+                               'gender': 'm',
+                               'player_id': 1,
+                               'player_name': 'Dallas Fraser'},
+                   'players': [{'email': 'dream@mylaurier.ca',
+                                'gender': 'f',
+                                'player_id': 2,
+                                'player_name': 'My Dream Girl'}]}]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
                          " GET: on non-empty set")
 
+    def testQuery(self):
+        self.addPlayerToTeam()
+        t = Team.query.join(roster, Team.id == roster.team_id)\
+            .add_columns(roster.year, roster.captain)
+        print(test)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

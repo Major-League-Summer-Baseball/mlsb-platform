@@ -7,14 +7,15 @@ Purpose: To create an application to act as an api for the database
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.validators import string_validator
+from api.validators import string_validator, year_validator
 from api.model import Team, Sponsor, League
 from api import DB
+from datetime import date
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
 parser.add_argument('league_id', type=int)
-
+parser.add_argument('year', type=int)
 
 class TeamAPI(Resource):
     def get(self, team_id):
@@ -80,6 +81,7 @@ class TeamAPI(Resource):
                 sponsor_id: The sponsor id (int)
                 team_picture_id: The picture id (int)
                 color: the color of the team (string)
+                year: the year of the team (int)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -117,6 +119,10 @@ class TeamAPI(Resource):
                 result['failures'].append('Invalid league ID')
             else:
                 team.league_id = lid
+        if args['year'] and year_validator(args['year']):
+            team.year = args['year']
+        elif args['year'] and not year_validator(args['year']):
+            result['failures'].append("Invalid year")
         if len(result['failures']) > 0:
             result['message'] = "Failed to properly supply the required fields"
             return Response(dumps(result), status=400, mimetype="application/json")
@@ -183,13 +189,13 @@ class TeamListAPI(Resource):
         color = None
         sponsor_id = None
         league_id = None
-        
+        year = date.today().year
         if args['color'] and string_validator(args['color']):
             color = args['color']
         elif args['color'] and not string_validator(args['color']):
             result['failures'].append('Invalid color')
         else:
-            result['failures'].append("Missing color")
+            result['failures'].append("Invalid color")
         if args['sponsor_id']:
             sid = args['sponsor_id']
             sponsor = Sponsor.query.get(sid)
@@ -204,10 +210,17 @@ class TeamListAPI(Resource):
                 result['failures'].append('Invalid league ID')
             else:
                 league_id = lid
+        if args['year'] and year_validator(args['year']):
+            year = args['year']
+        elif args['year'] and not year_validator(args['year']):
+            result['failures'].append("Invalid year")
         if len(result['failures']) > 0:
             result['message'] = "Failed to properly supply the required fields"
             return Response(dumps(result), status=400, mimetype="application/json")
-        t = Team(color=color, sponsor_id=sponsor_id, league_id=league_id)
+        t = Team(color=color,
+                 sponsor_id=sponsor_id,
+                 league_id=league_id,
+                 year=year)
         DB.session.add(t)
         DB.session.commit()
         result['success'] = True
