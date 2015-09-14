@@ -68,7 +68,6 @@ class GameAPI(Resource):
             result['message'] = 'Not a valid game ID'
             return Response(dumps(result), status=404,
                             mimetype="application/json")
-        print(game)
         DB.session.delete(game)
         DB.session.commit()
         result['success'] = True

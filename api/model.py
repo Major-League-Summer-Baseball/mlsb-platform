@@ -17,15 +17,21 @@ roster = DB.Table('roster',
                 )
 
 def insertPlayer(team_id, player_id, captain=False):
+        valid = False
         if captain:
             team = Team.query.get(team_id)
-            team.player_id = player_id
-            DB.session.commit()
+            if team is not None:
+                team.player_id = player_id
+                DB.session.commit()
+                valid = True
         else:
-            DB.session.execute(roster.insert(), params={"player_id": player_id,
-                                                "team_id": team_id})
-            DB.session.commit()
-
+            player = Player.query.get(player_id)
+            team = Team.query.get(team_id)
+            if team is not None and player is not None:
+                team.players.append(player)
+                DB.session.commit()
+                valid = True
+        return valid
 class Player(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(80))

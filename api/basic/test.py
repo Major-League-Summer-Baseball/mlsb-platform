@@ -35,7 +35,6 @@ class BaseTest(unittest.TestCase):
                                 DROP TABLE IF EXISTS sponsor;
                                 DROP TABLE IF EXISTS league;
                         ''')
-        print("Starting Test")
         DB.create_all()
 
     def tearDown(self):
@@ -182,9 +181,7 @@ class BaseTest(unittest.TestCase):
 
     def addCaptainToTeam(self):
         self.addTeam()
-        print("Team was added")
         insertPlayer(1, 1, captain=True)
-        print("Done")
     
     def addPlayersToTeam(self):
         self.addTeams()
@@ -1123,30 +1120,52 @@ class TestBat(BaseTest):
 class TestTeamRoster(BaseTest):
     def testPost(self):
         #invalid update
-        params = {'team_id': 1, "player_id": 1, 
-                  "start_date": "2014/08/8", 'tournament_id': 1}
+        params = {'team_id': 1, "player_id": 1}
         rv = self.app.post(Routes['team_roster'], data=params)
-        expect = {'failures': ['Invalid data for header player_id',
-                               'Invalid data for header team_id',
-                               'Invalid data for header tournament_id',
-                               'Invalid data for header start_date'],
-                  'message': 'Failed to properly supply the certain fields',
+        expect = {'failures': ['Invalid player',
+                               'Invalid team'],
+                  'message': 'Invalid parameters',
                   'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: invalid data")
         # add player to team        
-        self.addPlayerToTeam()
-
+        self.addTeams()
+        params = {'team_id': 1, "player_id": 1}
+        rv = self.app.post(Routes['team_roster'], data=params)
+        expect = {'failures': [],
+                  'message': '',
+                  'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(loads(rv.data), expect,
+                         Routes['team_roster'] + " POST: proper data")
+        # add a captain
+        params = {'team_id': 1, "player_id": 2, "captain": 1}
+        rv = self.app.post(Routes['team_roster'], data=params)
+        expect = {'failures': [],
+                  'message': '',
+                  'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(loads(rv.data), expect,
+                         Routes['team_roster'] + " POST: proper data")
+        query = "?team_id=2&player_id=2"
+        rv = self.app.delete(Routes['team_roster'] + query)
+        expect = []
+        self.output(loads(rv.data))
+        self.output(expect)
+        
+        
     def testDelete(self):
         #add player to team
-        self.addPlayerToTeam()
+        self.addPlayersToTeam()
         # missing data
         query = "?team_id=2"
         rv = self.app.delete(Routes['team_roster'] + query)
-        expect = {'failures': ['Missing header Player and Team id'],
-                  'message': 'Failed to supply required fields',
+        expect = {
+                  'message': 'Invalid parameters',
                   'success': False}
         self.output(loads(rv.data))
         self.output(expect)
@@ -1155,16 +1174,16 @@ class TestTeamRoster(BaseTest):
         # invalid combination
         query = "?team_id=2&player_id=2"
         rv = self.app.delete(Routes['team_roster'] + query)
-        expect = {'failures': [], 'message': 'Invalid combination',
-                  'success': True}
+        expect = {'message': 'Player is not on the team',
+                  'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
                          " DELETE: Invalid combination")
         # proper deletion
-        query = "?team_id=1&player_id=1"
+        query = "?team_id=1&player_id=2"
         rv = self.app.delete(Routes['team_roster'] + query)
-        expect = {'failures': [], 'message': 'Removed player from team', 
+        expect = {'message': '', 
                   'success': True}
         self.output(loads(rv.data))
         self.output(expect)
@@ -1205,12 +1224,6 @@ class TestTeamRoster(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
                          " GET: on non-empty set")
-
-    def testQuery(self):
-        self.addPlayerToTeam()
-        t = Team.query.join(roster, Team.id == roster.team_id)\
-            .add_columns(roster.year, roster.captain)
-        print(test)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
