@@ -171,6 +171,7 @@ class TeamListAPI(Resource):
                 sponsor_id: The sponsor id (int)
                 team_picture_id: The picture id (int)
                 color: the color of the team (string)
+                year: the year the team is playing in
             Returns:
                 status: 200 
                 mimetype: application/json

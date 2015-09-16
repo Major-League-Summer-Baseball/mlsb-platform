@@ -66,3 +66,34 @@ api.add_resource(BatListAPI, Routes['bat'], endpoint="bats")
 api.add_resource(BatAPI, Routes['bat'] + "/<int:bat_id>", 
                  endpoint="bat")
 api.add_resource(TeamRosterAPI, Routes['team_roster'], endpoint="teamrosters")
+
+
+
+#add documentation
+from api.documentation import Document
+from api.documentation import PlayerObjectDocument
+from api.documentation import TeamObjectDocument
+from api.documentation import BatObjectDocument
+from api.documentation import GameObjectDocument
+from api.documentation import LeagueObjectDocument
+from api.documentation import SponsorObjectDocument
+from api.documentation import TeamRosterObjectDocument
+
+api.add_resource(Document, Routes["dindex"], endpoint="documentation")
+# player
+api.add_resource(PlayerObjectDocument, Routes['doplayer'], endpoint="doplayer")
+# team
+api.add_resource(TeamObjectDocument, Routes['doteam'], endpoint="doteam")
+# bat
+api.add_resource(BatObjectDocument, Routes['dobat'], endpoint="dobat")
+# game
+api.add_resource(GameObjectDocument, Routes['dogame'], endpoint="dogame")
+# tournament
+api.add_resource(LeagueObjectDocument, Routes['dotournament'],
+                 endpoint="dotournament")
+# sponsor
+api.add_resource(SponsorObjectDocument, Routes['dosponsor'], 
+                 endpoint="dosponsor")
+# team roster
+api.add_resource(TeamRosterObjectDocument, Routes['doteamroster'], 
+                 endpoint="doteamroster")

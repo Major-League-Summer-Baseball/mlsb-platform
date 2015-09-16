@@ -168,6 +168,7 @@ class BaseTest(unittest.TestCase):
                        self.games[0].id,
                        "S",
                        5,
+                       
                        rbi=1),
                      Bat(self.players[1].id,
                          self.teams[0].id,

@@ -1,0 +1,174 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - MLSB</title>
+    {% else %}
+    <title>MLSB</title>
+    {% endif %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="MLSB web app">
+    <meta name="author" content="Dallas Fraser">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+   	<link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename="css/simple-sidebar.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/documentation.css") }}" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+      <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li>
+                    <a onclick="toggleBasics();">
+                      RESTful routes
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbgame}}">
+                      Game Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbplayer}}">
+                      Player Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbsponsor}}">
+                      Sponsor Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbteam}}">
+                      Team Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbteamroster}}">
+                      Team Roster Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbtournament}}">
+                      League Route
+                    </a>
+                </li>
+                <li>
+                    <a onclick="toggleObjects();">
+                      Objects
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.dobat}}">
+                      Bat Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.dogame}}">
+                      Game Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.doplayer}}">
+                      Player Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.dosponsor}}">
+                      Sponsor Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.doteam}}">
+                      Team Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.doteamroster}}">
+                      Team Roster Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.dotournament}}">
+                      League Object
+                    </a>
+                </li>
+                <li>
+                    <a onclick="toggleViews();">
+                        Views
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvgame}}">
+                      Game View
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvplayer}}">
+                      Player View
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvteam}}">
+                      Team View
+                    </a>
+                </li>
+            </ul>
+        </div><!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% block content %}{% endblock %}
+                        <p><br/><br/><br/></p>
+                        <a class="btn btn-mini btn-link " href="{{route.about}}">About</a>
+                        <a class="btn btn-mini btn-link " href="{{route.dindex}}">Documentation</a>
+                        <a class="btn btn-mini btn-link " href="https://github.com/fras2560"> Author</a>
+                        <a class="btn btn-mini btn-link " href="http://jquery.com/">jQuery</a>
+                        <a class="btn btn-mini btn-link " href="http://twitter.github.io/bootstrap/">Bootstrap</a>
+                        <a class="btn btn-mini btn-link " href="http://flask.pocoo.org/">Flask</a>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /#page-content-wrapper -->
+    </div><!-- /#wrapper -->
+    <!-- jquery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- Menu Toggle Script -->
+    <script>
+
+      $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+      });
+      
+      function toggleViews(){
+        $(".viewsSidebar").toggle();
+      }
+      
+      function toggleBasics(){
+        $(".basicsSidebar").toggle();
+      }
+
+      function toggleObjects(){
+        $(".objectsSidebar").toggle();
+      }
+    </script>
+  </body>
+  <footer>
+
+  </footer>
+
+</html>

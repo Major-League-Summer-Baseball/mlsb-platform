@@ -1,0 +1,47 @@
+{% extends "documentation_base.html" %}
+{% block content %}
+
+    <h1>Team Roster Object</h1>
+    <p>
+    	A team roster Object is the information stored relating to a team roster and its attributes.
+    </p>
+    <p>
+    The following table shows all team roster attributes, what type each attribute is, and any restrictions on that attribute:
+    </p>
+    <table class="table table-bordered">
+    	<thead>
+    		<th>Attribute</th>
+    		<th>Type</th>
+    		<th>Required</th>
+    		<th>Description</th>
+            <th>Restrictions</th>
+    		<th>Default</th>
+    	</thead>
+    	<tbody>
+    		<tr>
+	    		<td>player_id</td>
+	    		<td>integer</td>
+	    		<td>yes</td>
+	    		<td>The player's identifier</td>
+                <td>--</td>
+                <td>--</td>
+    		</tr>
+    		<tr>
+    			<td>team_id</td>
+    			<td>integer</td>
+    			<td>yes</td>
+    			<td>The team's identifier</td>
+                <td>--</td>
+                <td>--</td>
+    		</tr>
+            <tr>
+                <td>league_id</td>
+                <td>integer</td>
+                <td>yes</td>
+                <td>The tournament's identifier</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>         
+    	</tbody>
+    </table>
+{% endblock %}
