@@ -1,0 +1,222 @@
+{% extends "documentation_base.html" %}
+{% block content %}
+<h1>Sponsor</h1>
+
+<p>
+	All responses use a <a href="{{route.dresponse}}">response object</a>
+</p>
+<h4>GET</h4>
+<code>{{route.dbsponsor}}/:id</code>
+<p style="color:#808080">
+	Permission: none
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The Sponsors-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">sponsor_id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The Sponsors-ID</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">sponsor_name</td>
+				<td class="colo-md-3">string</td>
+				<td class="colo-md-3">The name of the Sponsor</td>
+			</tr>
+			
+		</tbody>
+	</table>
+
+
+<h4>DELETE</h4>
+<code>{{route.dbsponsor}}/:id</code>
+<p style="color:#808080">
+	Permission: admin
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The Sponsors-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+<h4>PUT</h4>
+<code>{{route.dbsponsor}}/:id</code>
+<p style="color:#808080">
+	Permission: admin
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3"></td>
+				<td class="colo-md-3"></td>
+				<td class="colo-md-3"></td>
+			</tr>
+		</tbody>
+	</table>
+
+
+<h4>POST</h4>
+<code>{{route.dbsponsor}}</code>
+<p style="color:#808080">
+	Permission: admin
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">sponsor_name</td>
+				<td class="colo-md-3">string</td>
+				<td class="colo-md-3">The name of Sponsor</td>	
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">sponsor_id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The created Sponsor-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+<h4>GET</h4>
+<code>{{route.dbsponsor}}</code>
+<p style="color:#808080">
+	Permission: none
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="colo-md-3">List of Sponsors</td>
+				<td class="colo-md-3"><a href="{{route.dosponsor}}">Sponsor</a></td>
+				<td class="colo-md-3"></td>
+			</tr>
+		</tbody>
+	</table>
+{% endblock %}

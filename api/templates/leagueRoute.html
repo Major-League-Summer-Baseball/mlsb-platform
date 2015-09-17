@@ -1,0 +1,224 @@
+{% extends "documentation_base.html" %}
+{% block content %}
+<h1>League</h1>
+<p>
+	All responses use a <a href="{{route.dresponse}}">response object</a>
+</p>
+<h4>GET</h4>
+<code>{{route.dbleague}}/:id</code>
+<p style="color:#808080">
+	Permission: none
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">league_name</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The name of the League</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+<h4>DELETE</h4>
+<code>{{route.dbleague}}/:id</code>
+<p style="color:#808080">
+	Permission: captain
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+<h4>PUT</h4>
+<code>{{route.dbleague}}/:id</code>
+<p style="color:#808080">
+	Permission: captain
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">league_name</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The name of the League</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+<h4>POST</h4>
+<code>{{route.dbleague}}</code>
+<p style="color:#808080">
+	Permission: captain
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">league_name</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The name of the League</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The created Leagues-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+<h4>GET</h4>
+<code>{{route.dbleague}}</code>
+<p style="color:#808080">
+	Permission: none
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">list of Leagues</td>
+				<td class="col-md-3"><a href="{{route.doleague}}">League</a></td>
+				<td class="col-md-3"></td>
+			</tr>
+		</tbody>
+	</table>
+{% endblock %}
