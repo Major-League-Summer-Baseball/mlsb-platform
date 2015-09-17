@@ -33,7 +33,7 @@ class PlayerAPI(Resource):
                 data: 
                     success: tells if request was successful (boolean)
                     message: the status message (string)
-                    data:  {player_id:int, player-name:string, gender: string}
+                    data:  {player_id:int, player_name:string, gender: string}
         """
         # expose a single user
         result = {'success': False,

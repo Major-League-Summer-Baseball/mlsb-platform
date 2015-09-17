@@ -44,7 +44,7 @@ from api.basic.league import LeagueAPI, LeagueListAPI
 from api.basic.team import TeamAPI, TeamListAPI
 from api.basic.game import GameAPI, GameListAPI
 from api.basic.bat import BatAPI, BatListAPI
-from api.basic.team_roster import TeamRosterAPI
+from api.advanced.team_roster import TeamRosterAPI
 from api.routes import Routes
 
 api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
@@ -70,30 +70,47 @@ api.add_resource(TeamRosterAPI, Routes['team_roster'], endpoint="teamrosters")
 
 
 #add documentation
-from api.documentation import Document
-from api.documentation import PlayerObjectDocument
-from api.documentation import TeamObjectDocument
-from api.documentation import BatObjectDocument
-from api.documentation import GameObjectDocument
-from api.documentation import LeagueObjectDocument
-from api.documentation import SponsorObjectDocument
-from api.documentation import TeamRosterObjectDocument
+from api.documentation import Document , PlayerObjectDocument,\
+                              TeamObjectDocument, BatObjectDocument,\
+                              GameObjectDocument, LeagueObjectDocument,\
+                              SponsorObjectDocument ,TeamRosterObjectDocument
+from api.documentation import PlayerRoute, TeamRoute, BatRoute,\
+                              GameRoute, LeagueRoute, SponsorRoute,\
+                              TeamRosterRoute, Response
 
 api.add_resource(Document, Routes["dindex"], endpoint="documentation")
+api.add_resource(Response, Routes["dresponse"], endpoint="dresponse")
+
 # player
 api.add_resource(PlayerObjectDocument, Routes['doplayer'], endpoint="doplayer")
+api.add_resource(PlayerRoute, Routes['dbplayer'], endpoint="dbplayer")
+
 # team
 api.add_resource(TeamObjectDocument, Routes['doteam'], endpoint="doteam")
+api.add_resource(TeamRoute, Routes['dbteam'], endpoint="dbteam")
+
 # bat
 api.add_resource(BatObjectDocument, Routes['dobat'], endpoint="dobat")
+api.add_resource(BatRoute, Routes['dbbat'], endpoint="dbbat")
+
 # game
 api.add_resource(GameObjectDocument, Routes['dogame'], endpoint="dogame")
+api.add_resource(GameRoute, Routes['dbgame'], endpoint="dbgame")
+
 # tournament
-api.add_resource(LeagueObjectDocument, Routes['dotournament'],
-                 endpoint="dotournament")
+api.add_resource(LeagueObjectDocument, Routes['doleague'],
+                 endpoint="doleague")
+api.add_resource(LeagueRoute, Routes['dbleague'], endpoint="dbleague")
+
 # sponsor
 api.add_resource(SponsorObjectDocument, Routes['dosponsor'], 
                  endpoint="dosponsor")
+api.add_resource(SponsorRoute, Routes['dbsponsor'], 
+                 endpoint="dbsponsor")
+
 # team roster
 api.add_resource(TeamRosterObjectDocument, Routes['doteamroster'], 
                  endpoint="doteamroster")
+
+api.add_resource(TeamRosterRoute, Routes['dbteamroster'], 
+                 endpoint="dbteamroster")

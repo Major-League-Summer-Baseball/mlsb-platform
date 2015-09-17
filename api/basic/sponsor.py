@@ -30,8 +30,7 @@ class SponsorAPI(Resource):
                 data: 
                     success: tells if request was successful (boolean)
                     message: the status message (string)
-                    data:  {sponsor_id:int, sponsor_name :string, 
-                            sponsoer_picture_id: int, photo_file:string}
+                    data:  {sponsor_id:int, sponsor_name :string}
         """
         # expose a single Sponsor
         result = {'success': False,

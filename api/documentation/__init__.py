@@ -15,6 +15,15 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response, render_template, make_response
 from json import dumps
 from api.routes import Routes
+
+class Response(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('responseObject.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
 class Document(Resource):
     
     def get(self):
@@ -76,6 +85,62 @@ class TeamRosterObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
         return make_response(render_template('teamRosterObject.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class TeamRosterRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('teamRosterRoute.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class TeamRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('teamRoute.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class PlayerRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('playerRoute.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class BatRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('batRoute.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class GameRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('gameRoute.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class SponsorRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('sponsorRoute.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class LeagueRoute(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('leagueRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)

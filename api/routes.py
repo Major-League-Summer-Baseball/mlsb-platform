@@ -24,6 +24,8 @@ Routes['about'] = "/about"
 
 # documentation routes
 Routes['dindex'] = "/documentation"
+Routes['dresponse'] = "/documentation/object/response"
+
 # do = documentation object
 Routes['doplayer'] = "/documentation/object/player"
 Routes['dobat'] = "/documentation/object/bat"
@@ -31,10 +33,10 @@ Routes['dogame'] = "/documentation/object/game"
 Routes['dosponsor'] = "/documentation/object/sponsor"
 Routes['doteam'] = "/documentation/object/team"
 Routes['doteamroster'] = "/documentation/object/teamroster"
-Routes['dotournament'] = "/documentation/object/tournament"
+Routes['doleague'] = "/documentation/object/league"
 # db = documentation basic
 Routes['dbplayer'] = "/documentation/basic/player"
-Routes['dobat'] = "/documentation/basic/bat"
+Routes['dbbat'] = "/documentation/basic/bat"
 Routes['dbgame'] = "/documentation/basic/game"
 Routes['dbsponsor'] = "/documentation/basic/sponsor"
 Routes['dbteam'] = "/documentation/basic/team"
