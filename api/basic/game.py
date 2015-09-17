@@ -12,6 +12,7 @@ from api.model import Game, Team, League
 from api.validators import date_validator, time_validator
 from sqlalchemy.ext.baked import Result
 from datetime import datetime
+from api.authentication import requires_admin, requires_captain
 parser = reqparse.RequestParser()
 parser.add_argument('home_team_id', type=int)
 parser.add_argument('away_team_id', type=int)
@@ -50,6 +51,7 @@ class GameAPI(Resource):
         return Response(dumps(result), status=200,
                         mimetype="application/json")
 
+    @requires_admin
     def delete(self, game_id):
         """
             DELETE request for Game
@@ -74,6 +76,7 @@ class GameAPI(Resource):
         result['message'] = "Game was deleted"
         return Response(dumps(result), status=200, mimetype="application/json")
 
+    @requires_admin
     def put(self, game_id):
         """
             PUT request for game
@@ -164,7 +167,7 @@ class GameListAPI(Resource):
         resp = Response(dumps(games), status=200, mimetype="application/json")
         return resp
 
-
+    @requires_admin
     def post(self):
         """
             POST request for Games List

@@ -10,6 +10,7 @@ from json import dumps
 from api.model import Player
 from api import DB
 from api.validators import string_validator, gender_validator
+from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
@@ -48,6 +49,7 @@ class PlayerAPI(Resource):
         result['data'] = entry.json()
         return Response(dumps(result), status=200, mimetype="application/json")
 
+    @requires_admin
     def delete(self, player_id):
         """
             DELETE request for Player
@@ -73,6 +75,7 @@ class PlayerAPI(Resource):
         result['message'] = 'Player was deleted'
         return Response(dumps(result), status=200, mimetype="application/json")
 
+    @requires_admin
     def put(self, player_id):
         """
             PUT request for Player
@@ -142,6 +145,7 @@ class PlayerListAPI(Resource):
         resp = Response(dumps(players), status=200, mimetype="application/json")
         return resp
 
+    @requires_admin
     def post(self):
         """
             POST request for Player List

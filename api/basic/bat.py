@@ -5,11 +5,12 @@ Project: MLSB API
 Purpose: A Bat API
 '''
 from flask.ext.restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from api import DB
 from api.model import Team, Game, Bat, Player
 from json import dumps
 from api.validators import rbi_validator, hit_validator, inning_validator
+from api.authentication import requires_admin, requires_captain
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int)
 parser.add_argument('rbi', type=int)
@@ -51,6 +52,7 @@ class BatAPI(Resource):
         return Response(dumps(result), status=200,
                         mimetype="application/json")
 
+    @requires_admin
     def delete(self, bat_id):
         """
             DELETE request for Bat
@@ -75,6 +77,7 @@ class BatAPI(Resource):
         result['message'] = 'Bat was deleted'
         return Response(dumps(result), status=200, mimetype="application/json")
 
+    @requires_admin
     def put(self, bat_id):
         """
             PUT request for Bat
@@ -101,6 +104,7 @@ class BatAPI(Resource):
                   'failures': []}
         args = parser.parse_args()
         bat = Bat.query.get(bat_id)
+        auth = request.authorization
         if bat is None:
             result['message'] = "Not a valid bat ID"
             return Response(dumps(result), status=404,
@@ -176,6 +180,7 @@ class BatListAPI(Resource):
         resp = Response(dumps(bats), status=200, mimetype="application/json")
         return resp
 
+    @requires_admin
     def post(self):
         """
             POST request for Bats List

@@ -15,6 +15,12 @@ from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
 from api.model import insertPlayer
 from datetime import datetime, date, time
+from api.credentials import ADMIN, PASSWORD
+from base64 import b64encode
+headers = {
+    'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
+}
+
 
 class BaseTest(unittest.TestCase):
 
@@ -197,7 +203,7 @@ class TestSponsor(BaseTest):
         self.assertEqual([], empty,"/sponsors GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['sponsor'], data=params)
+        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
         result ={"sponsor_id": None,
                  "failures": ['Invalid sponsor name'],
                  "message": "Failed to properly supply the required fields",
@@ -210,7 +216,7 @@ class TestSponsor(BaseTest):
                          )
         # testing with improper name parameters
         params = {'sponsor_name':1, 'sponsor_picture_id':1}
-        rv = self.app.post(Routes['sponsor'], data=params)
+        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
         result = {"sponsor_id": None, 
                   "failures": ['Invalid sponsor name'],
                   "message": "Failed to properly supply the required fields",
@@ -223,7 +229,7 @@ class TestSponsor(BaseTest):
                          )
         # proper insertion with post
         params = {'sponsor_name':"Domus"}
-        rv = self.app.post(Routes['sponsor'], data=params)
+        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
         result = {  'data': {
                               'sponsor_id': 1,
                               'sponsor_name': 'Domus'},
@@ -274,7 +280,7 @@ class TestSponsor(BaseTest):
         #proper insertion with post
         self.addSponsor()
         # delete of invalid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/2")
+        rv = self.app.delete(Routes['sponsor'] + "/2", headers=headers)
         result = {'message': 'Not a valid Sponsor ID',
                   'success': False}
         self.output(loads(rv.data))
@@ -282,7 +288,7 @@ class TestSponsor(BaseTest):
         self.assertEqual(loads(rv.data),result,
                          Routes['sponsor'] + " DELETE Invalid Sponsor id ")
         # delete valid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/1")
+        rv = self.app.delete(Routes['sponsor'] + "/1", headers=headers)
         result = {  'message': 'Sponsor was deleted', 
                     'success': True}
         self.output(loads(rv.data))
@@ -295,7 +301,7 @@ class TestSponsor(BaseTest):
         self.addSponsor()
         #invalid sponsor id
         params = {'sponsor_name': 'New League'}
-        rv = self.app.put(Routes['sponsor'] + '/2', data=params)
+        rv = self.app.put(Routes['sponsor'] + '/2', data=params, headers=headers)
         expect = {'failures': [], 'message': 'Not a valid sponsor ID',
                   'success': False}
         self.output(loads(rv.data))
@@ -304,7 +310,7 @@ class TestSponsor(BaseTest):
                          Routes['sponsor'] + " PUT: given invalid sponsor ID")
         #invalid parameters
         params = {'sponsor_name': 1}
-        rv = self.app.put(Routes['sponsor'] + '/1', data=params)
+        rv = self.app.put(Routes['sponsor'] + '/1', data=params, headers=headers)
         expect = {'failures': ['Invalid sponsor name'],
                   'message': 'Failed to properly supply the required fields',
                   'success': False}
@@ -314,7 +320,7 @@ class TestSponsor(BaseTest):
                          Routes['sponsor'] + " PUT: given invalid parameters")
         #successful update
         params = {'sponsor_name': 'New League'}
-        rv = self.app.put(Routes['sponsor'] + '/1', data=params)
+        rv = self.app.put(Routes['sponsor'] + '/1', data=params, headers=headers)
         expect = {  'failures': [],
                     'message': '',
                     'success': True}
@@ -354,13 +360,13 @@ class TestPlayer(BaseTest):
         # proper insertion with post
         self.addPlayer()
         # delete of invalid player id
-        rv = self.app.delete(Routes['player'] + "/2")
+        rv = self.app.delete(Routes['player'] + "/2", headers=headers)
         result = {'message': 'Not a valid player ID', 'success': False}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data),result, Routes['player'] +
                          " DELETE Invalid player id ")
-        rv = self.app.delete(Routes['player'] + "/1")
+        rv = self.app.delete(Routes['player'] + "/1", headers=headers)
         result = {'message': 'Player was deleted', 'success': True}
         self.output(loads(rv.data))
         self.output(result)
@@ -372,7 +378,7 @@ class TestPlayer(BaseTest):
         self.addPlayer()
         # invalid player id
         params = {'player_name':'David Duchovny', 'gender':"F"}
-        rv = self.app.put(Routes['player'] + '/2', data=params)
+        rv = self.app.put(Routes['player'] + '/2', data=params, headers=headers)
         result = {"failures": [],
                   "message": "Not a valid player ID",
                   "success": False
@@ -383,7 +389,7 @@ class TestPlayer(BaseTest):
                          ' PUT: Invalid Player ID')
         # invalid player_name type
         params = {'player_name':1, 'gender':"F"}
-        rv = self.app.put(Routes['player'] + '/1', data=params)
+        rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
         result = {"failures": ["Invalid player name"],
                   "message": "Failed to properly supply the required fields",
                   "success": False
@@ -394,7 +400,7 @@ class TestPlayer(BaseTest):
                          ' PUT: Invalid Player name')
         # invalid gender
         params = {'player_name':"David Duchovny", 'gender':"X"}
-        rv = self.app.put(Routes['player'] + '/1', data=params)
+        rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
         result = {"failures": ["Invalid gender"],
                   "message": "Failed to properly supply the required fields",
                   "success": False
@@ -405,7 +411,7 @@ class TestPlayer(BaseTest):
                          ' PUT: Invalid Player gender')
         # successfully update
         params = {'player_name':"David Duchovny", 'gender':"F"}
-        rv = self.app.put(Routes['player'] + '/1', data=params)
+        rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
         result = {"failures": [],
                   "message": "",
                   "success": True
@@ -423,7 +429,7 @@ class TestPlayer(BaseTest):
                          " GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['player'], data=params)
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result ={"player_id": None,
                  "failures": ['Invalid player name'],
                  "message": "Failed to properly supply the required fields",
@@ -436,7 +442,7 @@ class TestPlayer(BaseTest):
                          )
         # testing a gender parameter
         params = {'player_name':'Dallas Fraser','gender':'X'}
-        rv = self.app.post(Routes['player'], data=params)
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {"player_id": None,
                   "failures": ['Invalid gender'],
                   "message": "Failed to properly supply the required fields",
@@ -448,7 +454,7 @@ class TestPlayer(BaseTest):
                          " POST: POST request with invalid gender"
                          )
         params = {'player_name':'Dallas Fraser','gender':1}
-        rv = self.app.post(Routes['player'], data=params)
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {"player_id": None,
                   "failures": ['Invalid gender'],
                   "message": "Failed to properly supply the required fields",
@@ -461,7 +467,7 @@ class TestPlayer(BaseTest):
                          )
         # testing player_name parameter
         params = {'player_name':1,'gender':'M'}
-        rv = self.app.post(Routes['player'], data=params)
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {"player_id": None,
                   "failures": ['Invalid player name'],
                   "message": "Failed to properly supply the required fields",
@@ -477,7 +483,7 @@ class TestPlayer(BaseTest):
                       "gender": "M",
                       "email": "fras2560@mylaurier.ca",
                       "password":"Suck it"}
-        rv = self.app.post(Routes['player'], data=params)
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {  'data': {
                               'email': 'fras2560@mylaurier.ca',
                               'gender': 'm',
@@ -527,14 +533,14 @@ class TestLeague(BaseTest):
         # proper insertion with post
         self.addLeague()
         # delete of invalid league id
-        rv = self.app.delete(Routes['league'] + "/2")
+        rv = self.app.delete(Routes['league'] + "/2", headers=headers)
         result = {'message': 'Not a valid league ID',
                   'success': False}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data),result, Routes['league']+
                          " DELETE Invalid league id ")
-        rv = self.app.delete(Routes['league'] + "/1")
+        rv = self.app.delete(Routes['league'] + "/1", headers=headers)
         result = {  'message': 'League was deleted', 
                     'success': True}
         self.output(loads(rv.data))
@@ -547,7 +553,7 @@ class TestLeague(BaseTest):
         self.addLeague()
         # invalid league id
         params = {'league_name':'Chainsaw Classic'}
-        rv = self.app.put(Routes['league'] + '/2', data=params)
+        rv = self.app.put(Routes['league'] + '/2', data=params, headers=headers)
         result = {"failures": [],
                   "message": "Not a valid league ID",
                   "success": False
@@ -558,7 +564,7 @@ class TestLeague(BaseTest):
                          ' PUT: Invalid league ID')
         # invalid league_name type
         params = {'league_name':1}
-        rv = self.app.put(Routes['league'] + '/1', data=params)
+        rv = self.app.put(Routes['league'] + '/1', data=params, headers=headers)
         result = {"failures": ["Invalid league name"],
                   "message": "Failed to properly supply the required fields",
                   "success": False
@@ -568,7 +574,7 @@ class TestLeague(BaseTest):
         self.assertEqual(loads(rv.data),result)
         # successfully update
         params = {'league_name':"Chainsaw Classic"}
-        rv = self.app.put(Routes['league'] + '/1', data=params)
+        rv = self.app.put(Routes['league'] + '/1', data=params, headers=headers)
         result = {"failures": [],
                   "message": "",
                   "success": True
@@ -585,7 +591,7 @@ class TestLeague(BaseTest):
                          " GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['league'], data=params)
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
         result ={"league_id": None,
                  "failures": ['Invalid league name'],
                  "message": "Failed to properly supply the required fields",
@@ -598,7 +604,7 @@ class TestLeague(BaseTest):
                          )
         # testing a league name parameter
         params = {'league_name':1}
-        rv = self.app.post(Routes['league'], data=params)
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
         result = {"league_id": None,
                   "failures": ['Invalid league name'],
                   "message": "Failed to properly supply the required fields",
@@ -628,7 +634,7 @@ class TestTeam(BaseTest):
                          Routes['team'] + " GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['team'], data=params)
+        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result ={"team_id": None,
                  "failures": ['Invalid color'],
                  "message": "Failed to properly supply the required fields",
@@ -644,7 +650,7 @@ class TestTeam(BaseTest):
                   'sponsor_id': 1,
                   'league_id': 1,
                   'year': 9999}
-        rv = self.app.post(Routes['team'], data=params)
+        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {"team_id": None,
                   "failures": ['Invalid color',
                                'Invalid sponsor ID',
@@ -666,7 +672,7 @@ class TestTeam(BaseTest):
                   'sponsor_id': 1,
                   'league_id': 1,
                   'year': 2015}
-        rv = self.app.post(Routes['team'], data=params)
+        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {"team_id": 1,
                   "failures": [], 
                   "message": "", 
@@ -724,13 +730,13 @@ class TestTeam(BaseTest):
         # proper insertion with post
         self.addTeam()
         # delete of invalid team id
-        rv = self.app.delete(Routes['team'] + "/2")
+        rv = self.app.delete(Routes['team'] + "/2", headers=headers)
         result = {'message': 'Not a valid team ID', 'success': False}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data),result, Routes['team'] +
                          " DELETE: Invalid team id ")
-        rv = self.app.delete(Routes['team'] + "/1")
+        rv = self.app.delete(Routes['team'] + "/1", headers=headers)
         result = {'message': 'Team was deleted', 'success': True}
         self.output(loads(rv.data))
         self.output(result)
@@ -744,7 +750,7 @@ class TestTeam(BaseTest):
         params = {'sponsor_id': 1,
                   'league_id': 1,
                   'color': "Black"}
-        rv = self.app.put(Routes['team'] + '/2', data=params)
+        rv = self.app.put(Routes['team'] + '/2', data=params, headers=headers)
         expect = {'failures': [], 'message': 'Not a valid team ID',
                   'success': False}
         self.output(loads(rv.data))
@@ -757,7 +763,7 @@ class TestTeam(BaseTest):
                   'league_id': 2,
                   'color': 1,
                   'year': 9999}
-        rv = self.app.put(Routes['team'] + '/1', data=params)
+        rv = self.app.put(Routes['team'] + '/1', data=params, headers=headers)
         expect = {  'failures': [
                                'Invalid color',
                                'Invalid sponsor ID',
@@ -778,7 +784,7 @@ class TestTeam(BaseTest):
                   'sponsor_id': 2,
                   'league_id': 2,
                   'color': "Black"}
-        rv = self.app.put(Routes['team'] + '/1', data=params)
+        rv = self.app.put(Routes['team'] + '/1', data=params, headers=headers)
         expect = {'failures': [], 'message': '',
                   'success': True}
         self.output(loads(rv.data))
@@ -795,7 +801,7 @@ class TestGame(BaseTest):
                         Routes['game'] + "GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['game'], data=params)
+        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'failures': ['Invalid home team ID',
                                'Invalid away team ID',
                                'Invalid time & date',
@@ -817,7 +823,7 @@ class TestGame(BaseTest):
                   'time': "25:61",
                   'league_id': 1
                               }
-        rv = self.app.post(Routes['game'], data=params)
+        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'failures': [ 'Invalid home team ID',
                                 'Invalid away team ID',
                                 'Invalid time & date',
@@ -840,7 +846,7 @@ class TestGame(BaseTest):
                   'time': "23:59",
                   'league_id': 1
                               }
-        rv = self.app.post(Routes['game'], data=params)
+        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'failures': [],
                   'game_id': 1,
                   'message': '',
@@ -850,6 +856,7 @@ class TestGame(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['game']
                          + " POST: request with missing parameters")
+
     def testGameGet(self):
         # proper insertion
         self.addGame()
@@ -882,14 +889,14 @@ class TestGame(BaseTest):
         # proper insertion
         self.addGame()
         # delete invalid game id
-        rv = self.app.delete(Routes['game'] + "/2")
+        rv = self.app.delete(Routes['game'] + "/2", headers=headers)
         expect = {'message': 'Not a valid game ID', 'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['game'] + 
                          " DELETE: on invalid game id")
         # delete valid game id
-        rv = self.app.delete(Routes['game'] + "/1")
+        rv = self.app.delete(Routes['game'] + "/1", headers=headers)
         expect = {'message': 'Game was deleted', 'success': True}
         self.output(loads(rv.data))
         self.output(expect)
@@ -907,7 +914,7 @@ class TestGame(BaseTest):
                   'time': "11:37",
                   'league_id': 2
                  }
-        rv = self.app.put(Routes['game'] + "/3", data=params)
+        rv = self.app.put(Routes['game'] + "/3", data=params, headers=headers)
         expect = {'failures': [], 'message': 'Invalid game ID',
                   'success': False}
         self.output(loads(rv.data))
@@ -922,7 +929,7 @@ class TestGame(BaseTest):
                   'time': "11:62",
                   'tournament_id': 3
                  }
-        rv = self.app.put(Routes['game'] + "/1", data=params)
+        rv = self.app.put(Routes['game'] + "/1", data=params, headers=headers)
         expect = {'failures': ['Invalid home team ID',
                                'Invalid away team ID',
                                'Invalid time & date'],
@@ -940,7 +947,7 @@ class TestGame(BaseTest):
                   'time': "11:37",
                   'league_id': 2
                  }
-        rv = self.app.put(Routes['game'] + "/1", data=params)
+        rv = self.app.put(Routes['game'] + "/1", data=params, headers=headers)
         expect = {'failures': [], 'message': '',
                   'success': True}
         self.output(loads(rv.data))
@@ -957,7 +964,7 @@ class TestBat(BaseTest):
                         Routes['bat'] + "GET: did not return empty list")
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['bat'], data=params)
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'bat_id': None,
                   'failures': ['Invalid game ID',
                                'Invalid player ID',
@@ -978,7 +985,7 @@ class TestBat(BaseTest):
                   'hit': "X",
                   'inning': -1
                               }
-        rv = self.app.post(Routes['bat'], data=params)
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'bat_id': None,
                   'failures': [
                                'Invalid game ID',
@@ -1003,7 +1010,7 @@ class TestBat(BaseTest):
                   'team_id': 1,
                   'inning': 4
                               }
-        rv = self.app.post(Routes['bat'], data=params)
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'bat_id': 1,
                   'failures': [],
                   'message': '',
@@ -1046,14 +1053,14 @@ class TestBat(BaseTest):
         # proper insertion of get
         self.addBat()
         # delete invalid id
-        rv = self.app.delete(Routes['bat']+ "/2")
+        rv = self.app.delete(Routes['bat']+ "/2", headers=headers)
         expect = {'message': 'Not a valid bat ID', 'success': False}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['bat']
                          + " DELETE: invalid bat id")
         # delete valid id
-        rv = self.app.delete(Routes['bat']+ "/1")
+        rv = self.app.delete(Routes['bat']+ "/1", headers=headers)
         expect = {'message': 'Bat was deleted', 'success': True}
         self.output(loads(rv.data))
         self.output(expect)
@@ -1072,7 +1079,7 @@ class TestBat(BaseTest):
                   'hit': "HR",
                   'inning': 1
                               }
-        rv = self.app.put(Routes['bat'] + "/3", data=params)
+        rv = self.app.put(Routes['bat'] + "/3", data=params, headers=headers)
         expect = {'failures': [], 'message': 'Not a valid bat ID',
                   'success': False}
         self.output(loads(rv.data))
@@ -1088,7 +1095,7 @@ class TestBat(BaseTest):
                   'hit': "X",
                   'inning': -1
                               }
-        rv = self.app.put(Routes['bat'] + "/1", data=params)
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
         expect = {'failures': ['Invalid team ID',
                                'Invalid game ID',
                                'Invalid player ID',
@@ -1110,7 +1117,7 @@ class TestBat(BaseTest):
                   'hit': "HR",
                   'inning': 1
                               }
-        rv = self.app.put(Routes['bat'] + "/1", data=params)
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
         expect = {'failures': [], 'message': '',
                   'success': True}
         self.output(loads(rv.data))

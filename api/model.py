@@ -98,6 +98,7 @@ class Team(DB.Model):
         self.sponsor_id = sponsor_id
         self.league_id = league_id
         self.year = year
+
     def __repr__(self):
         result = []
         if self.color is not None:

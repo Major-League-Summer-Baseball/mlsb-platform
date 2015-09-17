@@ -10,6 +10,7 @@ from json import dumps
 from api.validators import string_validator
 from api.model import Sponsor
 from api import DB
+from api.authentication import requires_admin, requires_captain
 
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
@@ -45,7 +46,7 @@ class SponsorAPI(Resource):
         result['data'] = entry.json()
         return Response(dumps(result), status=200, mimetype="application/json")
 
-
+    @requires_admin
     def delete(self, sponsor_id):
         """
             DELETE request for Sponsor
@@ -72,7 +73,7 @@ class SponsorAPI(Resource):
         result['message'] = 'Sponsor was deleted'
         return Response(dumps(result), status=200, mimetype="application/json")
 
-
+    @requires_admin
     def put(self, sponsor_id):
         """
             PUT request for Sponsor
@@ -142,6 +143,7 @@ class SponsorListAPI(Resource):
                         mimetype="application/json")
         return resp
 
+    @requires_admin
     def post(self):
         """
             POST request for Sponsor List

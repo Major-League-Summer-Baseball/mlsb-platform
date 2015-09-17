@@ -11,6 +11,7 @@ from api.validators import string_validator, year_validator
 from api.model import Team, Sponsor, League
 from api import DB
 from datetime import date
+from api.authentication import requires_admin, requires_captain
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
@@ -46,6 +47,7 @@ class TeamAPI(Resource):
         result['data'] = entry.json()
         return Response(dumps(result), status=200, mimetype="application/json")
 
+    @requires_admin
     def delete(self, team_id):
         """
             DELETE request for Team
@@ -71,6 +73,7 @@ class TeamAPI(Resource):
         result['message'] = 'Team was deleted'
         return Response(dumps(result), status=200, mimetype="application/json")
 
+    @requires_admin
     def put(self, team_id):
         """
             PUT request for team
@@ -161,6 +164,7 @@ class TeamListAPI(Resource):
         resp = Response(dumps(teams), status=200, mimetype="application/json")
         return resp
 
+    @requires_admin
     def post(self):
         """
             POST request for Teams List

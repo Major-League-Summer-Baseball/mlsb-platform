@@ -10,7 +10,7 @@ from api.model import League
 from json import dumps
 from api.validators import string_validator
 from api import DB
-
+from api.authentication import requires_admin, requires_captain
 parser = reqparse.RequestParser()
 parser.add_argument('league_name', type=str)
 
@@ -43,7 +43,7 @@ class LeagueAPI(Resource):
         result['data'] = entry.json()
         return Response(dumps(result), status=200, mimetype="application/json")
 
-
+    @requires_admin
     def delete(self, league_id):
         """
             DELETE request for League
@@ -69,7 +69,7 @@ class LeagueAPI(Resource):
         result['message'] = 'League was deleted'
         return Response(dumps(result), status=200, mimetype="application/json")
 
-
+    @requires_admin
     def put(self, league_id):
         """
             PUT request for league
@@ -138,6 +138,7 @@ class LeagueListAPI(Resource):
         resp = Response(dumps(leagues), status=200, mimetype="application/json")
         return resp
 
+    @requires_admin
     def post(self):
         """
             POST request for League List
