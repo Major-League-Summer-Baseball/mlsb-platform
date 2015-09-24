@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>{{title}}</title>
+	
+	<!-- core CSS -->
+    <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/font-awesome.min.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/animate.min.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/prettyPhoto.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/responsive.css") }}" rel="stylesheet">
+
+    <link href="{{ url_for('static', filename="css/simple-sidebar.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/website.css") }}" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->       
+    <link rel="shortcut icon" href="images/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ url_for('static', filename="images/ico/apple-touch-icon-144-precomposed.png") }}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ url_for('static', filename="images/ico/apple-touch-icon-114-precomposed.png") }}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ url_for('static', filename="images/ico/apple-touch-icon-72-precomposed.png") }}">
+    <link rel="apple-touch-icon-precomposed" href="{{ url_for('static', filename="images/ico/apple-touch-icon-57-precomposed.png") }}">
+</head><!--/head-->
+
+<body class="homepage">
+
+    <header id="header">
+        <div class="top-bar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-4">
+                        <div class="top-number"><p>Sponsors:</p></div>
+                    </div>
+                    <div class="col-sm-6 col-xs-8">
+                       <div class="social">
+                            <ul class="social-share">
+                              {% for sponsor in sponsors %}
+                                    <li>
+                                      <a href="{{route.sponsorspage}}/{{sponsor.id}}" title="{{sponsor.name}}">
+                                        <img src="{{route.sponsorspicture}}/{{sponsor.id}}"  alt="" class="sponsor" style="">
+                                      </a>
+                                    </li>
+                              {% endfor %}
+                            </ul>
+                       </div>
+                    </div>
+                </div>
+            </div><!--/.container-->
+        </div><!--/.top-bar-->
+
+        <nav class="navbar navbar-inverse accent" role="banner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{route.homepage}}"><img src="{{ url_for('static', filename="banner.jpg")}}" style=" width=100%; max-width=1000px;"></a>
+                </div>
+				
+                <div class="collapse navbar-collapse navbar-right">
+                    <ul class="nav navbar-nav">
+                          <li><a href="{{route.schedulepage}}">Schedule</a></li>
+                          <li><a href="{{route.standingspage}}">Standings</a></li>
+                          <li><a href="{{route.teamspage}}">Teams</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Events <i class="fa fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                              <li><a href="{{route.mysterybuspage}}">Mystery Bus</a></li>
+                              <li><a href="{{route.bluejayspage}}">Blue Jays Game</a></li>
+                              <li><a href="{{route.beerfestpage}}">Beerfest</a></li>
+                              <li><a href="{{route.raftingpage}}">Rafting</a></li>
+                              <li><a href="{{route.beerwellpage}}">Beerwell Classic</a></li>
+                              <li><a href="{{route.hftcpage}}">Hitting for the Cycle</a></li>
+                              <li><a href="{{route.summerweenpage}}">Summerween</a></li>
+                              <li><a href="{{route.espypage}}">ESPY Awards</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{{route.sponsorspage}}">Sponsors</a></li>
+                        <li><a href="{{route.leaderspage}}">Race for the Domus Cup</a></li>
+                        <li><a href="{{route.wleaderspage}}">Sentry Singles</a></li>
+                        <li><a href="{{route.espystandingspage}}">ESPY Standings</a></li>
+                        <li><a href="{{route.rulespage}}">Rules</a></li>
+                        <li><a href="{{route.fieldspage}}">Fields</a></li>                        
+                    </ul>
+                </div>
+            </div><!--/.container-->
+        </nav><!--/nav-->
+		
+    </header><!--/header-->
+
+    <section id="bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3 primary">
+                    <table>
+                        <tr>
+                            <td><h4>Follow us:</h4>
+                            <td><a class="btn btn-mini btn-link " href="#"><i class="fa fa-facebook"></i></a></td>
+                            <td><a class="btn btn-mini btn-link " href="#"><i class="fa fa-twitter"></i></a></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-sm-6">
+                    <h4>
+                        {{title}}
+                    </h4>
+                </div>
+                <div class="col-sm-3 primary">
+                    <h4>
+                        More
+                    </h4>
+                </div>
+            <div class="row">
+                <div class="col-sm-3 primary">
+                    Recent posts
+
+                    Fun Meter
+                </div>
+
+                <div class="col-sm-6">
+                    {% block content %}{% endblock %}
+                </div>
+                <div class="col-sm-3 primary">
+                    Weahter app things
+                </div>
+
+        </div>
+    </section><!--/#bottom-->
+
+    <footer id="footer" class="midnight-blue">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    &copy; 2013 <a target="_blank" href="http://shapebootstrap.net/" title="Free Twitter Bootstrap WordPress Themes and HTML templates">ShapeBootstrap</a>. All Rights Reserved.
+                </div>
+                <div class="col-sm-8">
+                    <ul class="pull-right">
+                        <li><a class="btn btn-mini btn-link " href="{{route.about}}">About</a></li>
+                        <li><a class="btn btn-mini btn-link " href="{{route.dindex}}">Documentation</a></li>
+                        <li><a class="btn btn-mini btn-link " href="https://github.com/fras2560"> Author</a></li>
+                        <li><a class="btn btn-mini btn-link " href="http://jquery.com/">jQuery</a></li>
+                        <li><a class="btn btn-mini btn-link " href="http://twitter.github.io/bootstrap/">Bootstrap</a></li>
+                        <li><a class="btn btn-mini btn-link " href="http://flask.pocoo.org/">Flask</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer><!--/#footer-->
+
+    <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/jquery.prettyPhoto.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/jquery.isotope.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/main.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
+</body>
+</html>
