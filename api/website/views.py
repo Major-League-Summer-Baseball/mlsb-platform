@@ -29,7 +29,75 @@ def sponsor_page(id):
                            sponsors=get_sponsors(), 
                            title="Sponsors")
 
+@app.route(Routes['mysterybuspage'])
+def mystery_bus():
+    return render_template("mysterybus.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Mystery Bus")
 
+@app.route(Routes['bluejayspage'])
+def blue_jays():
+    return render_template("bluejays.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Blue Jays Game")
+
+@app.route(Routes['beerfestpage'])
+def beerfest():
+    return render_template("beerfest.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Beerfest")
+
+@app.route(Routes['raftingpage'])
+def rafting():
+    return render_template("rafting.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Rafting")
+
+@app.route(Routes['beerwellpage'])
+def beerwell():
+    return render_template("beerwell.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Beerwell")
+
+@app.route(Routes['hftcpage'])
+def hftc():
+    return render_template("hftc.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Hitting for the Cycle")
+
+@app.route(Routes['summerweenpage'])
+def summerween():
+    return render_template("summerween.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Summerween")
+
+@app.route(Routes['espypage'])
+def espy():
+    return render_template("espy.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="ESPY Awards")
+
+@app.route(Routes['rulespage'])
+def rules():
+    return render_template("rules.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Rules")
+
+@app.route(Routes['fieldspage'])
+def fields():
+    return render_template("fields.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Fields")
 def get_sponsors():
     info = Sponsor.query.all()
     sponsors = []
