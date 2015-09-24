@@ -10,17 +10,26 @@ from flask.ext.restful import Api
 from flask.ext.restful.utils import cors
 from flask.ext.sqlalchemy import SQLAlchemy
 from api.credentials import PWD, URL
-
+from os import getcwd
+from os.path import join
 #create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 DB = SQLAlchemy(app)
 
+DB.create_all()
+print("Created Database")
+
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 api = Api(app)
 api.decorators=[cors.crossdomain(origin='*',headers=['accept', 'Content-Type'])]
+PICTURES = join(getcwd(), "api", "static", "pictures")
+app.config['UPLOAD_FOLDER'] =  "./static"
+
+
+from api.website import views
 
 @app.after_request
 def add_cors(resp):

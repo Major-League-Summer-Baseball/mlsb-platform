@@ -1,0 +1,49 @@
+.sponsor {
+	width 100%;
+	max-width: 50px;
+	height:100%; 
+	max-height:50px; 
+	border-radius: 60px
+}
+
+.2015{
+
+}
+
+.navlinks{
+	color: #000000;
+}
+
+nav.primary{
+	background-color: #000000;
+}
+
+nav.accent{
+	background-color: #FDB829;
+	border-color: #FDB829;
+}
+
+div.accent{
+	background-color:#FDB829;
+}
+
+div.primary{
+	background-color: #000000;
+}
+
+div.secondary{
+	background-color: #666;
+}
+
+div.neutral{
+	background-color: #eaeaea;
+}
+
+
+p.primary{
+	color:#FFFFFF;
+}
+
+p.accent{
+	color:#FDB829;
+}
