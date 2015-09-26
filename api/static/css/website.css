@@ -14,6 +14,11 @@
 	color: #000000;
 }
 
+.eventImage{
+	max-width:500px;
+	max-height:500px;
+
+}
 nav.primary{
 	background-color: #000000;
 }

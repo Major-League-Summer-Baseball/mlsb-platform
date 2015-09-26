@@ -11,6 +11,7 @@ from api.model import Team, Player, Sponsor
 from api.variables import SPONSORS
 @app.route(Routes["homepage"])
 def index():
+    print(get_sponsors())
     return render_template("index.html",
                            route=Routes,
                            sponsors=get_sponsors(),
@@ -22,12 +23,28 @@ def sponsor_picture(id):
     return send_from_directory(PICTURES,
                                filename=SPONSORS[id])
 
-@app.route(Routes['sponsorspage'] + "/<int:id>")
-def sponsor_page(id):
-    return render_template("sponsor.html",
+@app.route(Routes['sponsorspage'])
+def sponsors_page():
+    return render_template("sponsors.html",
                            route=Routes,
                            sponsors=get_sponsors(), 
                            title="Sponsors")
+
+@app.route(Routes['sponsorspage'] + "/<int:id>")
+def sponsor_page(id):
+    sponsor = get_sponsor(id)
+    if sponsor is None:
+        page = render_template("notFound.html",
+                               route=Routes,
+                               sponsors=get_sponsors(),
+                               title = "Not Found")
+    else:
+        page = render_template("sponsor.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           sponsor=sponsor, 
+                           title="Sponsor | " + sponsor['name'])
+    return page
 
 @app.route(Routes['mysterybuspage'])
 def mystery_bus():
@@ -98,6 +115,88 @@ def fields():
                            route=Routes,
                            sponsors=get_sponsors(),
                            title="Fields")
+
+@app.route(Routes["schedulepage"])
+def schedule():
+    return render_template("schedule.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           games=get_games(),
+                           title="Schedule")
+
+@app.route(Routes['standingspage'])
+def standings():
+    return render_template("standings.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           leauges=get_leagues(),
+                           title="Standings")
+
+@app.route(Routes['teamspage'])
+def teams_page():
+    return render_template("teams.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           teams=get_teams(),
+                           title="Teams")
+
+@app.route(Routes['leaderspage'])
+def leaders():
+    return render_template("leaders.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           leaders=get_leaders("m"),
+                           title="Race for the Domus Cup")
+
+@app.route(Routes['wleaderspage'])
+def wleaders():
+    return render_template("wleaders.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           leaders=get_leaders("f"),
+                           title="Sentry Singles")
+
+@app.route(Routes['espystandingspage'])
+def espy_standings():
+    return render_template("espystandings.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           standings=get_espy(),
+                           title="ESPY Standings")
+
+def get_sponsor(id):
+    s = Sponsor.query.get(id)
+    expect = None
+    if s is not None:
+        expect = {"name": s.name,
+                  "id": s.id}
+    return expect
+
+def get_leaders(gender):
+    leaders = []
+    #TODO
+    return leaders
+
+def get_espy():
+    espy = []
+    #TODO
+    return espy
+
+def get_teams():
+    teams =[]
+    #TODO
+    return teams
+
+def get_games():
+    games = []
+    #TODO
+    return games
+
+def get_leagues():
+    leagues = []
+    #TODO
+    return leagues
+
 def get_sponsors():
     info = Sponsor.query.all()
     sponsors = []
