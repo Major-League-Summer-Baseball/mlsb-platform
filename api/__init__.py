@@ -47,6 +47,7 @@ def add_cors(resp):
         resp.headers['Access-Control-Max-Age'] = '1'
     return resp
 
+# basic routes
 from api.basic.player import PlayerAPI, PlayerListAPI
 from api.basic.sponsor import SponsorAPI, SponsorListAPI
 from api.basic.league import LeagueAPI, LeagueListAPI
@@ -55,7 +56,6 @@ from api.basic.game import GameAPI, GameListAPI
 from api.basic.bat import BatAPI, BatListAPI
 from api.advanced.team_roster import TeamRosterAPI
 from api.routes import Routes
-
 api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
 api.add_resource(PlayerAPI, Routes['player'] + "/<int:player_id>", 
                  endpoint="player")
@@ -76,9 +76,11 @@ api.add_resource(BatAPI, Routes['bat'] + "/<int:bat_id>",
                  endpoint="bat")
 api.add_resource(TeamRosterAPI, Routes['team_roster'], endpoint="teamrosters")
 
+# add advanced routes
+from api.advanced.game_stats import GameStatsAPI
+api.add_resource(GameStatsAPI, Routes['vgame'], endpoint="vgame")
 
-
-#add documentation
+# add documentation
 from api.documentation import Document , PlayerObjectDocument,\
                               TeamObjectDocument, BatObjectDocument,\
                               GameObjectDocument, LeagueObjectDocument,\
