@@ -21,10 +21,11 @@ class GameStatsAPI(Resource):
     def post(self):
         """
             GET request for Team Roster List
-            Route: Route['player_stats']
+            Route: Route['vgame']
             Parameters:
                 year: the year  (int)
                 team: the team id (int)
+                game_id: the game id (int)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -58,7 +59,9 @@ class GameStatsAPI(Resource):
                 d2 = date(date.today().year, 12, 30)
             start = datetime.combine(d1, t1)
             end = datetime.combine(d2, t2)
-            games = DB.session.query(Game).filter(Game.date.between(start, end)).filter_by(league_id=id)
+            games = DB.session.query(Game).filter(Game.date.between(start, end))
+            if id is not None:
+                games = games.filter_by(league_id=id)
         result = []
         for game in games:
             aid = game.away_team_id
