@@ -207,7 +207,7 @@ class GameTest(BaseTest):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " Post: View of Game")
+                         Routes['vgame'] + " Post: View of Game")
         self.addBats()
         rv = self.app.post(Routes['vgame'], data={"league_id": 1})
         expect = {   'data': [   {  'away_bats': [],
@@ -236,13 +236,110 @@ class GameTest(BaseTest):
                                                'league_name': 'Monday & Wedneday'}
                                   }
                               ],
-    'failures': [],
-    'message': '',
-    'success': True}
+                    'failures': [],
+                    'message': '',
+                    'success': True}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " Post: View of Game")
+                         Routes['vgame'] + " Post: View of Game")
+
+        rv = self.app.post(Routes['vgame'], data={})
+        expect = {   'data': [   {  'away_bats': [],
+                                    'away_score': 0,
+                                    'away_team': {   'color': 'Black',
+                                                     'league_id': None,
+                                                     'sponsor_id': 2,
+                                                     'team_id': 2,
+                                                     'year': 2015},
+                                    'date': '2014-08-23 11:37',
+                                    'home_bats': [   {   'hit': 's',
+                                                         'inning': 5,
+                                                         'name': 'Dallas Fraser',
+                                                         'rbi': 1},
+                                                     {   'hit': 'k',
+                                                         'inning': 5,
+                                                         'name': 'My Dream Girl',
+                                                         'rbi': 0}],
+                                    'home_score': 1,
+                                    'home_team': {   'color': 'Green',
+                                                     'league_id': None,
+                                                     'sponsor_id': 1,
+                                                     'team_id': 1,
+                                                     'year': 2015},
+                                    'league': {   'league_id': 1,
+                                                  'league_name': 'Monday & Wedneday'}},
+                                {   'away_bats': [],
+                                    'away_score': 0,
+                                    'away_team': {   'color': 'Black',
+                                                     'league_id': None,
+                                                     'sponsor_id': 2,
+                                                     'team_id': 2,
+                                                     'year': 2015},
+                                    'date': '2014-08-23 11:37',
+                                    'home_bats': [   {   'hit': 's',
+                                                         'inning': 5,
+                                                         'name': 'Dallas Fraser',
+                                                         'rbi': 1},
+                                                     {   'hit': 'k',
+                                                         'inning': 5,
+                                                         'name': 'My Dream Girl',
+                                                         'rbi': 0}],
+                                    'home_score': 1,
+                                    'home_team': {   'color': 'Green',
+                                                     'league_id': None,
+                                                     'sponsor_id': 1,
+                                                     'team_id': 1,
+                                                     'year': 2015},
+                                    'league': {   'league_id': 2,
+                                                  'league_name': 'Tuesday & Thursday'}}],
+                'failures': [],
+                'message': '',
+                'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vgame'] + " Post: View of Game")
+
+class PlayerTest(BaseTest):
+    def testPost(self):
+        self.show_results = True
+        rv = self.app.post(Routes['vplayer'])
+        expect = {'data': {},
+                  'failures': [],
+                  'message': '',
+                  'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vplayer'] + " Post: View of Game")
+        self.addBats()
+        rv = self.app.post(Routes['vplayer'])
+        expect = {   'data': {   '1': {   'avg': 1.0,
+                                         'bats': 1,
+                                         'd': 0,
+                                         'go': 0,
+                                         'hr': 0,
+                                         'k': 0,
+                                         'pf': 0,
+                                         's': 1},
+                                '2': {   'avg': 0.0,
+                                         'bats': 1,
+                                         'd': 0,
+                                         'go': 0,
+                                         'hr': 0,
+                                         'k': 1,
+                                         'pf': 0,
+                                         's': 0}},
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vplayer'] + " Post: View of Game")
+        
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
