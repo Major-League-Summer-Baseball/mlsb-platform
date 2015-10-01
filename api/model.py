@@ -7,7 +7,7 @@
 from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
 GENDERS = ['f', 'm']
-HITS = ['s','ss', 'd', 'hr', 'k']
+HITS = ['s','ss', 'd', 'hr', 'k', 'go', 'pf']
 from datetime import date, datetime
 
 
@@ -32,6 +32,7 @@ def insertPlayer(team_id, player_id, captain=False):
                 DB.session.commit()
                 valid = True
         return valid
+
 class Player(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(80))
@@ -46,8 +47,10 @@ class Player(DB.Model):
     def __init__(self, name, email, gender=None, password="default"):
         self.name = name
         self.email = email
-        if gender is None or gender.lower() in GENDERS:
+        if gender is not None or gender.lower() in GENDERS:
             self.gender = gender.lower()
+        elif gender is None:
+            self.gender = None
         else:
             raise Exception("Invalid Gender")
         self.set_password(password)
@@ -66,6 +69,7 @@ class Player(DB.Model):
                 "player_name":self.name,
                 "email": self.email,
                 "gender": self.gender}
+
 class Team(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     color = DB.Column(DB.String(120))
