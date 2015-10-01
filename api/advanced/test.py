@@ -155,6 +155,53 @@ class BaseTest(unittest.TestCase):
         DB.session.add(self.games[1])
         DB.session.commit()
 
+    def addBunchGames(self):
+        self.addTeams()
+        self.addLeagues()
+        self.teams.append(Team("Blue"))
+        DB.session.add(self.teams[-1])
+        self.games = [Game(datetime.combine(self.d, self.t),
+                         self.teams[0].id,
+                         self.teams[1].id,
+                         self.leagues[0].id),
+                      Game(datetime.combine(self.d, self.t),
+                         self.teams[0].id,
+                         self.teams[1].id,
+                         self.leagues[1].id),
+                      Game(datetime.combine(self.d, self.t),
+                         self.teams[1].id,
+                         self.teams[2].id,
+                         self.leagues[1].id)
+                      ]
+        DB.session.add(self.games[0])
+        DB.session.add(self.games[1])
+        DB.session.add(self.games[2])
+        DB.session.commit()
+
+    def addBunchBats(self):
+        self.addBunchGames()
+        self.bats = [Bat(self.players[0].id,
+                       self.teams[0].id,
+                       self.games[0].id,
+                       "S",
+                       5,
+                       
+                       rbi=1),
+                     Bat(self.players[1].id,
+                         self.teams[0].id,
+                         self.games[1].id,
+                         "K",
+                         5),
+                    Bat(self.players[1].id,
+                         self.teams[1].id,
+                         self.games[2].id,
+                         "K",
+                         5),
+                     ]
+        for i in range(0, len(self.bats)):
+            DB.session.add(self.bats[i])
+        DB.session.commit()
+
     def addBat(self):
         self.addGame()
         self.bat = Bat(self.players[0].id,
@@ -194,7 +241,6 @@ class BaseTest(unittest.TestCase):
         self.addTeams()
         insertPlayer(1, 1, captain=True)
         insertPlayer(1, 2, captain=False)
-
 
 class GameTest(BaseTest):
     def testPost(self):
@@ -315,22 +361,50 @@ class PlayerTest(BaseTest):
                          Routes['vplayer'] + " Post: View of Game")
         self.addBats()
         rv = self.app.post(Routes['vplayer'])
-        expect = {   'data': {   '1': {   'avg': 1.0,
-                                         'bats': 1,
-                                         'd': 0,
-                                         'go': 0,
-                                         'hr': 0,
-                                         'k': 0,
-                                         'pf': 0,
-                                         's': 1},
-                                '2': {   'avg': 0.0,
-                                         'bats': 1,
-                                         'd': 0,
-                                         'go': 0,
-                                         'hr': 0,
-                                         'k': 1,
-                                         'pf': 0,
-                                         's': 0}},
+        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
+                                                     'bats': 1,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 0,
+                                                     'pf': 0,
+                                                     's': 1},
+                                'My Dream Girl': {   'avg': 0.0,
+                                                     'bats': 1,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 1,
+                                                     'pf': 0,
+                                                     's': 0}},
+                'failures': [],
+                'message': '',
+                'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vplayer'] + " Post: View of Game")
+
+    def testPost2(self):
+        self.show_results = True
+        self.addBunchBats()
+        rv = self.app.post(Routes['vplayer'])
+        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
+                                                     'bats': 1,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 0,
+                                                     'pf': 0,
+                                                     's': 1},
+                                'My Dream Girl': {   'avg': 0.0,
+                                                     'bats': 2,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 2,
+                                                     'pf': 0,
+                                                     's': 0}},
                     'failures': [],
                     'message': '',
                     'success': True}
@@ -338,6 +412,47 @@ class PlayerTest(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vplayer'] + " Post: View of Game")
+        rv = self.app.post(Routes['vplayer'], data={'league_id': 1})
+        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
+                                                     'bats': 1,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 0,
+                                                     'pf': 0,
+                                                     's': 1}},
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vplayer'] + " Post: View of Game")
+        rv = self.app.post(Routes['vplayer'], data={'team_id': 1})
+        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
+                                                     'bats': 1,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 0,
+                                                     'pf': 0,
+                                                     's': 1},
+                                'My Dream Girl': {   'avg': 0.0,
+                                                     'bats': 1,
+                                                     'd': 0,
+                                                     'go': 0,
+                                                     'hr': 0,
+                                                     'k': 1,
+                                                     'pf': 0,
+                                                     's': 0}},
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vplayer'] + " Post: View of Game")
+        
         
         
 if __name__ == "__main__":

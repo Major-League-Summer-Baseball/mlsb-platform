@@ -5,7 +5,7 @@
 @summary: The views for player stats
 '''
 import unittest
-
+from sqlalchemy.sql.expression import or_
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
@@ -90,25 +90,26 @@ class PlayerStatsAPI(Resource):
             if id is not None:
                 games = games.filter_by(league_id=id)
             if team_id is not None:
-                games = games.filter_by(or_(away_team_id = team_id, home_team_id = team_id))
+                games = games.filter(or_(Game.away_team_id == team_id, Game.home_team_id == team_id))
             players = {}
             print(games)
             for game in games:
                 for bat in game.bats:
                     print(bat)
-                    if bat.player_id in players:
-                        players[bat.player_id][bat.classification] += 1
-                        players[bat.player_id]['bats'] += 1
+                    player = Player.query.get(bat.player_id)
+                    if player.name in players:
+                        players[player.name][bat.classification] += 1
+                        players[player.name]['bats'] += 1
                     else:
-                        players[bat.player_id] = {'bats': 0,
+                        players[player.name] = {'bats': 0,
                                                   's': 0,
                                                   'd': 0,
                                                   'k': 0,
                                                   'hr': 0,
                                                   'go': 0,
                                                   'pf': 0}
-                        players[bat.player_id][bat.classification] += 1
-                        players[bat.player_id]['bats'] += 1
+                        players[player.name][bat.classification] += 1
+                        players[player.name]['bats'] += 1
         for key, values in players.items():
             players[key]['avg'] = (players[key]['s'] +\
                                    players[key]['d'] +\
