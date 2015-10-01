@@ -1,7 +1,8 @@
 '''
-Created on Sep 16, 2015
-
-@author: Dallas
+@author: Dallas Fraser
+@author: 2015-09-29
+@organization: MLSB API
+@summary: Holds the authentication functions
 '''
 from functools import wraps
 from flask import request, Response
