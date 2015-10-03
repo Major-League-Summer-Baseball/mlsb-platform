@@ -79,8 +79,10 @@ api.add_resource(TeamRosterAPI, Routes['team_roster'], endpoint="teamrosters")
 # add advanced routes
 from api.advanced.game_stats import GameStatsAPI
 from api.advanced.players_stats import PlayerStatsAPI
+from api.advanced.team_stats import TeamStatsAPI
 api.add_resource(GameStatsAPI, Routes['vgame'], endpoint="vgame")
 api.add_resource(PlayerStatsAPI, Routes['vplayer'], endpoint="vplayer")
+api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
 
 # add documentation
 from api.documentation import Document , PlayerObjectDocument,\

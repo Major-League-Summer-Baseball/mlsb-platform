@@ -242,6 +242,134 @@ class BaseTest(unittest.TestCase):
         insertPlayer(1, 1, captain=True)
         insertPlayer(1, 2, captain=False)
 
+    def addSeason(self):
+        self.sponsors = [Sponsor("Domus"),
+                         Sponsor("Sentry"),
+                         Sponsor("Nightschool"),
+                         Sponsor("Brick")]
+        for s in self.sponsors:
+            DB.session.add(s)
+        DB.session.add(League("Monday & Wednesday"))
+        DB.session.add(League("Tuesday & Thursday"))
+        self.teams = [Team("Green",
+                           sponsor_id=1, 
+                           league_id=1),
+                      Team("Sky Blue",
+                           sponsor_id=2, 
+                           league_id=1),
+                      Team("Navy",
+                           sponsor_id=3, 
+                           league_id=2),
+                      Team('Blue',
+                           sponsor_id=4,
+                           league_id=2)]
+        for t in self.teams:
+            DB.session.add(t)
+        self.games = [Game(datetime.combine(self.d, self.t),
+                             1,
+                             2,
+                             1),
+                     Game(datetime.combine(self.d, self.t),
+                             2,
+                             1,
+                             1),
+                     Game(datetime.combine(self.d, self.t),
+                             2,
+                             1,
+                             1),
+                    Game(datetime.combine(self.d, self.t),
+                             3,
+                             4,
+                             2),
+                     Game(datetime.combine(self.d, self.t),
+                             4,
+                             3,
+                             2),
+                     Game(datetime.combine(self.d, self.t),
+                             4,
+                             3,
+                             2),
+                      ]
+        for g in self.games:
+            DB.session.add(g)
+        self.addPlayers()
+        self.bats = [Bat(   1, 
+                            1, 
+                            1, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   2, 
+                            2, 
+                            1, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   1, 
+                            1, 
+                            2, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            2, 
+                            2, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   1, 
+                            1, 
+                            3, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            2, 
+                            3, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   1, 
+                            3, 
+                            4, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   2, 
+                            4, 
+                            4, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   1, 
+                            3, 
+                            5, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            4, 
+                            5, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   1, 
+                            3, 
+                            6, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            4, 
+                            6, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     ]
+        for b in self.bats:
+            DB.session.add(b)
+        DB.session.commit()
+
 class GameTest(BaseTest):
     def testPost(self):
         self.show_results = True
@@ -452,9 +580,81 @@ class PlayerTest(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vplayer'] + " Post: View of Game")
+
+class TeamTest(BaseTest):
+    def TestPostNoParameters(self):
+        self.show_results = True
+        rv = self.app.post(Routes['vteam'])
+        expect = {'data': {},
+                  'failures': [],
+                  'message': '',
+                  'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
+        self.addSeason()
+        rv = self.app.post(Routes['vteam'])
+        expect = {'data': {     '1': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                                '2': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                                '3': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                                '4': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                           },
+                  'failures': [],
+                  'message': '',
+                  'success': True}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
         
         
-        
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
