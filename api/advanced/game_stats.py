@@ -79,7 +79,7 @@ class GameStatsAPI(Resource):
             away_bats = Bat.query.filter_by(team_id=aid).all()
             home_bats = Bat.query.filter_by(team_id=hid).all()
             for bat in away_bats:
-                p = Player.query.get(away_bats.player_id)
+                p = Player.query.get(bat.player_id)
                 g['away_bats'].append({'name': p.name,
                                        'hit': bat.classification,
                                        'inning': bat.inning,
