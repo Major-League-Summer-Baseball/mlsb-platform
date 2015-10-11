@@ -66,7 +66,9 @@ class GameStatsAPI(Resource):
         for game in games:
             aid = game.away_team_id
             hid = game.home_team_id
-            g = {'home_score':0,
+            g = {
+                 'game_id': game.id,
+                 'home_score':0,
                  'away_score': 0,
                  'home_bats': [],
                  'away_bats': [],
