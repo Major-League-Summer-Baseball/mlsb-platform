@@ -663,10 +663,86 @@ class TeamTest(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                  Routes['vteam'] + " Post: View of Team")
-        
-        
 
-
+    def testParameters(self):
+        self.show_results = True
+        expect = {   'data': {   '1': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                                '2': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                                '3': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1},
+                                '4': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1}},
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        self.addSeason()
+        rv = self.app.post(Routes['vteam'], data={'league_id': 1})
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
+        expect = {   'data': {   '1': {   'away_losses': 1,
+                                         'away_wins': 0,
+                                         'games': 0,
+                                         'hits_allowed': 3,
+                                         'hits_for': 3,
+                                         'home_losses': 0,
+                                         'home_wins': 1,
+                                         'losses': 1,
+                                         'runs_against': 4,
+                                         'runs_for': 4,
+                                         'ties': 1,
+                                         'wins': 1}},
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        rv = self.app.post(Routes['vteam'], data={'team_id': 1})
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

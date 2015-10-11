@@ -62,7 +62,7 @@ def single_team(team_id):
         else:
             team[team_id]['ties'] += 1
         team[team_id]['runs_for'] += team_score
-        team[team_id]['runs_allowed'] += opponent_score
+        team[team_id]['runs_against'] += opponent_score
     for game in home_games:
         team_score = 0
         opponent_score = 0
@@ -70,11 +70,11 @@ def single_team(team_id):
             if bat.team_id == team_id:
                 team_score += bat.rbi
                 if bat.classification in ['s', 'ss', 'd', 'hr']:
-                    team[tid]['hits_for'] += 1
+                    team[team_id]['hits_for'] += 1
             else:
                 opponent_score += bat.rbi
                 if bat.classification in ['s', 'ss', 'd', 'hr']:
-                    team[tid]['hits_allowed'] += 1
+                    team[team_id]['hits_allowed'] += 1
         if team_score > opponent_score:
             team[team_id]['wins'] += 1
             team[team_id]['home_wins'] += 1
@@ -179,7 +179,7 @@ class TeamStatsAPI(Resource):
         args = parser.parse_args()
         if args['team_id']:
             tid = args['team_id']
-            post(tid, None, None)
+            team = post(tid, None, None)
         else:
             
             if args['year']:
