@@ -4,23 +4,18 @@
 @organization: MLSB API
 @summary: The views for player stats
 '''
-import unittest
 from sqlalchemy.sql.expression import or_
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.validators import date_validator
 from api import DB
 from api.model import Team, Player, roster, Bat, Game
 from datetime import datetime, date, time
-from pprint import PrettyPrinter
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('player_id', type=int)
 parser.add_argument('team_id', type=int)
-
-
 
 class PlayerStatsAPI(Resource):
     def post(self):
