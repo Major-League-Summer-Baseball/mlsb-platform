@@ -486,6 +486,7 @@ class GameTest(BaseTest):
 class PlayerTest(BaseTest):
     def testPost(self):
         self.show_results = True
+        # no date
         rv = self.app.post(Routes['vplayer'])
         expect = {'data': {},
                   'failures': [],
@@ -494,8 +495,9 @@ class PlayerTest(BaseTest):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Game")
+                         Routes['vplayer'] + " Post: View of Player")
         self.addBats()
+        # no parameters
         rv = self.app.post(Routes['vplayer'])
         expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
                                                      'bats': 1,
@@ -519,9 +521,9 @@ class PlayerTest(BaseTest):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Game")
+                         Routes['vplayer'] + " Post: View of Player")
 
-    def testPost2(self):
+    def testPostParameters(self):
         self.show_results = True
         self.addBunchBats()
         rv = self.app.post(Routes['vplayer'])
@@ -547,7 +549,8 @@ class PlayerTest(BaseTest):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Game")
+                         Routes['vplayer'] + " Post: View of Player")
+        # filter based on league
         rv = self.app.post(Routes['vplayer'], data={'league_id': 1})
         expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
                                                      'bats': 1,
@@ -563,7 +566,8 @@ class PlayerTest(BaseTest):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Game")
+                         Routes['vplayer'] + " Post: View of Player")
+        # filter based on team
         rv = self.app.post(Routes['vplayer'], data={'team_id': 1})
         expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
                                                      'bats': 1,
@@ -587,7 +591,7 @@ class PlayerTest(BaseTest):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Game")
+                         Routes['vplayer'] + " Post: View of Player")
 
 class TeamTest(BaseTest):
     def TestPostNoParameters(self):
