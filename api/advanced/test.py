@@ -372,6 +372,7 @@ class BaseTest(unittest.TestCase):
 
 class GameTest(BaseTest):
     def testPost(self):
+        # No games
         self.show_results = True
         rv = self.app.post(Routes['vgame'])
         expect = {'data': [],
@@ -383,8 +384,11 @@ class GameTest(BaseTest):
         self.assertEqual(expect, loads(rv.data),
                          Routes['vgame'] + " Post: View of Game")
         self.addBats()
+        # just monday and wednesday
         rv = self.app.post(Routes['vgame'], data={"league_id": 1})
-        expect = {   'data': [   {  'away_bats': [],
+        expect = {   'data': [   {  
+                                    'game_id': 1,
+                                    'away_bats': [],
                                     'away_score': 0,
                                     'away_team': {'color': 'Black',
                                                   'league_id': None,
@@ -417,9 +421,11 @@ class GameTest(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vgame'] + " Post: View of Game")
-
+        # no parameters
         rv = self.app.post(Routes['vgame'], data={})
-        expect = {   'data': [   {  'away_bats': [],
+        expect = {   'data': [   {  
+                                    'game_id': 1,
+                                    'away_bats': [],
                                     'away_score': 0,
                                     'away_team': {   'color': 'Black',
                                                      'league_id': None,
@@ -443,7 +449,9 @@ class GameTest(BaseTest):
                                                      'year': 2015},
                                     'league': {   'league_id': 1,
                                                   'league_name': 'Monday & Wedneday'}},
-                                {   'away_bats': [],
+                                {   
+                                    'game_id': 2,
+                                    'away_bats': [],
                                     'away_score': 0,
                                     'away_team': {   'color': 'Black',
                                                      'league_id': None,
