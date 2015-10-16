@@ -92,6 +92,7 @@ from api.documentation import Document , PlayerObjectDocument,\
 from api.documentation import PlayerRoute, TeamRoute, BatRoute,\
                               GameRoute, LeagueRoute, SponsorRoute,\
                               TeamRosterRoute, Response
+from api.documentation import PlayerView, GameView, TeamView
 
 api.add_resource(Document, Routes["dindex"], endpoint="documentation")
 api.add_resource(Response, Routes["dresponse"], endpoint="dresponse")
@@ -129,3 +130,11 @@ api.add_resource(TeamRosterObjectDocument, Routes['doteamroster'],
 
 api.add_resource(TeamRosterRoute, Routes['dbteamroster'], 
                  endpoint="dbteamroster")
+
+# view documentation
+api.add_resource(TeamView, Routes['dvteam'],
+                 endpoint="dvteam")
+api.add_resource(GameView, Routes['dvgame'],
+                 endpoint="dvgame")
+api.add_resource(PlayerView, Routes['dvplayer'],
+                 endpoint="dvplayer")

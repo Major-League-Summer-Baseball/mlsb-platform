@@ -1,0 +1,70 @@
+{% extends "documentation_base.html" %}
+{% block content %}
+<h1>Team - View</h1>
+<p>
+	All responses use a <a href="{{route.dresponse}}">response object</a>
+</p>
+<h4>GET</h4>
+<code>{{route.dvplayer}}/</code>
+<p style="color:#808080">
+	Permission: none
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Games-ID</td>
+			</tr>
+		</tbody>
+	</table>
+
+<strong>Success 200</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">game_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Games-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">home_team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The home Teams-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">away_team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The away Teams-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">date</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The date of the game (%Y-%M-%D HH:MM)</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+
+{% endblock %}

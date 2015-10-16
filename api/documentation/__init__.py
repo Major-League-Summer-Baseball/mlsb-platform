@@ -144,3 +144,27 @@ class LeagueRoute(Resource):
                                              route = Routes
                                              )
                              ,200,headers)
+
+class TeamView(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('teamView.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class GameView(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('gameView.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)
+
+class PlayerView(Resource):
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('playerView.html',
+                                             route = Routes
+                                             )
+                             ,200,headers)

@@ -13,34 +13,72 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
 
 <strong>Success 200</strong>
+	Returns a lists of the following object
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Example</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="col-md-3">Teams-ID</td>
+				<td class="col-md-3">Team Object</td>
+				<td class="col-md-3">See more infromation on the <a href="{{route.doteam}}">Team Object</a></td>
+				<td class="col-md-3">
+					<code>
+					'0': {'color': 'Black',
+                           'league_id': None,
+                           'sponsor_id': 2,
+                           'team_id': 2,
+                           'year': 2015}
+					</code>
+				</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">captain</td>
+				<td class="col-md-3">Player Object</td>
+				<td class="col-md-3">The captain of the team. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
+				<td class="col-md-3">
+					<code>
+                    'captain': {'email': 'fras2560@mylaurier.ca',
+                               'gender': 'm',
+                               'player_id': 1,
+                               'player_name': 'Dallas Fraser'}
+					</code>
+				</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">players</td>
+				<td class="col-md-3">List of Player Object</td>
+				<td class="col-md-3">The players on the team's roster. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
+				<td class="col-md-3">
+					<code>
+                   'players': [{'email': 'dream@mylaurier.ca',
+                                'gender': 'f',
+                                'player_id': 2,
+                                'player_name': 'My Dream Girl'}]
+					</code>
+				</td>
+
 			</tr>
 		</tbody>
 	</table>
@@ -55,17 +93,23 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="col-md-3">team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Teams-ID</td>
 			</tr>
+			<tr>
+				<td class="col-md-3">player_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Players-ID</td>
+			</tr>
+			
 		</tbody>
 	</table>
 
@@ -73,58 +117,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
-
-
-<h4>PUT</h4>
-<code>{{route.team_roster}}/:id</code>
-<p style="color:#808080">
-	Permission: captain
-</p>
-<strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
-
-<strong>Success 200</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -139,16 +141,26 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="col-md-3">team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Teams-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">player_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Players-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">captain</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">1 if the player is the captain of the team</td>
 			</tr>
 		</tbody>
 	</table>
@@ -157,58 +169,18 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
 
-<h4>GET</h4>
-<code>{{route.team_roster}}</code>
-<p style="color:#808080">
-	Permission: none
-</p>
-<strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
-
-<strong>Success 200</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>Field</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
 {% endblock %}
