@@ -32,7 +32,7 @@ class TeamAPI(Resource):
                     data:  {
                             team_name: string, team_id: int,
                             captain_id: int, sponsor_id: int,
-                            photo: int, color:string
+                            color:string
                             }
         """
         # expose a single team

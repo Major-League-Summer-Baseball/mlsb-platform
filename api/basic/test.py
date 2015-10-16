@@ -21,7 +21,6 @@ headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
 
-
 class BaseTest(unittest.TestCase):
 
     def setUp(self):
