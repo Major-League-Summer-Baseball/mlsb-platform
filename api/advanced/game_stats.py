@@ -20,11 +20,11 @@ parser.add_argument('game_id', type=int)
 class GameStatsAPI(Resource):
     def post(self):
         """
-            GET request for Team Roster List
+            POST request for Game Stats
             Route: Route['vgame']
             Parameters:
                 year: the year  (int)
-                team: the team id (int)
+                league_id: the team id (int)
                 game_id: the game id (int)
             Returns:
                 status: 200 
