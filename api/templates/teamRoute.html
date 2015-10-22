@@ -13,16 +13,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Teams-ID</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Teams-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -31,41 +31,46 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">color</td>
-				<td th class="col-md-3">string</td>
-				<td th class="col-md-3">The color of the team</td>
+				<td class="col-md-3">color</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The color of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">team_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The  Teams-ID</td>
+				<td class="col-md-3">team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The  Teams-ID</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">captain_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Players-ID of the captain of the team</td>
+				<td class="col-md-3">captain_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Players-ID of the captain of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">sponsor_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Sponsors-ID of the sponsor of the team</td>
+				<td class="col-md-3">sponsor_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Sponsors-ID of the sponsor of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">league_id</td>
-				<td th class="col-md-3">id</td>
-				<td th class="col-md-3">The Leagues-ID that the team plays in</td>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">The Leagues-ID that the team plays in</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">year</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The year the team plays in</td>
+				<td class="col-md-3">year</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The year the team plays in</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">espys</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The espys points the team has</td>
 			</tr>
 		</tbody>
 	</table>
@@ -74,22 +79,22 @@
 <h4>DELETE</h4>
 <code>{{route.team}}/:id</code>
 <p style="color:#808080">
-	Permission: captain
+	Permission: admin
 </p>
 <strong>Parameter</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Teams-ID</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Teams-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -98,16 +103,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">--</td>
-				<td th class="col-md-3">--</td>
-				<td th class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -116,47 +121,52 @@
 <h4>PUT</h4>
 <code>{{route.team}}/:id</code>
 <p style="color:#808080">
-	Permission: captain
+	Permission: admin
 </p>
 <strong>Parameter</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">color</td>
-				<td th class="col-md-3">string</td>
-				<td th class="col-md-3">The color of the team</td>
+				<td class="col-md-3">color</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The color of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">team_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The  Teams-ID</td>
+				<td class="col-md-3">team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The  Teams-ID</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">captain_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Players-ID of the captain of the team</td>
+				<td class="col-md-3">captain_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Players-ID of the captain of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">sponsor_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Sponsors-ID of the sponsor of the team</td>
+				<td class="col-md-3">sponsor_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Sponsors-ID of the sponsor of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">league_id</td>
-				<td th class="col-md-3">id</td>
-				<td th class="col-md-3">The Leagues-ID that the team plays in</td>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">The Leagues-ID that the team plays in</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">year</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The year the team plays in</td>
+				<td class="col-md-3">year</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The year the team plays in</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">espys</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The espys points the team has</td>
 			</tr>
 		</tbody>
 	</table>
@@ -165,16 +175,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">--</td>
-				<td th class="col-md-3">--</td>
-				<td th class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -183,47 +193,52 @@
 <h4>POST</h4>
 <code>{{route.team}}</code>
 <p style="color:#808080">
-	Permission: captain
+	Permission: admin
 </p>
 <strong>Parameter</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">color</td>
-				<td th class="col-md-3">string</td>
-				<td th class="col-md-3">The color of the team</td>
+				<td class="col-md-3">color</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The color of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">team_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The  Teams-ID</td>
+				<td class="col-md-3">team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The  Teams-ID</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">captain_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Players-ID of the captain of the team</td>
+				<td class="col-md-3">captain_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Players-ID of the captain of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">sponsor_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The Sponsors-ID of the sponsor of the team</td>
+				<td class="col-md-3">sponsor_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Sponsors-ID of the sponsor of the team</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">league_id</td>
-				<td th class="col-md-3">id</td>
-				<td th class="col-md-3">The Leagues-ID that the team plays in</td>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">The Leagues-ID that the team plays in</td>
 			</tr>
 			<tr>
-				<td th class="col-md-3">year</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The year the team plays in</td>
+				<td class="col-md-3">year</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The year the team plays in</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">espys</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The espys points the team has</td>
 			</tr>
 		</tbody>
 	</table>
@@ -232,16 +247,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">team_id</td>
-				<td th class="col-md-3">int</td>
-				<td th class="col-md-3">The created Team-ID</td>
+				<td class="col-md-3">team_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The created Team-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -255,16 +270,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">--</td>
-				<td th class="col-md-3">--</td>
-				<td th class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -273,16 +288,16 @@
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th th class="col-md-3">Field</th>
-				<th th class="col-md-3">Type</th>
-				<th th class="col-md-3">Description</th>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td th class="col-md-3">List of Bats</td>
-				<td th class="col-md-3"><a href="{{route.doteam}}">Team</a></td>
-				<td th class="col-md-3"></td>
+				<td class="col-md-3">List of Bats</td>
+				<td class="col-md-3"><a href="{{route.doteam}}">Team</a></td>
+				<td class="col-md-3"></td>
 			</tr>
 		</tbody>
 	</table>
