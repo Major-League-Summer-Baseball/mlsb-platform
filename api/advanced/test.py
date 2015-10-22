@@ -386,11 +386,12 @@ class GameTest(BaseTest):
         self.addBats()
         # just monday and wednesday
         rv = self.app.post(Routes['vgame'], data={"league_id": 1})
-        expect = {   'data': [   {  
+        expect = {   'data': [   {  'status': '',
                                     'game_id': 1,
                                     'away_bats': [],
                                     'away_score': 0,
                                     'away_team': {'color': 'Black',
+                                                  'espys': 0,
                                                   'league_id': None,
                                                   'sponsor_id': 2,
                                                   'team_id': 2,
@@ -406,6 +407,7 @@ class GameTest(BaseTest):
                                                       'rbi': 0}],
                                     'home_score': 1,
                                     'home_team': {'color': 'Green',
+                                                  'espys': 0,
                                                   'league_id': None,
                                                   'sponsor_id': 1,
                                                   'team_id': 1,
@@ -423,11 +425,12 @@ class GameTest(BaseTest):
                          Routes['vgame'] + " Post: View of Game")
         # no parameters
         rv = self.app.post(Routes['vgame'], data={})
-        expect = {   'data': [   {  
+        expect = {   'data': [   {  'status': '',
                                     'game_id': 1,
                                     'away_bats': [],
                                     'away_score': 0,
                                     'away_team': {   'color': 'Black',
+                                                     'espys': 0,
                                                      'league_id': None,
                                                      'sponsor_id': 2,
                                                      'team_id': 2,
@@ -443,6 +446,7 @@ class GameTest(BaseTest):
                                                          'rbi': 0}],
                                     'home_score': 1,
                                     'home_team': {   'color': 'Green',
+                                                     'espys': 0,
                                                      'league_id': None,
                                                      'sponsor_id': 1,
                                                      'team_id': 1,
@@ -450,10 +454,12 @@ class GameTest(BaseTest):
                                     'league': {   'league_id': 1,
                                                   'league_name': 'Monday & Wedneday'}},
                                 {   
+                                    'status': '',
                                     'game_id': 2,
                                     'away_bats': [],
                                     'away_score': 0,
                                     'away_team': {   'color': 'Black',
+                                                     'espys': 0,
                                                      'league_id': None,
                                                      'sponsor_id': 2,
                                                      'team_id': 2,
@@ -469,6 +475,7 @@ class GameTest(BaseTest):
                                                          'rbi': 0}],
                                     'home_score': 1,
                                     'home_team': {   'color': 'Green',
+                                                     'espys': 0,
                                                      'league_id': None,
                                                      'sponsor_id': 1,
                                                      'team_id': 1,

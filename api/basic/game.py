@@ -19,6 +19,7 @@ parser.add_argument('away_team_id', type=int)
 parser.add_argument('date', type=str)
 parser.add_argument('time', type=str)
 parser.add_argument('league_id', type=int)
+parser.add_argument('status', type=str)
 
 class GameAPI(Resource):
     def get(self, game_id):
@@ -34,7 +35,8 @@ class GameAPI(Resource):
                     data:  {
                             home_team_id: int, away_team_id: int,
                             date: string, time: string,
-                            league_id: int, game_id: int
+                            league_id: int, game_id: int,
+                            status: string
                            }
         """
         # expose a single game
@@ -86,7 +88,8 @@ class GameAPI(Resource):
                 away_team_id: The away team id (int)
                 date: The date of the game with the format YYYY-MM-DD (string)
                 time: The time of the game in the format HH:MM (string)
-                league_id: The league this game belongs to (int)
+                league_id: The league this game belongs to (int),
+                status: the game's status (string)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -124,6 +127,8 @@ class GameAPI(Resource):
                 result['failures'].append("Invalid time & date")
         else:
             result['failures'].append('Invalid time & date')
+        if args['status']:
+            game.status = args['status']
         if args['league_id']:
             lid = args['league_id']
             if League.query.get(lid) is None:
@@ -155,7 +160,8 @@ class GameListAPI(Resource):
                     games: [  {
                                     home_team_id: int, away_team_id: int,
                                     date: string, time: string,
-                                    league_id: int, game_id: int
+                                    league_id: int, game_id: int,
+                                    status: string
                               }
                                 ,{...}
                            ]
@@ -177,7 +183,8 @@ class GameListAPI(Resource):
                 away_team_id: The away team id (int)
                 date: The date of the game with the format YYYY-MM-DD (string)
                 time: The time of the game in the format HH:MM (string)
-                league_id: The tournament this game belongs to (int)
+                league_id: The league this game belongs to (int)
+                status: the game status (string)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -198,6 +205,7 @@ class GameListAPI(Resource):
         date = None
         time = None
         league_id = None
+        status = ""
         if args['home_team_id']:
             htid = args['home_team_id']
             if Team.query.get(htid) is None:
@@ -230,10 +238,12 @@ class GameListAPI(Resource):
                 league_id = lid
         else:
             result['failures'].append("Invalid league ID")
+        if args['status']:
+            status = args['status']
         if len(result['failures']) > 0:
             result['message'] = "Failed to properly supply the required fields"
             return Response(dumps(result), status=400, mimetype="application/json")
-        game = Game(date, home_team_id, away_team_id, league_id)
+        game = Game(date, home_team_id, away_team_id, league_id, status=status)
         DB.session.add(game)
         DB.session.commit()
         result['success'] = True

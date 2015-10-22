@@ -875,7 +875,8 @@ class TestGame(BaseTest):
                 'date': '2014-08-23 11:37',
                 'game_id': 1,
                 'home_team_id': 1,
-                'league_id': 1}
+                'league_id': 1,
+                'status': ""}
         expect = {'data': data,
                   'failures': [],
                   'message': '',

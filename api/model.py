@@ -164,12 +164,13 @@ class Game(DB.Model):
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     bats = DB.relationship("Bat", backref="game", lazy='dynamic')
     date = DB.Column(DB.DateTime)
- 
-    def __init__(self, date, home_team_id, away_team_id, league_id):
+    status = DB.Column(DB.String(120))
+    def __init__(self, date, home_team_id, away_team_id, league_id, status=""):
         self.date = date
         self.home_team_id = home_team_id
         self.away_team_id = away_team_id
         self.league_id = league_id
+        self.status = status
 
     def __repr__(self):
         home = str(Team.query.get(self.home_team_id))
@@ -182,7 +183,8 @@ class Game(DB.Model):
                 'home_team_id': self.home_team_id,
                 'away_team_id': self.away_team_id,
                 'league_id': self.league_id,
-                'date': self.date.strftime("%Y-%m-%d %H:%M")}
+                'date': self.date.strftime("%Y-%m-%d %H:%M"),
+                'status':self.status}
 
 class Bat(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)

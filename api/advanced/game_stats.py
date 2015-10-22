@@ -67,6 +67,7 @@ class GameStatsAPI(Resource):
             aid = game.away_team_id
             hid = game.home_team_id
             g = {
+                 'status': game.status,
                  'game_id': game.id,
                  'home_score':0,
                  'away_score': 0,
