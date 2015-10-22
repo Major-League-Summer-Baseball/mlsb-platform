@@ -6,7 +6,16 @@
 '''
 from functools import wraps
 from flask import request, Response
-from api.credentials import ADMIN, PASSWORD
+import os
+try:
+    # running local
+    local = True
+    from api.credentials import ADMIN, PASSWORD
+except:
+    ADMIN = os.environ['ADMIN']
+    PASSWORD = os.environ['PASSWORD']
+    
+
 from api.model import Team, Player
 
 def check_auth(username, password):
