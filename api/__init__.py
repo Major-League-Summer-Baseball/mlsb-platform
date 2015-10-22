@@ -14,6 +14,7 @@ try:
     # running local
     local = True
     from api.credentials import PWD, URL
+    print("Running Locally")
 except:
     URL = os.environ['DATABASE_URL']
 from os import getcwd
