@@ -9,6 +9,8 @@ from api.routes import Routes
 from flask import render_template, send_file, url_for, send_from_directory
 from api.model import Team, Player, Sponsor
 from api.variables import SPONSORS
+
+@app.route("/")
 @app.route(Routes["homepage"])
 def index():
     print(get_sponsors())
