@@ -1,0 +1,9 @@
+decorator==4.0.2
+Flask==0.10.1
+Flask-HTTPAuth==2.6.0
+Flask-RESTful==0.3.4
+Flask-SQLAlchemy==2.0
+Jinja2==2.8
+MarkupSafe==0.23
+SQLAlchemy==1.0.8
+Werkzeug==0.10.4
