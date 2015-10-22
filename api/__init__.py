@@ -9,7 +9,13 @@ from flask import Flask, g, request
 from flask.ext.restful import Api
 from flask.ext.restful.utils import cors
 from flask.ext.sqlalchemy import SQLAlchemy
-from api.credentials import PWD, URL
+local = False
+try:
+    # running local
+    local = True
+    from api.credentials import PWD, URL
+except:
+    URL = os.environ['DATABASE_URL']
 from os import getcwd
 from os.path import join
 #create the application
@@ -17,9 +23,9 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 DB = SQLAlchemy(app)
-
-DB.create_all()
-print("Created Database")
+if local:
+    DB.create_all()
+    print("Created Database")
 
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
