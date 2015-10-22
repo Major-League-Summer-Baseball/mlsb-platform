@@ -7,7 +7,7 @@ Purpose: To create an application to act as an api for the database
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.validators import string_validator, year_validator
+from api.validators import string_validator, year_validator, int_validator
 from api.model import Team, Sponsor, League
 from api import DB
 from datetime import date
@@ -17,6 +17,7 @@ parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
 parser.add_argument('league_id', type=int)
 parser.add_argument('year', type=int)
+parser.add_argument('espys', type=int)
 
 class TeamAPI(Resource):
     def get(self, team_id):
@@ -32,7 +33,7 @@ class TeamAPI(Resource):
                     data:  {
                             team_name: string, team_id: int,
                             captain_id: int, sponsor_id: int,
-                            color:string
+                            color:string, espys: int
                             }
         """
         # expose a single team
@@ -85,6 +86,7 @@ class TeamAPI(Resource):
                 team_picture_id: The picture id (int)
                 color: the color of the team (string)
                 year: the year of the team (int)
+                espys: the total espys points of the team (int)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -122,6 +124,10 @@ class TeamAPI(Resource):
                 result['failures'].append('Invalid league ID')
             else:
                 team.league_id = lid
+        if args['espys'] and int_validator(args['espys']):
+            team.espys = args['espys']
+        elif args['espys'] and not int_validator(args['espys']):
+            result['failures'].append('Invalid espys (int)')
         if args['year'] and year_validator(args['year']):
             team.year = args['year']
         elif args['year'] and not year_validator(args['year']):
@@ -173,9 +179,9 @@ class TeamListAPI(Resource):
                 team_name: The team's name (string)
                 captain_id: The captain player id (int)
                 sponsor_id: The sponsor id (int)
-                team_picture_id: The picture id (int)
                 color: the color of the team (string)
-                year: the year the team is playing in
+                year: the year the team is playing in (int)
+                espys: the team espys points (int)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -195,6 +201,7 @@ class TeamListAPI(Resource):
         sponsor_id = None
         league_id = None
         year = date.today().year
+        espys = 0
         if args['color'] and string_validator(args['color']):
             color = args['color']
         elif args['color'] and not string_validator(args['color']):
@@ -215,6 +222,10 @@ class TeamListAPI(Resource):
                 result['failures'].append('Invalid league ID')
             else:
                 league_id = lid
+        if args['espys'] and int_validator(args['espys']):
+            espys = args['espys']
+        elif args['espys'] and not int_validator(args['espys']):
+            result['failures'].append('Invalid espys (int)')
         if args['year'] and year_validator(args['year']):
             year = args['year']
         elif args['year'] and not year_validator(args['year']):
@@ -225,7 +236,8 @@ class TeamListAPI(Resource):
         t = Team(color=color,
                  sponsor_id=sponsor_id,
                  league_id=league_id,
-                 year=year)
+                 year=year,
+                 espys=espys)
         DB.session.add(t)
         DB.session.commit()
         result['success'] = True

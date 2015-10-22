@@ -91,18 +91,20 @@ class Team(DB.Model):
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     year = DB.Column(DB.Integer)
     player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
+    espys = DB.Column(DB.Integer)
     def __init__(self,
                  color=None,
                  sponsor_id=None,
                  league_id=None,
-                 year=date.today().year):
+                 year=date.today().year,
+                 espys=0):
         if year < 2013 and year >= date.today().year:
             raise Exception("Invalid year")
         self.color = color
         self.sponsor_id = sponsor_id
         self.league_id = league_id
         self.year = year
-
+        self.espys = espys
     def __repr__(self):
         result = []
         if self.color is not None:
@@ -117,7 +119,8 @@ class Team(DB.Model):
                'color': self.color,
                'sponsor_id': self.sponsor_id,
                'league_id': self.league_id,
-               'year': self.year}
+               'year': self.year,
+               'espys': self.espys}
 
 class Sponsor(DB.Model):
     __tablename__ = 'sponsor'

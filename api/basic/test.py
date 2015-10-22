@@ -688,6 +688,7 @@ class TestTeam(BaseTest):
         expect = [
                   {
                    'team_id': 1,
+                   'espys': 0,
                    'color': "Black",
                    'sponsor_id': 1,
                    'league_id': 1,
@@ -712,6 +713,7 @@ class TestTeam(BaseTest):
         # test valid team id
         rv = self.app.get(Routes['team'] + "/1")
         data = {'team_id': 1,
+                'espys': 0,
                 'color': 'Green',
                 'sponsor_id': 1,
                 'league_id': None,
@@ -1208,17 +1210,19 @@ class TestTeamRoster(BaseTest):
         self.addPlayersToTeam()
         rv = self.app.get(Routes['team_roster'])
         expect = [{  '0': {'color': 'Black',
+                           'espys': 0,
                            'league_id': None,
                            'sponsor_id': 2,
                            'team_id': 2,
                            'year': 2015},
                     'captain': None,
                     'players': []},
-                  {  '1': {'color': 'Green',
-                         'league_id': None,
-                         'sponsor_id': 1,
-                         'team_id': 1,
-                         'year': 2015},
+                  {  '1': { 'color': 'Green',
+                            'espys': 0,
+                             'league_id': None,
+                             'sponsor_id': 1,
+                             'team_id': 1,
+                             'year': 2015},
                     'captain': {'email': 'fras2560@mylaurier.ca',
                                'gender': 'm',
                                'player_id': 1,
