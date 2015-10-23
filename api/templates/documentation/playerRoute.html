@@ -1,11 +1,11 @@
-{% extends "documentation_base.html" %}
+{% extends "documentation/documentation_base.html" %}
 {% block content %}
-<h1>Game</h1>
+<h1>Player</h1>
 <p>
 	All responses use a <a href="{{route.dresponse}}">response object</a>
 </p>
 <h4>GET</h4>
-<code>{{route.game}}/:id</code>
+<code>{{route.player}}/:id</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -22,7 +22,7 @@
 			<tr>
 				<td class="col-md-3">id</td>
 				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Games-ID</td>
+				<td class="col-md-3">The Players-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -38,42 +38,26 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">game_id</td>
+				<td class="col-md-3">player_id</td>
 				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Games-ID</td>
+				<td class="col-md-3">The Players-ID</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">home_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The home Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">away_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The away Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">league_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Leagues-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">date</td>
+				<td class="col-md-3">player_name</td>
 				<td class="col-md-3">string</td>
-				<td class="col-md-3">The date of the game (%Y-%M-%D HH:MM)</td>
+				<td class="col-md-3">The name of the Player</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">status</td>
+				<td class="col-md-3">gender</td>
 				<td class="col-md-3">string</td>
-				<td class="col-md-3">The status of the game</td>
+				<td class="col-md-3">The gender of the Player</td>
 			</tr>
-
 		</tbody>
 	</table>
 
 
 <h4>DELETE</h4>
-<code>{{route.game}}/:id</code>
+<code>{{route.player}}/:id</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -90,7 +74,7 @@
 			<tr>
 				<td class="col-md-3">id</td>
 				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Games-ID</td>
+				<td class="col-md-3">The Players-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -115,7 +99,7 @@
 
 
 <h4>PUT</h4>
-<code>{{route.game}}/:id</code>
+<code>{{route.player}}/:id</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -130,29 +114,14 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">home_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The home Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">away_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The away Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">league_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Leagues-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">date</td>
+				<td class="col-md-3">player_name</td>
 				<td class="col-md-3">string</td>
-				<td class="col-md-3">The date of the game (%Y-%M-%D HH:MM)</td>
+				<td class="col-md-3">The name of the Player</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">status</td>
+				<td class="col-md-3">gender</td>
 				<td class="col-md-3">string</td>
-				<td class="col-md-3">The status of the game</td>
+				<td class="col-md-3">The gender of the Player (<a href="{{route.doplayer}}">See restrictions</a>)</td>
 			</tr>
 		</tbody>
 	</table>
@@ -177,7 +146,7 @@
 
 
 <h4>POST</h4>
-<code>{{route.game}}</code>
+<code>{{route.player}}</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -192,29 +161,14 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">home_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The home Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">away_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The away Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">league_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Leagues-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">date</td>
+				<td class="col-md-3">player_name</td>
 				<td class="col-md-3">string</td>
-				<td class="col-md-3">The date of the game (%Y-%M-%D HH:MM)</td>
+				<td class="col-md-3">The name of the Player</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">status</td>
+				<td class="col-md-3">gender</td>
 				<td class="col-md-3">string</td>
-				<td class="col-md-3">The status of the game</td>
+				<td class="col-md-3">The gender of the Player (<a href="{{route.doplayer}}">See restrictions</a>)</td>
 			</tr>
 		</tbody>
 	</table>
@@ -230,15 +184,15 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">game_id</td>
+				<td class="col-md-3">player_id</td>
 				<td class="col-md-3">int</td>
-				<td class="col-md-3">The created Games-ID</td>
+				<td class="col-md-3">The created Player-ID</td>
 			</tr>
 		</tbody>
 	</table>
 
 <h4>GET</h4>
-<code>{{route.game}}</code>
+<code>{{route.player}}</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -271,8 +225,8 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">List of Games</td>
-				<td class="col-md-3"><a href="{{route.dogame}}">Game</a></td>
+				<td class="col-md-3">list of Players</td>
+				<td class="col-md-3"><a href="{{route.dbplayer}}">Player</a></td>
 				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>

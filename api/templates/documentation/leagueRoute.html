@@ -1,12 +1,11 @@
-{% extends "documentation_base.html" %}
+{% extends "documentation/documentation_base.html" %}
 {% block content %}
-<h1>Sponsor</h1>
-
+<h1>League</h1>
 <p>
 	All responses use a <a href="{{route.dresponse}}">response object</a>
 </p>
 <h4>GET</h4>
-<code>{{route.sponsor}}/:id</code>
+<code>{{route.league}}/:id</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -21,9 +20,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Sponsors-ID</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -39,22 +38,21 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">sponsor_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Sponsors-ID</td>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
 			</tr>
 			<tr>
-				<td class="colo-md-3">sponsor_name</td>
-				<td class="colo-md-3">string</td>
-				<td class="colo-md-3">The name of the Sponsor</td>
+				<td class="col-md-3">league_name</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The name of the League</td>
 			</tr>
-			
 		</tbody>
 	</table>
 
 
 <h4>DELETE</h4>
-<code>{{route.sponsor}}/:id</code>
+<code>{{route.league}}/:id</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -69,9 +67,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Sponsors-ID</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -87,16 +85,16 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
 
 
 <h4>PUT</h4>
-<code>{{route.sponsor}}/:id</code>
+<code>{{route.league}}/:id</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -111,9 +109,14 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
+				<td class="col-md-3">id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The Leagues-ID</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">league_name</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The name of the League</td>
 			</tr>
 		</tbody>
 	</table>
@@ -129,16 +132,16 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3"></td>
-				<td class="colo-md-3"></td>
-				<td class="colo-md-3"></td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
 
 
 <h4>POST</h4>
-<code>{{route.sponsor}}</code>
+<code>{{route.league}}</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -153,9 +156,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">sponsor_name</td>
-				<td class="colo-md-3">string</td>
-				<td class="colo-md-3">The name of Sponsor</td>	
+				<td class="col-md-3">league_name</td>
+				<td class="col-md-3">string</td>
+				<td class="col-md-3">The name of the League</td>
 			</tr>
 		</tbody>
 	</table>
@@ -171,16 +174,15 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">sponsor_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The created Sponsor-ID</td>
+				<td class="col-md-3">league_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The created Leagues-ID</td>
 			</tr>
 		</tbody>
 	</table>
 
-
 <h4>GET</h4>
-<code>{{route.sponsor}}</code>
+<code>{{route.league}}</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -195,9 +197,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -213,9 +215,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">List of Sponsors</td>
-				<td class="colo-md-3"><a href="{{route.dosponsor}}">Sponsor</a></td>
-				<td class="colo-md-3"></td>
+				<td class="col-md-3">list of Leagues</td>
+				<td class="col-md-3"><a href="{{route.doleague}}">League</a></td>
+				<td class="col-md-3"></td>
 			</tr>
 		</tbody>
 	</table>

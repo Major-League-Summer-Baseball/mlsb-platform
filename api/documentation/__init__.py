@@ -19,7 +19,7 @@ from api.routes import Routes
 class Response(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('responseObject.html',
+        return make_response(render_template('documentation/responseObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -28,7 +28,7 @@ class Document(Resource):
     
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation.html',
+        return make_response(render_template('documentation/documentation.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -36,7 +36,7 @@ class Document(Resource):
 class PlayerObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('playerObject.html',
+        return make_response(render_template('documentation/playerObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -44,7 +44,7 @@ class PlayerObjectDocument(Resource):
 class TeamObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('teamObject.html',
+        return make_response(render_template('documentation/teamObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -52,7 +52,7 @@ class TeamObjectDocument(Resource):
 class BatObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('batObject.html',
+        return make_response(render_template('documentation/batObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -60,7 +60,7 @@ class BatObjectDocument(Resource):
 class GameObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('gameObject.html',
+        return make_response(render_template('documentation/gameObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -68,7 +68,7 @@ class GameObjectDocument(Resource):
 class LeagueObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('leagueObject.html',
+        return make_response(render_template('documentation/leagueObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -76,7 +76,7 @@ class LeagueObjectDocument(Resource):
 class SponsorObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('sponsorObject.html',
+        return make_response(render_template('documentation/sponsorObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -84,7 +84,7 @@ class SponsorObjectDocument(Resource):
 class TeamRosterObjectDocument(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('teamRosterObject.html',
+        return make_response(render_template('documentation/teamRosterObject.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -92,7 +92,7 @@ class TeamRosterObjectDocument(Resource):
 class TeamRosterRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('teamRosterRoute.html',
+        return make_response(render_template('documentation/teamRosterRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -100,7 +100,7 @@ class TeamRosterRoute(Resource):
 class TeamRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('teamRoute.html',
+        return make_response(render_template('documentation/teamRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -108,7 +108,7 @@ class TeamRoute(Resource):
 class PlayerRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('playerRoute.html',
+        return make_response(render_template('documentation/playerRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -116,7 +116,7 @@ class PlayerRoute(Resource):
 class BatRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('batRoute.html',
+        return make_response(render_template('documentation/batRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -124,7 +124,7 @@ class BatRoute(Resource):
 class GameRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('gameRoute.html',
+        return make_response(render_template('documentation/gameRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -132,7 +132,7 @@ class GameRoute(Resource):
 class SponsorRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('sponsorRoute.html',
+        return make_response(render_template('documentation/sponsorRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -140,7 +140,7 @@ class SponsorRoute(Resource):
 class LeagueRoute(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('leagueRoute.html',
+        return make_response(render_template('documentation/leagueRoute.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -148,7 +148,7 @@ class LeagueRoute(Resource):
 class TeamView(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('teamView.html',
+        return make_response(render_template('documentation/teamView.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -156,7 +156,7 @@ class TeamView(Resource):
 class GameView(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('gameView.html',
+        return make_response(render_template('documentation/gameView.html',
                                              route = Routes
                                              )
                              ,200,headers)
@@ -164,7 +164,7 @@ class GameView(Resource):
 class PlayerView(Resource):
     def get(self):
         headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('playerView.html',
+        return make_response(render_template('documentation/playerView.html',
                                              route = Routes
                                              )
                              ,200,headers)

@@ -1,11 +1,12 @@
-{% extends "documentation_base.html" %}
+{% extends "documentation/documentation_base.html" %}
 {% block content %}
-<h1>Player</h1>
+<h1>Sponsor</h1>
+
 <p>
 	All responses use a <a href="{{route.dresponse}}">response object</a>
 </p>
 <h4>GET</h4>
-<code>{{route.player}}/:id</code>
+<code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -20,9 +21,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Players-ID</td>
+				<td class="colo-md-3">id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The Sponsors-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -38,26 +39,22 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">player_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Players-ID</td>
+				<td class="colo-md-3">sponsor_id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The Sponsors-ID</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">player_name</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The name of the Player</td>
+				<td class="colo-md-3">sponsor_name</td>
+				<td class="colo-md-3">string</td>
+				<td class="colo-md-3">The name of the Sponsor</td>
 			</tr>
-			<tr>
-				<td class="col-md-3">gender</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The gender of the Player</td>
-			</tr>
+			
 		</tbody>
 	</table>
 
 
 <h4>DELETE</h4>
-<code>{{route.player}}/:id</code>
+<code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -72,9 +69,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Players-ID</td>
+				<td class="colo-md-3">id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The Sponsors-ID</td>
 			</tr>
 		</tbody>
 	</table>
@@ -90,16 +87,16 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
 
 
 <h4>PUT</h4>
-<code>{{route.player}}/:id</code>
+<code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -114,14 +111,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">player_name</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The name of the Player</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">gender</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The gender of the Player (<a href="{{route.doplayer}}">See restrictions</a>)</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -137,16 +129,16 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
+				<td class="colo-md-3"></td>
+				<td class="colo-md-3"></td>
+				<td class="colo-md-3"></td>
 			</tr>
 		</tbody>
 	</table>
 
 
 <h4>POST</h4>
-<code>{{route.player}}</code>
+<code>{{route.sponsor}}</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
@@ -161,14 +153,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">player_name</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The name of the Player</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">gender</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The gender of the Player (<a href="{{route.doplayer}}">See restrictions</a>)</td>
+				<td class="colo-md-3">sponsor_name</td>
+				<td class="colo-md-3">string</td>
+				<td class="colo-md-3">The name of Sponsor</td>	
 			</tr>
 		</tbody>
 	</table>
@@ -184,15 +171,16 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">player_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The created Player-ID</td>
+				<td class="colo-md-3">sponsor_id</td>
+				<td class="colo-md-3">int</td>
+				<td class="colo-md-3">The created Sponsor-ID</td>
 			</tr>
 		</tbody>
 	</table>
 
+
 <h4>GET</h4>
-<code>{{route.player}}</code>
+<code>{{route.sponsor}}</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -207,9 +195,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">--</td>
 			</tr>
 		</tbody>
 	</table>
@@ -225,9 +213,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">list of Players</td>
-				<td class="col-md-3"><a href="{{route.dbplayer}}">Player</a></td>
-				<td class="col-md-3">--</td>
+				<td class="colo-md-3">List of Sponsors</td>
+				<td class="colo-md-3"><a href="{{route.dosponsor}}">Sponsor</a></td>
+				<td class="colo-md-3"></td>
 			</tr>
 		</tbody>
 	</table>
