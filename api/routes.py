@@ -49,7 +49,7 @@ Routes['dvplayer'] = "/documentation/views/player"
 Routes['dvteam'] = "/documentation/views/team"
 
 
-#website routes
+# website routes
 Routes['homepage'] = "/website"
 Routes['teampage'] = "/website/team"
 Routes['sponsorspage'] = "/website/sponsor"
@@ -72,4 +72,14 @@ Routes['espystandingspage'] = "/website/espy"
 Routes['rulespage'] = "/website/rules"
 Routes['fieldspage'] = "/website/fields"
 
+
+# admin routes
+Routes['aindex'] = "/admin"
+Routes['editplayer'] = "/admin/import/teams"
+Routes['editgame'] = "/admin/edit/game"
+Routes['editleague'] = "/admin/edit/league"
+Routes['editsponsor'] = "/admin/edit/sponsor"
+Routes['importteam'] = "/admin/import/team"
+Routes['importgame'] = "/admin/import/game"
+Routes['importscore'] = "/admin/import/score"
 

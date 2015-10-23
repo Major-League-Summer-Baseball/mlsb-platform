@@ -37,6 +37,7 @@ app.config['UPLOAD_FOLDER'] =  "./static"
 
 
 from api.website import views
+from api import admin
 
 @app.after_request
 def add_cors(resp):

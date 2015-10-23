@@ -4,13 +4,6 @@ Date: 2014-08-25
 Project: MLSB API
 Purpose: Holds the routes for the documentation
 '''
-
-'''
-Name: Dallas Fraser
-Date: 2014-08-25
-Project: MLSB API
-Purpose: A view to deal with game info
-'''
 from flask.ext.restful import Resource, reqparse
 from flask import Response, render_template, make_response
 from json import dumps
