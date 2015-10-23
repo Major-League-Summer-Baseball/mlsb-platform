@@ -1,0 +1,30 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+{% if error %}
+  <div class="alert alert-error show" id="submit-errors">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Error! {{error}} </h4>
+    
+  </div>
+{% endif %}
+  <form class="form-horizontal" name="loginForm" action="{{post_url}}" method="post" >
+    <div class="control-group">
+      <label class="control-label" for="admin">Admin</label>
+      <div class="controls">
+        <input type="text" name="admin" id="admin" placeholder="User">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="password">Password</label>
+      <div class="controls">
+        <input type="password" name="password" id="password" placeholder="Password">
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="btn btn-primary">Sign in</button>
+        <a href="/" class="btn btn-warning">Home</a>
+      </div>
+    </div>
+  </form>
+{% endblock %}
