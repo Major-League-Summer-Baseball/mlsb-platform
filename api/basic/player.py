@@ -83,6 +83,7 @@ class PlayerAPI(Resource):
             Parameters :
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
+                email: the players email (string)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -96,19 +97,23 @@ class PlayerAPI(Resource):
         result = {'success': False,
                   'message': '',
                   'failures': []}
-        player = Player.query.get(player_id)
+        player = DB.session.query(Player).get(player_id)
         args = parser.parse_args()
         if player is None:
             result['message'] = 'Not a valid player ID'
             return result
         if args['player_name'] and string_validator(args['player_name']):
-            player.player_name = args['player_name']
+            player.name = args['player_name']
         elif args['player_name'] and not string_validator(args['player_name']):
             result['failures'].append("Invalid player name")
         if args['gender'] and gender_validator(args['gender']):
             player.gender = args['gender']
         elif args['gender'] and not gender_validator(args['gender']):
             result['failures'].append("Invalid gender")
+        if args['email'] and string_validator(args['email']):
+            player.email = args['email']
+        elif args['email'] and not string_validator(args['email']):
+            result['failures'].append("Invalid email")
         if len(result['failures']) > 0:
             result['message'] = "Failed to properly supply the required fields"
             return Response(dumps(result), status=400, mimetype="application/json")
@@ -173,7 +178,7 @@ class PlayerListAPI(Resource):
         gender = None
         player_name = None
         email = None
-        password = None
+        password = "default"
         if args['player_name'] and string_validator(args['player_name']):
             player_name = args['player_name']
         else:

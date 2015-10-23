@@ -75,7 +75,10 @@ Routes['fieldspage'] = "/website/fields"
 
 # admin routes
 Routes['aindex'] = "/admin"
-Routes['editplayer'] = "/admin/import/teams"
+Routes['aportal'] = "/admin/portal"
+Routes['alogin'] = "/admin/login"
+Routes['alogout'] = "/admin/logout"
+Routes['editplayer'] = "/admin/edit/player"
 Routes['editgame'] = "/admin/edit/game"
 Routes['editleague'] = "/admin/edit/league"
 Routes['editsponsor'] = "/admin/edit/sponsor"

@@ -13,16 +13,18 @@ local = False
 try:
     # running local
     local = True
-    from api.credentials import PWD, URL
+    from api.credentials import PWD, URL, SECRET_KEY
     print("Running Locally")
 except:
     URL = os.environ['DATABASE_URL']
+    SECRET_KEY = os.environ['SECRET_KEY']
 from os import getcwd
 from os.path import join
 #create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
+app.config['SECRET_KEY'] = SECRET_KEY
 DB = SQLAlchemy(app)
 if local:
     DB.create_all()
