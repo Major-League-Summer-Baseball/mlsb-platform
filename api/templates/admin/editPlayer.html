@@ -92,8 +92,8 @@ function postPlayer(){
 	  	if (results.success == true){
 	  		alert('Player was added successfully');
 	  		var i1,i2, i3, iv4;
-	  		i1 = '<input class="input" value="' + results.data.player_name + '" id="' + results.data.player_id + '_player_name" onclick="change('+ results.data.player_id+', \'name\')">';
-	  		i2 = '<input class="input" value="' + results.data.email + '" id="' + results.data.player_id + '_email" onclick="change('+ results.data.player_id+', \'name\')">';
+	  		i1 = '<input class="input" value="' + results.data.player_name + '" id="' + results.data.player_id + '_player_name" onclick="change('+ results.data.player_id+', \'player_name\')">';
+	  		i2 = '<input class="input" value="' + results.data.email + '" id="' + results.data.player_id + '_email" onclick="change('+ results.data.player_id+', \'email\')">';
 	  		if (results.data.gender == "m"){
 	  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ results.data.player_id+', \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>';
 	  		}else{
