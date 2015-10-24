@@ -1,0 +1,159 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<table id="myTable" class="table table-bordered table-striped">
+	<thead>
+		<th>ID</td>
+		<th>Name</th>
+		<th>
+			<button type="button" class="btn btn-warning" onclick="putLeagues();" id="updateButton" disabled>
+				Update Leagues
+			</button>
+		</th>
+	</thead>
+	<tbody id="leagueTable" >
+		{% for entry in leagues %}
+			<tr class="leagueEntry" id="{{entry.league_id}}">
+				<td>
+					{{entry.league_id}}
+				</td>
+				<td>
+					<input class="input" value="{{entry.league_name}}" id='{{entry.league_id}}_league_name' onchange="change({{entry.league_id}}, 'league_name');">
+				</td>
+				<td>
+					<button type="button" class="btn btn-danger" onclick="deleteLeague({{entry.league_id}});">
+						Delete
+					</button>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td>
+				<button  type="button" class="btn btn-info" onclick="postLeague()">
+					Add League
+				</button>
+			</td>
+			<td>
+				<input  class="newLeaguer" value="" id="newName">
+			</td>
+			<td></td>
+		</tr>
+	</tfoot>
+<table>
+
+<script>
+var updates = {};
+
+function postLeague(){
+	console.log("Fucker");
+	var league_name;
+	league_name = $("#newName").val();
+	var data = { "league_name":league_name };
+	$.ajax
+	({
+	  type: "POST",
+	  url: "{{route.league}}",
+	  contentType: "application/json",
+	  dataType: 'json',
+	  async: false,
+	  username: '{{admin}}',
+	  password: '{{password}}',
+	  data: JSON.stringify(data),
+      dataType: "json",
+	  success: function (results){
+	  	if (results.success == true){
+	  		alert('League was added successfully');
+	  		var i1, i4;
+	  		i1 = '<input class="input" value="' + results.data.league_name + '" id="' + results.data.league_id + '_league_name" onclick="change('+ results.data.league_id+', \'league_name\')">';
+	  		i4 = '	<button type="button" class="btn btn-danger" onclick="deleteLeague('+results.data.league_id+');">Delete</button>'
+	  		
+	  		$("#leagueTable").append('<tr><td>' + results.league_id + '</td><td>' + i1 + '</td><td>' + i4 + '</td></tr>');
+			$("#newName").val('');
+	  	}else{
+	  		alert('League was not added correctly', result.failures);
+	  	}
+	    console.log(results	)
+	  }, error: function(request, error){
+        alert("Error-> check console");
+        console.log(request);
+        console.log(error);
+    } 
+	});
+}
+
+function change(id, cat){
+	if (!(id  in updates)){
+		updates[id] = {}
+	}
+	updates[id][cat] = $('#' + id + '_' + cat).val();
+	$('#updateButton').attr('disabled', false);
+	console.log(updates);
+}
+
+function deleteLeague(id){
+	console.log("Fucker");
+	var data = { "id": id};
+	$.ajax
+	({
+	  type: "DELETE",
+	  url: "{{route.league}}/"+id,
+	  contentType: "application/json",
+	  dataType: 'json',
+	  async: false,
+	  username: '{{admin}}',
+	  password: '{{password}}',
+	  data: JSON.stringify(data),
+      dataType: "json",
+	  success: function (results){
+	  	if (results.success == true){
+	  		alert('League was removed successfully');
+	  		$('#'+id).remove();
+	  	}else{
+	  		alert('League was not removed', result.failures);
+	  	}
+	    console.log(results	)
+	  }, error: function(request, error){
+        alert("Error-> check console");
+        console.log(request.text);
+        console.log(error);
+    } 
+	});
+}
+
+function putLeagues(){
+	for (var id in updates){
+		putLeague(id, updates[id]);
+	}
+}
+function putLeague(id, attributes){
+	console.log("Fucker", attributes);
+	console.log(id);
+	$.ajax
+	({
+	  type: "PUT",
+	  url: "{{route.league}}/"+id,
+	  contentType: "application/json",
+	  dataType: 'json',
+	  async: false,
+	  username: '{{admin}}',
+	  password: '{{password}}',
+	  data: JSON.stringify(attributes),
+      dataType: "json",
+	  success: function (results){
+	  	if (results.success == true){
+	  		alert('League was updated successfully');
+	  	}else{
+	  		alert('League was not updated properly', result.failures);
+	  	}
+	    console.log(results)
+	  }, error: function(request, error){
+        alert("Error-> check console");
+        console.log(request.text);
+        console.log(error);
+    } 
+	});
+}
+
+</script>
+{% endblock %}

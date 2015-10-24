@@ -13,10 +13,33 @@ from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, send_file, url_for, send_from_directory,\
                   redirect, session, request
-from api.model import Team, Player, Sponsor
+from api.model import Team, Player, Sponsor, League
 from api.variables import SPONSORS
 from api.authentication import check_auth
 from api.model import Player
+
+@app.route(Routes['editleague'])
+def admin_edit_league():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/editLeague.html",
+                           route=Routes,
+                           leagues=get_leagues(),
+                           title="Edit Leagues",
+                           admin=session['admin'],
+                           password=session['password'])
+
+@app.route(Routes['editsponsor'])
+def admin_edit_sponsor():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/editSponsor.html",
+                           route=Routes,
+                           sponsors=get_sponsors(),
+                           title="Edit Leagues",
+                           admin=session['admin'],
+                           password=session['password'])
+
 @app.route(Routes['aindex'])
 def admin_home():
     if not logged_in():
@@ -39,6 +62,23 @@ def admin_edit_player():
                            title="Edit Players",
                            admin=session['admin'],
                            password=session['password'])
+
+@app.route(Routes['editteam'])
+def admin_edit_team():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    results = Team.query.all()
+    teams = []
+    for team in results:
+        teams.append(team.json())
+    return render_template("admin/editTeam.html",
+                           route=Routes,
+                           teams=teams,
+                           title="Edit Teams",
+                           admin=session['admin'],
+                           password=session['password'],
+                           sponsors=get_sponsors(),
+                           leagues=get_leagues())
 
 @app.route(Routes['alogout'])
 def admin_logout():
@@ -84,4 +124,17 @@ def logout():
     session.pop('password', None)
     return
 
+def get_sponsors():
+    results = Sponsor.query.all()
+    sponsors = []
+    for sponsor in results:
+        sponsors.append(sponsor.json())
+    return sponsors
+
+def get_leagues():
+    results = League.query.all()
+    leagues = []
+    for league in results:
+        leagues.append(league.json())
+    return leagues
 
