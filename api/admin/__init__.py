@@ -13,7 +13,7 @@ from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, send_file, url_for, send_from_directory,\
                   redirect, session, request
-from api.model import Team, Player, Sponsor, League
+from api.model import Team, Player, Sponsor, League,Game
 from api.variables import SPONSORS
 from api.authentication import check_auth
 from api.model import Player
@@ -79,6 +79,38 @@ def admin_edit_team():
                            password=session['password'],
                            sponsors=get_sponsors(),
                            leagues=get_leagues())
+
+@app.route(Routes['editgame'])
+def admin_edit_game():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    results = Team.query.all()
+    leagues = get_leagues()
+    teams = []
+    for league in leagues:
+        while len(teams) < league['league_id'] + 1:
+            teams.append([])
+    for team in results:
+        print(team)
+        print(team.league_id)
+        
+        if team.league_id is not None:
+            t = team.json()
+            t['team_name'] = str(team)
+            teams[team.league_id].append(t)
+    print(teams)
+    results = Game.query.all()
+    games = []
+    for game in results:
+        games.append(game.json())
+    return render_template("admin/editGame.html",
+                           route=Routes,
+                           teams=teams,
+                           title="Edit Game",
+                           admin=session['admin'],
+                           password=session['password'],
+                           leagues=get_leagues(),
+                           games=games)
 
 @app.route(Routes['alogout'])
 def admin_logout():

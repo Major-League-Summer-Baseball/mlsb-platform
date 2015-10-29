@@ -111,7 +111,7 @@ function makeSponsors(sponsor, id){
 	return select
 }
 
-function makeLeages(league, id){
+function makeLeagues(league, id){
 	var select = '<select class="selectpicker" value="" id="'+id+'_league_id" onclick="change('+id+', \'league_id\');">';
 	$("#newLeagueId > option").each(function(){
 		console.log(this.text, this.value)
@@ -151,15 +151,16 @@ function postTeam(){
 	  	if (results.success == true){
 	  		console.log(results)
 	  		alert('Team was added successfully');
-	  		var i1,i2, i3, i4, i5, result;
+	  		var i1,i2, i3, i4, i5,i6, result;
 	  		i1 = '<input class="input" value="' + color + '" id="' + results.team_id + 'color" onclick="change('+ results.team_id+', \'color\')">';
 	  		i2 = makeSponsors(sponsor_id, results.team_id);
-	  		i3 = makeLeagees(league_id, results.team_id);
+	  		i3 = makeLeagues(league_id, results.team_id);
 	  		i4 = '<input class="input" value="' + year + '" id="' + results.team_id + 'color" onclick="change('+ results.team_id+', \'year\')">';
 	  		i5 = '<input class="input" value="' + espys + '" id="' + results.team_id + 'color" onclick="change('+ results.team_id+', \'espys\')">';
-	  		result = '<tr><td>'+results.team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 + '</tr>';
+	  		i6 = '<button type="button" class="btn btn-danger" onclick="deleteTeam('+results.team_id+');">Delete</button>'
+	  		result = '<tr class="teamEntry" id="'+results.team_id+'"><td>'+results.team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 +'</td><td>'+ i6 + '</td></tr>';
 	  		console.log(result);
-	  		$("#teamTable").append();
+	  		$("#teamTable").append(result);
 			$('#newColor').val('');
 			$('#newSponsorId').val('');
 			$('#newLeagueId').val('');

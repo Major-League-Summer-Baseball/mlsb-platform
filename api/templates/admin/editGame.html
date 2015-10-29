@@ -1,0 +1,299 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<table id="myTable" class="table table-bordered table-striped">
+	<thead>
+		<th>ID</td>
+		<th>League</th>
+		<th>Home Team</th>
+		<th>Away Team</th>
+		<th>Date</th>
+		<th>Time</th>
+		<th>Status</th>
+		<th>Field</th>
+		<th>
+			<button type="button" class="btn btn-warning" onclick="putGames();" id="updateButton" disabled>
+				Update Games
+			</button>
+		</th>
+	</thead>
+	<tbody id="gameTable" >
+		{% for entry in games %}
+			<tr class="gameEntry" id="{{entry.game_id}}">
+				<td>
+					{{entry.game_id}}
+				</td>
+				<td>
+					Can't edit which league the game belongs to
+				</td>
+				<td>
+					<select class="selectpicker" value="" id="{{entry.game_id}}_home_team_id" onclick="change({{entry.game_id}}, 'home_team_id');">
+						{% for team in  teams[entry.league_id]%}
+							{% if entry.home_team_id == team.team_id %}
+								<option value="{{team.team_id}}" selected="selected" class="League_{{entry.league_id}}_{{entry.game_id}}">{{team.team_name}}</option>
+							{% else %}
+								<option value="{{team.team_id}}" class="League_{{entry.league_id}}_{{entry.game_id}}">{{team.team_name}}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</td>
+				<td>
+					<select class="selectpicker" value="" id="{{entry.game_id}}_away_team_id" onclick="change({{entry.game_id}}, 'away_team_id');">
+						{% for team in  teams[entry.league_id]%}
+							{% if entry.away_team_id == team.team_id %}
+								<option value="{{team.team_id}}" selected="selected" class="League_{{entry.league_id}}_{{entry.game_id}}">{{team.team_name}}</option>
+							{% else %}
+								<option value="{{team.team_id}}" class="League_{{entry.league_id}}_{{entry.game_id}}">{{team.team_name}}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</td>
+				<td>
+					<input class="input" value="{{entry.date}}" id='{{entry.game_id}}_date' onchange="change({{entry.game_id}}, 'time');change({{entry.game_id}}, 'date');">
+				</td>
+				<td>
+					<input class="input" value="{{entry.time}}" id='{{entry.game_id}}_time' onchange="change({{entry.game_id}}, 'time');change({{entry.game_id}}, 'date')">
+				</td>
+				<td>
+					<input class="input" value="{{entry.status}}" id='{{entry.game_id}}_status' onchange="change({{entry.game_id}}, 'status');">
+				</td>
+				<td>
+					<input class="input" value="{{entry.field}}" id='{{entry.game_id}}_field' onchange="change({{entry.game_id}}, 'field');">
+				</td>
+				<td>
+					<button type="button" class="btn btn-danger" onclick="deleteGame({{entry.game_id}});">
+						Delete
+					</button>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td>
+				<button  type="button" class="btn btn-info" onclick="postGame()">
+					Add game
+				</button>
+			</td>
+			<td>
+				<select class="selectpicker" value="" id="new_league_id" onclick="updateTeams();">
+					{% for league in  leagues%}
+						<option value="{{league.league_id}}" class="">{{league.league_name}}</option>
+					{% endfor %}
+				</select>
+			</td>
+			<td>
+				<select class="selectpicker" value="" id="new_home_team_id" disabled="disabled">
+					{% for league in leagues%}
+						{% for team in  teams[league.league_id]%}
+							<option value="{{team.team_id}}" class="Home_League_{{league.league_id}} team homeTeams">{{team.team_name}}</option>
+						{% endfor %}
+					{% endfor %}
+				</select>
+			</td>
+			<td>
+				<select class="selectpicker" value="" id="new_away_team_id" disabled="disabled">
+					{% for league in leagues%}
+						{% for team in  teams[league.league_id]%}
+							<option value="{{team.team_id}}" class="Away_League_{{league.league_id}} team">{{team.team_name}}</option>
+						{% endfor %}
+					{% endfor %}
+				</select>
+			</td>
+
+
+			<td>
+				<input class="input" value=""  placeholder="YYYY-MM-DD" id='new_date'>
+			</td>
+			<td>
+				<input class="input" value=""  placeholder="HH:MM" id='new_time'>
+			</td>
+			<td>
+				<input class="input" value="" placeholder="Rain Delay etc.." id='new_status'>
+			</td>
+			<td>
+				<input class="input" value="" placeholder="Field WP1 etc.." id='new_field'>
+			</td>
+
+			<td>
+
+			</td>
+		</tr>
+	</tfoot>
+<table>
+
+<script>
+var updates = {};
+
+function updateTeams(){
+	var league_id = $('#new_league_id').val();
+	/* unselect teams */
+	$('#new_away_team_id').val([]);
+	$('#new_home_team_id').val([]);
+
+	$('#new_away_team_id').prop('disabled', false);
+	$('#new_home_team_id').prop('disabled', false);
+	
+	/* hide all  teams */
+	$('.team').hide();
+	/* shoe the proper teams*/
+	$('.Home_League_' + league_id).show();
+	$('.Away_League_' + league_id).show();
+}
+
+function makeTeams(id, league, team, team_id){
+	var select = '<select class="selectpicker" value="" id="'+id+'_'+team+'_team_id" onclick="change('+id+', \''+team+'_team_id\');">';
+	var teams = [];
+
+	$(".Home_League_"+ league).each(function(){
+		if (this.value == team_id){
+			select += '<option selected="selected" value="' + this.value+'">'+this.text+'</option>';
+		}else{
+			select += '<option value="' + this.value+'">'+this.text+'</option>';
+			}
+	});
+	select += '</select>'
+	return select
+}
+
+function postGame(){
+	console.log("Fucker");
+	var away_team_id,home_team_id, date, time, status, league_id, field, data;
+	league_id = $('#new_league_id').val();
+	away_team_id = $('#new_away_team_id').val();
+	home_team_id = $('#new_home_team_id').val();
+	field = $('#new_field').val();
+	time = $('#new_time').val();
+	date = $('#new_date').val();
+	console.log(away_team_id,home_team_id, date,status, league_id);
+	if (away_team_id == home_team_id){
+		alert("One team cannot play itself");
+		return;
+	}else if(date == ""){
+		alert("Need a date");
+		return;
+	}
+	status = $('#new_status').val();
+	console.log("Here");
+	data = {
+			'league_id': league_id,
+			'away_team_id':away_team_id,
+			'home_team_id':home_team_id,
+			'status': status,
+			'date':date	,
+			'time':time,
+			'field':field
+			}
+	console.log(data);
+	$.ajax
+	({
+	  type: "POST",
+	  url: "{{route.game}}",
+	  contentType: "application/json",
+	  dataType: 'json',
+	  async: false,
+	  username: '{{admin}}',
+	  password: '{{password}}',
+	  data: JSON.stringify(data),
+      dataType: "json",
+	  success: function (results){
+	  	if (results.success == true){
+	  		alert('Game was added successfully');
+	  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, result;
+	  		i3 = makeTeams(results.game_id, league_id, 'home', home_team_id);;
+	  		i4 = makeTeams(results.game_id, league_id, 'away', away_team_id);
+	  		i5 = '<input class="input" value="'+ date +'" id="'+results.game_id+'_date" onchange="change('+results.game_id+', \'date\');change('+results.game_id+', \'time\');">';
+	  		i6 =  '<input class="input" value="'+ time +'" id="'+results.game_id+'_time" onchange="change('+results.game_id+', \'date\');change('+results.game_id+', \'time\');">';
+	  		i7 = '<input class="input" value="'+ status +'" id="'+results.game_id+'_status" onchange="change('+results.game_id+', \'status\');">';
+	  		i8 = '<input class="input" value="'+ field +'" id="'+results.game_id+'_status" onchange="change('+results.game_id+', \'field\');">';
+	  		i9 = '	<button type="button" class="btn btn-danger" onclick="deleteGame('+results.game_id+');">Delete</button>';
+	  		result = '<tr id="'+results.game_id+'"><td>' + results.game_id + '</td><td>Can\'t edit which league the game belongs to</td><td>' + i3 + '</td><td>'+i4+ '</td><td>'+i5+ '</td><td>'+i6+ '</td><td>'+i7+ '</td><td>'+i8+'</td><td>'+i9+'</td></tr>'
+	  		console.log(result)
+	  		$("#gameTable").append(result);
+	  	}else{
+	  		alert('game was not added correctly', result.failures);
+	  	}
+	    console.log(results	)
+	  }, error: function(request, error){
+        alert("Error-> check console");
+        console.log(request);
+        console.log(error);
+    } 
+	});
+}
+
+function change(id, cat){
+	if (!(id  in updates)){
+		updates[id] = {}
+	}
+	console.log('#' + id + '_' + cat);
+	updates[id][cat] = $('#' + id + '_' + cat).val();
+	$('#updateButton').attr('disabled', false);
+	console.log(updates);
+}
+
+function deleteGame(id){
+	console.log("Fucker");
+	var data = { "id": id};
+	$.ajax
+	({
+	  type: "DELETE",
+	  url: "{{route.game}}/"+id,
+	  contentType: "application/json",
+	  dataType: 'json',
+	  async: false,
+	  username: '{{admin}}',
+	  password: '{{password}}',
+	  data: JSON.stringify(data),
+      dataType: "json",
+	  success: function (results){
+	  	if (results.success == true){
+	  		alert('game was removed successfully');
+	  		$('#'+id).remove();
+	  	}else{
+	  		alert('game was not removed', result.failures);
+	  	}
+	    console.log(results	)
+	  }, error: function(request, error){
+        alert("Error-> check console");
+        console.log(request.text);
+        console.log(error);
+    } 
+	});
+}
+
+function putGames(){
+	for (var id in updates){
+		putGame(id, updates[id]);
+	}
+}
+function putGame(id, attributes){
+	console.log("Fucker", attributes);
+	console.log(id);
+	$.ajax
+	({
+	  type: "PUT",
+	  url: "{{route.game}}/"+id,
+	  contentType: "application/json",
+	  dataType: 'json',
+	  async: false,
+	  username: '{{admin}}',
+	  password: '{{password}}',
+	  data: JSON.stringify(attributes),
+      dataType: "json",
+	  success: function (results){
+	  	if (results.success == true){
+	  		alert('game was updated successfully');
+	  	}else{
+	  		alert('game was not updated properly', result.failures);
+	  	}
+	    console.log(results)
+	  }, error: function(request, error){
+        alert("Error-> check console");
+        console.log(request.text);
+        console.log(error);
+    } 
+	});
+}
+
+</script>
+{% endblock %}

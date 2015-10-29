@@ -99,7 +99,7 @@ function postPlayer(){
 	  		}else{
 	  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ results.data.player_id+', \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>';
 	  		}
-	  		iv4 = '	<button type="button" class="btn btn-danger" onclick="deletePlayer('+results.data.player_id+');">Delete</button>'
+	  		i4 = '	<button type="button" class="btn btn-danger" onclick="deletePlayer('+results.data.player_id+');">Delete</button>'
 	  		
 	  		$("#playerTable").append('<tr><td>'+results.player_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td></tr>');
 	  		$('#newEmail').val('');
