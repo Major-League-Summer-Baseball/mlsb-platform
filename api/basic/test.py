@@ -872,12 +872,13 @@ class TestGame(BaseTest):
         # valid id
         rv = self.app.get(Routes['game'] + "/1")
         data = {'away_team_id': 2,
-                'date': '2014-08-23 11:37',
+                'date': '2014-08-23',
                 'game_id': 1,
                 'home_team_id': 1,
                 'league_id': 1,
                 'status': "",
-                'field':""}
+                'field':"",
+                'time': '11:37'}
         expect = {'data': data,
                   'failures': [],
                   'message': '',

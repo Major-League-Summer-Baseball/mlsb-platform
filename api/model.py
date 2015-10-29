@@ -196,7 +196,8 @@ class Game(DB.Model):
                 'home_team_id': self.home_team_id,
                 'away_team_id': self.away_team_id,
                 'league_id': self.league_id,
-                'date': self.date.strftime("%Y-%m-%d %H:%M"),
+                'date': self.date.strftime("%Y-%m-%d"),
+                'time': self.date.strftime("%H:%M"),
                 'status':self.status,
                 'field': self.field}
 
