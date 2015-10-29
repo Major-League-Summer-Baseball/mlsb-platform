@@ -876,7 +876,8 @@ class TestGame(BaseTest):
                 'game_id': 1,
                 'home_team_id': 1,
                 'league_id': 1,
-                'status': ""}
+                'status': "",
+                'field':""}
         expect = {'data': data,
                   'failures': [],
                   'message': '',

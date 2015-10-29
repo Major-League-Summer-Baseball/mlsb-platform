@@ -6,6 +6,7 @@
 '''
 from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
+from _csv import field_size_limit
 GENDERS = ['f', 'm']
 HITS = ['s','ss', 'd', 'hr', 'k', 'go', 'pf']
 from datetime import date, datetime
@@ -107,10 +108,10 @@ class Team(DB.Model):
         self.espys = espys
     def __repr__(self):
         result = []
-        if self.color is not None:
-            result.append( self.color)
         if self.sponsor_id is not None:
             result.append(str( Sponsor.query.get(self.sponsor_id)))
+        if self.color is not None:
+            result.append( self.color)
         return " ".join(result)
 
     def json(self):
@@ -165,17 +166,29 @@ class Game(DB.Model):
     bats = DB.relationship("Bat", backref="game", lazy='dynamic')
     date = DB.Column(DB.DateTime)
     status = DB.Column(DB.String(120))
-    def __init__(self, date, home_team_id, away_team_id, league_id, status=""):
+    field = DB.Column(DB.String(120))
+    def __init__(self,
+                 date,
+                 home_team_id,
+                 away_team_id,
+                 league_id,
+                 status="",
+                 field=""):
         self.date = date
         self.home_team_id = home_team_id
         self.away_team_id = away_team_id
         self.league_id = league_id
         self.status = status
+        self.field = field
 
     def __repr__(self):
         home = str(Team.query.get(self.home_team_id))
         away = str(Team.query.get(self.away_team_id))
-        return home + " vs " + away + " on " + self.date.strftime("%Y-%m-%d %H:%M")
+        result = (home + " vs " + away + " on " +
+                self.date.strftime("%Y-%m-%d %H:%M"))
+        if self.field != "":
+            result += "at" + self.field
+        return result
     
     def json(self):
         return {
@@ -184,7 +197,8 @@ class Game(DB.Model):
                 'away_team_id': self.away_team_id,
                 'league_id': self.league_id,
                 'date': self.date.strftime("%Y-%m-%d %H:%M"),
-                'status':self.status}
+                'status':self.status,
+                'field': self.field}
 
 class Bat(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)

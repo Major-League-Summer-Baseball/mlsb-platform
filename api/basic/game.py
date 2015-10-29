@@ -9,7 +9,7 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Game, Team, League
-from api.validators import date_validator, time_validator
+from api.validators import date_validator, time_validator, string_validator
 from sqlalchemy.ext.baked import Result
 from datetime import datetime
 from api.authentication import requires_admin, requires_captain
@@ -20,6 +20,7 @@ parser.add_argument('date', type=str)
 parser.add_argument('time', type=str)
 parser.add_argument('league_id', type=int)
 parser.add_argument('status', type=str)
+parser.add_argument('field', type=str)
 
 class GameAPI(Resource):
     def get(self, game_id):
@@ -125,8 +126,9 @@ class GameAPI(Resource):
                                               '%Y-%m-%d-%H:%M')
             else:
                 result['failures'].append("Invalid time & date")
-        else:
-            result['failures'].append('Invalid time & date')
+        if args['field']:
+            if string_validator(args['field']):
+                game.field = args['field']
         if args['status']:
             game.status = args['status']
         if args['league_id']:
@@ -161,7 +163,7 @@ class GameListAPI(Resource):
                                     home_team_id: int, away_team_id: int,
                                     date: string, time: string,
                                     league_id: int, game_id: int,
-                                    status: string
+                                    status: string, field:string
                               }
                                 ,{...}
                            ]
@@ -185,6 +187,7 @@ class GameListAPI(Resource):
                 time: The time of the game in the format HH:MM (string)
                 league_id: The league this game belongs to (int)
                 status: the game status (string)
+                field: the field the game is being played on (string)
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -206,6 +209,7 @@ class GameListAPI(Resource):
         time = None
         league_id = None
         status = ""
+        field = ""
         if args['home_team_id']:
             htid = args['home_team_id']
             if Team.query.get(htid) is None:
@@ -240,10 +244,18 @@ class GameListAPI(Resource):
             result['failures'].append("Invalid league ID")
         if args['status']:
             status = args['status']
+        if args['field']:
+            if string_validator(args['field']):
+                field = args['field']
         if len(result['failures']) > 0:
             result['message'] = "Failed to properly supply the required fields"
             return Response(dumps(result), status=400, mimetype="application/json")
-        game = Game(date, home_team_id, away_team_id, league_id, status=status)
+        game = Game(date,
+                    home_team_id,
+                    away_team_id,
+                    league_id,
+                    status=status,
+                    field=field)
         DB.session.add(game)
         DB.session.commit()
         result['success'] = True
