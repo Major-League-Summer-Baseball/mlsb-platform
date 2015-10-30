@@ -71,7 +71,8 @@ def admin_edit_player(year):
 def admin_edit_team(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    results = Team.query.all()
+    results = Team.query.filter(Team.year==year).all()
+    #results = Team.query.all()
     teams = []
     for team in results:
         teams.append(team.json())
@@ -96,14 +97,10 @@ def admin_edit_game(year):
         while len(teams) < league['league_id'] + 1:
             teams.append([])
     for team in results:
-        print(team)
-        print(team.league_id)
-        
         if team.league_id is not None:
             t = team.json()
             t['team_name'] = str(team)
             teams[team.league_id].append(t)
-    print(teams)
     results = Game.query.all()
     games = []
     for game in results:
@@ -136,15 +133,12 @@ def admin_edit_bat(year, game_id):
     away_bats = []
     home_bats = []
     for bat in results:
-        print(bat.team_id)
         if bat.team_id == game.home_team_id:
             home_bats.append(bat.json())
         elif bat.team_id == game.away_team_id:
             away_bats.append(bat.json())
     away_players = get_team_players(game.away_team_id)
     home_players = get_team_players(game.home_team_id)
-    print(away_players)
-    print(away_bats)
     return render_template("admin/editBat.html",
                            year=year,
                            game_id=game_id,
@@ -172,7 +166,6 @@ def admin_portal():
     if 'admin' in session and 'password' in session:
         return redirect(url_for('admin_form'))
     else:
-        print(request.form)
         admin = request.form.get('admin')
         password = request.form.get('password')
         if check_auth(admin, password):
@@ -229,7 +222,6 @@ def get_players():
 
 def get_team_players(team_id):
     team = Team.query.get(team_id)
-    print(team.players)
     players = []
     for player in team.players:
         players.append(player.json())
