@@ -18,38 +18,41 @@ from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
 from api.model import Player
 
-@app.route(Routes['editleague'])
-def admin_edit_league():
+@app.route(Routes['editleague'] + "/<int:year>")
+def admin_edit_league(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     return render_template("admin/editLeague.html",
+                           year=year,
                            route=Routes,
                            leagues=get_leagues(),
                            title="Edit Leagues",
                            admin=session['admin'],
                            password=session['password'])
 
-@app.route(Routes['editsponsor'])
-def admin_edit_sponsor():
+@app.route(Routes['editsponsor']+ "/<int:year>")
+def admin_edit_sponsor(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     return render_template("admin/editSponsor.html",
+                           year=year,
                            route=Routes,
                            sponsors=get_sponsors(),
                            title="Edit Leagues",
                            admin=session['admin'],
                            password=session['password'])
 
-@app.route(Routes['aindex'])
-def admin_home():
+@app.route(Routes['aindex'] + "/<int:year>")
+def admin_home(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     return render_template("admin/index.html",
+                           year=year,
                            route=Routes,
                            title="Admin")
 
-@app.route(Routes['editplayer'])
-def admin_edit_player():
+@app.route(Routes['editplayer'] + "/<int:year>")
+def admin_edit_player(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     results = Player.query.all()
@@ -57,14 +60,15 @@ def admin_edit_player():
     for player in results:
         players.append(player.json())
     return render_template("admin/editPlayer.html",
+                           year=year,
                            route=Routes,
                            players=players,
                            title="Edit Players",
                            admin=session['admin'],
                            password=session['password'])
 
-@app.route(Routes['editteam'])
-def admin_edit_team():
+@app.route(Routes['editteam'] + "/<int:year>")
+def admin_edit_team(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     results = Team.query.all()
@@ -72,6 +76,7 @@ def admin_edit_team():
     for team in results:
         teams.append(team.json())
     return render_template("admin/editTeam.html",
+                           year=year,
                            route=Routes,
                            teams=teams,
                            title="Edit Teams",
@@ -80,8 +85,8 @@ def admin_edit_team():
                            sponsors=get_sponsors(),
                            leagues=get_leagues())
 
-@app.route(Routes['editgame'])
-def admin_edit_game():
+@app.route(Routes['editgame'] + "/<int:year>")
+def admin_edit_game(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     results = Team.query.all()
@@ -104,6 +109,7 @@ def admin_edit_game():
     for game in results:
         games.append(game.json())
     return render_template("admin/editGame.html",
+                           year=year,
                            route=Routes,
                            teams=teams,
                            title="Edit Game",
@@ -112,8 +118,8 @@ def admin_edit_game():
                            leagues=get_leagues(),
                            games=games)
 
-@app.route(Routes['editbat'] +"/<int:game_id>")
-def admin_edit_bat(game_id):
+@app.route(Routes['editbat'] + "/<int:year>" + "/<int:game_id>")
+def admin_edit_bat(year, game_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
     game = Game.query.get(game_id)
@@ -140,6 +146,7 @@ def admin_edit_bat(game_id):
     print(away_players)
     print(away_bats)
     return render_template("admin/editBat.html",
+                           year=year,
                            game_id=game_id,
                            route=Routes,
                            away_bats=away_bats,

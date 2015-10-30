@@ -10,11 +10,13 @@
 		<th>Time</th>
 		<th>Status</th>
 		<th>Field</th>
+		<th>Bats</th>
 		<th>
 			<button type="button" class="btn btn-warning" onclick="putGames();" id="updateButton" disabled>
 				Update Games
 			</button>
 		</th>
+		
 	</thead>
 	<tbody id="gameTable" >
 		{% for entry in games %}
@@ -58,6 +60,11 @@
 				</td>
 				<td>
 					<input class="input" value="{{entry.field}}" id='{{entry.game_id}}_field' onchange="change({{entry.game_id}}, 'field');">
+				</td>
+				<td>
+					<a type="button" class="btn btn-info" href="{{route.editbat}}/{{year}}/{{entry.game_id}}">
+						Edit Bats
+					</a>
 				</td>
 				<td>
 					<button type="button" class="btn btn-danger" onclick="deleteGame({{entry.game_id}});">
@@ -113,9 +120,11 @@
 			<td>
 				<input class="input" value="" placeholder="Field WP1 etc.." id='new_field'>
 			</td>
-
 			<td>
-
+				--
+			</td>
+			<td>
+				
 			</td>
 		</tr>
 	</tfoot>
@@ -198,15 +207,17 @@ function postGame(){
 	  success: function (results){
 	  	if (results.success == true){
 	  		alert('Game was added successfully');
-	  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, result;
+	  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, result;
 	  		i3 = makeTeams(results.game_id, league_id, 'home', home_team_id);;
 	  		i4 = makeTeams(results.game_id, league_id, 'away', away_team_id);
 	  		i5 = '<input class="input" value="'+ date +'" id="'+results.game_id+'_date" onchange="change('+results.game_id+', \'date\');change('+results.game_id+', \'time\');">';
 	  		i6 =  '<input class="input" value="'+ time +'" id="'+results.game_id+'_time" onchange="change('+results.game_id+', \'date\');change('+results.game_id+', \'time\');">';
 	  		i7 = '<input class="input" value="'+ status +'" id="'+results.game_id+'_status" onchange="change('+results.game_id+', \'status\');">';
 	  		i8 = '<input class="input" value="'+ field +'" id="'+results.game_id+'_status" onchange="change('+results.game_id+', \'field\');">';
-	  		i9 = '	<button type="button" class="btn btn-danger" onclick="deleteGame('+results.game_id+');">Delete</button>';
-	  		result = '<tr id="'+results.game_id+'"><td>' + results.game_id + '</td><td>Can\'t edit which league the game belongs to</td><td>' + i3 + '</td><td>'+i4+ '</td><td>'+i5+ '</td><td>'+i6+ '</td><td>'+i7+ '</td><td>'+i8+'</td><td>'+i9+'</td></tr>'
+	  		i9 = '<a type="button" class="btn btn-info" href="{{route.editbat}}/{{year}}/'+results.game_id+'"> Edit Bats </a>';
+	  		i10 = '	<button type="button" class="btn btn-danger" onclick="deleteGame('+results.game_id+');">Delete</button>';
+	  		
+	  		result = '<tr id="'+results.game_id+'"><td>' + results.game_id + '</td><td>Can\'t edit which league the game belongs to</td><td>' + i3 + '</td><td>'+i4+ '</td><td>'+i5+ '</td><td>'+i6+ '</td><td>'+i7+ '</td><td>'+i8+'</td><td>'+i9+'</td><td>'+i10+'</td></tr>'
 	  		console.log(result)
 	  		$("#gameTable").append(result);
 	  	}else{
