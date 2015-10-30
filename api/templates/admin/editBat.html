@@ -356,6 +356,12 @@ function postBat(team, team_id){
 	  		alert('Bat was not added correctly', result.failures);
 	  	}
 	    console.log(results	)
+	    $('#'+team+"_new_player_id").val("default");
+	    $('#'+team+"_outside_new_player_id").val("default");
+	    $('#'+team+"_new_rbi").val("");
+	    $('#'+team+"_new_inning").val("");
+	    $('#'+team+"_new_hit").val("default");
+	    
 	  }, error: function(request, error){
         alert("Error-> check console");
         console.log(request);
