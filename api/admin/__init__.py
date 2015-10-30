@@ -116,23 +116,38 @@ def admin_edit_game():
 def admin_edit_bat(game_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    results = Bat.query.filter(Bat.game_id==game_id).all()
     game = Game.query.get(game_id)
+    results = game.bats
+    away_team_id = game.away_team_id
+    home_team_id = game.home_team_id
+    if game is None:
+        return render_template("admin/notFound.html",
+                               route=Routes,
+                               title="Game not found",
+                               admin=session['admin'],
+                               password=session['password'],
+                               )
     away_bats = []
     home_bats = []
     for bat in results:
+        print(bat.team_id)
         if bat.team_id == game.home_team_id:
             home_bats.append(bat.json())
-        elif bat.team == game.away_team_id:
+        elif bat.team_id == game.away_team_id:
             away_bats.append(bat.json())
     away_players = get_team_players(game.away_team_id)
     home_players = get_team_players(game.home_team_id)
+    print(away_players)
+    print(away_bats)
     return render_template("admin/editBat.html",
+                           game_id=game_id,
                            route=Routes,
                            away_bats=away_bats,
                            home_bats=home_bats,
                            home_players=home_players,
                            away_players=away_players,
+                           away_team_id=away_team_id,
+                           home_team_id=home_team_id,
                            title="Edit Bats",
                            admin=session['admin'],
                            password=session['password'],
@@ -207,6 +222,7 @@ def get_players():
 
 def get_team_players(team_id):
     team = Team.query.get(team_id)
+    print(team.players)
     players = []
     for player in team.players:
         players.append(player.json())
