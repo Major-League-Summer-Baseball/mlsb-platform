@@ -7,7 +7,7 @@ Purpose: Holds data validators
 import unittest
 import os
 from datetime import date
-HITS = ['S', 'D', 'SS', 'HR', 'K', 'E','FC', 'FO','GO']
+from api.variables import BATS
 def string_validator(value):
     '''
     string_validator
@@ -141,7 +141,7 @@ def hit_validator(hit):
     '''
     valid = False
     if string_validator(hit):
-        if hit in HITS:
+        if hit.lower() in BATS:
             valid = True
     return valid
 

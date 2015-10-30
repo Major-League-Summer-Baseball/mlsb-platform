@@ -6,9 +6,7 @@
 '''
 from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
-from _csv import field_size_limit
-GENDERS = ['f', 'm']
-HITS = ['s','ss', 'd', 'hr', 'k', 'go', 'pf']
+from api.variables import BATS, GENDERS
 from datetime import date, datetime
 
 
@@ -45,6 +43,7 @@ class Player(DB.Model):
     team = DB.relationship('Team',
                               backref='player',
                               lazy='dynamic')
+
     def __init__(self, name, email, gender=None, password="default"):
         self.name = name
         self.email = email
@@ -55,7 +54,7 @@ class Player(DB.Model):
         else:
             raise Exception("Invalid Gender")
         self.set_password(password)
-     
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
  
@@ -93,6 +92,7 @@ class Team(DB.Model):
     year = DB.Column(DB.Integer)
     player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
     espys = DB.Column(DB.Integer)
+
     def __init__(self,
                  color=None,
                  sponsor_id=None,
@@ -106,6 +106,7 @@ class Team(DB.Model):
         self.league_id = league_id
         self.year = year
         self.espys = espys
+
     def __repr__(self):
         result = []
         if self.sponsor_id is not None:
@@ -167,6 +168,7 @@ class Game(DB.Model):
     date = DB.Column(DB.DateTime)
     status = DB.Column(DB.String(120))
     field = DB.Column(DB.String(120))
+
     def __init__(self,
                  date,
                  home_team_id,
@@ -185,11 +187,11 @@ class Game(DB.Model):
         home = str(Team.query.get(self.home_team_id))
         away = str(Team.query.get(self.away_team_id))
         result = (home + " vs " + away + " on " +
-                self.date.strftime("%Y-%m-%d %H:%M"))
+                  self.date.strftime("%Y-%m-%d %H:%M"))
         if self.field != "":
-            result += "at" + self.field
+            result += " at " + self.field
         return result
-    
+
     def json(self):
         return {
                 'game_id': self.id,
@@ -209,7 +211,7 @@ class Bat(DB.Model):
     rbi = DB.Column(DB.Integer)
     inning = DB.Column(DB.Integer)
     classification =  DB.Column(DB.String(2))
-  
+
     def __init__(self,
                  player_id,
                  team_id,
@@ -218,7 +220,7 @@ class Bat(DB.Model):
                  inning,
                  rbi=0):
         classification = classification.lower().strip()
-        if classification not in HITS:
+        if classification not in BATS:
             raise Exception("Not a proper hit")
         gender = Player.query.get(player_id)
         if classification == "SS" and gender != "f":
@@ -231,7 +233,7 @@ class Bat(DB.Model):
         if inning <= 0:
             raise Exception("Improper Inning")
         self.inning = inning
-  
+
     def __repr__(self):
         player = Player.query.get(self.player_id)
         return (player.name  + "-" + self.classification + " in " 

@@ -11,6 +11,7 @@ from json import dumps
 from api.validators import date_validator
 from api import DB
 from api.model import Team, Player, roster, Bat, Game
+from api.variables import HITS
 from datetime import datetime, date, time
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
@@ -47,11 +48,11 @@ def single_team(team_id):
         for bat in game.bats:
             if bat.team_id == team_id:
                 team_score += bat.rbi
-                if bat.classification in ['s', 'ss', 'd', 'hr']:
+                if bat.classification in HITS:
                     team[team_id]['hits_for'] += 1
             else:
                 opponent_score += bat.rbi
-                if bat.classification in ['s', 'ss', 'd', 'hr']:
+                if bat.classification in HITS:
                     team[team_id]['hits_allowed'] += 1
         if team_score > opponent_score:
             team[team_id]['wins'] += 1
@@ -69,11 +70,11 @@ def single_team(team_id):
         for bat in game.bats:
             if bat.team_id == team_id:
                 team_score += bat.rbi
-                if bat.classification in ['s', 'ss', 'd', 'hr']:
+                if bat.classification in HITS:
                     team[team_id]['hits_for'] += 1
             else:
                 opponent_score += bat.rbi
-                if bat.classification in ['s', 'ss', 'd', 'hr']:
+                if bat.classification in HITS:
                     team[team_id]['hits_allowed'] += 1
         if team_score > opponent_score:
             team[team_id]['wins'] += 1
@@ -127,12 +128,12 @@ def team_stats(year, league_id):
             print(bat)
             if bat.team_id == game.away_team_id:
                 away_score += bat.rbi
-                if bat.classification in ['s', 'ss', 'd', 'hr']:
+                if bat.classification in HITS:
                     team[game.away_team_id]['hits_for'] += 1
                     team[game.home_team_id]['hits_allowed']
             else:
                 home_score += bat.rbi
-                if bat.classification in ['s', 'ss', 'd', 'hr']:
+                if bat.classification in HITS:
                     team[game.home_team_id]['hits_for'] += 1
                     team[game.away_team_id]['hits_allowed'] += 1
                     team[bat.team_id]['hits_allowed'] += 1

@@ -13,8 +13,8 @@ from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, send_file, url_for, send_from_directory,\
                   redirect, session, request
-from api.model import Team, Player, Sponsor, League,Game
-from api.variables import SPONSORS
+from api.model import Team, Player, Sponsor, League, Game, Bat
+from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
 from api.model import Player
 
@@ -112,6 +112,34 @@ def admin_edit_game():
                            leagues=get_leagues(),
                            games=games)
 
+@app.route(Routes['editbat'] +"/<int:game_id>")
+def admin_edit_bat(game_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    results = Bat.query.filter(Bat.game_id==game_id).all()
+    game = Game.query.get(game_id)
+    away_bats = []
+    home_bats = []
+    for bat in results:
+        if bat.team_id == game.home_team_id:
+            home_bats.append(bat.json())
+        elif bat.team == game.away_team_id:
+            away_bats.append(bat.json())
+    away_players = get_team_players(game.away_team_id)
+    home_players = get_team_players(game.home_team_id)
+    return render_template("admin/editBat.html",
+                           route=Routes,
+                           away_bats=away_bats,
+                           home_bats=home_bats,
+                           home_players=home_players,
+                           away_players=away_players,
+                           title="Edit Bats",
+                           admin=session['admin'],
+                           password=session['password'],
+                           game=str(game),
+                           players=get_players(),
+                           BATS=BATS)
+
 @app.route(Routes['alogout'])
 def admin_logout():
     logout()
@@ -170,3 +198,16 @@ def get_leagues():
         leagues.append(league.json())
     return leagues
 
+def get_players():
+    results = Player.query.all()
+    players = []
+    for player in results:
+        players.append(player.json())
+    return players
+
+def get_team_players(team_id):
+    team = Team.query.get(team_id)
+    players = []
+    for player in team.players:
+        players.append(player.json())
+    return players
