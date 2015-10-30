@@ -1,5 +1,8 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
+Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();" id="searchValue" placeholder="Search by Player's Name">
+<br>
+<br>
 <table id="myTable" class="table table-bordered table-striped">
 	<thead>
 		<th>ID</td>
@@ -190,6 +193,23 @@ function putPlayer(id, attributes){
         console.log(request.text);
         console.log(error);
     } 
+	});
+}
+
+function searchPlayer(){
+	var search = $('#searchValue').val();
+	var player;
+	console.log(search)
+	$("#myTable tr").each(function(){
+			player = $('#'+this.id+"_player_name").val();
+			if (player != null){
+				console.log(player, this.id, player.indexOf(search));
+				if (player.indexOf(search) > -1){
+					$("#"+this.id).show();
+				}else{
+					$("#"+this.id).hide();
+				}
+			}
 	});
 }
 
