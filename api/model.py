@@ -127,7 +127,7 @@ class Team(DB.Model):
 class Sponsor(DB.Model):
     __tablename__ = 'sponsor'
     id = DB.Column(DB.Integer, primary_key=True)
-    name = DB.Column(DB.String(120))
+    name = DB.Column(DB.String(120), unique=True)
     teams = DB.relationship('Team', backref='sponsor',
                                 lazy='dynamic')
     def __init__(self, name):

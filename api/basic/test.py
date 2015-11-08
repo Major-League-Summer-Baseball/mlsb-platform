@@ -63,6 +63,12 @@ class BaseTest(unittest.TestCase):
         DB.session.commit()
         self.assertEqual(self.sponsor.id, 1, "Could not add sponsor")
 
+    def addAnotherSponsor(self):
+        self.sponsor = Sponsor("Chainsaw")
+        DB.session.add(self.sponsor)
+        DB.session.commit()
+        self.assertEqual(self.sponsor.id, 2, "Could not add sponsor")
+
     def addSponsors(self):
         self.sponsors = [Sponsor("Domus"),
                          Sponsor("Chainsaw")
@@ -778,7 +784,7 @@ class TestTeam(BaseTest):
         self.assertEqual(expect, loads(rv.data),
                          Routes['team'] + " PUT: given invalid parameters")
         # successful update
-        self.addSponsors()
+        self.addAnotherSponsor()
         self.addLeagues()
         # valid update
         params = {
