@@ -1,0 +1,13 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<h4> Import a team (roster) from a CSV</h4>
+<a class="btn btn-info" href="{{route.team_template}}" target="_blank">Download Template</a>
+<button class="btn btn-success" onclick="SubmitTeam();">Upload Team</button>
+
+<script>
+function SubmitTeam(){
+	console.log("Submit Team");
+}
+
+</script>
+{% endblock %}

@@ -4,7 +4,10 @@ Date: 2014-08-25
 Project: MLSB API
 Purpose: Holds the routes for the admin side
 '''
-
+# -----------------------------------------------------------------------------
+# Imports
+# -----------------------------------------------------------------------------
+from os.path import join
 from flask.ext.restful import Resource, reqparse
 from flask import Response, render_template, make_response
 from json import dumps
@@ -12,12 +15,122 @@ from api.routes import Routes
 from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, send_file, url_for, send_from_directory,\
-                  redirect, session, request
+                  redirect, session, request, make_response
 from api.model import Team, Player, Sponsor, League, Game, Bat
 from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
 from api.model import Player
+from datetime import date
+# -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+ALLOWED_EXTENSIONS = set(['csv'])
+# -----------------------------------------------------------------------------
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route(Routes['import_team_list'])
+def admin_import_team_list():
+    results = {'errors': [], 'success':False, 'warnings': []}
+    if not logged_in():
+        results['errors'].append("Permission denied")
+        return dumps(results)
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        content = (file.read()).decode("UTF-8")
+        print(content)
+        lines = content.replace("\r", "")
+        lines = lines.split("\n")
+        (results['success'],
+         results['errors'],
+         results['warnings']) = team_list(lines)
+        print(lines)
+        results['graph'] = text_to_d3(lines)
+        if result['graph'] is not None:
+            result['success'] = True
+        return dumps(resulta)
+@app.route(Routes['importteam'])
+def admin_import_team():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/importTeam.html",
+                           year=date.today().year,
+                           route=Routes,
+                           title="Import Team from CSV",
+                           admin=session['admin'],
+                           password=session['password'])
+
+@app.route(Routes['importgame'])
+def admin_import_game():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/importGame.html",
+                           year=date.today().year,
+                           route=Routes,
+                           title="Import Game from CSV",
+                           admin=session['admin'],
+                           password=session['password'])
+
+@app.route(Routes['importbat'])
+def admin_import_bat():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/importBat.html",
+                           year=date.today().year,
+                           route=Routes,
+                           title="Import Game Scores from CSV",
+                           admin=session['admin'],
+                           password=session['password'])
+
+@app.route(Routes['team_template'])
+def admin_team_template():
+    print(app.root_path)
+    uploads = join(app.root_path, "static", "files", "team_template.csv")
+    result = ""
+    with open (uploads, "r") as f:
+        for line in f:
+            result += line
+    print(result)
+    response = make_response(result)
+    response.headers["Content-Disposition"] = "attachment; filename=team_template.csv"
+    return response
+
+@app.route(Routes['game_template'])
+def admin_game_template():
+    print(app.root_path)
+    uploads = join(app.root_path, "static", "files", "game_template.csv")
+    result = ""
+    with open (uploads, "r") as f:
+        for line in f:
+            result += line
+    print(result)
+    response = make_response(result)
+    response.headers["Content-Disposition"] = "attachment; filename=game_template.csv"
+    return response
+
+@app.route(Routes['bat_template'])
+def admin_bat_template():
+    print(app.root_path)
+    uploads = join(app.root_path, "static", "files", "bat_template.csv")
+    result = ""
+    with open (uploads, "r") as f:
+        for line in f:
+            result += line
+    print(result)
+    response = make_response(result)
+    response.headers["Content-Disposition"] = "attachment; filename=bat_template.csv"
+    return response
+
+@app.route(Routes['editroster'] + "/<int:year>" + "/<int:team_id>")
+def admin_edit_roster(year, team_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):
     if not logged_in():
@@ -171,7 +284,7 @@ def admin_portal():
         if check_auth(admin, password):
             session['admin'] = admin
             session['password'] = password
-            return redirect(url_for('admin_home'))
+            return redirect(url_for('admin_home', year=date.today().year))
         else:
             return redirect(url_for('admin_form'))
 
