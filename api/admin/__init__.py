@@ -21,6 +21,7 @@ from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
 from api.model import Player
 from datetime import date
+from api.advanced.import_team import TeamList
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -34,7 +35,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-@app.route(Routes['import_team_list'])
+@app.route(Routes['import_team_list'], methods=["POST"])
 def admin_import_team_list():
     results = {'errors': [], 'success':False, 'warnings': []}
     if not logged_in():
@@ -46,14 +47,15 @@ def admin_import_team_list():
         print(content)
         lines = content.replace("\r", "")
         lines = lines.split("\n")
-        (results['success'],
-         results['errors'],
-         results['warnings']) = team_list(lines)
-        print(lines)
-        results['graph'] = text_to_d3(lines)
-        if result['graph'] is not None:
-            result['success'] = True
-        return dumps(resulta)
+        team = TeamList(lines)
+        team.import_team()
+        results['errors'] = team.errors
+        results['warnings'] = team.warnings
+        results['success'] = True
+        if len(results['errors']) > 0:
+            results['success'] = False
+        return dumps(results)
+
 @app.route(Routes['importteam'])
 def admin_import_team():
     if not logged_in():

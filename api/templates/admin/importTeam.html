@@ -2,11 +2,98 @@
 {% block content %}
 <h4> Import a team (roster) from a CSV</h4>
 <a class="btn btn-info" href="{{route.team_template}}" target="_blank">Download Template</a>
-<button class="btn btn-success" onclick="SubmitTeam();">Upload Team</button>
+<button class="btn btn-success" onclick="showModal();">Upload Team</button>
 
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" >Import a Team</h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <p id="file_modalText">Choose File</p>
+            <div id="file-div">
+              <form id="upload-file" method="post" enctype="multipart/form-data">
+                  <fieldset>
+                      <input name="file" type="file" style="">
+                  </fieldset>
+                  <br/>
+                  <fieldset>
+                      <button id="upload-file-button" type="button" class=" btn btn-success" style="" onclick="submitTeam();">Upload Team</button>
+                  </fieldset>
+              </form>
+            </div>
+            <h4 style="display: none;" id="warningsHeader"> Warnings</h4>
+            <ul id ="warnings" class="list-group">
+            </ul>
+            <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+            <ul id ="errors" class="list-group">
+            </ul>
+            
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
 <script>
-function SubmitTeam(){
-	console.log("Submit Team");
+function showModal(){
+	console.log("Show Modal");
+  $('#file-div').show();
+	$('#file_modal').modal("show");
+  $('#warnings').empty();
+  $('#errors').empty(); 
+  $('#file_modalText').text('Choose File');
+  $('#modal-title').text('Import a Team');
+  $('#warningsHeader').hide();
+  $('#errorsHeader').hide();
+}
+
+function submitTeam(){
+  var form_data = new FormData($('#upload-file')[0]);
+  $.ajax({
+      type: 'POST',
+      url: '{{route.import_team_list}}',
+      data: form_data,
+      contentType: false,
+      cache: false,
+      processData: false,
+      async: false,
+      success: function(data) {
+          $('#file-div').hide();
+          data = $.parseJSON(data);
+          console.log(data);
+          $('#file_modalText').text('--');
+          var element;
+          for (var i = 0 ;i < data.errors.length;i++){
+            $('#errorsHeader').show();
+            element = '<li class="list-group-item list-group-item-danger">'+data.errors[i]+'</li>'
+            $('#errors').append(element);
+          }
+          for (var i = 0 ;i < data.warnings.length;i++){
+            element = '<li class="list-group-item list-group-item-warning">'+data.warnings[i]+'</li>'
+            $('#warnings').append(element);
+            $('#warningsHeader').show();
+          }
+          if (data.success == true){
+            if (data.warnings.length == 0){
+              alert("Import was successful")  
+            }else{
+              alert("Import was successful but check the following warnings");
+            }
+            $('#modal-title').text('Successful');
+          }else{
+            $('#modal-title').text('Unsuccessful');
+            alert("Import was not successful, check check for the following");
+          }
+      }, error: function(request, error){
+          alert("Error: check console");
+          console.log(request);
+          console.log(error) ;
+      }
+  });
 }
 
 </script>

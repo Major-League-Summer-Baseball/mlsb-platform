@@ -99,7 +99,7 @@ class Team(DB.Model):
                  league_id=None,
                  year=date.today().year,
                  espys=0):
-        if year < 2013 and year >= date.today().year:
+        if year < 2013 and year > date.today().year:
             raise Exception("Invalid year")
         self.color = color
         self.sponsor_id = sponsor_id

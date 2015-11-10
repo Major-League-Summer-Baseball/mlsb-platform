@@ -114,6 +114,10 @@ class TeamList():
         '''
         print("1")
         info = info.split(",")
+        if (len(info) < self.name_index or 
+            len(info) < self.email_index or
+            len(info) < self.gender_index):
+            return # probably just an empty line
         name = info[self.name_index]
         email = info[self.email_index]
         gender = info[self.gender_index]
@@ -142,8 +146,8 @@ class TeamList():
                     player = search
                     if search.name != name:
                         self.warnings.append(EMAIL_NAME.format(email))
-                    team = Team.query.get(self.team_id)
-                    team.players.append(player)
+                team = Team.query.get(self.team_id)
+                team.players.append(player)
         return
 
     def check_header(self,header):
@@ -185,11 +189,12 @@ class TeamList():
         headers = header[1].split(",")
         return sponsor, color, headers
 
+
+# the test for this class are not the best might need to be fixed later
 import unittest
 from pprint import PrettyPrinter
 from api import app
 import tempfile
-
 class testSubTester(unittest.TestCase):
     # this is just to test the subroutines
     # was having trouble and need to run the test individual of else
