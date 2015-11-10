@@ -60,12 +60,15 @@ def admin_import_team_list():
 def admin_import_team():
     if not logged_in():
         return redirect(url_for('admin_login'))
-    return render_template("admin/importTeam.html",
+    return render_template("admin/importForm.html",
                            year=date.today().year,
                            route=Routes,
                            title="Import Team from CSV",
                            admin=session['admin'],
-                           password=session['password'])
+                           password=session['password'],
+                           template=Routes['team_template'],
+                           import_route=Routes['import_team_list'],
+                           type="Team")
 
 @app.route(Routes['importgame'])
 def admin_import_game():

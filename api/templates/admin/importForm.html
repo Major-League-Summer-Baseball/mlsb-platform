@@ -1,15 +1,15 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
 <h4> Import a team (roster) from a CSV</h4>
-<a class="btn btn-info" href="{{route.team_template}}" target="_blank">Download Template</a>
-<button class="btn btn-success" onclick="showModal();">Upload Team</button>
+<a class="btn btn-info" href="{{template}}" target="_blank">Download Template</a>
+<button class="btn btn-success" onclick="showModal();">Upload {{type}}</button>
 
 <div class="modal fade" id="file_modal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
-        <h4 class="modal-title" id="modal-title" >Import a Team</h4>
+        <h4 class="modal-title" id="modal-title" >Import a {{type}}</h4>
       </div>
       <div class="modal-body" id="file_modalBody" >
         <p id="file_modalText">Choose File</p>
@@ -20,7 +20,7 @@
                   </fieldset>
                   <br/>
                   <fieldset>
-                      <button id="upload-file-button" type="button" class=" btn btn-success" style="" onclick="submitTeam();">Upload Team</button>
+                      <button id="upload-file-button" type="button" class=" btn btn-success" style="" onclick="submitForm();">Upload {{type}}</button>
                   </fieldset>
               </form>
             </div>
@@ -46,16 +46,16 @@ function showModal(){
   $('#warnings').empty();
   $('#errors').empty(); 
   $('#file_modalText').text('Choose File');
-  $('#modal-title').text('Import a Team');
+  $('#modal-title').text('Import a {{type}}');
   $('#warningsHeader').hide();
   $('#errorsHeader').hide();
 }
 
-function submitTeam(){
+function submitForm(){
   var form_data = new FormData($('#upload-file')[0]);
   $.ajax({
       type: 'POST',
-      url: '{{route.import_team_list}}',
+      url: '{{import_route}}',
       data: form_data,
       contentType: false,
       cache: false,
