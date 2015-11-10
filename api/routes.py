@@ -5,6 +5,8 @@
 @summary: Contains all the routes for the API
 '''
 Routes = {}
+# APIs
+# -----------------------------------------------------------------------------
 # basic routes
 Routes['player'] = "/api/players"
 Routes['sponsor'] = "/api/sponsors"
@@ -14,19 +16,16 @@ Routes['team'] = "/api/teams"
 Routes['game'] = "/api/games"
 Routes['bat'] = "/api/bats"
 Routes['team_roster'] = "/api/tearmroster"
- 
 # advanced routes
 Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"
 Routes['vgame'] = "/api/view/games"
-
-# website
-Routes['about'] = "/about"
+# -----------------------------------------------------------------------------
 
 # documentation routes
+# -----------------------------------------------------------------------------
 Routes['dindex'] = "/documentation"
 Routes['dresponse'] = "/documentation/object/response"
-
 # do = documentation object
 Routes['doplayer'] = "/documentation/object/player"
 Routes['dobat'] = "/documentation/object/bat"
@@ -47,16 +46,28 @@ Routes['dbleague'] = "/documentation/basic/league"
 Routes['dvgame'] = "/documentation/views/game"
 Routes['dvplayer'] = "/documentation/views/player"
 Routes['dvteam'] = "/documentation/views/team"
+# -----------------------------------------------------------------------------
 
-
-# website routes
-Routes['homepage'] = "/website"
-Routes['teampage'] = "/website/team"
+# Website
+# -----------------------------------------------------------------------------
+# static pages
+Routes['rulespage'] = "/website/rules"
+Routes['fieldspage'] = "/website/fields"
+Routes['about'] = "/about"
+# sponsors pages
 Routes['sponsorspage'] = "/website/sponsor"
 Routes['sponsorspicture'] = "/website/sponsor/picture"
+Routes['sponsorspage'] = "/website/sponsors_list"
+# baseball pages
+Routes['homepage'] = "/website"
+Routes['teampage'] = "/website/team"
 Routes['schedulepage'] = "/website/schedule"
 Routes['standingspage'] = "/website/standings"
 Routes['teamspage'] = "/website/teams"
+Routes['leaderspage'] = "/website/leaders"
+Routes['wleaderspage'] = "/website/wleaders"
+Routes['espystandingspage'] = "/website/espy"
+# events
 Routes['mysterybuspage'] = "/website/event/mysterybus"
 Routes['bluejayspage'] = "/website/event/bluejays"
 Routes['beerfestpage'] = "/website/event/beerfest"
@@ -65,15 +76,11 @@ Routes['beerwellpage'] = "/website/event/beerwell"
 Routes['hftcpage'] = "/website/event/hftc"
 Routes['summerweenpage'] = "/website/event/summerween"
 Routes['espypage'] = "/website/event/espy"
-Routes['sponsorspage'] = "/website/sponsors_list"
-Routes['leaderspage'] = "/website/leaders"
-Routes['wleaderspage'] = "/website/wleaders"
-Routes['espystandingspage'] = "/website/espy"
-Routes['rulespage'] = "/website/rules"
-Routes['fieldspage'] = "/website/fields"
+# -----------------------------------------------------------------------------
 
-
-# admin routes
+# Admin
+# -----------------------------------------------------------------------------
+# editting columns
 Routes['aindex'] = "/admin"
 Routes['aportal'] = "/admin/portal"
 Routes['alogin'] = "/admin/login"
@@ -84,7 +91,17 @@ Routes['editleague'] = "/admin/edit/league"
 Routes['editteam'] = "/admin/edit/team"
 Routes['editsponsor'] = "/admin/edit/sponsor"
 Routes['editbat'] = "/admin/edit/bat"
+Routes['editroster'] = "/admin/edit/roster"
+# imports from csv
 Routes['importteam'] = "/admin/import/team"
 Routes['importgame'] = "/admin/import/game"
-Routes['importscore'] = "/admin/import/score"
-
+Routes['importbat'] = "/admin/import/score"
+# import routes
+Routes["import_team_list"] = "/admin/import/team/list"
+Routes["import_game_list"] = "/admin/import/game/list"
+Routes["import_bat_list"] = "/admin/import/bat/list"
+# templates
+Routes['team_template'] = "/admin/template/team"
+Routes['game_template'] = "/admin/template/game"
+Routes['bat_template'] = "/admin/template/bat"
+# -----------------------------------------------------------------------------
