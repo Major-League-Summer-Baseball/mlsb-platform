@@ -22,6 +22,7 @@ from api.authentication import check_auth
 from api.model import Player
 from datetime import date
 from api.advanced.import_team import TeamList
+from api.advanced.import_league import LeagueList
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -54,7 +55,34 @@ def admin_import_team_list():
         results['success'] = True
         if len(results['errors']) > 0:
             results['success'] = False
+    else:
+        results['errors'] = "File should ba CSV"
+        results['success'] = False
+    return dumps(results)
+
+@app.route(Routes['import_game_list'], methods=["POST"])
+def admin_import_game_list():
+    results = {'errors': [], 'success':False, 'warnings': []}
+    if not logged_in():
+        results['errors'].append("Permission denied")
         return dumps(results)
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        content = (file.read()).decode("UTF-8")
+        print(content)
+        lines = content.replace("\r", "")
+        lines = lines.split("\n")
+        team = LeagueList(lines)
+        team.import_league()
+        results['errors'] = team.errors
+        results['warnings'] = team.warnings
+        results['success'] = True
+        if len(results['errors']) > 0:
+            results['success'] = False
+    else:
+        results['errors'] = "File should ba CSV"
+        results['success'] = False
+    return dumps(results)
 
 @app.route(Routes['importteam'])
 def admin_import_team():
@@ -74,23 +102,15 @@ def admin_import_team():
 def admin_import_game():
     if not logged_in():
         return redirect(url_for('admin_login'))
-    return render_template("admin/importGame.html",
+    return render_template("admin/importForm.html",
                            year=date.today().year,
                            route=Routes,
-                           title="Import Game from CSV",
+                           title="Import League's Game from CSV",
                            admin=session['admin'],
-                           password=session['password'])
-
-@app.route(Routes['importbat'])
-def admin_import_bat():
-    if not logged_in():
-        return redirect(url_for('admin_login'))
-    return render_template("admin/importBat.html",
-                           year=date.today().year,
-                           route=Routes,
-                           title="Import Game Scores from CSV",
-                           admin=session['admin'],
-                           password=session['password'])
+                           password=session['password'],
+                           template=Routes['game_template'],
+                           import_route=Routes['import_game_list'],
+                           type="Games")
 
 @app.route(Routes['team_template'])
 def admin_team_template():
@@ -116,19 +136,6 @@ def admin_game_template():
     print(result)
     response = make_response(result)
     response.headers["Content-Disposition"] = "attachment; filename=game_template.csv"
-    return response
-
-@app.route(Routes['bat_template'])
-def admin_bat_template():
-    print(app.root_path)
-    uploads = join(app.root_path, "static", "files", "bat_template.csv")
-    result = ""
-    with open (uploads, "r") as f:
-        for line in f:
-            result += line
-    print(result)
-    response = make_response(result)
-    response.headers["Content-Disposition"] = "attachment; filename=bat_template.csv"
     return response
 
 @app.route(Routes['editroster'] + "/<int:year>" + "/<int:team_id>")
