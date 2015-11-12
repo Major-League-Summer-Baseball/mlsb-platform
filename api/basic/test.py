@@ -878,9 +878,11 @@ class TestGame(BaseTest):
         # valid id
         rv = self.app.get(Routes['game'] + "/1")
         data = {'away_team_id': 2,
+                'away_team':'Chainsaw Black',
                 'date': '2014-08-23',
                 'game_id': 1,
                 'home_team_id': 1,
+                'home_team': 'Domus Green',
                 'league_id': 1,
                 'status': "",
                 'field':"",
