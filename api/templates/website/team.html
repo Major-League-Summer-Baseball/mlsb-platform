@@ -1,0 +1,44 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<p>
+	<strong>Captain:</strong> {{team.captain}}<br/>
+	<strong>League:</strong> {{team.league}}<br/>
+	<strong>Record:</strong> {{team.record}}<br/>
+</p>
+
+<h4>Stats</h4>
+<table class="display" id="teamTable" cellspacing="0" width="100%">
+	<thead>
+		<th>Player</th>
+		<th>Batting Average</th>
+		<th>Slugging %</th>
+		<th>Singles</th>
+		<th>Sentry Singles</th>
+		<th>Doubles</th>
+		<th>Homeruns</th>
+		<th>At Bats</th>
+	</thead>
+	<tbody>
+		{% for player in team.players %}
+			<tr>
+				<td><a href="{{route.player}}/{{year}}/{{player.id}}">{{player.name}}</a></td>
+				<td>{{player.ba}}</td>
+				<td>{{player.sp}}</td>
+				<td>{{player.s}}</td>
+				<td>{{player.ss}}</td>
+				<td>{{player.d}}</td>
+				<td>{{player.hr}}</td>
+				<td>{{player.bats}}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<script>
+function ready(){
+	var table = $('#teamTable').DataTable({
+		"order": [[1, "desc"]]
+	});
+	console.log("Done");
+}
+</script>
+{% endblock %}

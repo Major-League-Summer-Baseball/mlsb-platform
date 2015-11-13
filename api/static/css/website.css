@@ -41,9 +41,20 @@ div.accent{
 	background-color:#FDB829;
 }
 
+
 div.primary{
 	background-color: #000000;
 }
+
+@media (max-wdith: 640px)
+{
+	div.primary{
+		display: none;
+	}
+}
+
+
+
 
 div.secondary{
 	background-color: #666;
