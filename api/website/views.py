@@ -359,12 +359,12 @@ def get_games(year):
     end = datetime.combine(d2, t2)
     for league in leagues:
         g = Game.query.filter(and_(Game.league_id==league.id,Game.date.between(start, end) )).order_by("date").all()
-        games[league.name] = []
+        games[league.id] = {'league_name': league.name, 'games': []}
         for game in g:
             result = game.json()
             if game.date < datetime.today():
                 result['score'] = get_score(game)
-            games[league.name].append(result)
+            games[league.id]['games'].append(result)
     print(games)
     return games
 

@@ -1,8 +1,8 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-	{% for league, games in games.items() %}
-		<h4>{{league}}
-		<table id="{{league}}" class="table table-bordered">
+	{% for id, league in games.items() %}
+		<h4>{{league.name}}
+		<table id="{{id}}League" width="100%" class="display">
 			<thead>
 				<tr>
 					<th>Date</th>
@@ -15,7 +15,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for game in games %}
+				{% for game in league.games %}
 					<tr>
 						<td>{{game.date}}</td>
 						<td>{{game.time}}</td>
@@ -29,4 +29,14 @@
 			</tbody>
 		</table>
 	{% endfor %}
+<script>
+function ready(){
+	console.log("Done");
+	{% for id, league in games.items() %}
+		$('#{{id}}League').DataTable({
+		"order": [[2, "desc"]]
+	});
+	{% endfor %}
+}
+</script>
 {% endblock %}
