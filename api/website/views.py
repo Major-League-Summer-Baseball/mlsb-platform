@@ -317,9 +317,13 @@ def get_team(year, id):
                     stats[player]['bats'] += 1
         players = []
         for player, hits in stats.items():
-            ba = (hits['ss'] + hits['s'] + hits['d'] + hits['hr']) / hits['bats']
-            sp = ((hits['ss'] + hits['s'] + hits['d'] * 2 + hits['hr'] * 4)
-                  / hits['bats'])
+            if hits['bats'] > 0:
+                ba = (hits['ss'] + hits['s'] + hits['d'] + hits['hr']) / hits['bats']
+                sp = ((hits['ss'] + hits['s'] + hits['d'] * 2 + hits['hr'] * 4)
+                      / hits['bats'])
+            else:
+                ba = 0
+                sp = 0
             players.append({
                             'id':hits['id'],
                             'name': player, 
