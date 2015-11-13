@@ -1,4 +1,8 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-
+	{% for sponsor in sponsors %}
+	    <a href="{{route.sponsorspage}}/{{year}}/{{sponsor.id}}" title="{{sponsor.name}}">
+	 		<img src="{{route.sponsorspicture}}/{{sponsor.id}}" class="big-sponsor" style="" alt="{{sponsor.name}}">
+	 	</a>
+	 {% endfor %}
 {% endblock %}

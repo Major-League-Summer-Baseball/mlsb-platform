@@ -224,8 +224,8 @@ class Bat(DB.Model):
         classification = classification.lower().strip()
         if classification not in BATS:
             raise Exception("Not a proper hit")
-        gender = Player.query.get(player_id)
-        if classification == "SS" and gender != "f":
+        gender = Player.query.get(player_id).gender
+        if classification == "ss" and gender != "f":
             raise Exception("Guys do not get SS")
         self.classification = classification
         self.rbi = rbi

@@ -30,7 +30,7 @@
               <!-- Brand and toggle get grouped for better mobile display -->
               <div class="container-fluid">
                   {% for sponsor in sponsors %}
-                      <a href="{{route.sponsorspage}}/{{sponsor.id}}" title="{{sponsor.name}}">
+                      <a href="{{route.sponsorspage}}/{{year}}/{{sponsor.id}}" title="{{sponsor.name}}">
                         <img src="{{route.sponsorspicture}}/{{sponsor.id}}"  alt="" class="sponsor" style="">
                       </a>
                   {% endfor %}
@@ -51,28 +51,28 @@
               <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                  <li><a href="{{route.schedulepage}}">Schedule</a></li>
-                  <li><a href="{{route.standingspage}}">Standings</a></li>
-                  <li><a href="{{route.teamspage}}">Teams</a></li>
+                  <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
+                  <li><a href="{{route.standingspage}}/{{year}}">Standings</a></li>
+                  <li><a href="{{route.teamspage}}/{{year}}">Teams</a></li>
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Events <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                      <li><a href="{{route.mysterybuspage}}">Mystery Bus</a></li>
-                      <li><a href="{{route.bluejayspage}}">Blue Jays Game</a></li>
-                      <li><a href="{{route.beerfestpage}}">Beerfest</a></li>
-                      <li><a href="{{route.raftingpage}}">Rafting</a></li>
-                      <li><a href="{{route.beerwellpage}}">Beerwell Classic</a></li>
-                      <li><a href="{{route.hftcpage}}">Hitting for the Cycle</a></li>
-                      <li><a href="{{route.summerweenpage}}">Summerween</a></li>
-                      <li><a href="{{route.espypage}}">ESPY Awards</a></li>
+                      <li><a href="{{route.mysterybuspage}}/{{year}}">Mystery Bus</a></li>
+                      <li><a href="{{route.bluejayspage}}/{{year}}">Blue Jays Game</a></li>
+                      <li><a href="{{route.beerfestpage}}/{{year}}">Beerfest</a></li>
+                      <li><a href="{{route.raftingpage}}/{{year}}">Rafting</a></li>
+                      <li><a href="{{route.beerwellpage}}/{{year}}">Beerwell Classic</a></li>
+                      <li><a href="{{route.hftcpage}}/{{year}}">Hitting for the Cycle</a></li>
+                      <li><a href="{{route.summerweenpage}}/{{year}}">Summerween</a></li>
+                      <li><a href="{{route.espypage}}/{{year}}">ESPY Awards</a></li>
                     </ul>
                 </li>
-                <li><a href="{{route.sponsorspage}}">Sponsors</a></li>
-                <li><a href="{{route.leaderspage}}">Race for the Domus Cup</a></li>
-                <li><a href="{{route.wleaderspage}}">Sentry Singles</a></li>
-                <li><a href="{{route.espystandingspage}}">ESPY Standings</a></li>
-                <li><a href="{{route.rulespage}}">Rules</a></li>
-                <li><a href="{{route.fieldspage}}">Fields</a></li>
+                <li><a href="{{route.sponsorspage}}/{{year}}">Sponsors</a></li>
+                <li><a href="{{route.leaderspage}}/{{year}}">Race for the Domus Cup</a></li>
+                <li><a href="{{route.wleaderspage}}/{{year}}">Sentry Singles</a></li>
+                <li><a href="{{route.espystandingspage}}/{{year}}">ESPY Standings</a></li>
+                <li><a href="{{route.rulespage}}/{{year}}">Rules</a></li>
+                <li><a href="{{route.fieldspage}}/{{year}}">Fields</a></li>
               </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
           </nav>

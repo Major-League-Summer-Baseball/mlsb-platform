@@ -1,4 +1,32 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-
+	{% for league, games in games.items() %}
+		<h4>{{league}}
+		<table id="{{league}}" class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Time</th>
+					<th>Score</th>
+					<th>Home Team</th>
+					<th>Away Team</th>
+					<th>Field</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for game in games %}
+					<tr>
+						<td>{{game.date}}</td>
+						<td>{{game.time}}</td>
+						<td>{{game.score}}</td>
+						<td>{{game.away_team}}</td>
+						<td>{{game.home_team}}</td>
+						<td>{{game.field}}</td>
+						<td>{{game.status}}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endfor %}
 {% endblock %}

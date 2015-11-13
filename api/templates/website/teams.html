@@ -1,4 +1,23 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-
+	<table id="teams">
+		<thead>
+			<th>Name
+		</thead>
+		<tbody>
+			{% for team in teams %}
+				<tr>
+					<td><a href="{{route.teamspage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+<script>
+function ready(){
+	console.log("Done");
+	$('#teams').DataTable({
+		"order": [[0, "asc"]]
+	});
+}
+</script>
 {% endblock %}

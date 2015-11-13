@@ -1,4 +1,29 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-
+	<table id="leaders" class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Team</th>
+				<th>Sentry Singles</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for player in leaders %}
+				<tr>
+					<td>{{player.name}}</td>
+					<td>{{player.team}}</td>
+					<td>{{player.hits}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+<script>
+function ready(){
+	console.log("Done");
+	var table = $('#leaders').DataTable({
+		"order": [[2, "desc"]]
+	});
+}
+</script>
 {% endblock %}

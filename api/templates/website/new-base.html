@@ -17,6 +17,8 @@
 
     <link href="{{ url_for('static', filename="css/simple-sidebar.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/website.css") }}" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
+
     <!--[if lt IE 9]>
     <script src="js/html5shiv.js"></script>
     <script src="js/respond.min.js"></script>
@@ -42,7 +44,7 @@
                             <ul class="social-share">
                               {% for sponsor in sponsors %}
                                     <li>
-                                      <a href="{{route.sponsorspage}}/{{sponsor.id}}" title="{{sponsor.name}}">
+                                      <a href="{{route.sponsorspage}}/{{year}}/{{sponsor.id}}" title="{{sponsor.name}}">
                                         <img src="{{route.sponsorspicture}}/{{sponsor.id}}"  alt="" class="sponsor" style="">
                                       </a>
                                     </li>
@@ -68,28 +70,28 @@
 				
                 <div class="collapse navbar-collapse navbar-right">
                     <ul class="nav navbar-nav">
-                          <li><a href="{{route.schedulepage}}">Schedule</a></li>
-                          <li><a href="{{route.standingspage}}">Standings</a></li>
-                          <li><a href="{{route.teamspage}}">Teams</a></li>
+                          <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
+                          <li><a href="{{route.standingspage}}/{{year}}">Standings</a></li>
+                          <li><a href="{{route.teamspage}}/{{year}}">Teams</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Events <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
-                              <li><a href="{{route.mysterybuspage}}">Mystery Bus</a></li>
-                              <li><a href="{{route.bluejayspage}}">Blue Jays Game</a></li>
-                              <li><a href="{{route.beerfestpage}}">Beerfest</a></li>
-                              <li><a href="{{route.raftingpage}}">Rafting</a></li>
-                              <li><a href="{{route.beerwellpage}}">Beerwell Classic</a></li>
-                              <li><a href="{{route.hftcpage}}">Hitting for the Cycle</a></li>
-                              <li><a href="{{route.summerweenpage}}">Summerween</a></li>
-                              <li><a href="{{route.espypage}}">ESPY Awards</a></li>
+                              <li><a href="{{route.mysterybuspage}}/{{year}}">Mystery Bus</a></li>
+                              <li><a href="{{route.bluejayspage}}/{{year}}">Blue Jays Game</a></li>
+                              <li><a href="{{route.beerfestpage}}/{{year}}">Beerfest</a></li>
+                              <li><a href="{{route.raftingpage}}/{{year}}">Rafting</a></li>
+                              <li><a href="{{route.beerwellpage}}/{{year}}">Beerwell Classic</a></li>
+                              <li><a href="{{route.hftcpage}}/{{year}}">Hitting for the Cycle</a></li>
+                              <li><a href="{{route.summerweenpage}}/{{year}}">Summerween</a></li>
+                              <li><a href="{{route.espypage}}/{{year}}">ESPY Awards</a></li>
                             </ul>
                         </li>
-                        <li><a href="{{route.sponsorspage}}">Sponsors</a></li>
-                        <li><a href="{{route.leaderspage}}">Race for the Domus Cup</a></li>
-                        <li><a href="{{route.wleaderspage}}">Sentry Singles</a></li>
-                        <li><a href="{{route.espystandingspage}}">ESPY Standings</a></li>
-                        <li><a href="{{route.rulespage}}">Rules</a></li>
-                        <li><a href="{{route.fieldspage}}">Fields</a></li>                        
+                        <li><a href="{{route.sponsorspage}}/{{year}}">Sponsors</a></li>
+                        <li><a href="{{route.leaderspage}}/{{year}}">Race for the Domus Cup</a></li>
+                        <li><a href="{{route.wleaderspage}}/{{year}}">Sentry Singles</a></li>
+                        <li><a href="{{route.espystandingspage}}/{{year}}">ESPY Standings</a></li>
+                        <li><a href="{{route.rulespage}}/{{year}}">Rules</a></li>
+                        <li><a href="{{route.fieldspage}}/{{year}}">Fields</a></li>                        
                     </ul>
                 </div>
             </div><!--/.container-->
@@ -104,8 +106,8 @@
                     <table>
                         <tr>
                             <td><h4>Follow us:</h4>
-                            <td><a class="btn btn-mini btn-link " href="#"><i class="fa fa-facebook"></i></a></td>
-                            <td><a class="btn btn-mini btn-link " href="#"><i class="fa fa-twitter"></i></a></td>
+                            <td><a class="btn btn-mini btn-link " href="https://www.facebook.com/mlsb2015/?fref=ts" target="_blank"><i class="fa fa-facebook"></i></a></td>
+                            <td><a class="btn btn-mini btn-link" href="https://twitter.com/MLSB2015" target="_blank"><i class="fa fa-twitter"></i></a></td>
                         </tr>
                     </table>
                 </div>
@@ -119,9 +121,10 @@
                         More
                     </h4>
                 </div>
+            </div>
             <div class="row">
                 <div class="col-sm-3 primary">
-                    Recent posts
+                    <div class="fb-page" data-href="https://www.facebook.com/mlsb2015" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="true" data-show-posts="true"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/mlsb2015"><a href="https://www.facebook.com/mlsb2015">MLSB 2015</a></blockquote></div></div>
 
                     Fun Meter
                 </div>
@@ -129,8 +132,13 @@
                 <div class="col-sm-6">
                     {% block content %}{% endblock %}
                 </div>
-                <div class="col-sm-3 primary">
-                    Weahter app things
+                <div class="col-sm-3 primary"> 
+                      <!-- weather widget start --><div id="m-booked-bl-simple-47452"> <a href="//www.booked.net/weather/waterloo-2003" class="booked-wzs-160-110" style="background-color:#137AE9;"> <div class="booked-wzs-160-data wrz-"> <div class="booked-wzs-160-right"> <div class="booked-wzs-day-deck"> <div class="booked-wzs-day-val"> <div class="booked-wzs-day-number"></div> <div class="booked-wzs-day-dergee"> <div class="booked-wzs-day-dergee-val">&deg;</div> <div class="booked-wzs-day-dergee-name"></div> </div> </div> <div class="booked-wzs-day"> <div class="booked-wzs-day-d">&deg;</div> <div class="booked-wzs-day-n">&deg;</div> </div> </div> <div class="booked-wzs-160-city">Waterloo</div> <div class="booked-wzs-160-date">, </div> </div> </div> <div class="booked-wzs-center"> <span class="booked-wzs-bottom-l">See 7-Day Forecast</span> </div> </a> </div><script type="text/javascript"> var css_file=document.createElement("link"); css_file.setAttribute("rel","stylesheet"); css_file.setAttribute("type","text/css"); css_file.setAttribute("href",'//s.bookcdn.com/css/w/booked-wzs-widget-160.css?v=0.0.1'); document.getElementsByTagName("head")[0].appendChild(css_file); function setWidgetData(data) { if(typeof(data) != 'undefined' && data.results.length > 0) { for(var i = 0; i < data.results.length; ++i) { var objMainBlock = document.getElementById('m-booked-bl-simple-47452'); if(objMainBlock !== null) { var copyBlock = document.getElementById('m-bookew-weather-copy-'+data.results[i].widget_type); objMainBlock.innerHTML = data.results[i].html_code; if(copyBlock !== null) objMainBlock.appendChild(copyBlock); } } } else { alert('data=undefined||data.results is empty'); } } </script> <script type="text/javascript" charset="UTF-8" src="http://widgets.booked.net/weather/info?action=get_weather_info&ver=4&cityID=2003&type=1&scode=124&ltid=3457&domid=w209&cmetric=1&wlangID=1&color=137AE9&wwidth=250&header_color=ffffff&text_color=333333&link_color=08488D&border_form=1&footer_color=ffffff&footer_text_color=333333&transparent=0"></script><!-- weather widget end -->
+
+                      <!-- Polling Option-->
+                        <div id="qp_all479944" style="width:100%;"><link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'><STYLE>#qp_main479944 .qp_btna:hover input {background: rgb(0, 53, 95)!important}</STYLE><div id="qp_main479944" fp='92D945c0-19' results=0 style="border-radius: 0px;margin: 0px auto;padding: 0.8em;font-family: 'Open Sans', sans-serif, Arial;color: rgb(0, 0, 0);border: 1px solid rgb(219, 217, 217);max-width: 792px;background: rgb(255, 255, 255)"><div style="font-size: 1.2em;color: rgb(255, 255, 255);font-family: 'Open Sans', sans-serif, Arial;background-color: rgb(0, 53, 95)"><div style="padding: 0.8em;line-height: 1.3em">Thoughts on the new website?</div></div><form id="qp_form479944" action="//www.poll-maker.com/results479944x92D945c0-19" method="post" target="_blank" style="display: inline;margin: 0px;padding: 0px"><div style="padding: 0px"><input type=hidden name="qp_d479944" value="42321.5716666669-42321.5716580928"><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="1" />Cool</span></div><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="2" />Fuck no</span></div><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="3" />Where is the beer?</span></div><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="999" />Other</span></div><div id="qp_ot479944" style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both"><div style="padding-left:33px">Please Specify: <input style="width:100%;position:relative;top:2px" name='qp_other479944' type=text value=''></div></div></div><div style="padding-left: 0px;min-height: 40px;clear: both"><a style="float: left;width: 50%;max-width: 140px;box-sizing: border-box;padding-right: 5px;text-decoration: none" class="qp_btna" href="#"><input name="qp_b479944" style="width: 100%;height: 40px;font-family: 'Open Sans', sans-serif, Arial;font-size: 16px;color: rgb(255, 255, 255);cursor: pointer;border: 0px;-webkit-appearance: none;border-radius: 0px;background-color: rgb(11, 121, 211)" type="submit" btype="v" value="Vote" /></a><a style="float: left;width: 50%;max-width: 140px;box-sizing: border-box;padding-left: 5px;text-decoration: none" class="qp_btna" href="#"><input name="qp_b479944" style="width: 100%;height: 40px;font-family: 'Open Sans', sans-serif, Arial;font-size: 16px;color: rgb(255, 255, 255);cursor: pointer;border: 0px;-webkit-appearance: none;border-radius: 0px;background-color: rgb(11, 121, 211)" type="submit" btype="r" value="Results" /></a></div><a id="qp_a479944" style="float:right;font-family:Arial;font-size:10px;color:rgb(0,0,0);text-decoration:none" href="http://www.poll-maker.com">Poll Maker</a></form><div style="display:none"><div id="qp_rp479944" style="font-size: 14px;width: 5ex;text-align: right;overflow: hidden;position: absolute;right: 5px;height: 1.5em;line-height: 1.5em"></div><div id="qp_rv479944" style="font-size: 14px;line-height: 1.5em;width: 0%;text-align: right;color: rgb(255, 255, 255);box-sizing: border-box;padding-right: 3px"></div><div id="qp_rb479944" style="font-size: 14px;line-height: 1.5em;color: rgb(255, 255, 255);display: block"></div><div id="qp_rva479944" style="border-color: rgb(0, 111, 185);background: rgb(0, 111, 185)"></div><div id="qp_rvb479944" style="border-color: rgb(22, 52, 99);background: rgb(22, 52, 99)"></div><div id="qp_rvc479944" style="border-color: rgb(20, 129, 171);background: rgb(91, 207, 252)"></div></div></div></div><script src="//scripts.poll-maker.com/3012/scpolls.js" language="javascript"></script>
+                      
+                      <!-- end of poll -->
                 </div>
 
         </div>
@@ -156,11 +164,31 @@
         </div>
     </footer><!--/#footer-->
 
+    <div id="fb-root"></div>
+    <script>
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
     <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.prettyPhoto.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.isotope.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/main.js") }}"></script>
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
+    <script>
+        $(document).ready(function() {
+            try{
+            ready();
+            }catch(err){
+
+            }
+        } );
+    </script>
 </body>
 </html>

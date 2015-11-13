@@ -60,7 +60,7 @@ Routes['sponsorspicture'] = "/website/sponsor/picture"
 Routes['sponsorspage'] = "/website/sponsors_list"
 # baseball pages
 Routes['homepage'] = "/website"
-Routes['teampage'] = "/website/team"
+Routes['teampage'] = "/website/teams"
 Routes['schedulepage'] = "/website/schedule"
 Routes['standingspage'] = "/website/standings"
 Routes['teamspage'] = "/website/teams"

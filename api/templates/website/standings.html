@@ -1,4 +1,45 @@
 {% extends "website/new-base.html" %}
 {% block content %}
 
+	{% for id, league in leagues.items() %}
+		<h4>{{league.name}}</h4>
+		<table id="{{id}}">
+			<thead>
+				<tr>
+					<th>Team</th>
+					<th>GP</th>
+					<th>W</th>
+					<th>L</th>
+					<th>T</th>
+					<th>RF</th>
+					<th>RA</th>
+					<th>+/-</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for team in league.teams %}
+					<tr>
+						<th>{{team.name}}</th>
+						<th>{{team.games}}</th>
+						<th>{{team.wins}}</th>
+						<th>{{team.lossess}}</th>
+						<th>{{team.ties}}</th>
+						<th>{{team.runs_for}}</th>
+						<th>{{team.runs_against}}</th>
+						<th>{{team.plus_minus}}</th>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endfor %}
+<script>
+function ready(){
+	console.log("Done");
+	{% for id, league in leagues.items()  %}
+		$('#'+{{id}}).DataTable({
+		"order": [[2, "desc"]]
+	});
+	{% endfor %}
+}
+</script>
 {% endblock %}

@@ -1,4 +1,29 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-
+	<table id="espys" class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Rank</th>
+				<th>Team</th>
+				<th>ESPY Points</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for team in standings %}
+				<tr>
+					<td>{{team.rank}}</td>
+					<td>{{team.name}}</td>
+					<td>{{team.espys}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+<script>
+function ready(){
+	console.log("Done");
+	var table = $('#espys').DataTable({
+		"order": [[2, "desc"]]
+	});
+}
+</script>
 {% endblock %}
