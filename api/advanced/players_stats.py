@@ -20,7 +20,7 @@ parser.add_argument('team_id', type=int)
 class PlayerStatsAPI(Resource):
     def post(self):
         """
-            GET request for Players Stats List
+            POST request for Players Stats List
             Route: Route['player_stats']
             Parameters:
                 year: the year  (int)

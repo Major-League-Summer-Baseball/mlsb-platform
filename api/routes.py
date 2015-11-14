@@ -20,6 +20,7 @@ Routes['team_roster'] = "/api/tearmroster"
 Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"
 Routes['vgame'] = "/api/view/games"
+Routes['vplayerLookup'] = "/api/view/player-lookup"
 # -----------------------------------------------------------------------------
 
 # documentation routes

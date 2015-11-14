@@ -750,6 +750,48 @@ class TeamTest(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                  Routes['vteam'] + " Post: View of Team")
+
+class testPlayerLookup(BaseTest):
+    def testMain(self):
+        self.addPlayers()
+        self.show_results = True
+        # players email
+        expect = {  'data': [{'email': 'fras2560@mylaurier.ca',
+                                'gender': 'm',
+                                'player_id': 1,
+                                'player_name': 'Dallas Fraser'}],
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        rv = self.app.post(Routes['vplayerLookup'], data={'email': 'fras2560@mylaurier.ca'})
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
+        # players name
+        expect = {  'data': [{'email': 'fras2560@mylaurier.ca',
+                                'gender': 'm',
+                                'player_id': 1,
+                                'player_name': 'Dallas Fraser'}],
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': 'Dallas'})
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
+        # not a player
+        expect = {  'data': [],
+                    'failures': [],
+                    'message': '',
+                    'success': True}
+        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': 'XX'})
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                 Routes['vteam'] + " Post: View of Team")
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

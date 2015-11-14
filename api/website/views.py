@@ -131,10 +131,11 @@ def espy_standings(year):
                            standings=get_espy(year),
                            title="ESPY Standings",
                            year=year)
-
+'''
 # -----------------------------------------------------------------------------
 #             STATIC PAGES
 # -----------------------------------------------------------------------------
+'''
 @app.route(Routes['mysterybuspage'] + "/<int:year>")
 def mystery_bus(year):
     return render_template("website/mysterybus.html",
@@ -214,13 +215,14 @@ def fields(year):
                            sponsors=get_sponsors(),
                            title="Fields",
                            year=year)
+'''
 # -----------------------------------------------------------------------------
 
 
 # -----------------------------------------------------------------------------
 #                FUNCTIONS TO HELP with ROUTES
 # -----------------------------------------------------------------------------
-
+'''
 def get_sponsor(id):
     s = Sponsor.query.get(id)
     expect = None
@@ -410,5 +412,6 @@ def get_sponsors():
         sponsors.append({"name":info[i].name,
                        "id": info[i].id})
     return sponsors
-
+'''
 # -----------------------------------------------------------------------------
+'''
