@@ -10,6 +10,7 @@ from api.model import Sponsor, Team, Player
 from api import DB
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from api.validators import gender_validator, string_validator
+from datetime import date
 # constants
 CREATED = "Created Team (no league was specified"
 NO_SPONSOR = "Cannot find sponsor, please ensure spelt correctly or create sponsor"
@@ -75,6 +76,7 @@ class TeamList():
             sponsor_id = sponsor.id
             team = DB.session.query(Team)
             team = team.filter(Team.sponsor_id==sponsor_id)
+            team = team.filter(Team.year==date.today().year)
             team = team.filter_by(color=color).first()
             # check if a previous team and if not create it
             if team is None:
