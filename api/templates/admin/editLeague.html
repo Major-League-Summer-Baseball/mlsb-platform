@@ -57,8 +57,6 @@ function postLeague(){
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
@@ -101,8 +99,6 @@ function deleteLeague(id){
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
@@ -136,8 +132,6 @@ function putLeague(id, attributes){
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
 	  data: JSON.stringify(attributes),
       dataType: "json",
 	  success: function (results){

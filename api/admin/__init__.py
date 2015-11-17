@@ -92,8 +92,6 @@ def admin_import_team():
                            year=date.today().year,
                            route=Routes,
                            title="Import Team from CSV",
-                           admin=session['admin'],
-                           password=session['password'],
                            template=Routes['team_template'],
                            import_route=Routes['import_team_list'],
                            type="Team")
@@ -146,10 +144,7 @@ def admin_edit_roster(year, team_id):
     if team is None:
         return render_template("admin/notFound.html",
                                route=Routes,
-                               title="Team not found",
-                               admin=session['admin'],
-                               password=session['password']
-                               )
+                               title="Team not found")
     else:
         players = []
         for player in team.players:
@@ -161,11 +156,10 @@ def admin_edit_roster(year, team_id):
         return render_template("admin/editTeamRoster.html",
                                route=Routes,
                                title="Edit {} roster".format(str(team)),
-                               admin=session['admin'],
-                               password=session['password'],
                                players=players,
                                team_id=team_id,
-                               non_roster=non_roster)
+                               non_roster=non_roster,
+                               year=year)
 
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):
@@ -175,9 +169,7 @@ def admin_edit_league(year):
                            year=year,
                            route=Routes,
                            leagues=get_leagues(),
-                           title="Edit Leagues",
-                           admin=session['admin'],
-                           password=session['password'])
+                           title="Edit Leagues")
 
 @app.route(Routes['editsponsor']+ "/<int:year>")
 def admin_edit_sponsor(year):
@@ -187,9 +179,7 @@ def admin_edit_sponsor(year):
                            year=year,
                            route=Routes,
                            sponsors=get_sponsors(),
-                           title="Edit Leagues",
-                           admin=session['admin'],
-                           password=session['password'])
+                           title="Edit Leagues")
 
 @app.route(Routes['aindex'] + "/<int:year>")
 def admin_home(year):
@@ -212,9 +202,7 @@ def admin_edit_player(year):
                            year=year,
                            route=Routes,
                            players=players,
-                           title="Edit Players",
-                           admin=session['admin'],
-                           password=session['password'])
+                           title="Edit Players")
 
 @app.route(Routes['editteam'] + "/<int:year>")
 def admin_edit_team(year):
@@ -230,8 +218,6 @@ def admin_edit_team(year):
                            route=Routes,
                            teams=teams,
                            title="Edit Teams",
-                           admin=session['admin'],
-                           password=session['password'],
                            sponsors=get_sponsors(),
                            leagues=get_leagues())
 
@@ -259,8 +245,6 @@ def admin_edit_game(year):
                            route=Routes,
                            teams=teams,
                            title="Edit Game",
-                           admin=session['admin'],
-                           password=session['password'],
                            leagues=get_leagues(),
                            games=games)
 
@@ -275,9 +259,7 @@ def admin_edit_bat(year, game_id):
     if game is None:
         return render_template("admin/notFound.html",
                                route=Routes,
-                               title="Game not found",
-                               admin=session['admin'],
-                               password=session['password'],
+                               title="Game not found"
                                )
     away_bats = []
     home_bats = []
@@ -299,8 +281,6 @@ def admin_edit_bat(year, game_id):
                            away_team_id=away_team_id,
                            home_team_id=home_team_id,
                            title="Edit Bats",
-                           admin=session['admin'],
-                           password=session['password'],
                            game=str(game),
                            players=get_players(),
                            BATS=BATS)

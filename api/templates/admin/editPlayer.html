@@ -87,8 +87,6 @@ function postPlayer(){
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
@@ -142,8 +140,6 @@ function deletePlayer(id){
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
@@ -177,8 +173,6 @@ function putPlayer(id, attributes){
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
 	  data: JSON.stringify(attributes),
       dataType: "json",
 	  success: function (results){
