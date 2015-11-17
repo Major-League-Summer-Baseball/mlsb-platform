@@ -6,6 +6,7 @@
 '''
 from functools import wraps
 from flask import request, Response
+from flask import session
 import os
 try:
     # running local
@@ -45,6 +46,11 @@ def requires_admin(f):
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
+        elif 'admin' in session and 'password' in session:
+            # check if user signed in already
+            logged = check_auth(session['admin'], session['password'])
+            if not logged:
+                return authenticate()
         return f(*args, **kwargs)
     return decorated
 

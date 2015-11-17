@@ -11,8 +11,11 @@
 		<th>
 			<button type="button" class="btn btn-warning" onclick="putTeams();" id="updateButton" disabled>
 				Update Teams
-			</button>
+			</button></th>
+		<th>
+			--
 		</th>
+
 	</thead>
 	<tbody id="teamTable" >
 		{% for entry in teams %}
@@ -52,6 +55,11 @@
 					<input class="input" value="{{entry.espys}}" id='{{entry.team_id}}_espys' onchange="change({{entry.team_id}}, 'espys');">
 				</td>
 				<td>
+					<a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/{{entry.team_id}}">
+						Edit Team Roster
+					</a>
+				</td>
+				<td>
 					<button type="button" class="btn btn-danger" onclick="deleteTeam({{entry.team_id}});">
 						Delete
 					</button>
@@ -89,6 +97,7 @@
 			<td>
 				<input  class="newTeam" value="" id="newEspys" placeholder="ESPYS">
 			</td>
+			<td></td>
 			<td></td>
 		</tr>
 	</tfoot>
@@ -151,14 +160,15 @@ function postTeam(){
 	  	if (results.success == true){
 	  		console.log(results)
 	  		alert('Team was added successfully');
-	  		var i1,i2, i3, i4, i5,i6, result;
+	  		var i1,i2, i3, i4, i5,i6, i7, result;
 	  		i1 = '<input class="input" value="' + color + '" id="' + results.team_id + 'color" onclick="change('+ results.team_id+', \'color\')">';
 	  		i2 = makeSponsors(sponsor_id, results.team_id);
 	  		i3 = makeLeagues(league_id, results.team_id);
 	  		i4 = '<input class="input" value="' + year + '" id="' + results.team_id + 'color" onclick="change('+ results.team_id+', \'year\')">';
 	  		i5 = '<input class="input" value="' + espys + '" id="' + results.team_id + 'color" onclick="change('+ results.team_id+', \'espys\')">';
-	  		i6 = '<button type="button" class="btn btn-danger" onclick="deleteTeam('+results.team_id+');">Delete</button>'
-	  		result = '<tr class="teamEntry" id="'+results.team_id+'"><td>'+results.team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 +'</td><td>'+ i6 + '</td></tr>';
+	  		i6 = '<a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/'+ results.team_id +'">Edit Team Roster</a>';
+	  		i7 = '<button type="button" class="btn btn-danger" onclick="deleteTeam('+results.team_id+');">Delete</button>'
+	  		result = '<tr class="teamEntry" id="'+results.team_id+'"><td>'+results.team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 +'</td><td>'+ i6 + '</td><td>' + i7+'</td></tr>';
 	  		console.log(result);
 	  		$("#teamTable").append(result);
 			$('#newColor').val('');

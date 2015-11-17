@@ -142,7 +142,31 @@ def admin_game_template():
 def admin_edit_roster(year, team_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    
+    team = Team.query.get(team_id)
+    if team is None:
+        return render_template("admin/notFound.html",
+                               route=Routes,
+                               title="Team not found",
+                               admin=session['admin'],
+                               password=session['password']
+                               )
+    else:
+        players = []
+        for player in team.players:
+            players.append(player.json())
+        all_players = Player.query.order_by("id desc").all()
+        non_roster = []
+        for player in all_players:
+            non_roster.append(player.json())
+        return render_template("admin/editTeamRoster.html",
+                               route=Routes,
+                               title="Edit {} roster".format(str(team)),
+                               admin=session['admin'],
+                               password=session['password'],
+                               players=players,
+                               team_id=team_id,
+                               non_roster=non_roster)
+
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):
     if not logged_in():

@@ -17,6 +17,8 @@
 
     <link href="{{ url_for('static', filename="css/simple-sidebar.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/website.css") }}" rel="stylesheet">
+
+    
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
@@ -181,13 +183,10 @@
     <script src="{{ url_for('static', filename="js/main.js") }}"></script>
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
+
     <script>
         $(document).ready(function() {
-            try{
-            ready();
-            }catch(err){
-
-            }
+            ready();        
         } );
     </script>
 </body>
