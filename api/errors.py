@@ -26,3 +26,4 @@ class TeamAlreadyHasCaptain(Exception):
     pass
 
 class NonUniqueEmail(Exception):
+    pass
