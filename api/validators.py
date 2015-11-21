@@ -5,9 +5,8 @@ Project: MLSB API
 Purpose: Holds data validators
 '''
 import unittest
-import os
 from datetime import date
-from api.variables import BATS
+from api.variables import BATS, FIELDS
 def string_validator(value):
     '''
     string_validator
@@ -129,12 +128,13 @@ def rbi_validator(rbi):
             valid = True
     return valid
 
-def hit_validator(hit):
+def hit_validator(hit, gender=None):
     '''
     hit_validator
         a function that checks if the hit is valid
         Parameters:
-            hit: The classification of the hit
+            hit: The classification of the hit (str)
+            gender: the gende of the batter (str)
         Returns:
             True is valid
             False otherwise
@@ -142,7 +142,10 @@ def hit_validator(hit):
     valid = False
     if string_validator(hit):
         if hit.lower() in BATS:
-            valid = True
+            if gender is None:
+                valid = True
+            elif gender != "f" and hit.lower() == "ss":
+                valid = False
     return valid
 
 def inning_validator(inning):
@@ -171,6 +174,20 @@ def validated(x):
     '''
     return True
 
+def field_validator(field):
+    '''
+    field_validator
+        a function that check if the field is valid
+        Parameters:
+            field: the field (str)
+        Returns:
+            True if valid
+            False otherwise
+    '''
+    valid = False
+    if field in FIELDS:
+        valid = True
+    return valid
 from pprint import PrettyPrinter
 class Test(unittest.TestCase):
 
@@ -276,6 +293,25 @@ class Test(unittest.TestCase):
         test = "S"
         self.assertEqual(hit_validator(test), True,
                          'Hit Validator: S was a invalid Hit')
+        test = "ss"
+        self.assertEqual(hit_validator(test), True,
+                         'Hit Validator: SS was a invalid Hit')
+        test = "ss"
+        self.assertEqual(hit_validator(test,gender="m"), False,
+                         'Hit Validator: SS was a invalid Hit for a guy')
+
+    def testFieldValidator(self):
+        test = 1
+        self.assertEqual(field_validator(test), False,
+                         'Field Validator: 1 was a valid Field')
+        test = "X"
+        self.assertEqual(hit_validator(test), False,
+                         'Field Validator: X was a valid Field')
+        test = "WP1"
+        self.assertEqual(hit_validator(test), False,
+                         'Field Validator: WP1 was not a valid Field')
+        
+        
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -16,3 +16,4 @@ TEAMS = {
 HITS = ["s", "ss", "d", "hr"]
 BATS = ['s', 'd', 'ss', 'hr', 'k', 'e','fc', 'fo','go']
 GENDERS = ["f", "m"]
+FIELDS = ["WP1", "WP2", "WP3", "WP4", "Hillside Upper", "Hillside Lower"]
