@@ -14,6 +14,8 @@ from api.validators import  rbi_validator, hit_validator, inning_validator,\
                             string_validator, date_validator, time_validator,\
                             field_validator, year_validator, int_validator,\
                             gender_validator
+from nt import link
+import email
 
 roster = DB.Table('roster',
                   DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
@@ -40,12 +42,14 @@ class Player(DB.Model):
         if not string_validator(name):
             raise InvalidField()
         # check if email is unique
-        player = Player.query.filter_by(email=email).get()
+        if not string_validator(email):
+            raise InvalidField()
+        player = Player.query.filter_by(email=email).first()
         if player is not None:
             raise NonUniqueEmail()
         if not string_validator(email):
             raise InvalidField()
-        if not gender_validator(gender):
+        if gender is not None and not gender_validator(gender):
             raise InvalidField()
         self.name = name
         self.email = email
@@ -66,6 +70,28 @@ class Player(DB.Model):
                 "player_name":self.name,
                 "email": self.email,
                 "gender": self.gender}
+
+    def update(self,
+               name=None,
+               email=None,
+               gender=None,
+               password=None):
+        if email is not None:   
+            # check if email is unique
+            if not string_validator(email):
+                raise InvalidField()
+            player = Player.query.filter_by(email=email).first()
+            if player is not None:
+                raise NonUniqueEmail()
+            self.email = email
+        if gender is not None and gender_validator(gender):
+            self.gender = gender
+        elif gender is not None:
+            raise InvalidField()
+        if name is not None and string_validator(name):
+            self.name = name
+        elif name is not None:
+            raise InvalidField()
 
 class Team(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
@@ -102,9 +128,9 @@ class Team(DB.Model):
             raise SponsorDoesNotExist()
         if league_id is not None and League.query.get(league_id) is None:
             raise LeagueDoesNotExist()
-        if not year_validator(year):
+        if year is not None and not year_validator(year):
             raise InvalidField()
-        if not int_validator(espys):
+        if espys is not None and not int_validator(espys):
             raise InvalidField()
         self.color = color
         self.sponsor_id = sponsor_id
@@ -198,11 +224,20 @@ class Sponsor(DB.Model):
         return {'sponsor_id': self.id,
                 'sponsor_name': self.name}
 
-    def update(self, name=None):
+    def update(self, name=None,link=None, description=None):
         if name is not None and string_validator(name):
             self.name = name
         elif name is not None:
             raise InvalidField()
+        if description is not None and string_validator(description):
+            self.description = description
+        elif description is not None:
+            raise InvalidField()
+        if link is not None and string_validator(link):
+            self.link = link
+        elif link is not None:
+            raise InvalidField()
+
 
 class League(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
@@ -260,7 +295,8 @@ class Game(DB.Model):
             raise TeamDoesNotExist()
         if League.query.get(league_id) is None:
             raise LeagueDoesNotExist()
-        if not string_validator(status) or field_validator(field):
+        if ((status != "" and  not string_validator(status)) 
+            or (field != "" and not field_validator(field))):
             raise InvalidField()
         # must be good now
         self.home_team_id = home_team_id
@@ -300,7 +336,7 @@ class Game(DB.Model):
                status=None,
                field=None):
         d = self.date.strftime("%Y-%m-%d")
-        t = self.date.strftim("%H:%M")
+        t = self.date.strftime("%H:%M")
         if date is not None and date_validator(date):
             d = date
         elif date is not None:
@@ -322,7 +358,7 @@ class Game(DB.Model):
         if league_id is not None and League.query.get(league_id) is not None:
             self.league_id = league_id
         elif league_id is not None:
-            raise InvalidField()
+            raise LeagueDoesNotExist()
         if status is not None and string_validator(status):
             self.status = status
         elif status is not None:
@@ -390,9 +426,9 @@ class Bat(DB.Model):
                }
 
     def update(self,
+               player_id=None,
                team_id=None,
                game_id=None,
-               player_id=None,
                rbi=None,
                hit=None,
                inning=None):
