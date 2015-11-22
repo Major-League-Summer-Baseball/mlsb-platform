@@ -127,9 +127,11 @@ class Team(DB.Model):
         if color is not None and not string_validator(color):
             raise InvalidField("Invalid color for Team")
         if sponsor_id is not None and Sponsor.query.get(sponsor_id) is None:
-            raise SponsorDoesNotExist()
+            message = "Sponsor does not Exist {}".format(sponsor_id)
+            raise SponsorDoesNotExist(message)
         if league_id is not None and League.query.get(league_id) is None:
-            raise LeagueDoesNotExist()
+            message = "League does not Exist {}".format(league_id)
+            raise LeagueDoesNotExist(message)
         if year is not None and not year_validator(year):
             raise InvalidField("Invalid year for Team")
         if espys is not None and not int_validator(espys):
@@ -149,13 +151,18 @@ class Team(DB.Model):
         return " ".join(result)
 
     def json(self):
+        captain = None
+        if self.player_id is not None:
+            captain = Player.query.get(self.player_id)
         return{
                'team_id': self.id,
+               'team_name': str(self),
                'color': self.color,
                'sponsor_id': self.sponsor_id,
                'league_id': self.league_id,
                'year': self.year,
-               'espys': self.espys}
+               'espys': self.espys,
+               'captain': captain}
 
     def update(self,
                color=None,
@@ -170,11 +177,13 @@ class Team(DB.Model):
         if sponsor_id is not None and Sponsor.query.get(sponsor_id) is not None:
             self.sponsor_id = sponsor_id
         elif sponsor_id is not None:
-            raise SponsorDoesNotExist()
+            message = "Sponsor does not Exist {}".format(sponsor_id)
+            raise SponsorDoesNotExist(message)
         if league_id is not None and League.query.get(league_id) is not None:
             self.league_id = league_id
         elif league_id  is not None:
-            raise LeagueDoesNotExist()
+            message = "League does not Exist {}".format(league_id)
+            raise LeagueDoesNotExist(message)
         if year is not None and year_validator(year):
             self.year = year
         elif year is not None:
@@ -241,7 +250,6 @@ class Sponsor(DB.Model):
             self.link = link
         elif link is not None:
             raise InvalidField("Invalid link for Sponsor")
-
 
 class League(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)

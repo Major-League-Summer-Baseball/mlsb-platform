@@ -12,14 +12,49 @@ LDNESC = ERROR + 4
 GDNESC = ERROR + 5
 SDNESC = ERROR + 6
 NUESC = ERROR + 7
+THCSC = ERROR + 8
+
 class TeamDoesNotExist(Exception):
-    pass
+    status_code = TDNESC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 class PlayerDoesNotExist(Exception):
-    pass
+    status_code = PDNESC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 class GameDoesNotExist(Exception):
-    pass
+    status_code = GDNESC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 class InvalidField(Exception):
     status_code = IFSC
@@ -36,13 +71,46 @@ class InvalidField(Exception):
         return rv
 
 class LeagueDoesNotExist(Exception):
-    pass
+    status_code = LDNESC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 class SponsorDoesNotExist(Exception):
-    pass
+    status_code = SDNESC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 class TeamAlreadyHasCaptain(Exception):
-    pass
+    status_code = THCSC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 class NonUniqueEmail(Exception):
     status_code = NUESC

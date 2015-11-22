@@ -7,11 +7,10 @@ Purpose: To create an application to act as an api for the database
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.validators import string_validator, year_validator, int_validator
-from api.model import Team, Sponsor, League
 from api import DB
+from api.model import Team
 from datetime import date
-from api.authentication import requires_admin, requires_captain
+from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
@@ -19,125 +18,127 @@ parser.add_argument('league_id', type=int)
 parser.add_argument('year', type=int)
 parser.add_argument('espys', type=int)
 
+post_parser = reqparse.RequestParser(bundle_errors=True)
+post_parser.add_argument('sponsor_id', type=int, required=True)
+post_parser.add_argument('color', type=str, required=True)
+post_parser.add_argument('league_id', type=int, required=True)
+post_parser.add_argument('year', type=int, required=True)
+post_parser.add_argument('espys', type=int)
+
 class TeamAPI(Resource):
     def get(self, team_id):
         """
             GET request for Team Object matching given team_id
-            Route: /teams/<team_id: int>
+            Route: Routes['team']/<team_id:int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    data:  {
-                            team_name: string, team_id: int,
-                            captain_id: int, sponsor_id: int,
-                            color:string, espys: int
-                            }
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data:  
+                        {
+                           'team_id':  int,
+                           'team_name': string,
+                           'color': string,
+                           'sponsor_id': int,
+                           'league_id': int,
+                           'year': int,
+                           'espys': int,
+                           'captain': string
+                        }
+                otherwise
+                    status: 404 
+                    mimetype: application/json
+                    data:  
+                        None
         """
         # expose a single team
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
         entry  = Team.query.get(team_id)
-        if entry is None:
-            result['message'] = 'Not a valid team ID'
-            return Response(dumps(result), status=404, mimetype="application/json")
-        result['success'] = True
-        result['data'] = entry.json()
-        return Response(dumps(result), status=200, mimetype="application/json")
+        response = Response(dumps(None),
+                            status=404, mimetype="application/json")
+        if entry is not None:
+            response = Response(dumps(entry.json()), status=200,
+                                mimetype="application/json")
+        return response
 
     @requires_admin
     def delete(self, team_id):
         """
             DELETE request for Team
-            Route: /teams/<team_id:int>
+            Route: Routes['team']/<team_id:int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404 
+                    mimetype: application/json
+                    data: None
         """
-        result = {'success': False,
-                  'message': '',}
         team = Team.query.get(team_id)
-        # delete a single user
-        if team is None:
-            result['message'] = 'Not a valid team ID'
-            return Response(dumps(result), status=404, mimetype="application/json")
-        # delete a single team
-        DB.session.delete(team)
-        DB.session.commit()
-        result['success'] = True
-        result['message'] = 'Team was deleted'
-        return Response(dumps(result), status=200, mimetype="application/json")
+        response = Response(dumps(None), status=404, mimetype="application/json")
+        if team is not None:
+            # delete a single team
+            DB.session.delete(team)
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     @requires_admin
     def put(self, team_id):
         """
             PUT request for team
-            Route: /teams/<team_id:int>
+            Route: Routes['team']/<team_id:int>
             Parameters :
+                team_id: The team's id (int)
                 team_name: The team's name (string)
-                captain_id: The captain player id (int)
-                sponsor_id: The sponsor id (int)
-                team_picture_id: The picture id (int)
+                sponsor_id: The sponsor's id (int)
+                league_id: The league's id (int)
                 color: the color of the team (string)
                 year: the year of the team (int)
                 espys: the total espys points of the team (int)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed to update 
-                              (list of string)
+                if found and updated successfully
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise possible errors are
+                    status: 404, IFSC, LDNESC, PDNESC or SDNESC
+                    mimetype: application/json
+                    data: None
         """
         # update a single user
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
         team = Team.query.get(team_id)
         args = parser.parse_args()
-        if team is None:
-            result['message'] = "Not a valid team ID"
-            return Response(dumps(result), status=404,
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        if args['color'] and string_validator(args['color']):
-            team.color = args['color']
-        elif args['color'] and not string_validator(args['color']):
-            result['failures'].append('Invalid color')
-        if args['sponsor_id']:
-            sid = args['sponsor_id']
-            sponsor = Sponsor.query.get(sid)
-            if sponsor is None:
-                result['failures'].append('Invalid sponsor ID')
-            else:
-                team.sponsor_id = sid
-        if args['league_id']:
-            lid = args['league_id']
-            league = League.query.get(lid)
-            if league is None:
-                result['failures'].append('Invalid league ID')
-            else:
-                team.league_id = lid
-        if args['espys'] and int_validator(args['espys']):
-            team.espys = args['espys']
-        elif args['espys'] and not int_validator(args['espys']):
-            result['failures'].append('Invalid espys (int)')
-        if args['year'] and year_validator(args['year']):
-            team.year = args['year']
-        elif args['year'] and not year_validator(args['year']):
-            result['failures'].append("Invalid year")
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
-        DB.session.commit()
-        result['success'] = True
-        return Response(dumps(result), status=200, mimetype="application/json")
+        color = None
+        sponsor_id = None
+        league_id = None
+        espys = None
+        year = None
+        if team is not None:
+            if args['color']:
+                color = args['color']
+            if args['sponsor_id']:
+                sponsor_id = args['sponsor_id']
+            if args['league_id']:
+                league_id = args['league_id']
+            if args['espys']:
+                espys = args['espys']
+            if args['year']:
+                year = args['year']
+            team.update(color=color,
+                        sponsor_id=sponsor_id,
+                        league_id=league_id,
+                        year=year,
+                        espys=espys
+                        )
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     def option(self):
         return {'Allow' : 'PUT' }, 200, \
@@ -148,91 +149,71 @@ class TeamListAPI(Resource):
     def get(self):
         """
             GET request for Teams List
-            Route: /teams
+            Route: Routes['team']
             Parameters :
-
             Returns:
                 status: 200 
                 mimetype: application/json
                 data: 
                     teams: [  {
-                                    team_name: string, team_id: int,
-                                    captain_id: int, sponsor_id: int,
-                                    photo: int, color:string
-                                    }
-                                ,{...}
-                                ]
+                                'team_id':  int,
+                               'team_name': string,
+                               'color': string,
+                               'sponsor_id': int,
+                               'league_id': int,
+                               'year': int,
+                               'espys': int,
+                               'captain': string
+                                }
+                              ,{...}
+                            ]
         """
         # return a list of teams
         teams = Team.query.all()
+        result = []
         for i in range(0, len(teams)):
-            teams[i] = teams[i].json()
-        resp = Response(dumps(teams), status=200, mimetype="application/json")
+            result.append(teams[i].json())
+        resp = Response(dumps(result), status=200, mimetype="application/json")
         return resp
 
     @requires_admin
     def post(self):
         """
             POST request for Teams List
-            Route: /teams
+            Route: Routes['team']
             Parameters :
-                team_name: The team's name (string)
-                captain_id: The captain player id (int)
-                sponsor_id: The sponsor id (int)
+                league_id: the league's id (int)
+                sponsor_id: the sponsor's id (int)
                 color: the color of the team (string)
                 year: the year the team is playing in (int)
                 espys: the team espys points (int)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed (list of string)
-                    team_id: the created user team id (int)
+                if successful
+                    status: 200 
+                    mimetype: application/json
+                    data: the create team id (int)
+                possible errors
+                    status: 400, IFSC, LDNESC, PDNESC or SDNESC
+                    mimetype: application/json
+                    data: the create team id (int)
         """
         # create a new user
-        result = {'team_id': None,
-                  'success': False,
-                  'message': '',
-                  'failures':[]}
-        args = parser.parse_args()
+        args = post_parser.parse_args()
         color = None
         sponsor_id = None
         league_id = None
         year = date.today().year
         espys = 0
-        if args['color'] and string_validator(args['color']):
+        if args['color']:
             color = args['color']
-        elif args['color'] and not string_validator(args['color']):
-            result['failures'].append('Invalid color')
-        else:
-            result['failures'].append("Invalid color")
         if args['sponsor_id']:
-            sid = args['sponsor_id']
-            sponsor = Sponsor.query.get(sid)
-            if sponsor is None:
-                result['failures'].append('Invalid sponsor ID')
-            else:
-                sponsor_id = sid
+            sponsor_id = args['sponsor_id']
         if args['league_id']:
-            lid = args['league_id']
-            league = League.query.get(lid)
-            if league is None:
-                result['failures'].append('Invalid league ID')
-            else:
-                league_id = lid
-        if args['espys'] and int_validator(args['espys']):
+            league_id = args['league_id']
+        if args['espys']:
             espys = args['espys']
-        elif args['espys'] and not int_validator(args['espys']):
-            result['failures'].append('Invalid espys (int)')
-        if args['year'] and year_validator(args['year']):
+        if args['year']:
             year = args['year']
-        elif args['year'] and not year_validator(args['year']):
-            result['failures'].append("Invalid year")
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
         t = Team(color=color,
                  sponsor_id=sponsor_id,
                  league_id=league_id,
@@ -240,8 +221,7 @@ class TeamListAPI(Resource):
                  espys=espys)
         DB.session.add(t)
         DB.session.commit()
-        result['success'] = True
-        result['team_id'] = t.id
+        result = t.id
         return Response(dumps(result), status=200, mimetype="application/json")
 
     def options (self):
