@@ -13,7 +13,7 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
-from api.errors import IFSC
+from api.errors import IFSC, NUESC
 from datetime import datetime, date, time
 from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
@@ -43,6 +43,7 @@ class BaseTest(unittest.TestCase):
         DB.create_all()
 
     def tearDown(self):
+        DB.session.commit()
         DB.engine.execute('''   
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
@@ -347,25 +348,24 @@ class TestPlayer(BaseTest):
         self.addPlayer()
         # invalid player id
         rv = self.app.get(Routes['player'] + "/2")
-        result = {'failures': [], 'message': 'Not a valid player ID',
-                  'success': False}
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data), result,Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " GET invalid player id")
+        self.assertEqual(rv.status_code, 404, Routes['player'] +
                          " GET invalid player id")
         # valid user
         rv = self.app.get(Routes['player'] + "/1")
-        data = {"player_id": 1,
-                'email': 'fras2560@mylaurier.ca',
-                'gender': 'm',
-                'player_name': 'Dallas Fraser'}
-        result = {'data': data,
-                  'failures': [],
-                  'message': '',
-                  'success': True}
+        result = {"player_id": 1,
+                  'email': 'fras2560@mylaurier.ca',
+                  'gender': 'm',
+                  'player_name': 'Dallas Fraser'}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data), result,Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " GET valid player id")
+        self.assertEqual(rv.status_code, 200, Routes['player'] +
                          " GET valid player id")
 
     def testPlayerApiDelete(self):
@@ -373,16 +373,20 @@ class TestPlayer(BaseTest):
         self.addPlayer()
         # delete of invalid player id
         rv = self.app.delete(Routes['player'] + "/2", headers=headers)
-        result = {'message': 'Not a valid player ID', 'success': False}
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " DELETE Invalid player id ")
+        self.assertEqual(rv.status_code, 404, Routes['player'] +
                          " DELETE Invalid player id ")
         rv = self.app.delete(Routes['player'] + "/1", headers=headers)
-        result = {'message': 'Player was deleted', 'success': True}
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         ' DELETE Valid player id')
+        self.assertEqual(rv.status_code, 200, Routes['player'] +
                          ' DELETE Valid player id')
 
     def testPlayerApiPut(self):
@@ -391,46 +395,55 @@ class TestPlayer(BaseTest):
         # invalid player id
         params = {'player_name':'David Duchovny', 'gender':"F"}
         rv = self.app.put(Routes['player'] + '/2', data=params, headers=headers)
-        result = {"failures": [],
-                  "message": "Not a valid player ID",
-                  "success": False
-                 }
+        result = None
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['player'] +
                          ' PUT: Invalid Player ID')
+        self.assertEqual(rv.status_code, 404, Routes['player'] +
+                         ' PUT: Invalid Player ID')
         # invalid player_name type
         params = {'player_name':1, 'gender':"F"}
         rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
-        result = {"failures": ["Invalid player name"],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
+        result = {'message': 'Invalid name for Player'}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         ' PUT: Invalid Player name')
+        self.assertEqual(rv.status_code, IFSC, Routes['player'] +
                          ' PUT: Invalid Player name')
         # invalid gender
         params = {'player_name':"David Duchovny", 'gender':"X"}
         rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
-        result = {"failures": ["Invalid gender"],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
+        result = {'message': 'Invalid gender for Player'}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         ' PUT: Invalid Player gender')
+        self.assertEqual(rv.status_code, IFSC, Routes['player'] +
                          ' PUT: Invalid Player gender')
         # successfully update
         params = {'player_name':"David Duchovny", 'gender':"F"}
         rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
-        result = {"failures": [],
-                  "message": "",
-                  "success": True
-                 }
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['player'] +
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         ' PUT: Valid player update')
+        self.assertEqual(rv.status_code, 200, Routes['player'] +
+                         ' PUT: Valid player update')
+        # duplicate email
+        p = Player("first player", "new@mslb.ca")
+        DB.session.add(p)
+        DB.session.commit()
+        params = {'player_name':"David Duchovny", 'email':"new@mslb.ca"}
+        rv = self.app.put(Routes['player'] + '/1', data=params, headers=headers)
+        result = {'message': 'Email was a duplicate new@mslb.ca'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         ' PUT: Valid player update')
+        self.assertEqual(rv.status_code, NUESC, Routes['player'] +
                          ' PUT: Valid player update')
 
     def testPlayerListApi(self):
@@ -439,73 +452,64 @@ class TestPlayer(BaseTest):
         empty = loads(rv.data)
         self.assertEqual([], empty,Routes['player'] +
                          " GET: did not return empty list")
+        self.assertEqual(rv.status_code, 200,Routes['player'] +
+                         " GET: did not return empty list")
         # missing parameters
         params = {}
         rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result ={"player_id": None,
-                 "failures": ['Invalid player name'],
-                 "message": "Failed to properly supply the required fields",
-                 "success": False
-                }
+        message = 'Missing required parameter in the JSON body or the post body or the query string'
+        result = {   'message': { 
+                                 'player_name': message,
+                                 'email': message
+                                 }
+                  }
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result , Routes['player'] +
                          " POST: POST request with missing parameter"
                          )
+        self.assertEqual(rv.status_code, 400 , Routes['player'] +
+                         " POST: POST request with missing parameter"
+                         )
         # testing a gender parameter
-        params = {'player_name':'Dallas Fraser','gender':'X'}
+        params = {'player_name':'Dallas Fraser',
+                  'gender':'X',
+                  'email': "new@mlsb.ca"}
         rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {"player_id": None,
-                  "failures": ['Invalid gender'],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
+        result = {'message': 'Invalid gender for Player'}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['player'] +
                          " POST: POST request with invalid gender"
                          )
-        params = {'player_name':'Dallas Fraser','gender':1}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {"player_id": None,
-                  "failures": ['Invalid gender'],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
+        self.assertEqual(rv.status_code, IFSC, Routes['player'] +
                          " POST: POST request with invalid gender"
                          )
         # testing player_name parameter
-        params = {'player_name':1,'gender':'M'}
+        params = {'player_name':1,'gender':'M', 'email': 'new@mlsb.ca'}
         rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {"player_id": None,
-                  "failures": ['Invalid player name'],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
+        result = {'message': 'Invalid name for Player'}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['player'] +
                          " POST: POST request with invalid name"
                          )
-        #proper insertion with post
+        self.assertEqual(rv.status_code, IFSC, Routes['player'] +
+                         " POST: POST request with invalid name"
+                         )
+        # proper insertion with post
         params = {'player_name':"Dallas Fraser",
-                      "gender": "M",
-                      "email": "fras2560@mylaurier.ca",
-                      "password":"Suck it"}
+                  "gender": "M",
+                  "email": "fras2560@mylaurier.ca",
+                  "password":"Suck it"}
         rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {  'data': {
-                              'email': 'fras2560@mylaurier.ca',
-                              'gender': 'm',
-                              'player_id': 1,
-                              'player_name': 'Dallas Fraser'},
-                    'failures': [],
-                    'message': '',
-                    'player_id': 1,
-                    'success': True}
+        result = 1
+        self.output(loads(rv.data))
+        self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with valid data"
+                         )
+        self.assertEqual(rv.status_code, 200, Routes['player'] +
                          " POST: POST request with valid data"
                          )
         rv = self.app.get(Routes['player'])
@@ -516,6 +520,21 @@ class TestPlayer(BaseTest):
                    'player_name': 'Dallas Fraser'}]
         self.assertEqual(expect, empty,Routes['player'] +
                          " GET: did not receive player list")
+        # duplicate email
+        params = {'player_name':"Copy cat",
+                  "gender": "M",
+                  "email": "fras2560@mylaurier.ca",
+                  "password":"Suck it"}
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
+        result = {'message': 'Email is a duplicate - fras2560@mylaurier.ca'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with valid data"
+                         )
+        self.assertEqual(rv.status_code, NUESC, Routes['player'] +
+                         " POST: POST request with valid data"
+                         )
 
 class TestLeague(BaseTest):
     def testLeagueAPIGet(self):
@@ -566,65 +585,68 @@ class TestLeague(BaseTest):
         # invalid league id
         params = {'league_name':'Chainsaw Classic'}
         rv = self.app.put(Routes['league'] + '/2', data=params, headers=headers)
-        result = {"failures": [],
-                  "message": "Not a valid league ID",
-                  "success": False
-                 }
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['league'] + 
+        self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         ' PUT: Invalid league ID')
+        self.assertEqual(rv.status_code, 404, Routes['league'] + 
                          ' PUT: Invalid league ID')
         # invalid league_name type
         params = {'league_name':1}
         rv = self.app.put(Routes['league'] + '/1', data=params, headers=headers)
-        result = {"failures": ["Invalid league name"],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
+        result = {'message': 'Invalid name for League'}
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result)
+        self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         ' PUT: Invalid parameters')
+        self.assertEqual(rv.status_code, IFSC, Routes['league'] + 
+                         ' PUT: Invalid parameters')
         # successfully update
         params = {'league_name':"Chainsaw Classic"}
         rv = self.app.put(Routes['league'] + '/1', data=params, headers=headers)
-        result = {"failures": [],
-                  "message": "",
-                  "success": True
-                 }
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result)
+        self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         ' PUT: Successful Update')
+        self.assertEqual(rv.status_code, 200, Routes['league'] + 
+                         ' PUT: Successful Update')
 
-    def testTournamentListAPI(self):
+    def testLeagueListAPI(self):
         # test an empty get
         rv = self.app.get(Routes['league'])
         empty = loads(rv.data)
-        self.assertEqual([], empty,Routes['league'] +
+        self.assertEqual([], empty, Routes['league'] +
+                         " GET: did not return empty list")
+        self.assertEqual(rv.status_code, 200, Routes['league'] +
                          " GET: did not return empty list")
         # missing parameters
         params = {}
         rv = self.app.post(Routes['league'], data=params, headers=headers)
-        result ={"league_id": None,
-                 "failures": ['Invalid league name'],
-                 "message": "Failed to properly supply the required fields",
-                 "success": False
-                }
+        message = 'Missing required parameter in the JSON body or the post body or the query string'
+        result = {   'message': {
+                                 'league_name': message
+                                 }
+                  }
         self.output(loads(rv.data))
         self.output(result)
+        self.assertEqual(loads(rv.data), result , Routes['league'] +
+                         " POST: request with missing parameter"
+                         )
         self.assertEqual(loads(rv.data), result , Routes['league'] +
                          " POST: request with missing parameter"
                          )
         # testing a league name parameter
         params = {'league_name':1}
         rv = self.app.post(Routes['league'], data=params, headers=headers)
-        result = {"league_id": None,
-                  "failures": ['Invalid league name'],
-                  "message": "Failed to properly supply the required fields",
-                  "success": False
-                 }
+        result = {'message': 'Invalid name for League'}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         " POST: request with invalid league_name"
+                         )
+        self.assertEqual(rv.status_code, IFSC, Routes['league'] + 
                          " POST: request with invalid league_name"
                          )
         # proper insertion with post
@@ -635,6 +657,8 @@ class TestLeague(BaseTest):
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(result, loads(rv.data), Routes['league'] + 
+                         " GET: Failed to return list of leagues")
+        self.assertEqual(200, rv.status_code, Routes['league'] + 
                          " GET: Failed to return list of leagues")
 
 class TestTeam(BaseTest):

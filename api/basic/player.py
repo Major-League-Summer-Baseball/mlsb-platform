@@ -17,109 +17,113 @@ parser.add_argument('gender', type=str)
 parser.add_argument('email', type=str)
 parser.add_argument('password', type=str)
 
-#global parameters
-HEADERS = [{'header':'player_name', 'required':True,
-            'validator':""},
-           {'header':'gender', 'required':True, 'validator':"gender_validator"}]
+post_parser = reqparse.RequestParser(bundle_errors=True)
+post_parser.add_argument('player_name', type=str, required=True)
+post_parser.add_argument('gender', type=str)
+post_parser.add_argument('email', type=str, required=True)
+post_parser.add_argument('password', type=str)
+
 
 class PlayerAPI(Resource):
     
     def get(self, player_id):
         """
             GET request for Player List
-            Route: /players/<player_id: int>
+            Route: Routes['player']/<player_id: int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    data:  {player_id:int, player_name:string, gender: string}
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: {player_id:int, player_name:string, gender: string}
+                otherwise
+                    status: 404 
+                    mimetype: application/json
+                    data: None
         """
         # expose a single user
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
-        entry  = Player.query.get(player_id)
-        if entry is None:
-            result['message'] = 'Not a valid player ID'
-            return Response(dumps(result), status=404, 
+        response = Response(dumps(None), status=404, 
                             mimetype="application/json")
-        result['success'] = True
-        result['data'] = entry.json()
-        return Response(dumps(result), status=200, mimetype="application/json")
+        entry  = Player.query.get(player_id)
+        if entry is not None:
+            response = Response(dumps(entry.json()),
+                                status=200, mimetype="application/json")
+        return response
 
     @requires_admin
     def delete(self, player_id):
         """
             DELETE request for Player
-            Route: /players/<player_id:int>
+            Route: Routes['player']/<player_id: int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404 
+                    mimetype: application/json
+                    data: None
         """
-        result = {'success': False,
-                  'message': '',}
         player = Player.query.get(player_id)
-        if player is None:
-            result['message'] = 'Not a valid player ID'
-            return Response(dumps(result), status=404,
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        # delete a single user
-        DB.session.delete(player)
-        DB.session.commit()
-        result['success'] = True
-        result['message'] = 'Player was deleted'
-        return Response(dumps(result), status=200, mimetype="application/json")
+        if player is not None:
+            # delete a single user
+            DB.session.delete(player)
+            DB.session.commit()
+            response = Response(dumps(None),
+                                status=200, mimetype="application/json")
+        return response
 
     @requires_admin
     def put(self, player_id):
         """
             PUT request for Player
-            Route: /players/<player_id:int>
+            Route: Routes['player']/<player_id: int>
             Parameters :
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
                 email: the players email (string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed to update 
-                              (list of string)
+                if found and successful
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                if found but new email is duplicate
+                    status: NUESC 
+                    mimetype: application/json
+                    data: None
+                if found but invalid field
+                    status: IFSC 
+                    mimetype: application/json
+                    data: None
+                othwerwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
         """
         # update a single user
-        result = {'success': False,
-                  'message': '',
-                  'failures': []}
         player = DB.session.query(Player).get(player_id)
         args = parser.parse_args()
-        if player is None:
-            result['message'] = 'Not a valid player ID'
-            return result
-        if args['player_name'] and string_validator(args['player_name']):
-            player.name = args['player_name']
-        elif args['player_name'] and not string_validator(args['player_name']):
-            result['failures'].append("Invalid player name")
-        if args['gender'] and gender_validator(args['gender']):
-            player.gender = args['gender']
-        elif args['gender'] and not gender_validator(args['gender']):
-            result['failures'].append("Invalid gender")
-        if args['email'] and string_validator(args['email']):
-            player.email = args['email']
-        elif args['email'] and not string_validator(args['email']):
-            result['failures'].append("Invalid email")
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
-        DB.session.commit()
-        result['success'] = True
-        return Response(dumps(result), status=200, mimetype="application/json")
+        response = Response(dumps(None), status=404,
+                            mimetype="application/json")
+        if player is not None:
+            player_name = None
+            gender = None
+            email = None
+            if args['player_name']:
+                player_name = args['player_name']
+            if args['gender']:
+                gender = args['gender']
+            if args['email']:
+                email = args['email']
+            player.update(name=player_name,
+                          gender=gender,
+                          email=email)
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     def options (self):
         return {'Allow' : 'PUT' }, 200, \
@@ -130,7 +134,7 @@ class PlayerListAPI(Resource):
     def get(self):
         """
             GET request for Player List
-            Route: /players
+            Route: Routes['player']
             Parameters :
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
@@ -154,59 +158,49 @@ class PlayerListAPI(Resource):
     def post(self):
         """
             POST request for Player List
-            Route: /players
+            Route: Routes['player']
             Parameters :
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
                 email: the email of the player (string)
                 password: the password of the player(string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed (list of string)
-                    player_id: the created user player id (int)
+                if successful
+                    status: 200 
+                    mimetype: application/json
+                    data: the created player id (int)
+                if email is duplicate
+                    status: NUESC 
+                    mimetype: application/json
+                    data: None
+                if invalid field
+                    status: IFSC 
+                    mimetype: application/json
+                    data: None
+                othwerwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
         """
         # create a new user
-        result = {'success': False,
-                  'message': '',
-                  'failures': [],
-                  'player_id': None}
-        args = parser.parse_args()
+        args = post_parser.parse_args()
         gender = None
         player_name = None
         email = None
         password = "default"
-        if args['player_name'] and string_validator(args['player_name']):
+        if args['player_name']:
             player_name = args['player_name']
-        else:
-            result['failures'].append("Invalid player name")
-        if args['gender'] and gender_validator(args['gender']):
+        if args['gender']:
             gender = args['gender']
-        elif args['gender'] and not gender_validator(args['gender']):
-            result['failures'].append("Invalid gender")
-        if args['email'] and string_validator(args['email']):
+        if args['email']:
             email = args['email']
-        elif args['email'] and not string_validator(args['email']):
-            result['failures'].append("Invalid email")
-        if args['password'] and string_validator(args['password']):
+        if args['password']:
             password = args['password']
-        elif args['password'] and not string_validator(args['password']):
-            result['failures'].append("Invalid password")
-        if player_name is not None and len(result['failures']) <= 0:
-            player = Player(player_name, email, gender, password)
-            DB.session.add(player)
-            DB.session.commit()
-            result['player_id'] = player.id
-            result['data'] = player.json()
-            result['success'] = True
-            return Response(dumps(result), status=200,
-                        mimetype="application/json")
-        else:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400,
+        player = Player(player_name, email, gender, password)
+        DB.session.add(player)
+        DB.session.commit()
+        result = player.id
+        return Response(dumps(result), status=200,
                         mimetype="application/json")
 
     def options (self):

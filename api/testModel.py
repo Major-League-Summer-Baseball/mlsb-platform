@@ -85,7 +85,6 @@ class BaseModel(unittest.TestCase):
                             field="WP1"))
 
 class testSponsor(BaseModel):
-
     def testSponsorInit(self):
         # valid data
         __ =  Sponsor("Good Sponsor")

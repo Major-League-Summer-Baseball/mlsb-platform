@@ -46,13 +46,15 @@ class Player(DB.Model):
             raise InvalidField("Invalid email for Player")
         player = Player.query.filter_by(email=email).first()
         if player is not None:
-            raise NonUniqueEmail()
+            raise NonUniqueEmail("Email is a duplicate - {}".format(email))
         if not string_validator(email):
             raise InvalidField("Invalid email for Player")
         if gender is not None and not gender_validator(gender):
             raise InvalidField("Invalid gender for Player")
         self.name = name
         self.email = email
+        if gender is not None:
+            gender = gender.lower()
         self.gender = gender
         self.set_password(password)
 
@@ -82,10 +84,10 @@ class Player(DB.Model):
                 raise InvalidField("Invalid email for Player")
             player = Player.query.filter_by(email=email).first()
             if player is not None:
-                raise NonUniqueEmail()
+                raise NonUniqueEmail("Email was a duplicate {}".format(email))
             self.email = email
         if gender is not None and gender_validator(gender):
-            self.gender = gender
+            self.gender = gender.lower()
         elif gender is not None:
             raise InvalidField("Invalid gender for Player")
         if name is not None and string_validator(name):
