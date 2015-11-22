@@ -33,7 +33,7 @@ def string_validator(value):
 
 def year_validator(year):
     validated = False
-    if year > 2014 and year <= date.today().year:
+    if int_validator(year) and year >= 2014 and year <= date.today().year:
         validated = True
     return validated
 

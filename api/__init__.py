@@ -9,6 +9,7 @@ from flask import Flask, g, request
 from flask.ext.restful import Api
 from flask.ext.restful.utils import cors
 from flask.ext.sqlalchemy import SQLAlchemy
+from api.errors import ERRORS
 local = False
 try:
     # running local
@@ -29,18 +30,15 @@ DB = SQLAlchemy(app)
 if local:
     DB.create_all()
     print("Created Database")
-
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
-api = Api(app)
+api = Api(app, errors=ERRORS)
 api.decorators=[cors.crossdomain(origin='*',headers=['accept', 'Content-Type'])]
 PICTURES = join(getcwd(), "api", "static", "pictures")
 app.config['UPLOAD_FOLDER'] =  "./static"
 
-
 from api.website import views
 from api import admin
-
+from api import errrorHandlers
 @app.after_request
 def add_cors(resp):
     """ Ensure all responses have the CORS headers. 
