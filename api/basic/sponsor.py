@@ -10,10 +10,18 @@ from json import dumps
 from api.validators import string_validator
 from api.model import Sponsor
 from api import DB
-from api.authentication import requires_admin, requires_captain
+from api.authentication import requires_admin
 
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
+parser.add_argument('link', type=str)
+parser.add_argument('description', type=str)
+
+
+post_parser = reqparse.RequestParser()
+post_parser.add_argument('sponsor_name', type=str, required=True)
+post_parser.add_argument('link', type=str)
+post_parser.add_argument('description', type=str)
 
 
 HEADERS = [{'header':'sponsor_name', 'required':True, 
@@ -24,27 +32,31 @@ class SponsorAPI(Resource):
     def get(self, sponsor_id):
         """
             GET request for Sponsor Object matching given sponsor_id
-            Route: /sponsors/<sponsor_id: int>
+            Route: Routes['sponsor']
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    data:  {sponsor_id:int, sponsor_name :string}
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: 
+                        {sponsor_id:int,
+                        sponsor_name :string,
+                        link: string,
+                        description: string
+                        }
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
+                
         """
         # expose a single Sponsor
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
         entry  = Sponsor.query.get(sponsor_id)
-        if entry is None:
-            result['message'] = 'Not a valid sponsor ID'
-            return Response(dumps(result), status=404,
-                             mimetype="application/json")
-        result['success'] = True
-        result['data'] = entry.json()
-        return Response(dumps(result), status=200, mimetype="application/json")
+        response = Response(dumps(None), status=404,
+                            mimetype="application/json")
+        if entry is not None:
+            response = Response(dumps(entry.json()),
+                                status=200, mimetype="application/json")
+        return response
 
     @requires_admin
     def delete(self, sponsor_id):
@@ -52,26 +64,25 @@ class SponsorAPI(Resource):
             DELETE request for Sponsor
             Route: /sponsors/<sponsor_id:int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
+                
         """
-        result = {'success': False,
-                  'message': '',}
         # delete a single user
         sponsor = Sponsor.query.get(sponsor_id)
         if sponsor is None:
-            #Sponsor is not in the table
-            result['message'] = 'Not a valid Sponsor ID'
-            return Response(dumps(result), status=404,
+            # Sponsor is not in the table
+            return Response(dumps(None), status=404,
                             mimetype="application/json")
         DB.session.delete(sponsor)
         DB.session.commit()
-        result['success'] = True
-        result['message'] = 'Sponsor was deleted'
-        return Response(dumps(result), status=200, mimetype="application/json")
+        return Response(dumps(None), status=200, mimetype="application/json")
 
     @requires_admin
     def put(self, sponsor_id):
@@ -80,37 +91,36 @@ class SponsorAPI(Resource):
             Route: /sponsors/<sponsor_id:int>
             Parameters :
                 sponsor_name: The Sponsor's name (string)
-                sponser_picture_id: the picture for the sponser (int)
+                
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed to update 
-                              (list of string)
+                if found and successful
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                if found but not successful
+                    status: 409
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
         """
         # update a single user
-        result = {'success': False,
-                  'message': 'Failed to properly supply the required fields',
-                  'failures':[]}
         sponsor = Sponsor.query.get(sponsor_id)
         args = parser.parse_args()
-        if sponsor is None:
-            result['message'] = 'Not a valid sponsor ID'
-            return Response(dumps(result), status=404,
+        name = None
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        args = parser.parse_args()
-        if args['sponsor_name'] and string_validator(args['sponsor_name']):
-            sponsor.name = args['sponsor_name']
-            result['success'] = True
-            result['message'] = ""
+        if sponsor is not None:
+            args = parser.parse_args()
+            if args['sponsor_name']:
+                name = args['sponsor_name']
+            sponsor.update(name=name)    
             DB.session.commit()
-        elif args['sponsor_name'] and not string_validator(args['sponsor_name']):
-            result['failures'].append("Invalid sponsor name")
-            return Response(dumps(result), status=400, mimetype="application/json") 
-        return Response(dumps(result), status=200, mimetype="application/json")
-
+            response = Response(dumps(None), status=200,
+                            mimetype="application/json")
+        return response
 
     def options (self):
         return {'Allow' : 'PUT' }, 200, \
@@ -129,10 +139,10 @@ class SponsorListAPI(Resource):
                 mimetype: application/json
                 data: 
                     Sponsors: [{sponsor_id:int,
-                              sponsor_name:string,
-                              sponsor_picture_id: int
-                              file: string
-                              },{...}
+                                sponsor_name:string,
+                                description: string,
+                                link: string
+                                },{...}
                             ]
         """
         # return a list of Sponsors
@@ -150,37 +160,36 @@ class SponsorListAPI(Resource):
             Route: /sponsors
             Parameters :
                 sponsor_name: The Sponsor's name (string)
+                link: A link to sponsors website (string)
+                description: a description of the sponsor (string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed (list of string)
-                    sponsor_id: the created user Sponsor id (int)
+                if successful
+                    status: 200 
+                    mimetype: application/json
+                    sponsor_id: the create sponsor_id
+                else
+                    status: 409
+                    mimetype: application/json
+                    data: the create sponsor_id (int)
         """
         # create a new user
-        result = {'success': False,
-                  'message': '',
-                  'failures': [],
-                  'sponsor_id': None}
-        args = parser.parse_args()
+        args = post_parser.parse_args()
         sponsor_name = None
-        if args['sponsor_name'] and string_validator(args['sponsor_name']):
+        description = None
+        link = None
+        if args['sponsor_name']:
             sponsor_name = args['sponsor_name']
-        else:
-            result['failures'].append("Invalid sponsor name")
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400,
-                        mimetype="application/json")
-        sponsor = Sponsor(sponsor_name)
+        if args['description']:
+            description = description
+        if args['link']:
+            link = link
+        sponsor = Sponsor(sponsor_name,
+                          link=link,
+                          description=description)
         DB.session.add(sponsor)
         DB.session.commit()
-        result['sponsor_id'] = sponsor.id
-        result['data'] = sponsor.json()
-        result['success'] = True
-        return Response(dumps(result), status=200,
+        sponsor_id = sponsor.id
+        return Response(dumps(sponsor_id), status=200,
                         mimetype="application/json")
  
     def options (self):
