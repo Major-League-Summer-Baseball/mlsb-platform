@@ -142,9 +142,8 @@ def hit_validator(hit, gender=None):
     valid = False
     if string_validator(hit):
         if hit.lower() in BATS:
-            if gender is None:
-                valid = True
-            elif gender != "f" and hit.lower() == "ss":
+            valid = True
+            if gender != "f" and hit.lower() == "ss":
                 valid = False
     return valid
 
@@ -299,6 +298,10 @@ class Test(unittest.TestCase):
         test = "ss"
         self.assertEqual(hit_validator(test,gender="m"), False,
                          'Hit Validator: SS was a invalid Hit for a guy')
+        test = "hr"
+        self.assertEqual(hit_validator(test,gender="m"), False,
+                         'Hit Validator: SS was a invalid Hit for a guy')
+        
 
     def testFieldValidator(self):
         test = 1

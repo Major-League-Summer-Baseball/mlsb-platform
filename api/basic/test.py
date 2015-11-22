@@ -13,7 +13,7 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
-from api.errors import IFSC, NUESC, SDNESC, LDNESC, TDNESC
+from api.errors import IFSC, NUESC, SDNESC, LDNESC, TDNESC, PDNESC, GDNESC
 from datetime import datetime, date, time
 from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
@@ -1256,50 +1256,135 @@ class TestGame(BaseTest):
 class TestBat(BaseTest):
     def testBatList(self):
         # test an empty get
+        self.addGame()
         rv = self.app.get(Routes['bat'])
         empty = loads(rv.data)
         self.assertEqual([], empty,
                         Routes['bat'] + "GET: did not return empty list")
+        self.assertEqual(rv.status_code, 200,
+                        Routes['bat'] + "GET: did not return empty list")
         # missing parameters
         params = {}
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
-        expect = {'bat_id': None,
-                  'failures': ['Invalid game ID',
-                               'Invalid player ID',
-                               'Invalid team ID',
-                               'Invalid hit'],
-                  'message': 'Failed to properly supply the required fields',
-                  'success': False}
+        message = 'Missing required parameter in the JSON body or the post body or the query string'
+        expect = {   
+                  'message': {
+                               'game_id': message,
+                               'hit': message,
+                               'player_id': message,
+                               'team_id': message 
+                              }
+                  }
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['bat']
                          + " POST: request with missing parameters")
-        # testing all invalid parameters
+        self.assertEqual(400, rv.status_code, Routes['bat']
+                         + " POST: request with missing parameters")
+        # testing invalid player
         params = {
                   'game_id': 1,
-                  'player_id': 3,
-                  'team_id': 5,
-                  'rbi': 10, 
-                  'hit': "X",
-                  'inning': -1
+                  'player_id': 99,
+                  'team_id': 1,
+                  'rbi': 2, 
+                  'hit': "hr",
+                  'inning': 1
                               }
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
-        expect = {'bat_id': None,
-                  'failures': [
-                               'Invalid game ID',
-                               'Invalid player ID',
-                               'Invalid team ID',
-                               'Invalid hit',
-                               'Invalid rbi',
-                               'Invalid inning'],
-                  'message': 'Failed to properly supply the required fields',
-                  'success': False}
+        expect = {'message': 'Player does not Exist 99'}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['bat']
-                         + " POST: request with invalid parameters")
+                         + " POST: request with invalid player")
+        self.assertEqual(PDNESC, rv.status_code, Routes['bat']
+                         + " POST: request with invalid player")
+        # testing invalid game
+        params = {
+                  'game_id': 99,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 2, 
+                  'hit': "hr",
+                  'inning': 1
+                              }
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        expect = {'message': 'Game does not Exist 99'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['bat']
+                         + " POST: request with invalid game")
+        self.assertEqual(GDNESC, rv.status_code, Routes['bat']
+                         + " POST: request with invalid game")
+        # testing invalid team
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 99,
+                  'rbi': 2, 
+                  'hit': "hr",
+                  'inning': 1
+                              }
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        expect = {'message': 'Team does not Exist 99'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['bat']
+                         + " POST: request with invalid team")
+        self.assertEqual(TDNESC, rv.status_code, Routes['bat']
+                         + " POST: request with invalid team")
+        # testing invalid rbi
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 100, 
+                  'hit': "hr",
+                  'inning': 1
+                              }
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        expect = {'message': 'Invalid rbi for Bat'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['bat']
+                         + " POST: request with invalid rbi")
+        self.assertEqual(IFSC, rv.status_code, Routes['bat']
+                         + " POST: request with invalid rbi")
+        # testing invalid inning
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 1, 
+                  'hit': "hr",
+                  'inning': -1
+                              }
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        expect = {'message': 'Invalid inning for Bat'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['bat']
+                         + " POST: request with invalid inning")
+        self.assertEqual(IFSC, rv.status_code, Routes['bat']
+                         + " POST: request with invalid inning")
+        # testing invalid hit
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 1, 
+                  'hit': "xx",
+                  'inning': 1
+                              }
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        expect = {'message': 'Invalid hit for Bat'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['bat']
+                         + " POST: request with invalid hit")
+        self.assertEqual(IFSC, rv.status_code, Routes['bat']
+                         + " POST: request with invalid hit")
         # test all valid parameters
-        self.addGame()
+        
         params = {
                   'game_id': 1,
                   'player_id': 1,
@@ -1309,13 +1394,12 @@ class TestBat(BaseTest):
                   'inning': 4
                               }
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
-        expect = {'bat_id': 1,
-                  'failures': [],
-                  'message': '',
-                  'success': True}
+        expect = 1
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['bat']
+                         + " POST: request with proper parameters")
+        self.assertEqual(200, rv.status_code, Routes['bat']
                          + " POST: request with proper parameters")
 
     def testBatGet(self):
@@ -1323,28 +1407,29 @@ class TestBat(BaseTest):
         self.addBat()
         # get on invalid id
         rv = self.app.get(Routes['bat']+ "/2")
-        expect = {'failures': [], 'message': 'Not a valid bat ID',
-                  'success': False}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['bat']
                          + " GET: invalid bat id")
+        self.assertEqual(rv.status_code, 404, Routes['bat']
+                         + " GET: invalid bat id")
         # get on valid id
         rv = self.app.get(Routes['bat']+ "/1")
-        data = {'bat_id': 1,
-                'game_id': 1,
-                'hit': 's',
-                'inning': 5,
-                'player_id': 1,
-                'rbi': 1,
-                'team_id': 1}
-        expect = {'data': data,
-                  'failures': [],
-                  'message': '',
-                  'success': True}
+        expect = {  'bat_id': 1,
+                    'game_id': 1,
+                    'hit': 's',
+                    'inning': 5,
+                    'player': 'Dallas Fraser email:fras2560@mylaurier.ca',
+                    'player_id': 1,
+                    'rbi': 1,
+                    'team': 'Domus Green',
+                    'team_id': 1}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['bat']
+                         + " GET: valid bat id")
+        self.assertEqual(rv.status_code, 200, Routes['bat']
                          + " GET: valid bat id")
 
     def testBatDelete(self):
@@ -1352,22 +1437,27 @@ class TestBat(BaseTest):
         self.addBat()
         # delete invalid id
         rv = self.app.delete(Routes['bat']+ "/2", headers=headers)
-        expect = {'message': 'Not a valid bat ID', 'success': False}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['bat']
                          + " DELETE: invalid bat id")
+        self.assertEqual(rv.status_code, 404, Routes['bat']
+                         + " DELETE: invalid bat id")
         # delete valid id
         rv = self.app.delete(Routes['bat']+ "/1", headers=headers)
-        expect = {'message': 'Bat was deleted', 'success': True}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['bat']
+                         + " DELETE: valid bat id")
+        self.assertEqual(rv.status_code, 200, Routes['bat']
                          + " DELETE: valid bat id")
 
     def testBatPut(self):
         # proper insertion of get
         self.addBats()
+        self.show_results = True
         # invalid bat ID
         params = {
                   'game_id': 1,
@@ -1378,34 +1468,115 @@ class TestBat(BaseTest):
                   'inning': 1
                               }
         rv = self.app.put(Routes['bat'] + "/3", data=params, headers=headers)
-        expect = {'failures': [], 'message': 'Not a valid bat ID',
-                  'success': False}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), 
                          Routes['bat'] + " PUT: invalid Bat id")
-        # test invalid parameters
+        self.assertEqual(404, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid Bat id")
+        # test invalid game_id
         params = {
                   'game_id': -1,
-                  'player_id': -1,
-                  'team_id': -1,
-                  'rbi': -4, 
-                  'hit': "X",
-                  'inning': -1
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 4, 
+                  'hit': "HR",
+                  'inning': 1
                               }
         rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
-        expect = {'failures': ['Invalid team ID',
-                               'Invalid game ID',
-                               'Invalid player ID',
-                               'Invalid rbi',
-                               'Invalid hit',
-                               'Invalid inning'],
-                  'message': 'Failed to properly supply the required fields',
-                  'success': False}
+        expect = {'message': 'Game does not Exist -1'}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), 
-                         Routes['bat'] + " PUT: invalid parameters")
+                         Routes['bat'] + " PUT: invalid game")
+        self.assertEqual(GDNESC, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid game")
+        # test invalid game_id
+        params = {
+                  'game_id': 1,
+                  'player_id': -1,
+                  'team_id': 1,
+                  'rbi': 4, 
+                  'hit': "HR",
+                  'inning': 1
+                              }
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
+        expect = {'message': 'Player does not Exist -1'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), 
+                         Routes['bat'] + " PUT: invalid player")
+        self.assertEqual(PDNESC, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid player")
+        # test invalid game_id
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': -1,
+                  'rbi': 4, 
+                  'hit': "HR",
+                  'inning': 1
+                              }
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
+        expect = {'message': 'Team does not Exist -1'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), 
+                         Routes['bat'] + " PUT: invalid team")
+        self.assertEqual(TDNESC, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid team")
+        # test invalid rbi
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 99, 
+                  'hit': "HR",
+                  'inning': 1
+                              }
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
+        expect = {'message': 'Invalid rbi for Bat'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), 
+                         Routes['bat'] + " PUT: invalid rbi")
+        self.assertEqual(IFSC, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid rbi")
+        # test invalid hit
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 4, 
+                  'hit': "XX",
+                  'inning': 1
+                              }
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
+        expect = {'message': 'Invalid hit for Bat'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), 
+                         Routes['bat'] + " PUT: invalid hit")
+        self.assertEqual(IFSC, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid hit")
+        # test invalid inning
+        params = {
+                  'game_id': 1,
+                  'player_id': 1,
+                  'team_id': 1,
+                  'rbi': 4, 
+                  'hit': "hr",
+                  'inning': -1
+                              }
+        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
+        expect = {'message': 'Invalid inning for Bat'}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), 
+                         Routes['bat'] + " PUT: invalid inning")
+        self.assertEqual(IFSC, rv.status_code, 
+                         Routes['bat'] + " PUT: invalid inning")
         # valid update
         params = {
                   'game_id': 1,
@@ -1416,11 +1587,12 @@ class TestBat(BaseTest):
                   'inning': 1
                               }
         rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
-        expect = {'failures': [], 'message': '',
-                  'success': True}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), 
+                         Routes['bat'] + " PUT: valid parameters")
+        self.assertEqual(200, rv.status_code, 
                          Routes['bat'] + " PUT: valid parameters")
 
 class TestTeamRoster(BaseTest):

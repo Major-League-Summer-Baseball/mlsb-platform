@@ -405,7 +405,8 @@ class Bat(DB.Model):
         classification = classification.lower().strip()
         player = Player.query.get(player_id)
         if player is None:
-            raise PlayerDoesNotExist()
+            raise PlayerDoesNotExist("Player does not Exist {}".format(player_id))
+        print(hit_validator(classification, player.gender))
         if not hit_validator(classification, player.gender):
             raise InvalidField("Invalid hit for Bat")
         if not rbi_validator(rbi):
@@ -413,9 +414,9 @@ class Bat(DB.Model):
         if not inning_validator(inning):
             raise InvalidField("Invalid inning for Bat")
         if Team.query.get(team_id) is None:
-            raise TeamDoesNotExist()
+            raise TeamDoesNotExist("Team does not Exist {}".format(team_id))
         if Game.query.get(game_id) is None:
-            raise GameDoesNotExist
+            raise GameDoesNotExist("Game does not Exist {}".format(game_id))
         # otherwise good and a valid object
         self.classification = classification
         self.rbi = rbi
@@ -434,10 +435,12 @@ class Bat(DB.Model):
                'bat_id': self.id,
                'game_id':self.game_id,
                'team_id': self.team_id,
+               'team': str(Team.query.get(self.team_id)),
                'rbi': self.rbi,
                'hit': self.classification,
                'inning':self.inning,
-               'player_id': self.player_id
+               'player_id': self.player_id,
+               'player': str(Player.query.get(self.player_id))
                }
 
     def update(self,
@@ -450,15 +453,15 @@ class Bat(DB.Model):
         if team_id is not None and Team.query.get(team_id) is not None:
             self.team_id = team_id
         elif team_id is not None:
-            raise TeamDoesNotExist()
+            raise TeamDoesNotExist("Team does not Exist {}".format(team_id))
         if game_id is not None and Game.query.get(game_id) is not None:
             self.game_id = game_id
         elif game_id is not None:
-            raise GameDoesNotExist()
+            raise GameDoesNotExist("Game does not Exist {}".format(game_id))
         if player_id is not None and Player.query.get(player_id) is not None:
             self.player_id = player_id
         elif player_id is not None:
-            raise PlayerDoesNotExist()
+            raise PlayerDoesNotExist("Player does not Exist {}".format(player_id))
         if rbi is not None and rbi_validator(rbi):
             self.rbi = rbi
         elif rbi is not None:
