@@ -4,6 +4,14 @@
 @organization: MLSB API
 @summary: Holds the errors for the database
 '''
+ERROR = 431
+IFSC = ERROR + 1
+PDNESC = ERROR + 2
+TDNESC = ERROR + 3
+LDNESC = ERROR + 4
+GDNESC = ERROR + 5
+SDNESC = ERROR + 6
+NUESC = ERROR + 7
 class TeamDoesNotExist(Exception):
     pass
 
@@ -14,7 +22,7 @@ class GameDoesNotExist(Exception):
     pass
 
 class InvalidField(Exception):
-    status_code = 409
+    status_code = IFSC
     def __init__(self, message, status_code=None, payload=None):
         Exception.__init__(self)
         self.message = message
@@ -42,30 +50,30 @@ class NonUniqueEmail(Exception):
 ERRORS = {
             'InvalidField': {
                 'message': "A field given was invalid",
-                'status': 409,
+                'status': IFSC,
             },
             'PlayerDoesNotExist': {
                 'message': "The player requested does not exist",
-                'status': 410,
+                'status': PDNESC,
             },
             'TeamDoesNotExist': {
                 'message': "The team requested does not exist",
-                'status': 411,
+                'status': TDNESC,
             },
             'LeagueDoesNotExist': {
                 'message': "The league requested does not exist",
-                'status': 412,
+                'status': LDNESC,
             },
             'SponsorDoesNotExist': {
                 'message': "The sponsor requested does not exist",
-                'status': 413,
+                'status': SDNESC,
             },
             'GameoesNotExist': {
                 'message': "The game requested does not exist",
-                'status': 413,
+                'status': GDNESC,
             },
             'NonUniqueEmail': {
                 'message': "The player's email was not unique",
-                'status': 414,
+                'status': NUESC,
             }
           }

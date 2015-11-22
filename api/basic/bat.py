@@ -18,7 +18,13 @@ parser.add_argument('game_id', type=int)
 parser.add_argument('hit', type=str)
 parser.add_argument('inning', type=int)
 parser.add_argument('team_id', type=str)
-
+post_parser = reqparse.RequestParser()
+post_parser.add_argument('player_id', type=int, required=True)
+post_parser.add_argument('rbi', type=int)
+post_parser.add_argument('game_id', type=int, required=True)
+post_parser.add_argument('hit', type=str, required=True)
+post_parser.add_argument('inning', type=int)
+post_parser.add_argument('team_id', type=str, required=True)
 
 class BatAPI(Resource):
     def get(self, bat_id):
@@ -39,18 +45,13 @@ class BatAPI(Resource):
                             }
         """
         # expose a single bat
-        result = {'success': False,
-                  'message': '',
-                  'failures': []}
-        entry = Bat.query.get(bat_id)
-        if entry is None:
-            result['message'] = 'Not a valid bat ID'
-            return Response(dumps(result), status=404,
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        result['success'] = True
-        result['data'] = entry.json()
-        return Response(dumps(result), status=200,
+        entry = Bat.query.get(bat_id)
+        if entry is not None:
+            response = Response(dumps(entry.json()), status=200,
                         mimetype="application/json")
+        return response
 
     @requires_admin
     def delete(self, bat_id):
@@ -64,18 +65,14 @@ class BatAPI(Resource):
                     success: tells if request was successful (boolean)
                     message: the status message (string)
         """
-        result = {'success': False,
-                  'message': ''}
         bat = Bat.query.get(bat_id)
-        if bat is None:
-            result['message'] = 'Not a valid bat ID'
-            return Response(dumps(result), status=404, mimetype="application/json")
-        # delete a single bat
-        DB.session.delete(bat)
-        DB.session.commit()
-        result['success'] = True
-        result['message'] = 'Bat was deleted'
-        return Response(dumps(result), status=200, mimetype="application/json")
+        response = Response(dumps(None), status=404, mimetype="application/json")
+        if bat is not None:
+            # delete a single bat
+            DB.session.delete(bat)
+            DB.session.commit()
+            response = Response(dumps(""), status=200, mimetype="application/json")
+        return response
 
     @requires_admin
     def put(self, bat_id):
@@ -99,55 +96,39 @@ class BatAPI(Resource):
                               (list of string)
         """
         # update a single bat
-        result = {'success': False,
-                  'message': '',
-                  'failures': []}
         args = parser.parse_args()
         bat = Bat.query.get(bat_id)
-        auth = request.authorization
-        if bat is None:
-            result['message'] = "Not a valid bat ID"
-            return Response(dumps(result), status=404,
+        player_id=None,
+        team_id=None,
+        game_id=None,
+        rbi=None,
+        hit=None,
+        inning=None
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        if args['team_id']:
-            tid = args['team_id']
-            if Team.query.get(tid) is None:
-                result['failures'].append('Invalid team ID')
-            else:
-                bat.team_id = tid
-        if args['game_id']:
-            gid = args['game_id']
-            if Game.query.get(gid) is None:
-                result['failures'].append('Invalid game ID')
-            else:
-                bat.game_id = gid
-        if args['player_id']:
-            pid = args['player_id']
-            if Player.query.get(gid) is None:
-                result['failures'].append('Invalid player ID')
-            else:
-                bat.player_id = gid
-        if args['rbi']:
-            if rbi_validator(args['rbi']):
-                bat.rbi = args['rbi']
-            else:
-                result['failures'].append('Invalid rbi')
-        if args['hit']:
-            if hit_validator(args['hit']):
-                bat.classificaiton = args['hit']
-            else:
-                result['failures'].append('Invalid hit')
-        if args['inning']:
-            if inning_validator(args['inning']):
-                bat.inning = args['inning']
-            else:
-                result['failures'].append('Invalid inning')
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
-        DB.session.commit()
-        result['success'] = True
-        return Response(dumps(result), status=200, mimetype="application/json")
+        if bat is not None:
+            if args['team_id']:
+                team_id= args['team_id']
+            if args['game_id']:
+                game_id = args['game_id']
+            if args['player_id']:
+                player_id = args['player_id']
+            if args['rbi']:
+                rbi = args['rbi']
+            if args['hit']:
+                hit = args['hit']
+            if args['inning']:
+                inning = args['inning']
+            bat.update(player_id=player_id,
+                       team_id=team_id,
+                       game_id=game_id,
+                       rbi=rbi,
+                       hit=hit,
+                       inning=inning)
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \
@@ -199,12 +180,8 @@ class BatListAPI(Resource):
                     failures: a list of parameters that failed (list of string)
                     bat_id: the created bat id (int)
         """
-        # create a new batr
-        result = {'success': False,
-                  'message': '',
-                  'failures': [],
-                  'bat_id': None}
-        args = parser.parse_args()
+        # create a new bat
+        args = post_parser.parse_args()
         game_id = None
         player_id = None
         team_id = None
@@ -213,52 +190,26 @@ class BatListAPI(Resource):
         inning = 1 # just assume some first inning
         if args['game_id']:
             game_id = args['game_id']
-            if Game.query.get(game_id) is None:
-                result['failures'].append("Invalid game ID")
-        else:
-            result['failures'].append('Invalid game ID')
         if args['player_id']:
             player_id = args['player_id']
-            if Player.query.get(player_id) is None:
-                result['failures'].append("Invalid player ID")
-        else:
-            result['failures'].append("Invalid player ID")
         if args['team_id']:
             team_id = args['team_id']
-            team = Team.query.get(team_id)
-            if team is None:
-                result['failures'].append('Invalid team ID')
-        else:
-            result['failures'].append("Invalid team ID")
         if args['hit']:
-            if hit_validator(args['hit']):
-                hit = args['hit']
-            else:
-                result['failures'].append('Invalid hit')
-        else:
-            result['failures'].append("Invalid hit")
+            hit = args['hit']
         if args['rbi']:
-            if rbi_validator(args['rbi']):
-                rbi = args['rbi']
-            else:
-                result['failures'].append("Invalid rbi")
+            rbi = args['rbi']
         if args['inning']:
-            if inning_validator(args['inning']):
-                inning = args['inning']
-            else:
-                result['failures'].append('Invalid inning')
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
+            inning = args['inning']
         bat = Bat(player_id,
                   team_id,
                   game_id,
-                  hit, inning, rbi)
+                  hit,
+                  inning=inning,
+                  rbi=rbi)
         DB.session.add(bat)
         DB.session.commit()
-        result['bat_id'] = bat.id
-        result['success'] = True
-        resp = Response(dumps(result), status=200, mimetype="application/json")
+        bat_id = bat.id
+        resp = Response(dumps(bat_id), status=200, mimetype="application/json")
         return resp
 
     def option(self):

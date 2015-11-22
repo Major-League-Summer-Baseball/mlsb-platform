@@ -13,6 +13,7 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
+from api.errors import IFSC
 from datetime import datetime, date, time
 from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
@@ -230,7 +231,7 @@ class TestSponsor(BaseTest):
         self.assertEqual(loads(rv.data), result, Routes['sponsor']
                          + " POST: POST request with invalid parameters"
                          )
-        self.assertEqual(rv.status_code, 409, Routes['sponsor']
+        self.assertEqual(rv.status_code, IFSC, Routes['sponsor']
                          + " POST: POST request with invalid parameters"
                          )
         # proper insertion with post
@@ -327,7 +328,7 @@ class TestSponsor(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['sponsor'] + " PUT: given invalid parameters")
-        self.assertEqual(409, rv.status_code,
+        self.assertEqual(IFSC, rv.status_code,
                          Routes['sponsor'] + " PUT: given invalid parameters")
         #successful update
         params = {'sponsor_name': 'New League'}
@@ -515,29 +516,26 @@ class TestPlayer(BaseTest):
                    'player_name': 'Dallas Fraser'}]
         self.assertEqual(expect, empty,Routes['player'] +
                          " GET: did not receive player list")
-        
+
 class TestLeague(BaseTest):
     def testLeagueAPIGet(self):
         # proper insertion with post
         self.addLeague()
         # invalid league id
         rv = self.app.get(Routes['league'] + "/2")
-        result = {'failures': [],
-                  'message': 'Not a valid league ID',
-                  'success': False}
         self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result,Routes['league'] +
+        self.assertEqual(loads(rv.data), None, Routes['league'] +
+                         " GET invalid league id")
+        self.assertEqual(rv.status_code, 404, Routes['league'] +
                          " GET invalid league id")
         # valid league id
         rv = self.app.get(Routes['league'] + "/1")
-        result = {'data': {"league_id": 1, "league_name": "Monday & Wedneday"},
-                  'failures': [],
-                  'message': '',
-                  'success': True}
+        result = {'league_id': 1, 'league_name': 'Monday & Wedneday'}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result,Routes['league'] +
+                         " GET valid league id")
+        self.assertEqual(rv.status_code, 200,Routes['league'] +
                          " GET valid league id")
 
     def testLeagueAPIDelete(self):
@@ -545,19 +543,22 @@ class TestLeague(BaseTest):
         self.addLeague()
         # delete of invalid league id
         rv = self.app.delete(Routes['league'] + "/2", headers=headers)
-        result = {'message': 'Not a valid league ID',
-                  'success': False}
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['league']+
+        self.assertEqual(loads(rv.data), result, Routes['league']+
+                         " DELETE Invalid league id ")
+        self.assertEqual(rv.status_code, 404, Routes['league']+
                          " DELETE Invalid league id ")
         rv = self.app.delete(Routes['league'] + "/1", headers=headers)
-        result = {  'message': 'League was deleted', 
-                    'success': True}
+        result = None
         self.output(loads(rv.data))
         self.output(result)
-        self.assertEqual(loads(rv.data),result, Routes['league'] +
+        self.assertEqual(loads(rv.data), result, Routes['league'] +
                          ' DELETE Valid league id')
+        self.assertEqual(rv.status_code, 200, Routes['league'] +
+                         ' DELETE Valid league id')
+        
 
     def testLeagueAPIPut(self):
         # must add a League

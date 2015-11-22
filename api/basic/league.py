@@ -8,107 +8,100 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response
 from api.model import League
 from json import dumps
-from api.validators import string_validator
 from api import DB
-from api.authentication import requires_admin, requires_captain
+from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('league_name', type=str)
-
-HEADERS = [{'header':'league_name', 'required':True, 
-            'validator':string_validator},]
+post_parser = reqparse.RequestParser()
+post_parser.add_argument('league_name', type=str, required=True)
 
 class LeagueAPI(Resource):
     def get(self, league_id):
         """
             GET request for League Object matching given league_id
-            Route: /leagues/<league_id: int>
+            Route: Route['league']/<league_id: int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    data:  {league_id:int, league_name:string}
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: {league_id:int, league_name:string}
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
+                
         """
         # expose a single League
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
-        entry  = League.query.get(league_id)
-        if entry is None:
-            result['message'] = 'Not a valid league ID'
-            return Response(dumps(result), status=404,
+        response = Response(dumps(None), status=404,
                              mimetype="application/json")
-        result['success'] = True
-        result['data'] = entry.json()
-        return Response(dumps(result), status=200, mimetype="application/json")
+        entry  = League.query.get(league_id)
+        if entry is not None:
+            response = Response(dumps(entry.json()), status=200,
+                             mimetype="application/json")
+        return response
 
     @requires_admin
     def delete(self, league_id):
         """
             DELETE request for League
-            Route: /leagues/<league_id:int>
+            Route: Route['league']/<league_id: int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
         """
-        result = {'success': False,
-                  'message': '',}
+        response = Response(dumps(None), status=404,
+                            mimetype="application/json")
         # delete a single user
         league = League.query.get(league_id)
-        if league is None:
-            result['message'] = "Not a valid league ID"
-            return Response(dumps(result), status=404,
+        if league is not None:
+            DB.session.delete(league)
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
                             mimetype="application/json")
-        DB.session.delete(league)
-        DB.session.commit()
-        result['success'] = True
-        result['message'] = 'League was deleted'
-        return Response(dumps(result), status=200, mimetype="application/json")
+        return response 
 
     @requires_admin
     def put(self, league_id):
         """
             PUT request for league
-            Route: /leagues/<league_id:int>
+            Route: Route['league']/<league_id: int>
             Parameters :
                 league_name: The league's name (string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed to update 
-                              (list of string)
+                if found and successful
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                if found but not successful
+                    status: IFSC
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
+                
         """
         # update a single user
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
+        response = Response(dumps(None), status=404,
+                            mimetype="application/json")
         args = parser.parse_args()
         league = League.query.get(league_id)
-        if league is None:
-            result['message'] = 'Not a valid league ID'
-            return Response(dumps(result), status=404,
-                            mimetype="application/json")
-        if args['league_name'] and string_validator(args['league_name']):
-            league.name = args['league_name']
-            result['success'] = True
-            result['message'] = ""
+        league_name = None
+        if league is not None:
+            if args['league_name']:
+                league_name = args['league_name']
+            league.update(league_name)
             DB.session.commit()
-        elif args['league_name'] and not string_validator(args['league_name']):
-            result['failures'].append("Invalid league name")
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400,
-                        mimetype="application/json")
-        
-        return Response(dumps(result), status=200, mimetype="application/json")
-
+            response = Response(dumps(None), status=200,
+                            mimetype="application/json")
+        return response
 
     def options (self):
         return {'Allow' : 'PUT' }, 200, \
@@ -119,7 +112,7 @@ class LeagueListAPI(Resource):
     def get(self):
         """
             GET request for League List
-            Route: /leagues
+            Route: Route['league']
             Parameters :
                 league_name: The league's name (string)
             Returns:
@@ -128,53 +121,47 @@ class LeagueListAPI(Resource):
                 data: 
                     tournaments: [{league_id:int,
                                    league_name:string,
-                              },{...}
+                                  },{...}
                             ]
         """
         # return a list of leagues
         leagues = League.query.all()
+        result = []
         for i in range(0, len(leagues)):
-            leagues[i] = leagues[i].json()
-        resp = Response(dumps(leagues), status=200, mimetype="application/json")
+            result.append(leagues[i].json())
+        resp = Response(dumps(result), status=200, mimetype="application/json")
         return resp
 
     @requires_admin
     def post(self):
         """
             POST request for League List
-            Route: /leagues
+            Route: Route['league']
             Parameters :
                 tournament_name: The league's name (string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed (list of string)
-                    league_id: the created user league id (int)
+                if successful
+                    status: 200 
+                    mimetype: application/json
+                    data: the created user league id (int)
+                if missing required parameter
+                    status: 400
+                    mimetype: application/json
+                    data: the created user league id (int)
+                if invalid parameter
+                    status: IFSC 
+                    mimetype: application/json
+                    data: the created user league id (int)
         """
         # create a new user
-        result = {'success': False,
-                  'message': '',
-                  'failures': [],
-                  'league_id': None}
-        args = parser.parse_args()
+        args = post_parser.parse_args()
         league_name = None
-        if args['league_name'] and string_validator(args['league_name']):
+        if args['league_name']:
             league_name = args['league_name']
-        else:
-            result['failures'].append("Invalid league name")
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400,
-                        mimetype="application/json")
         league= League(league_name)
         DB.session.add(league)
         DB.session.commit()
-        result['league_id'] = league.id
-        result['data'] = league.json()
-        result['success'] = True
+        result = league.id
         return Response(dumps(result), status=200,
                         mimetype="application/json")
 

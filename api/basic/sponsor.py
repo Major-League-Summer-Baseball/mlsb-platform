@@ -32,7 +32,7 @@ class SponsorAPI(Resource):
     def get(self, sponsor_id):
         """
             GET request for Sponsor Object matching given sponsor_id
-            Route: Routes['sponsor']
+            Route: Routes['sponsor']/<sponsor_id:int>
             Returns:
                 if found
                     status: 200 
@@ -62,7 +62,7 @@ class SponsorAPI(Resource):
     def delete(self, sponsor_id):
         """
             DELETE request for Sponsor
-            Route: /sponsors/<sponsor_id:int>
+            Route: Routes['sponsor']/<sponsor_id:int>
             Returns:
                 if found
                     status: 200 
@@ -88,7 +88,7 @@ class SponsorAPI(Resource):
     def put(self, sponsor_id):
         """
             PUT request for Sponsor
-            Route: /sponsors/<sponsor_id:int>
+            Route: Routes['sponsor']/<sponsor_id:int>
             Parameters :
                 sponsor_name: The Sponsor's name (string)
                 
@@ -131,7 +131,7 @@ class SponsorListAPI(Resource):
     def get(self):
         """
             GET request for Sponsor List
-            Route: /sponsors
+            Route: Routes['sponsor']
             Parameters :
 
             Returns:
@@ -157,7 +157,7 @@ class SponsorListAPI(Resource):
     def post(self):
         """
             POST request for Sponsor List
-            Route: /sponsors
+            Route: Routes['sponsor']/<sponsor_id:int>
             Parameters :
                 sponsor_name: The Sponsor's name (string)
                 link: A link to sponsors website (string)
