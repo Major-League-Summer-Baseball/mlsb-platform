@@ -8,11 +8,8 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Game, Team, League
-from api.validators import date_validator, time_validator, string_validator
-from sqlalchemy.ext.baked import Result
-from datetime import datetime
-from api.authentication import requires_admin, requires_captain
+from api.model import Game
+from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('home_team_id', type=int)
 parser.add_argument('away_team_id', type=int)
@@ -22,68 +19,80 @@ parser.add_argument('league_id', type=int)
 parser.add_argument('status', type=str)
 parser.add_argument('field', type=str)
 
+post_parser = reqparse.RequestParser(bundle_errors=True)
+post_parser.add_argument('home_team_id', type=int, required=True)
+post_parser.add_argument('away_team_id', type=int, required=True)
+post_parser.add_argument('date', type=str, required=True)
+post_parser.add_argument('time', type=str, required=True)
+post_parser.add_argument('league_id', type=int, required=True)
+post_parser.add_argument('status', type=str)
+post_parser.add_argument('field', type=str)
+
 class GameAPI(Resource):
     def get(self, game_id):
         """
             GET request for Game Object matching given Game_id
-            Route: /games/<game_id: int>
+            Route: Routes['game']/<game_id: int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    data:  {
-                            home_team_id: int, away_team_id: int,
-                            date: string, time: string,
-                            league_id: int, game_id: int,
-                            status: string
-                           }
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data:   {
+                            home_team: string
+                            home_team_id: int,
+                            away_team: string
+                            away_team_id: int,
+                            date: string,
+                            time: string,
+                            league_id: int, 
+                            game_id: int,
+                            status: string,
+                            field: string
+                               }
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data:   None
         """
         # expose a single game
-        result = {'success': False,
-                  'message': '',
-                  'failures':[]}
-        entry = Game.query.get(game_id)
-        if entry is None:
-            result['message'] = 'Not a valid game ID'
-            return Response(dumps(result), status=404,
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        result['success'] = True
-        result['data'] = entry.json()
-        return Response(dumps(result), status=200,
+        entry = Game.query.get(game_id)
+        if entry is not None:
+            response = Response(dumps(entry.json()), status=200,
                         mimetype="application/json")
+        return response
 
     @requires_admin
     def delete(self, game_id):
         """
             DELETE request for Game
-            Route: /games/<game_id:int>
+            Route: Routes['game']/<game_id: int>
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
+                if found
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise
+                    status: 404
+                    mimetype: application/json
+                    data: None
         """
-        result = {'success': False,
-                  'message': '',}
-        game = Game.query.get(game_id)
-        if game is None:
-            result['message'] = 'Not a valid game ID'
-            return Response(dumps(result), status=404,
+        response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        DB.session.delete(game)
-        DB.session.commit()
-        result['success'] = True
-        result['message'] = "Game was deleted"
-        return Response(dumps(result), status=200, mimetype="application/json")
+        game = Game.query.get(game_id)
+        if game is not None:
+            DB.session.delete(game)
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     @requires_admin
     def put(self, game_id):
         """
             PUT request for game
-            Route: /games/<game_id:int>
+            Route: Routes['game']/<game_id: int>
             Parameters :
                 home_team_id: The home team id (int)
                 away_team_id: The away team id (int)
@@ -91,58 +100,55 @@ class GameAPI(Resource):
                 time: The time of the game in the format HH:MM (string)
                 league_id: The league this game belongs to (int),
                 status: the game's status (string)
+                field: the game's field (string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed to update 
-                              (list of string)
+                if found and successful
+                    status: 200 
+                    mimetype: application/json
+                    data: None
+                otherwise possible errors
+                    status: 404, IFSC, TDNESC, LDNESC 
+                    mimetype: application/json
+                    data: None
         """
-        result = {'success': False,
-                  'message': '',
-                  'failures': []}
+        response = Response(dumps(None), status=404,
+                            mimetype="application/json")
         game = Game.query.get(game_id)
         args = parser.parse_args()
-        if game is None:
-            result['message'] = 'Invalid game ID'
-            return result
-        if args['home_team_id']:
-            htid = args['home_team_id']
-            if Team.query.get(htid) is None:
-                result['failures'].append("Invalid home team ID")
-            else:
-                game.home_team_id = htid
-        if args['away_team_id']:
-            atid = args['away_team_id']
-            if Team.query.get(atid) is None:
-                result['failures'].append("Invalid away team ID")
-            else:
-                game.away_team_id = atid
-        if args['date'] and args['time']:
-            if date_validator(args['date']) and time_validator(args['time']):
-                game.date = datetime.strptime(args['date'] + "-" +args['time'],
-                                              '%Y-%m-%d-%H:%M')
-            else:
-                result['failures'].append("Invalid time & date")
-        if args['field']:
-            if string_validator(args['field']):
-                game.field = args['field']
-        if args['status']:
-            game.status = args['status']
-        if args['league_id']:
-            lid = args['league_id']
-            if League.query.get(lid) is None:
-                result['failures'].append("Invalid league ID")
-            else:
-                game.league_id = lid
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
-        DB.session.commit()
-        result['success'] = True
-        return Response(dumps(result), status=200, mimetype="application/json")
+        home_team_id = None
+        away_team_id = None
+        league_id = None
+        date = None
+        time = None
+        field = None
+        status = None
+        if game is not None:
+            if args['home_team_id']:
+                home_team_id = args['home_team_id']
+            if args['away_team_id']:
+                away_team_id = args['away_team_id']
+            if args['date']:
+                date = args['date']
+            if args['time']:
+                time = args['time']
+    
+            if args['field']:
+                field = args['field']
+            if args['status']:
+                status = args['status']
+            if args['league_id']:
+                league_id = args['league_id']
+            game.update(date=date,
+                        time=time,
+                        home_team_id=home_team_id,
+                        away_team_id=away_team_id,
+                        league_id=league_id,
+                        status=status,
+                        field=field)
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     def option(self):
         return {'Allow' : 'PUT' }, 200, \
@@ -153,33 +159,40 @@ class GameListAPI(Resource):
     def get(self):
         """
             GET request for Games List
-            Route: /games
+            Route: Routes['game']
             Parameters :
             Returns:
                 status: 200 
                 mimetype: application/json
                 data: 
                     games: [  {
-                                    home_team_id: int, away_team_id: int,
-                                    date: string, time: string,
-                                    league_id: int, game_id: int,
-                                    status: string, field:string
+                                home_team: string
+                                home_team_id: int,
+                                away_team: string
+                                away_team_id: int,
+                                date: string,
+                                time: string,
+                                league_id: int, 
+                                game_id: int,
+                                status: string,
+                                field: string
                               }
                                 ,{...}
                            ]
         """
         # return a list of games
         games = Game.query.all()
+        result = []
         for i in range(0, len(games)):
-            games[i] = games[i].json()
-        resp = Response(dumps(games), status=200, mimetype="application/json")
+            result.append(games[i].json())
+        resp = Response(dumps(result), status=200, mimetype="application/json")
         return resp
 
     @requires_admin
     def post(self):
         """
             POST request for Games List
-            Route: /teams
+            Route: Routes['game']
             Parameters :
                 home_team_id: The home team id (int)
                 away_team_id: The away team id (int)
@@ -189,20 +202,13 @@ class GameListAPI(Resource):
                 status: the game status (string)
                 field: the field the game is being played on (string)
             Returns:
-                status: 200 
-                mimetype: application/json
-                data: 
-                    success: tells if request was successful (boolean)
-                    message: the status message (string)
-                    failures: a list of parameters that failed (list of string)
-                    game_id: the created game id (int)
+                if successful
+                    status: 200 
+                    mimetype: application/json
+                    data: the created game id (int)
         """
         # create a new game
-        result = {'success': False,
-                  'message': '',
-                  'failures': [],
-                  'game_id': None}
-        args = parser.parse_args()
+        args = post_parser.parse_args()
         home_team_id = None
         away_team_id = None
         date = None
@@ -211,46 +217,20 @@ class GameListAPI(Resource):
         status = ""
         field = ""
         if args['home_team_id']:
-            htid = args['home_team_id']
-            if Team.query.get(htid) is None:
-                result['failures'].append("Invalid home team ID")
-            else:
-                home_team_id = htid
-        else:
-            result['failures'].append("Invalid home team ID")
+            home_team_id = args['home_team_id']
         if args['away_team_id']:
-            atid = args['away_team_id']
-            if Team.query.get(atid) is None:
-                result['failures'].append("Invalid away team ID")
-            else:
-                away_team_id = atid
-        else:
-            result['failures'].append("Invalid away team ID")
+            away_team_id = args['away_team_id']
         if args['date'] and args['time']:
-            if date_validator(args['date']) and time_validator(args['time']):
-                date = datetime.strptime(args['date'] + "-" +args['time'],
-                                              '%Y-%m-%d-%H:%M')
-            else:
-                result['failures'].append("Invalid time & date")
-        else:
-            result['failures'].append('Invalid time & date')
+            date = args['date']
+            time = args['time']
         if args['league_id']:
-            lid = args['league_id']
-            if League.query.get(lid) is None:
-                result['failures'].append("Invalid league ID")
-            else:
-                league_id = lid
-        else:
-            result['failures'].append("Invalid league ID")
+            league_id = args['league_id']
         if args['status']:
             status = args['status']
         if args['field']:
-            if string_validator(args['field']):
-                field = args['field']
-        if len(result['failures']) > 0:
-            result['message'] = "Failed to properly supply the required fields"
-            return Response(dumps(result), status=400, mimetype="application/json")
+            field = args['field']
         game = Game(date,
+                    time,
                     home_team_id,
                     away_team_id,
                     league_id,
@@ -258,10 +238,8 @@ class GameListAPI(Resource):
                     field=field)
         DB.session.add(game)
         DB.session.commit()
-        result['success'] = True
-        result['game_id'] = game.id
+        result = game.id
         return Response(dumps(result), status=200, mimetype="application/json")
-
 
     def option(self):
         return {'Allow' : 'PUT' }, 200, \

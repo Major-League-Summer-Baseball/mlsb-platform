@@ -302,9 +302,12 @@ class Game(DB.Model):
         if not time_validator(time):
             raise InvalidField("Invalid time for Game")
         self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
-        if (Team.query.get(home_team_id) is None
-            or Team.query.get(away_team_id) is None):
-            raise TeamDoesNotExist()
+        if (Team.query.get(home_team_id) is None):
+            message = "Game does not Exist {}".format(home_team_id)
+            raise TeamDoesNotExist(message)
+        if Team.query.get(away_team_id) is None:
+            message = "Game does not Exist {}".format(away_team_id)
+            raise TeamDoesNotExist(message)
         if League.query.get(league_id) is None:
             raise LeagueDoesNotExist
         if ((status != "" and  not string_validator(status)) 
@@ -361,16 +364,16 @@ class Game(DB.Model):
             and Team.query.get(home_team_id) is not None):
             self.home_team_id = home_team_id
         elif home_team_id is not None:
-            raise TeamDoesNotExist()
+            raise TeamDoesNotExist("Team does not Exist {}".format(home_team_id))
         if (away_team_id is not None
             and Team.query.get(away_team_id) is not None):
             self.away_team_id = away_team_id
         elif away_team_id is not None:
-            raise TeamDoesNotExist()
+            raise TeamDoesNotExist("Team does not Exist {}".format(away_team_id))
         if league_id is not None and League.query.get(league_id) is not None:
             self.league_id = league_id
         elif league_id is not None:
-            raise LeagueDoesNotExist()
+            raise LeagueDoesNotExist("League does not Exist {}".format(league_id))
         if status is not None and string_validator(status):
             self.status = status
         elif status is not None:
