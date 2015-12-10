@@ -14,7 +14,6 @@ SDNESC = ERROR + 6
 NUESC = ERROR + 7
 THCSC = ERROR + 8
 MPSC = ERROR + 9
-
 class TeamDoesNotExist(Exception):
     status_code = TDNESC
     def __init__(self, message, status_code=None, payload=None):
