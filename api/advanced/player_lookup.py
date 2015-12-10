@@ -29,10 +29,6 @@ class PlayerLookupAPI(Resource):
         """
         player_name = None
         data = []
-        response = {'success': True,
-                  'message': '',
-                  'failures': [],
-                  'data': {}}
         args = parser.parse_args()
         players = None
         if args['email']:
@@ -44,5 +40,4 @@ class PlayerLookupAPI(Resource):
         if players is not None:
             for player in players:
                 data.append(player.json())
-        response['data'] = data
-        return Response(dumps(response), status=200, mimetype="application/json")
+        return Response(dumps(data), status=200, mimetype="application/json")

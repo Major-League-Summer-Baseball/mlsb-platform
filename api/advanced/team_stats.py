@@ -173,10 +173,6 @@ class TeamStatsAPI(Resource):
         """
         year = None
         id = None
-        response = {'success': True,
-                  'message': '',
-                  'failures': [],
-                  'data': {}}
         args = parser.parse_args()
         if args['team_id']:
             tid = args['team_id']
@@ -192,5 +188,4 @@ class TeamStatsAPI(Resource):
             else:
                 league_id = None
             team = post(None, year, league_id)
-        response['data'] = team
-        return Response(dumps(response), status=200, mimetype="application/json")
+        return Response(dumps(team), status=200, mimetype="application/json")
