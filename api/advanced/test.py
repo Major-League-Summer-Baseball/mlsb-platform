@@ -13,7 +13,6 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, roster
-from api.model import insertPlayer
 from datetime import datetime, date, time
 from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
@@ -28,8 +27,8 @@ class BaseTest(unittest.TestCase):
         self.show_results = False
         self.pp = PrettyPrinter(indent=4)
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        self.d = date(2014, 8, 23)
-        self.t = time(11, 37)
+        self.d = "2014-8-23"
+        self.t = "11:37"
         app.config['TESTING'] = True
         self.app = app.test_client()
         DB.engine.execute('''   
@@ -44,6 +43,7 @@ class BaseTest(unittest.TestCase):
         DB.create_all()
 
     def tearDown(self):
+        DB.session.commit()
         DB.engine.execute('''   
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
@@ -142,14 +142,20 @@ class BaseTest(unittest.TestCase):
     def addGames(self):
         self.addTeams()
         self.addLeagues()
-        self.games = [Game(datetime.combine(self.d, self.t),
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.leagues[0].id),
-                      Game(datetime.combine(self.d, self.t),
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.leagues[1].id)
+        self.games = [Game(
+                           self.d,
+                           self.t,
+                           self.teams[0].id,
+                           self.teams[1].id,
+                           self.leagues[0].id
+                           ),
+                      Game(
+                           self.d,
+                           self.t,
+                           self.teams[0].id,
+                           self.teams[1].id,
+                           self.leagues[1].id
+                           )
                       ]
         DB.session.add(self.games[0])
         DB.session.add(self.games[1])
@@ -235,12 +241,16 @@ class BaseTest(unittest.TestCase):
 
     def addCaptainToTeam(self):
         self.addTeam()
-        insertPlayer(1, 1, captain=True)
-    
+        team = Team.query.get(1)
+        team.insert_player(1, captain=True)
+        DB.session.commit()
+
     def addPlayersToTeam(self):
         self.addTeams()
-        insertPlayer(1, 1, captain=True)
-        insertPlayer(1, 2, captain=False)
+        team = Team.query.get(1)
+        team.insert_player(1, captain=True)
+        team.insert_player(1, captain=False)
+        DB.session.commit()
 
     def addSeason(self):
         self.sponsors = [Sponsor("Domus"),
@@ -373,12 +383,8 @@ class BaseTest(unittest.TestCase):
 class GameTest(BaseTest):
     def testPost(self):
         # No games
-        self.show_results = True
         rv = self.app.post(Routes['vgame'])
-        expect = {'data': [],
-                  'failures': [],
-                  'message': '',
-                  'success': True}
+        expect = []
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -386,105 +392,105 @@ class GameTest(BaseTest):
         self.addBats()
         # just monday and wednesday
         rv = self.app.post(Routes['vgame'], data={"league_id": 1})
-        expect = {   'data': [   {  'status': '',
-                                    'game_id': 1,
-                                    'away_bats': [],
-                                    'away_score': 0,
-                                    'away_team': {'color': 'Black',
-                                                  'espys': 0,
-                                                  'league_id': None,
-                                                  'sponsor_id': 2,
-                                                  'team_id': 2,
-                                                  'year': 2015},
-                                    'date': '2014-08-23 11:37',
-                                    'home_bats': [   {'hit': 's',
-                                                      'inning': 5,
-                                                      'name': 'Dallas Fraser',
-                                                      'rbi': 1},
-                                                     {'hit': 'k',
-                                                      'inning': 5,
-                                                      'name': 'My Dream Girl',
-                                                      'rbi': 0}],
-                                    'home_score': 1,
-                                    'home_team': {'color': 'Green',
-                                                  'espys': 0,
-                                                  'league_id': None,
-                                                  'sponsor_id': 1,
-                                                  'team_id': 1,
-                                                  'year': 2015},
-                                    'league': {'league_id': 1,
-                                               'league_name': 'Monday & Wedneday'}
-                                  }
-                              ],
-                    'failures': [],
-                    'message': '',
-                    'success': True}
+        expect = [   {   'away_bats': [],
+                        'away_score': 0,
+                        'away_team': {   'captain': None,
+                                         'color': 'Black',
+                                         'espys': 0,
+                                         'league_id': None,
+                                         'sponsor_id': 2,
+                                         'team_id': 2,
+                                         'team_name': 'Chainsaw Black',
+                                         'year': 2015},
+                        'date': '2014-08-23 11:37',
+                        'game_id': 1,
+                        'home_bats': [   {   'hit': 's',
+                                             'inning': 5,
+                                             'name': 'Dallas Fraser',
+                                             'rbi': 1},
+                                         {   'hit': 'k',
+                                             'inning': 5,
+                                             'name': 'My Dream Girl',
+                                             'rbi': 0}],
+                        'home_score': 1,
+                        'home_team': {   'captain': None,
+                                         'color': 'Green',
+                                         'espys': 0,
+                                         'league_id': None,
+                                         'sponsor_id': 1,
+                                         'team_id': 1,
+                                         'team_name': 'Domus Green',
+                                         'year': 2015},
+                        'league': {'league_id': 1, 'league_name': 'Monday & Wedneday'},
+                        'status': ''}]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vgame'] + " Post: View of Game")
         # no parameters
         rv = self.app.post(Routes['vgame'], data={})
-        expect = {   'data': [   {  'status': '',
-                                    'game_id': 1,
-                                    'away_bats': [],
-                                    'away_score': 0,
-                                    'away_team': {   'color': 'Black',
-                                                     'espys': 0,
-                                                     'league_id': None,
-                                                     'sponsor_id': 2,
-                                                     'team_id': 2,
-                                                     'year': 2015},
-                                    'date': '2014-08-23 11:37',
-                                    'home_bats': [   {   'hit': 's',
-                                                         'inning': 5,
-                                                         'name': 'Dallas Fraser',
-                                                         'rbi': 1},
-                                                     {   'hit': 'k',
-                                                         'inning': 5,
-                                                         'name': 'My Dream Girl',
-                                                         'rbi': 0}],
-                                    'home_score': 1,
-                                    'home_team': {   'color': 'Green',
-                                                     'espys': 0,
-                                                     'league_id': None,
-                                                     'sponsor_id': 1,
-                                                     'team_id': 1,
-                                                     'year': 2015},
-                                    'league': {   'league_id': 1,
-                                                  'league_name': 'Monday & Wedneday'}},
-                                {   
-                                    'status': '',
-                                    'game_id': 2,
-                                    'away_bats': [],
-                                    'away_score': 0,
-                                    'away_team': {   'color': 'Black',
-                                                     'espys': 0,
-                                                     'league_id': None,
-                                                     'sponsor_id': 2,
-                                                     'team_id': 2,
-                                                     'year': 2015},
-                                    'date': '2014-08-23 11:37',
-                                    'home_bats': [   {   'hit': 's',
-                                                         'inning': 5,
-                                                         'name': 'Dallas Fraser',
-                                                         'rbi': 1},
-                                                     {   'hit': 'k',
-                                                         'inning': 5,
-                                                         'name': 'My Dream Girl',
-                                                         'rbi': 0}],
-                                    'home_score': 1,
-                                    'home_team': {   'color': 'Green',
-                                                     'espys': 0,
-                                                     'league_id': None,
-                                                     'sponsor_id': 1,
-                                                     'team_id': 1,
-                                                     'year': 2015},
-                                    'league': {   'league_id': 2,
-                                                  'league_name': 'Tuesday & Thursday'}}],
-                'failures': [],
-                'message': '',
-                'success': True}
+        expect = [   {   'away_bats': [],
+                        'away_score': 0,
+                        'away_team': {   'captain': None,
+                                         'color': 'Black',
+                                         'espys': 0,
+                                         'league_id': None,
+                                         'sponsor_id': 2,
+                                         'team_id': 2,
+                                         'team_name': 'Chainsaw Black',
+                                         'year': 2015},
+                        'date': '2014-08-23 11:37',
+                        'game_id': 1,
+                        'home_bats': [   {   'hit': 's',
+                                             'inning': 5,
+                                             'name': 'Dallas Fraser',
+                                             'rbi': 1},
+                                         {   'hit': 'k',
+                                             'inning': 5,
+                                             'name': 'My Dream Girl',
+                                             'rbi': 0}],
+                        'home_score': 1,
+                        'home_team': {   'captain': None,
+                                         'color': 'Green',
+                                         'espys': 0,
+                                         'league_id': None,
+                                         'sponsor_id': 1,
+                                         'team_id': 1,
+                                         'team_name': 'Domus Green',
+                                         'year': 2015},
+                        'league': {'league_id': 1, 'league_name': 'Monday & Wedneday'},
+                        'status': ''},
+                    {   'away_bats': [],
+                        'away_score': 0,
+                        'away_team': {   'captain': None,
+                                         'color': 'Black',
+                                         'espys': 0,
+                                         'league_id': None,
+                                         'sponsor_id': 2,
+                                         'team_id': 2,
+                                         'team_name': 'Chainsaw Black',
+                                         'year': 2015},
+                        'date': '2014-08-23 11:37',
+                        'game_id': 2,
+                        'home_bats': [   {   'hit': 's',
+                                             'inning': 5,
+                                             'name': 'Dallas Fraser',
+                                             'rbi': 1},
+                                         {   'hit': 'k',
+                                             'inning': 5,
+                                             'name': 'My Dream Girl',
+                                             'rbi': 0}],
+                        'home_score': 1,
+                        'home_team': {   'captain': None,
+                                         'color': 'Green',
+                                         'espys': 0,
+                                         'league_id': None,
+                                         'sponsor_id': 1,
+                                         'team_id': 1,
+                                         'team_name': 'Domus Green',
+                                         'year': 2015},
+                        'league': {'league_id': 2, 'league_name': 'Tuesday & Thursday'},
+                        'status': ''}]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),

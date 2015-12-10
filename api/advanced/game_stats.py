@@ -31,10 +31,6 @@ class GameStatsAPI(Resource):
                 mimetype: application/json
                 data: list of Players
         """
-        response = {'success': True,
-                  'message': '',
-                  'failures': [],
-                  'data': None}
         args = parser.parse_args()
         if args['game_id']:
             games = DB.session.query(Game).filter_by(id = args['game_id'])
@@ -96,5 +92,4 @@ class GameStatsAPI(Resource):
                                        'rbi':home_bats[bat].rbi})
                 g['home_score'] += home_bats[bat].rbi
             result.append(g)
-        response['data'] = result
-        return Response(dumps(response), status=200, mimetype="application/json")
+        return Response(dumps(result), status=200, mimetype="application/json")
