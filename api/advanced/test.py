@@ -107,11 +107,19 @@ class BaseTest(unittest.TestCase):
         self.addPlayers()
         self.addSponsors()
         # team one
-        self.teams = [Team(color="Green"),
-                      Team(color="Black")
+        self.teams = [Team(
+                           color="Green",
+                           sponsor_id=self.sponsors[0].id
+                           ),
+                      Team(
+                           color="Black",
+                           sponsor_id=self.sponsors[1].id
+                           ),
+                      Team(
+                           color="Diamon",
+                           sponsor_id=self.sponsors[0].id
+                           )
                       ]
-        self.teams[0].sponsor_id = self.sponsors[0].id
-        self.teams[1].sponsor_id = self.sponsors[1].id
         for t in range(0, len(self.teams)):
             DB.session.add(self.teams[t])
         DB.session.commit()
@@ -166,18 +174,26 @@ class BaseTest(unittest.TestCase):
         self.addLeagues()
         self.teams.append(Team("Blue"))
         DB.session.add(self.teams[-1])
-        self.games = [Game(datetime.combine(self.d, self.t),
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.leagues[0].id),
-                      Game(datetime.combine(self.d, self.t),
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.leagues[1].id),
-                      Game(datetime.combine(self.d, self.t),
-                         self.teams[1].id,
-                         self.teams[2].id,
-                         self.leagues[1].id)
+        print(self.teams[1].id,
+                           self.teams[2].id,)
+        self.games = [Game(
+                           self.d,
+                           self.t,
+                           self.teams[0].id,
+                           self.teams[1].id,
+                           self.leagues[0].id),
+                      Game(
+                           self.d,
+                           self.t,
+                           self.teams[0].id,
+                           self.teams[1].id,
+                           self.leagues[1].id),
+                      Game(
+                           self.d,
+                           self.t,
+                           self.teams[1].id,
+                           self.teams[2].id,
+                           self.leagues[1].id)
                       ]
         DB.session.add(self.games[0])
         DB.session.add(self.games[1])
@@ -219,7 +235,7 @@ class BaseTest(unittest.TestCase):
         DB.session.add(self.bat)
         DB.session.commit()
         self.assertEqual(self.bat.id, 1)
-    
+
     def addBats(self):
         self.addGames()
         self.bats = [Bat(self.players[0].id,
@@ -498,13 +514,9 @@ class GameTest(BaseTest):
 
 class PlayerTest(BaseTest):
     def testPost(self):
-        self.show_results = True
         # no date
         rv = self.app.post(Routes['vplayer'])
-        expect = {'data': {},
-                  'failures': [],
-                  'message': '',
-                  'success': True}
+        expect = {}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -512,95 +524,82 @@ class PlayerTest(BaseTest):
         self.addBats()
         # no parameters
         rv = self.app.post(Routes['vplayer'])
-        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
-                                                     'bats': 1,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 0,
-                                                     'pf': 0,
-                                                     's': 1},
-                                'My Dream Girl': {   'avg': 0.0,
-                                                     'bats': 1,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 1,
-                                                     'pf': 0,
-                                                     's': 0}},
-                'failures': [],
-                'message': '',
-                'success': True}
+        expect = {   'Dallas Fraser': {   'avg': 1.0,
+                         'bats': 1,
+                         'd': 0,
+                         'go': 0,
+                         'hr': 0,
+                         'k': 0,
+                         'pf': 0,
+                         's': 1},
+                    'My Dream Girl': {   'avg': 0.0,
+                                         'bats': 1,
+                                         'd': 0,
+                                         'go': 0,
+                                         'hr': 0,
+                                         'k': 1,
+                                         'pf': 0,
+                                         's': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vplayer'] + " Post: View of Player")
 
     def testPostParameters(self):
-        self.show_results = True
         self.addBunchBats()
         rv = self.app.post(Routes['vplayer'])
-        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
-                                                     'bats': 1,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 0,
-                                                     'pf': 0,
-                                                     's': 1},
-                                'My Dream Girl': {   'avg': 0.0,
-                                                     'bats': 2,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 2,
-                                                     'pf': 0,
-                                                     's': 0}},
-                    'failures': [],
-                    'message': '',
-                    'success': True}
+        expect = {   'Dallas Fraser': {   'avg': 1.0,
+                         'bats': 1,
+                         'd': 0,
+                         'go': 0,
+                         'hr': 0,
+                         'k': 0,
+                         'pf': 0,
+                         's': 1},
+                    'My Dream Girl': {   'avg': 0.0,
+                                         'bats': 2,
+                                         'd': 0,
+                                         'go': 0,
+                                         'hr': 0,
+                                         'k': 2,
+                                         'pf': 0,
+                                         's': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vplayer'] + " Post: View of Player")
         # filter based on league
         rv = self.app.post(Routes['vplayer'], data={'league_id': 1})
-        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
-                                                     'bats': 1,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 0,
-                                                     'pf': 0,
-                                                     's': 1}},
-                    'failures': [],
-                    'message': '',
-                    'success': True}
+        expect = {   'Dallas Fraser': {   'avg': 1.0,
+                         'bats': 1,
+                         'd': 0,
+                         'go': 0,
+                         'hr': 0,
+                         'k': 0,
+                         'pf': 0,
+                         's': 1}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vplayer'] + " Post: View of Player")
         # filter based on team
         rv = self.app.post(Routes['vplayer'], data={'team_id': 1})
-        expect = {   'data': {   'Dallas Fraser': {   'avg': 1.0,
-                                                     'bats': 1,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 0,
-                                                     'pf': 0,
-                                                     's': 1},
-                                'My Dream Girl': {   'avg': 0.0,
-                                                     'bats': 1,
-                                                     'd': 0,
-                                                     'go': 0,
-                                                     'hr': 0,
-                                                     'k': 1,
-                                                     'pf': 0,
-                                                     's': 0}},
-                    'failures': [],
-                    'message': '',
-                    'success': True}
+        expect = {   'Dallas Fraser': {   'avg': 1.0,
+                         'bats': 1,
+                         'd': 0,
+                         'go': 0,
+                         'hr': 0,
+                         'k': 0,
+                         'pf': 0,
+                         's': 1},
+                    'My Dream Girl': {   'avg': 0.0,
+                                         'bats': 1,
+                                         'd': 0,
+                                         'go': 0,
+                                         'hr': 0,
+                                         'k': 1,
+                                         'pf': 0,
+                                         's': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),

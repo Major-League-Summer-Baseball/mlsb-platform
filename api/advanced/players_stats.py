@@ -34,10 +34,6 @@ class PlayerStatsAPI(Resource):
         """
         year = None
         id = None
-        response = {'success': True,
-                  'message': '',
-                  'failures': [],
-                  'data': {}}
         args = parser.parse_args()
         if args['player_id']:
             bats = DB.session.query(Bat).filter_by(player_id = args['player_id'])
@@ -109,5 +105,4 @@ class PlayerStatsAPI(Resource):
             players[key]['avg'] = (players[key]['s'] +\
                                    players[key]['d'] +\
                                    players[key]['hr']) / players[key]['bats']
-        response['data'] = players
-        return Response(dumps(response), status=200, mimetype="application/json")
+        return Response(dumps(players), status=200, mimetype="application/json")
