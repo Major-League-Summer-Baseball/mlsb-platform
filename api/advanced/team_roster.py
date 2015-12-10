@@ -11,8 +11,8 @@ from api.validators import date_validator
 from api import DB
 from api.model import Team, Player, roster
 parser = reqparse.RequestParser()
-parser.add_argument('player_id', type=int)
-parser.add_argument('team_id', type=int)
+parser.add_argument('player_id', type=int, required=True)
+parser.add_argument('team_id', type=int, required=True)
 parser.add_argument('captain', type=int)
 
 
@@ -73,23 +73,15 @@ class TeamRosterAPI(Resource):
                     message: the status message (string)
         """
         args = parser.parse_args()
-        result = {'success': False,
-                  'message': '',}
-        if args['team_id'] and args['player_id']:
-            player = Player.query.get(args['player_id'])
-            team = Team.query.get(args['team_id'])
-            if player is not None and team is not None:
-                if player in team.players:
-                    team.players.remove(player)
-                    DB.session.commit()
-                    result['success'] = True
-                else:
-                    result['message'] = "Player is not on the team"
-            else:
-                result['message'] = "Invalid parameters"
-        else:
-            result['message'] = "Invalid parameters"
-        return Response(dumps(result), status=200, mimetype="application/json")
+        team = Team.query.get(args['team_id'])
+        response = Response(dumps("Team not found"),
+                            status=404, mimetype="application/json")
+        if team is not None:
+            team.remove_player(args['player_id'])
+            DB.session.commit()
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     def post(self):
         """
@@ -108,28 +100,17 @@ class TeamRosterAPI(Resource):
                     failures: a list of parameters that failed (list of string)
         """
         args = parser.parse_args()
-        result = {'success': False,
-                  'message': '',
-                  'failures': []}
-        if args['player_id'] and args['team_id']:
-            player = Player.query.get(args['player_id'])
-            team = Team.query.get(args['team_id'])
-            if player is None:
-                result['failures'].append("Invalid player")
-            if team is None:
-                result['failures'].append("Invalid team")
-            if len(result['failures']) > 0:
-                result['message'] = "Invalid parameters"
-            else:
-                if args['captain'] and args['captain'] == 1:
-                    team.player_id = args['player_id']
-                else:
-                    team.players.append(player)
-                result['success'] = True
-                DB.session.commit()
-        else:
-            result['message'] = "Failed to properly supply the required fields"
-        return Response(dumps(result), status=200, mimetype="application/json")
+        team = Team.query.get(args['team_id'])
+        response = Response(dumps("Team not found"), status=404,
+                            mimetype="application/json")
+        if team is not None:
+            captain = False
+            if args['captain'] and args['captain'] == 1:
+                captain = True
+            team.insert_player(args['player_id'], captain=captain)
+            response = Response(dumps(None), status=200,
+                                mimetype="application/json")
+        return response
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \

@@ -205,6 +205,7 @@ class BaseTest(unittest.TestCase):
         team = Team.query.get(1)
         team.insert_player(1, captain=True)
         team.insert_player(2, captain=False)
+        DB.session.commit()
 
 class TestSponsor(BaseTest):
     def testSponsorListAPI(self):
@@ -1457,7 +1458,6 @@ class TestBat(BaseTest):
     def testBatPut(self):
         # proper insertion of get
         self.addBats()
-        self.show_results = True
         # invalid bat ID
         params = {
                   'game_id': 1,
@@ -1600,51 +1600,43 @@ class TestTeamRoster(BaseTest):
         #invalid update
         params = {'team_id': 1, "player_id": 1}
         rv = self.app.post(Routes['team_roster'], data=params)
-        expect = {'failures': ['Invalid player',
-                               'Invalid team'],
-                  'message': 'Invalid parameters',
-                  'success': False}
+        expect = 'Team not found'
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: invalid data")
+        self.assertEqual(404, rv.status_code, 
+                         Routes['team_roster'] + " PUT: invalid data")
         # add player to team        
         self.addTeams()
         params = {'team_id': 1, "player_id": 1}
         rv = self.app.post(Routes['team_roster'], data=params)
-        expect = {'failures': [],
-                  'message': '',
-                  'success': True}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: proper data")
+        self.assertEqual(200, rv.status_code, 
+                         Routes['team_roster'] + " PUT: invalid data")
         # add a captain
         params = {'team_id': 1, "player_id": 2, "captain": 1}
         rv = self.app.post(Routes['team_roster'], data=params)
-        expect = {'failures': [],
-                  'message': '',
-                  'success': True}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: proper data")
-        query = "?team_id=2&player_id=2"
-        rv = self.app.delete(Routes['team_roster'] + query)
-        expect = []
-        self.output(loads(rv.data))
-        self.output(expect)
-        
-        
+        self.assertEqual(200, rv.status_code, 
+                         Routes['team_roster'] + " PUT: invalid data")
+
     def testDelete(self):
         #add player to team
         self.addPlayersToTeam()
         # missing data
         query = "?team_id=2"
         rv = self.app.delete(Routes['team_roster'] + query)
-        expect = {
-                  'message': 'Invalid parameters',
-                  'success': False}
+        message = 'Missing required parameter in the JSON body or the post body or the query string'
+        expect = {   'message': {   'player_id': message}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
@@ -1652,8 +1644,7 @@ class TestTeamRoster(BaseTest):
         # invalid combination
         query = "?team_id=2&player_id=2"
         rv = self.app.delete(Routes['team_roster'] + query)
-        expect = {'message': 'Player is not on the team',
-                  'success': False}
+        expect = {'message': 'Player was not a member of the team'}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
@@ -1661,8 +1652,7 @@ class TestTeamRoster(BaseTest):
         # proper deletion
         query = "?team_id=1&player_id=2"
         rv = self.app.delete(Routes['team_roster'] + query)
-        expect = {'message': '', 
-                  'success': True}
+        expect = None
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
@@ -1670,6 +1660,7 @@ class TestTeamRoster(BaseTest):
 
     def testGet(self):
         #empty get
+        self.show_results = True
         rv = self.app.get(Routes['team_roster'])
         expect = []
         self.output(loads(rv.data))
@@ -1678,28 +1669,36 @@ class TestTeamRoster(BaseTest):
                          " GET: on empty set")
         self.addPlayersToTeam()
         rv = self.app.get(Routes['team_roster'])
-        expect = [{  '0': {'color': 'Black',
-                           'espys': 0,
-                           'league_id': None,
-                           'sponsor_id': 2,
-                           'team_id': 2,
-                           'year': 2015},
-                    'captain': None,
-                    'players': []},
-                  {  '1': { 'color': 'Green',
-                            'espys': 0,
-                             'league_id': None,
-                             'sponsor_id': 1,
-                             'team_id': 1,
-                             'year': 2015},
-                    'captain': {'email': 'fras2560@mylaurier.ca',
-                               'gender': 'm',
-                               'player_id': 1,
-                               'player_name': 'Dallas Fraser'},
-                   'players': [{'email': 'dream@mylaurier.ca',
-                                'gender': 'f',
-                                'player_id': 2,
-                                'player_name': 'My Dream Girl'}]}]
+        expect = [   {   '0': {   'captain': None,
+                                 'color': 'Black',
+                                 'espys': 0,
+                                 'league_id': None,
+                                 'sponsor_id': 2,
+                                 'team_id': 2,
+                                 'team_name': 'Chainsaw Black',
+                                 'year': 2015},
+                        'captain': None,
+                        'players': []},
+                    {   '1': {   'captain': {   'email': 'fras2560@mylaurier.ca',
+                                                'gender': 'm',
+                                                'player_id': 1,
+                                                'player_name': 'Dallas Fraser'},
+                                 'color': 'Green',
+                                 'espys': 0,
+                                 'league_id': None,
+                                 'sponsor_id': 1,
+                                 'team_id': 1,
+                                 'team_name': 'Domus Green',
+                                 'year': 2015},
+                        'captain': {   'email': 'fras2560@mylaurier.ca',
+                                       'gender': 'm',
+                                       'player_id': 1,
+                                       'player_name': 'Dallas Fraser'},
+                        'players': [   {   'email': 'dream@mylaurier.ca',
+                                           'gender': 'f',
+                                           'player_id': 2,
+                                           'player_name': 'My Dream Girl'}]
+                }]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +

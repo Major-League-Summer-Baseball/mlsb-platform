@@ -8,9 +8,15 @@
 from api import app
 from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
                         PlayerDoesNotExist, GameDoesNotExist,\
-                        LeagueDoesNotExist, SponsorDoesNotExist
+                        LeagueDoesNotExist, SponsorDoesNotExist, MissingPlayer
 from flask import Response
 from json import dumps
+
+@app.errorhandler(MissingPlayer)
+def handle_missing_player(error):
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return  response
 
 @app.errorhandler(InvalidField)
 def handle_invalid_field(error):

@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime
 from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-                        NonUniqueEmail
+                        NonUniqueEmail, MissingPlayer
 from api.validators import  rbi_validator, hit_validator, inning_validator,\
                             string_validator, date_validator, time_validator,\
                             field_validator, year_validator, int_validator,\
@@ -153,7 +153,7 @@ class Team(DB.Model):
     def json(self):
         captain = None
         if self.player_id is not None:
-            captain = Player.query.get(self.player_id)
+            captain = Player.query.get(self.player_id).json()
         return{
                'team_id': self.id,
                'team_name': str(self),
@@ -197,13 +197,21 @@ class Team(DB.Model):
         valid = False
         player = Player.query.get(player_id)
         if player is None:
-            raise PlayerDoesNotExist()
+            raise PlayerDoesNotExist("Player does not Exist {}".format(player_id))
         if captain:
             self.player_id = player_id
         else:
             self.players.append(player)
         return valid
 
+    def remove_player(self, player_id):
+        if self.player_id == player_id:
+            self.player_id = None
+        else:
+            player = Player.query.get(player_id)
+            if player not in self.players:
+                raise MissingPlayer("Player was not a member of the team")
+        
     def check_captain(self, player_name, password):
         player = Player.query.get(self.player_id)
         return player.name == player_name and player.check_password(password)
@@ -309,7 +317,7 @@ class Game(DB.Model):
             message = "Game does not Exist {}".format(away_team_id)
             raise TeamDoesNotExist(message)
         if League.query.get(league_id) is None:
-            raise LeagueDoesNotExist
+            raise LeagueDoesNotExist("League does not Exist {}".format(league_id))
         if ((status != "" and  not string_validator(status)) 
             or (field != "" and not field_validator(field))):
             raise InvalidField("Invalid status/field for Game")
