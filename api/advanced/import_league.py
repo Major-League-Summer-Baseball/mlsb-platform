@@ -5,13 +5,11 @@ Project: MLSB API
 Purpose: Holds a class TeamList that helps imports a team roster
 '''
 # imports
-from sqlalchemy.sql.expression import and_
-from api.model import Sponsor, Team, Player, Game, League
+from api.model import Sponsor, Team, Game, League
 from api import DB
-from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from api.validators import time_validator, string_validator, date_validator
-from datetime import datetime
-from api.advanced.import_team import INVALID_FIELD
+from api.errors import InvalidField
+import logging
 # constants
 CREATED = "Created Team (no league was specified"
 NO_LEAGUE = "Cannot find league, please ensure spelt correctly or create the league"
@@ -22,11 +20,16 @@ INVALID_FIELD = "{} had an invalid field"
 INVALID_TEAM = "{} is not a team in the league"
 
 class LeagueList():
-    def __init__(self, lines):
+    def __init__(self, lines, logger=None):
         self.success = False
         self.errors = []
         self.warnings = []
         self.lines = lines
+        if logger is None:
+            logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)s %(message)s')
+            logger = logging.getLogger(__name__)
+        self.logger = logger
 
     def import_league(self):
         '''
@@ -39,26 +42,26 @@ class LeagueList():
             errors: a list of possible error (list)
             warnings: a list of possible warnings (list)
         '''
-        if self.lines is not None:
-            if self.check_header(self.lines[0:2]):
+        if self.lines is None:
+            raise InvalidField("No lines were provided")
+        if self.check_header(self.lines[0:2]):
                 league, headers = self.parse_header(self.lines[0:2])
-                print("Getting League ID")
+                self.logger.debug("Getting League ID")
                 self.league_id = self.get_league_id(league)
-                print("Got League id", self.league_id)
+                self.logger.debug("Got League id {}".format(self.league_id))
                 self.set_columns_indices(headers)
-                print("Got set column indcides")
+                self.logger.debug("Got set column indcides")
                 if self.league_id is not None:
                     self.set_teams()
                     games = self.lines[2:]
                     for game in games:
-                        print(game)
+                        self.logger.debug(game)
                         self.import_game(game)
-                        print("Done Import")
-                print("here")
-            else:
-                self.errors.append(INVALID_FILE)
+                        self.logger.debug("Done Import")
+        else:
+            self.errors.append(INVALID_FILE)
         if len(self.errors) < 1:
-            print("Committing")
+            self.logger.debug("Committing")
             # no major errors so commit changes
             DB.session.commit()
         return
@@ -78,7 +81,6 @@ class LeagueList():
         else:
             # cant assume some league so return None
             self.errors.append(NO_LEAGUE)
-        print(id)
         return id
 
     def set_teams(self):
@@ -112,7 +114,6 @@ class LeagueList():
                 self.time_index = i
             elif "field" in headers[i].lower():
                 self.field_index = i
-            
         return
 
     def import_game(self, info):
@@ -122,26 +123,19 @@ class LeagueList():
             info: the string that contains the information of a player (str)
         Returns:
         '''
-        print("1")
         info = info.split(",")
-        print(info)
         if (len(info) < self.away_index or 
             len(info) < self.home_index or
             len(info) < self.time_index or
             len(info) < self.field_index or
             len(info) < self.date_index):
-            print(len(info) < self.away_index,
-            len(info) < self.home_index,
-            len(info) < self.time_index,
-            len(info) < self.field_index,
-            len(info) < self.date_index)
+            self.logger.debug("Game did not have the right number of fields")
             return # probably just an empty line
         away = info[self.away_index].strip()
         home = info[self.home_index].strip()
         time = info[self.time_index].strip()
         field = info[self.field_index].strip()
         date = info[self.date_index].strip()
-        print("2")
         # check if variables meet certain conditions
         if (not string_validator(away) or
             not string_validator(home) or
@@ -150,20 +144,20 @@ class LeagueList():
             not string_validator(field)):
             g = away + " vs. " + home + " on " + date
             self.errors.append(INVALID_FIELD.format(g))
+            self.logger.debug("Game had invalid fields")
         else:
             # else should be good to add game
             away_team = self.teams.get(away, None)
             home_team = self.teams.get(home, None)
-            print(home_team, away_team)
             if away_team is None:
                 self.errors.append(INVALID_TEAM.format(away))
             if home_team is None:
                 self.errors.append(INVALID_TEAM.format(home))
             if away_team is not None and home_team is not None:
                 # else should be good to add the game
-                date = datetime.strptime(date + "-" +time,
-                                              '%Y-%m-%d-%H:%M')
-                game = Game(date,
+                game = Game(
+                            date,
+                            time,
                             home_team,
                             away_team,
                             self.league_id,
@@ -254,15 +248,16 @@ class testSubTester(unittest.TestCase):
 
     def tearDown(self):
         print("Teardown")
-#         DB.engine.execute('''   
-#                             DROP TABLE IF EXISTS roster;
-#                             DROP TABLE IF EXISTS bat;
-#                             DROP TABLE IF EXISTS game;
-#                             DROP TABLE IF EXISTS team;
-#                             DROP TABLE IF EXISTS player;
-#                             DROP TABLE IF EXISTS sponsor;
-#                             DROP TABLE IF EXISTS league;
-#                             ''')
+        DB.session.commit()
+        DB.engine.execute('''   
+                            DROP TABLE IF EXISTS roster;
+                            DROP TABLE IF EXISTS bat;
+                            DROP TABLE IF EXISTS game;
+                            DROP TABLE IF EXISTS team;
+                            DROP TABLE IF EXISTS player;
+                            DROP TABLE IF EXISTS sponsor;
+                            DROP TABLE IF EXISTS league;
+                            ''')
 
     def testParseHeader(self):
         self.tl = LeagueList(self.test)
@@ -351,7 +346,6 @@ class testSubTester(unittest.TestCase):
         self.tl.import_game(self.valid_test[2])
         self.assertEqual(self.tl.warnings, [])
         self.assertEqual(self.tl.errors, ["Domus Black is not a team in the league"])
-        # some bad field
 
 class testTeamImport(unittest.TestCase):
     def setUp(self):
@@ -397,16 +391,16 @@ class testTeamImport(unittest.TestCase):
                          ]
 
     def tearDown(self):
-        pass
-#         DB.engine.execute('''   
-#                             DROP TABLE IF EXISTS roster;
-#                             DROP TABLE IF EXISTS bat;
-#                             DROP TABLE IF EXISTS game;
-#                             DROP TABLE IF EXISTS team;
-#                             DROP TABLE IF EXISTS player;
-#                             DROP TABLE IF EXISTS sponsor;
-#                             DROP TABLE IF EXISTS league;
-#                             ''')
+        DB.session.commit()
+        DB.engine.execute('''   
+                            DROP TABLE IF EXISTS roster;
+                            DROP TABLE IF EXISTS bat;
+                            DROP TABLE IF EXISTS game;
+                            DROP TABLE IF EXISTS team;
+                            DROP TABLE IF EXISTS player;
+                            DROP TABLE IF EXISTS sponsor;
+                            DROP TABLE IF EXISTS league;
+                            ''')
 
     def insertSponsors(self):
         self.sponsors = [Sponsor("Domus"),
@@ -465,8 +459,6 @@ class testTeamImport(unittest.TestCase):
         self.tl.import_league()
         self.assertEqual(self.tl.warnings, [])
         self.assertEqual(self.tl.errors, [INVALID_TEAM.format("XX")])
-        
-
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

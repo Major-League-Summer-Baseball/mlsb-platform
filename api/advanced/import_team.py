@@ -5,12 +5,12 @@ Project: MLSB API
 Purpose: Holds a class TeamList that helps imports a team roster
 '''
 # imports
-from sqlalchemy.sql.expression import and_
 from api.model import Sponsor, Team, Player
 from api import DB
-from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from api.validators import gender_validator, string_validator
 from datetime import date
+from api.errors import InvalidField
+import logging
 # constants
 CREATED = "Created Team (no league was specified"
 NO_SPONSOR = "Cannot find sponsor, please ensure spelt correctly or create sponsor"
@@ -20,11 +20,16 @@ EMAIL_NAME = "Player {} email was found but had different name"
 INVALID_FIELD = "{} had an invalid field"
 
 class TeamList():
-    def __init__(self, lines):
+    def __init__(self, lines, logger=None):
         self.success = False
         self.errors = []
         self.warnings = []
         self.lines = lines
+        if logger is None:
+            logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)s %(message)s')
+            logger = logging.getLogger(__name__)
+        self.logger = logger
 
     def import_team(self):
         '''
@@ -36,26 +41,21 @@ class TeamList():
             errors: a list of possible error (list)
             warnings: a list of possible warnings (list)
         '''
-        if self.lines is not None:
-            if self.check_header(self.lines[0:2]):
-                sponsor, color, headers = self.parse_header(self.lines[0:2])
-                print("Getting Team_id")
-                self.team_id = self.get_team_id(sponsor, color)
-                print("Got team id")
-                self.set_columns_indices(headers)
-                print("Got set column indcides")
-                if self.team_id is not None:
-                    print("selt line")
-                    players = self.lines[2:]
-                    for player in players:
-                        print(player)
-                        self.import_player(player)
-                        print("Done Import")
-                print("here")
-            else:
-                self.errors.append(INVALID_FILE)
+        
+        if self.lines is None:
+            raise InvalidField("No lines were provided")
+        if self.check_header(self.lines[0:2]):
+            sponsor, color, headers = self.parse_header(self.lines[0:2])
+            self.team_id = self.get_team_id(sponsor, color)
+            self.set_columns_indices(headers)
+            if self.team_id is not None:
+                players = self.lines[2:]
+                for player in players:
+                    self.import_player(player)
+        else:
+            self.errors.append(INVALID_FILE)
         if len(self.errors) < 1:
-            print("Committing")
+            self.logger.debug("Successful completed import")
             # no major errors so commit changes
             DB.session.commit()
         return
@@ -88,7 +88,7 @@ class TeamList():
         else:
             # cant assume some sponsor so return None
             self.errors.append(NO_SPONSOR)
-        print(id)
+        self.logger.debug("{} - Id received for {}-{}".format(id,sponsor,color))
         return id
 
     def set_columns_indices(self, headers):
@@ -114,27 +114,27 @@ class TeamList():
             info: the string that contains the information of a player (str)
         Returns:
         '''
-        print("1")
         info = info.split(",")
         if (len(info) < self.name_index or 
             len(info) < self.email_index or
             len(info) < self.gender_index):
+            self.logger.debug("Missing field for player")
             return # probably just an empty line
         name = info[self.name_index]
         email = info[self.email_index]
         gender = info[self.gender_index]
-        print("2")
         # check if variables meet certain conditions
         if (not string_validator(name) or
             not string_validator(email) or
             not gender_validator(gender)):
+            self.logger.debug("Invalid field for player")
             self.errors.append(INVALID_FIELD.format(name +"-"+email))
         else:
             # check if similar to template example just skip if it is
             if ("Dallas Fraser" in name or
                 "fras2560@mylaurier.ca" in email):
                 self.warnings.append(EXAMPLE_FOUND)
-                print("Found example")
+                self.logger.debug("Example was given")
             else:
                 # else should be good to add player
                 #check the player exists already
@@ -150,6 +150,7 @@ class TeamList():
                         self.warnings.append(EMAIL_NAME.format(email))
                 team = Team.query.get(self.team_id)
                 team.players.append(player)
+                self.logger.debug("{} was added to {}".format(name,str(team)))
         return
 
     def check_header(self,header):
@@ -190,7 +191,6 @@ class TeamList():
         color = first[3]
         headers = header[1].split(",")
         return sponsor, color, headers
-
 
 # the test for this class are not the best might need to be fixed later
 import unittest
@@ -233,20 +233,21 @@ class testSubTester(unittest.TestCase):
 
     def tearDown(self):
         print("Teardown")
-#         DB.engine.execute('''   
-#                             DROP TABLE IF EXISTS roster;
-#                             DROP TABLE IF EXISTS bat;
-#                             DROP TABLE IF EXISTS game;
-#                             DROP TABLE IF EXISTS team;
-#                             DROP TABLE IF EXISTS player;
-#                             DROP TABLE IF EXISTS sponsor;
-#                             DROP TABLE IF EXISTS league;
-#                             ''')
+        DB.session.commit()
+        DB.engine.execute('''   
+                            DROP TABLE IF EXISTS roster;
+                            DROP TABLE IF EXISTS bat;
+                            DROP TABLE IF EXISTS game;
+                            DROP TABLE IF EXISTS team;
+                            DROP TABLE IF EXISTS player;
+                            DROP TABLE IF EXISTS sponsor;
+                            DROP TABLE IF EXISTS league;
+                            ''')
 
     def testParseHeader(self):
         self.tl = TeamList(self.test)
         s,c,h = self.tl.parse_header(self.test[0:2])
-        self.assertEqual(s ,'EX. SPORTZONE')
+        self.assertEqual(s ,'SPORTZONE')
         self.assertEqual(c, 'Pink')
         self.assertEqual(h, ['Player Name', 'Player Email', 'Gender (M/F)', ''])
 
@@ -375,16 +376,16 @@ class testTeamImport(unittest.TestCase):
                              "Player Name,Player Email,Gender (M/F),",
                              "Marco Gallucci,gall4400@mylaurier.ca,M,"]
     def tearDown(self):
-        pass
-#         DB.engine.execute('''   
-#                             DROP TABLE IF EXISTS roster;
-#                             DROP TABLE IF EXISTS bat;
-#                             DROP TABLE IF EXISTS game;
-#                             DROP TABLE IF EXISTS team;
-#                             DROP TABLE IF EXISTS player;
-#                             DROP TABLE IF EXISTS sponsor;
-#                             DROP TABLE IF EXISTS league;
-#                             ''')
+        DB.session.commit()
+        DB.engine.execute('''   
+                            DROP TABLE IF EXISTS roster;
+                            DROP TABLE IF EXISTS bat;
+                            DROP TABLE IF EXISTS game;
+                            DROP TABLE IF EXISTS team;
+                            DROP TABLE IF EXISTS player;
+                            DROP TABLE IF EXISTS sponsor;
+                            DROP TABLE IF EXISTS league;
+                            ''')
 
     def insertSponsors(self):
         self.sponsors = [Sponsor("Domus"),
