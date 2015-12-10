@@ -41,7 +41,28 @@
 		</tr>
 	</tfoot>
 <table>
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+{% endblock %}
 
+{% block script %}
 <script>
 var updates = {};
 
@@ -59,21 +80,17 @@ function postLeague(){
 	  async: false,
 	  data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	if (results.success == true){
+	  success: function (league_id){
 	  		alert('League was added successfully');
 	  		var i1, i4;
-	  		i1 = '<input class="input" value="' + results.data.league_name + '" id="' + results.data.league_id + '_league_name" onclick="change('+ results.data.league_id+', \'league_name\')">';
-	  		i4 = '	<button type="button" class="btn btn-danger" onclick="deleteLeague('+results.data.league_id+');">Delete</button>'
+	  		i1 = '<input class="input" value="' + league_name + '" id="' + league_id + '_league_name" onclick="change('+ league_id+', \'league_name\')">';
+	  		i4 = '	<button type="button" class="btn btn-danger" onclick="deleteLeague('+league_id+');">Delete</button>'
 	  		
-	  		$("#leagueTable").append('<tr><td>' + results.league_id + '</td><td>' + i1 + '</td><td>' + i4 + '</td></tr>');
+	  		$("#leagueTable").append('<tr class="leagueEntry" id="'+league_id+'"><td>' + league_id + '</td><td>' + i1 + '</td><td>' + i4 + '</td></tr>');
 			$("#newName").val('');
-	  	}else{
-	  		alert('League was not added correctly', result.failures);
-	  	}
-	    console.log(results	)
+	    console.log(league_id	)
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request);
         console.log(error);
     } 
@@ -102,15 +119,11 @@ function deleteLeague(id){
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('League was removed successfully');
-	  		$('#'+id).remove();
-	  	}else{
-	  		alert('League was not removed', result.failures);
-	  	}
-	    console.log(results	)
+	  	alert('League was removed successfully');
+	  	$('#'+id).remove();
+	    console.log(results, id	);
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
@@ -135,19 +148,32 @@ function putLeague(id, attributes){
 	  data: JSON.stringify(attributes),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('League was updated successfully');
-	  	}else{
-	  		alert('League was not updated properly', result.failures);
-	  	}
+	  	alert('League was updated successfully');
 	    console.log(results)
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
 	});
 }
 
+function showErrors(response, status_code){
+	$('#file_modal').modal("show");
+	$('#errors').empty();
+	var element;
+	if (status_code == 400){
+		$('#modal-title').text("Bad Request - 400");
+		for (var key in response.message){
+			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
+			$('#errors').append(element);	
+		}
+
+	}else if (status_code == 432){
+		$('#modal-title').text("Invalid Field - 432");
+		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
+		$('#errors').append(element);			
+	}
+}
 </script>
 {% endblock %}

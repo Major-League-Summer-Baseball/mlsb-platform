@@ -17,7 +17,8 @@
     <link href="{{ url_for('static', filename="css/documentation.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/admin.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/chosen.css") }}" rel="stylesheet">
-
+    {% block header %}
+    {% endblock %}
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -101,7 +102,6 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- bootstrap js -->
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/sorttable.js") }}"></script>
     <script src="{{ url_for('static', filename="js/chosen.jquery.min.js") }}"></script>
     <!-- Menu Toggle Script -->
     <script>
@@ -129,6 +129,8 @@
 
       }
     </script>
+    {% block script %}
+    {% endblock %}
   </body>
   <footer>
 

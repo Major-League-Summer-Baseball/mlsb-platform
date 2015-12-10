@@ -293,7 +293,7 @@ def admin_logout():
 @app.route(Routes['aportal'], methods=['POST'])
 def admin_portal():
     if 'admin' in session and 'password' in session:
-        return redirect(url_for('admin_form'))
+        return redirect(url_for('admin_home'))
     else:
         admin = request.form.get('admin')
         password = request.form.get('password')

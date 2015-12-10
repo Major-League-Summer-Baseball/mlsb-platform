@@ -247,9 +247,29 @@
 	</tfoot>
 </table>
 
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+
+{% endblock %}
+{% block script %}
 <script>
-
-
 function ready(){
 	$(function(){
 		$("#home_outside_new_player_id").chosen({});
@@ -346,31 +366,26 @@ function postBat(team, team_id){
 	  async: false,
 	  data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	if (results.success == true){
-	  		alert('Bat was added successfully');
-	  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, result;
-	  		i2 = makeTeamSelect(results.bat_id, team, player_id);
-			i3 = '<input class="input" value="'+ rbi +'" id="'+results.bat_id+'_rbi" onchange="change('+results.bat_id+', \'rbi\');">';
-	  		i4 = '<input class="input" value="'+ inning +'" id="'+results.bat_id+'_inning" onchange="change('+results.bat_id+', \'inning\');">';
-	  		i5 = makeHitSelect(results.bat_id, hit);
-	  		/*i6 = makePlayerSelect(results.bat_id, player_id);*/
-	  		i6 = '<button class="btn btn-danger" onclick="deleteBat('+results.bat_id+');">Delete Bat </button>'
-	  		result = '<tr id="'+results.bat_id+'"><td>' + results.bat_id + '</td><td>'+player_name+'</td><td>' + rbi + '</td><td>'+inning+ '</td><td>'+hit+ '</td><td>'+i6+ '</td></tr>'
-	  		console.log(result)
-	  		$("#"+team+"Bats").append(result);
-	  	}else{
-	  		alert('Bat was not added correctly', result.failures);
-	  	}
-	    console.log(results	)
+	  success: function (bat_id){
+  		alert('Bat was added successfully');
+  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, result;
+  		i2 = makeTeamSelect(bat_id, team, player_id);
+		i3 = '<input class="input" value="'+ rbi +'" id="'+bat_id+'_rbi" onchange="change('+bat_id+', \'rbi\');">';
+  		i4 = '<input class="input" value="'+ inning +'" id="'+bat_id+'_inning" onchange="change('+bat_id+', \'inning\');">';
+  		i5 = makeHitSelect(bat_id, hit);
+  		/*i6 = makePlayerSelect(bat_id, player_id);*/
+  		i6 = '<button class="btn btn-danger" onclick="deleteBat('+bat_id+');">Delete Bat </button>'
+  		result = '<tr id="'+bat_id+'"><td>' + bat_id + '</td><td>'+player_name+'</td><td>' + rbi + '</td><td>'+inning+ '</td><td>'+hit+ '</td><td>'+i6+ '</td></tr>'
+  		console.log(result)
+  		$("#"+team+"Bats").append(result);
+	    console.log()
 	    $('#'+team+"_new_player_id").val("default");
 	    $('#'+team+"_outside_new_player_id").val("default");
 	    $('#'+team+"_new_rbi").val("");
 	    $('#'+team+"_new_inning").val("");
 	    $('#'+team+"_new_hit").val("default");
-	    
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request);
         console.log(error);
     } 
@@ -379,6 +394,7 @@ function postBat(team, team_id){
 
 function deleteBat(bat_id){
 	var data = { "id": bat_id};
+	$('#errors').empty(); 
 	$.ajax
 	({
 	  type: "DELETE",
@@ -389,19 +405,33 @@ function deleteBat(bat_id){
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('Bat was removed successfully');
-	  		$('#'+bat_id).remove();
-	  	}else{
-	  		alert('Game was not removed', result.failures);
-	  	}
-	    console.log(results	)
+	  	alert('Bat was removed successfully');
+	  	$('#'+bat_id).remove();
+	    console.log(results)
 	  }, error: function(request, error){
-        alert("Error-> check console");
-        console.log(request.text);
+        showErrors(request.responseJSON, request.status);
+        console.log(request);
         console.log(error);
     } 
 	});
+}
+
+function showErrors(response, status_code){
+	$('#file_modal').modal("show");
+	$('#errors').empty();
+	var element;
+	if (status_code == 400){
+		$('#modal-title').text("Bad Request - 400");
+		for (var key in response.message){
+			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
+			$('#errors').append(element);	
+		}
+
+	}else if (status_code == 432){
+		$('#modal-title').text("Invalid Field - 432");
+		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
+		$('#errors').append(element);			
+	}
 }
 
 </script>

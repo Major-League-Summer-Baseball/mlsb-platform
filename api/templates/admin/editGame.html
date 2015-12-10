@@ -129,7 +129,28 @@
 		</tr>
 	</tfoot>
 <table>
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+{% endblock %}
 
+{% block script %}
 <script>
 var updates = {};
 
@@ -202,28 +223,23 @@ function postGame(){
 	  async: false,
 	  data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	if (results.success == true){
-	  		alert('Game was added successfully');
-	  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, result;
-	  		i3 = makeTeams(results.game_id, league_id, 'home', home_team_id);;
-	  		i4 = makeTeams(results.game_id, league_id, 'away', away_team_id);
-	  		i5 = '<input class="input" value="'+ date +'" id="'+results.game_id+'_date" onchange="change('+results.game_id+', \'date\');change('+results.game_id+', \'time\');">';
-	  		i6 =  '<input class="input" value="'+ time +'" id="'+results.game_id+'_time" onchange="change('+results.game_id+', \'date\');change('+results.game_id+', \'time\');">';
-	  		i7 = '<input class="input" value="'+ status +'" id="'+results.game_id+'_status" onchange="change('+results.game_id+', \'status\');">';
-	  		i8 = '<input class="input" value="'+ field +'" id="'+results.game_id+'_status" onchange="change('+results.game_id+', \'field\');">';
-	  		i9 = '<a type="button" class="btn btn-info" href="{{route.editbat}}/{{year}}/'+results.game_id+'"> Edit Bats </a>';
-	  		i10 = '	<button type="button" class="btn btn-danger" onclick="deleteGame('+results.game_id+');">Delete</button>';
-	  		
-	  		result = '<tr id="'+results.game_id+'"><td>' + results.game_id + '</td><td>Can\'t edit which league the game belongs to</td><td>' + i3 + '</td><td>'+i4+ '</td><td>'+i5+ '</td><td>'+i6+ '</td><td>'+i7+ '</td><td>'+i8+'</td><td>'+i9+'</td><td>'+i10+'</td></tr>'
-	  		console.log(result)
-	  		$("#gameTable").append(result);
-	  	}else{
-	  		alert('game was not added correctly', result.failures);
-	  	}
-	    console.log(results	)
+	  success: function (game_id){
+  		alert('Game was added successfully');
+  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, result;
+  		i3 = makeTeams(game_id, league_id, 'home', home_team_id);;
+  		i4 = makeTeams(game_id, league_id, 'away', away_team_id);
+  		i5 = '<input class="input" value="'+ date +'" id="'+ game_id+'_date" onchange="change('+ game_id+', \'date\');change('+game_id+', \'time\');">';
+  		i6 =  '<input class="input" value="'+ time +'" id="'+game_id+'_time" onchange="change('+game_id+', \'date\');change('+game_id+', \'time\');">';
+  		i7 = '<input class="input" value="'+ status +'" id="'+game_id+'_status" onchange="change('+game_id+', \'status\');">';
+  		i8 = '<input class="input" value="'+ field +'" id="'+game_id+'_status" onchange="change('+game_id+', \'field\');">';
+  		i9 = '<a type="button" class="btn btn-info" href="{{route.editbat}}/{{year}}/'+game_id+'"> Edit Bats </a>';
+  		i10 = '	<button type="button" class="btn btn-danger" onclick="deleteGame('+game_id+');">Delete</button>';
+  		
+  		result = '<tr id="'+game_id+'"><td>' + game_id + '</td><td>Can\'t edit which league the game belongs to</td><td>' + i3 + '</td><td>'+i4+ '</td><td>'+i5+ '</td><td>'+i6+ '</td><td>'+i7+ '</td><td>'+i8+'</td><td>'+i9+'</td><td>'+i10+'</td></tr>'
+  		console.log(result)
+  		$("#gameTable").append(result);
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request);
         console.log(error);
     } 
@@ -253,15 +269,10 @@ function deleteGame(id){
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('game was removed successfully');
-	  		$('#'+id).remove();
-	  	}else{
-	  		alert('game was not removed', result.failures);
-	  	}
-	    console.log(results	)
+	  	alert('game was removed successfully');
+	  	$('#'+id).remove();
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
@@ -286,18 +297,31 @@ function putGame(id, attributes){
 	  data: JSON.stringify(attributes),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('game was updated successfully');
-	  	}else{
-	  		alert('game was not updated properly', result.failures);
-	  	}
-	    console.log(results)
+	  	alert('game was updated successfully');
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
 	});
+}
+
+function showErrors(response, status_code){
+	$('#file_modal').modal("show");
+	$('#errors').empty();
+	var element;
+	if (status_code == 400){
+		$('#modal-title').text("Bad Request - 400");
+		for (var key in response.message){
+			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
+			$('#errors').append(element);	
+		}
+
+	}else if (status_code == 432){
+		$('#modal-title').text("Invalid Field - 432");
+		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
+		$('#errors').append(element);			
+	}
 }
 
 </script>

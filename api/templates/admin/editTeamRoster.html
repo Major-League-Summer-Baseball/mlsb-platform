@@ -30,8 +30,28 @@
 		</tr>
 	</tfoot>
 </table>
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+{% endblock %}
 
-
+{% block script %}
 <script>
 function ready(){
 	$(function(){
@@ -54,19 +74,14 @@ function addPlayer(team_id){
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('player was added to team successfully');
-	  		var i1,i2, result;
-	  		i1 = player_name;
-	  		i2 = '<button type="button" class="btn btn-warning" onclick="deletePlayer('+player_id+','+team_id+')">Delete Player</button>'
-	  		result = '<tr id="'+player_id+'"><td>'+i1+'</td><td>'+i2+'</td></tr>';
-	  		$("#players").append(result);
-	  	}else{
-	  		alert('Player was not added', result.failures);
-	  	}
-	    console.log(results	)
+  		alert('player was added to team successfully');
+  		var i1,i2, result;
+  		i1 = player_name;
+  		i2 = '<button type="button" class="btn btn-warning" onclick="deletePlayer('+player_id+','+team_id+')">Delete Player</button>'
+  		result = '<tr id="'+player_id+'"><td>'+i1+'</td><td>'+i2+'</td></tr>';
+  		$("#players").append(result);
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
@@ -86,19 +101,33 @@ function deletePlayer(player_id, team_id){
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('player was removed from team successfully');
-	  		$('#'+player_id).remove();
-	  	}else{
-	  		alert('game was not removed', result.failures);
-	  	}
-	    console.log(results	)
+	  	console.log(results)
+  		alert('player was removed from team successfully');
+  		$('#'+player_id).remove()
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
 	});
+}
+
+function showErrors(response, status_code){
+	$('#file_modal').modal("show");
+	$('#errors').empty();
+	var element;
+	if (status_code == 400){
+		$('#modal-title').text("Bad Request - 400");
+		for (var key in response.message){
+			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
+			$('#errors').append(element);	
+		}
+
+	}else if (status_code == 432){
+		$('#modal-title').text("Invalid Field - 432");
+		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
+		$('#errors').append(element);			
+	}
 }
 </script>
 {% endblock %}

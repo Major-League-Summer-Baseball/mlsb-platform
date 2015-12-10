@@ -108,6 +108,7 @@ class TeamRosterAPI(Resource):
             if args['captain'] and args['captain'] == 1:
                 captain = True
             team.insert_player(args['player_id'], captain=captain)
+            DB.session.commit()
             response = Response(dumps(None), status=200,
                                 mimetype="application/json")
         return response

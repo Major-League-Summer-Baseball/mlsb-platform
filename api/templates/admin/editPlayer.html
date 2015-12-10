@@ -69,7 +69,28 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
 		</tr>
 	</tfoot>
 <table>
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+{% endblock %}
 
+{% block script %}
 <script>
 var updates = {};
 
@@ -89,28 +110,23 @@ function postPlayer(){
 	  async: false,
 	  data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	if (results.success == true){
-	  		alert('Player was added successfully');
-	  		var i1,i2, i3, iv4;
-	  		i1 = '<input class="input" value="' + results.data.player_name + '" id="' + results.data.player_id + '_player_name" onclick="change('+ results.data.player_id+', \'player_name\')">';
-	  		i2 = '<input class="input" value="' + results.data.email + '" id="' + results.data.player_id + '_email" onclick="change('+ results.data.player_id+', \'email\')">';
-	  		if (results.data.gender == "m"){
-	  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ results.data.player_id+', \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>';
-	  		}else{
-	  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ results.data.player_id+', \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>';
-	  		}
-	  		i4 = '	<button type="button" class="btn btn-danger" onclick="deletePlayer('+results.data.player_id+');">Delete</button>'
-	  		
-	  		$("#playerTable").append('<tr><td>'+results.player_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td></tr>');
-	  		$('#newEmail').val('');
-			$("#newName").val('');
-	  	}else{
-	  		alert('Player was not added correctly', result.failures);
-	  	}
-	    console.log(results	)
+	  success: function (player_id){
+  		alert('Player was added successfully');
+  		var i1,i2, i3, iv4;
+  		i1 = '<input class="input" value="' + player_name + '" id="' + player_id + '_player_name" onclick="change('+ player_id+', \'player_name\')">';
+  		i2 = '<input class="input" value="' + email + '" id="' + player_id + '_email" onclick="change('+ player_id+', \'email\')">';
+  		if (gender == "m"){
+  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>';
+  		}else{
+  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>';
+  		}
+  		i4 = '	<button type="button" class="btn btn-danger" onclick="deletePlayer('+player_id+');">Delete</button>'
+  		
+  		$("#playerTable").append('<tr><td>'+player_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td></tr>');
+  		$('#newEmail').val('');
+		$("#newName").val('');
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request);
         console.log(error);
     } 
@@ -143,15 +159,11 @@ function deletePlayer(id){
 	  data: JSON.stringify(data),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('Player was removed successfully');
-	  		$('#'+id).remove();
-	  	}else{
-	  		alert('Player was not removed', result.failures);
-	  	}
+	  	alert('Player was removed successfully');
+	  	$('#'+id).remove();
 	    console.log(results	)
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
@@ -176,14 +188,10 @@ function putPlayer(id, attributes){
 	  data: JSON.stringify(attributes),
       dataType: "json",
 	  success: function (results){
-	  	if (results.success == true){
-	  		alert('Player was updated successfully');
-	  	}else{
-	  		alert('Player was not updated properly', result.failures);
-	  	}
+	  	alert('Player was updated successfully');
 	    console.log(results)
 	  }, error: function(request, error){
-        alert("Error-> check console");
+        showErrors(request.responseJSON, request.status);
         console.log(request.text);
         console.log(error);
     } 
@@ -205,6 +213,24 @@ function searchPlayer(){
 				}
 			}
 	});
+}
+
+function showErrors(response, status_code){
+	$('#file_modal').modal("show");
+	$('#errors').empty();
+	var element;
+	if (status_code == 400){
+		$('#modal-title').text("Bad Request - 400");
+		for (var key in response.message){
+			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
+			$('#errors').append(element);	
+		}
+
+	}else if (status_code == 432){
+		$('#modal-title').text("Invalid Field - 432");
+		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
+		$('#errors').append(element);			
+	}
 }
 
 </script>
