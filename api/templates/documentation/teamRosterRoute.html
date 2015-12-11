@@ -1,11 +1,8 @@
 {% extends "documentation/documentation_base.html" %}
 {% block content %}
 <h1>Team Roster</h1>
-<p>
-	All responses use a <a href="{{route.dresponse}}">response object</a>
-</p>
 <h4>GET</h4>
-<code>{{route.team_roster}}/:id</code>
+<code>{{route.team_roster}}/int:team_id</code>
 <p style="color:#808080">
 	Permission: none
 </p>
@@ -26,66 +23,29 @@
 			</tr>
 		</tbody>
 	</table>
-
-<strong>Success 200</strong>
-	Returns a lists of the following object
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-				<th class="col-md-3">Example</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">Teams-ID</td>
-				<td class="col-md-3">Team Object</td>
-				<td class="col-md-3">See more infromation on the <a href="{{route.doteam}}">Team Object</a></td>
+				<td class="col-md-3">200</td>
 				<td class="col-md-3">
-					<code>
-					'0': {'color': 'Black',
-                           'league_id': None,
-                           'sponsor_id': 2,
-                           'team_id': 2,
-                           'year': 2015}
-					</code>
+						<a href="{{route.doteamroster}}">Team Roster Objects</a>
 				</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">captain</td>
-				<td class="col-md-3">Player Object</td>
-				<td class="col-md-3">The captain of the team. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
-				<td class="col-md-3">
-					<code>
-                    'captain': {'email': 'fras2560@mylaurier.ca',
-                               'gender': 'm',
-                               'player_id': 1,
-                               'player_name': 'Dallas Fraser'}
-					</code>
-				</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">players</td>
-				<td class="col-md-3">List of Player Object</td>
-				<td class="col-md-3">The players on the team's roster. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
-				<td class="col-md-3">
-					<code>
-                   'players': [{'email': 'dream@mylaurier.ca',
-                                'gender': 'f',
-                                'player_id': 2,
-                                'player_name': 'My Dream Girl'}]
-					</code>
-				</td>
-
+				<td class="col-md-3">Successful</td>
 			</tr>
 		</tbody>
 	</table>
 
 
 <h4>DELETE</h4>
-<code>{{route.team_roster}}/:id</code>
+<code>{{route.team_roster}}/int:team_id</code>
 <p style="color:#808080">
 	Permission: captain
 </p>
@@ -99,11 +59,6 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td class="col-md-3">team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Teams-ID</td>
-			</tr>
 			<tr>
 				<td class="col-md-3">player_id</td>
 				<td class="col-md-3">int</td>
@@ -113,27 +68,36 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">
+						--
+				</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">
+						--
+				</td>
+				<td class="col-md-3">Not found</td>
 			</tr>
 		</tbody>
 	</table>
 
 
 <h4>POST</h4>
-<code>{{route.team_roster}}</code>
+<code>{{route.team_roster}}/int:team_id</code>
 <p style="color:#808080">
 	Permission: captain
 </p>
@@ -147,11 +111,6 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td class="col-md-3">team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Teams-ID</td>
-			</tr>
 			<tr>
 				<td class="col-md-3">player_id</td>
 				<td class="col-md-3">int</td>
@@ -176,9 +135,19 @@
 		</thead>
 		<tbody>
 			<tr>
+				<td class="col-md-3">200</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Team not found</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">433</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Player does not exist</td>
 			</tr>
 		</tbody>
 	</table>

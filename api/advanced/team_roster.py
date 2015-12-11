@@ -12,15 +12,14 @@ from api import DB
 from api.model import Team, Player, roster
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int, required=True)
-parser.add_argument('team_id', type=int, required=True)
 parser.add_argument('captain', type=int)
 
 
 class TeamRosterAPI(Resource):
-    def get(self):
+    def get(self, team_id):
         """
             GET request for Team Roster List
-            Route: /team_roster
+            Route: Routes['team_roster']/<int:team_id>
             Returns:
                 status: 200 
                 mimetype: application/json
@@ -42,26 +41,23 @@ class TeamRosterAPI(Resource):
                     'team_id':{...},
                 ]
         """
-        teams = Team.query.all()
-        result = []
-        for i in range(0, len(teams)):
-            team = {i : teams[i].json()}
-            team['players'] = []
-            for player in teams[i].players :
-                team['players'].append(player.json())
-            team['captain'] = None
-            if teams[i].player_id is not None:
-                captain = Player.query.get(teams[i].player_id)
-                if captain is not None:
-                    team['captain'] = captain.json()
-            result.append(team)
-        return Response(dumps(result), status=200,
-                        mimetype="application/json")
+        team = Team.query.get(team_id)
+        
+        response = Response(dumps("Team not found"),
+                            status=404, mimetype="application/json")
+        if team is not None:
+            result = team.json()
+            result['players'] = []
+            for player in team.players:
+                result['players'].append(player.json())
+            response = Response(dumps(result),
+                            status=200, mimetype="application/json")
+        return response
 
-    def delete(self):
+    def delete(self, team_id):
         """
             DELETE request for Team Roster List
-            Routes: Routes['team_roster']
+            Routes: Routes['team_roster']/<int:team_id>
             Parameters :
                 player_id: The player id (int)
                team_id: The team id (int)
@@ -73,7 +69,7 @@ class TeamRosterAPI(Resource):
                     message: the status message (string)
         """
         args = parser.parse_args()
-        team = Team.query.get(args['team_id'])
+        team = Team.query.get(team_id)
         response = Response(dumps("Team not found"),
                             status=404, mimetype="application/json")
         if team is not None:
@@ -83,13 +79,12 @@ class TeamRosterAPI(Resource):
                                 mimetype="application/json")
         return response
 
-    def post(self):
+    def post(self, team_id):
         """
             POST request for Team Roster List
-            Route: /team_roster
+            Route: Routes['team_roster']/<int:team_id>
             Parameters :
                 player_id: a player's identifier (int)
-                team_id: a team identifier (int)
                 captain: a 1 if a captain (int)
             Returns:
                 status: 200 
@@ -100,7 +95,7 @@ class TeamRosterAPI(Resource):
                     failures: a list of parameters that failed (list of string)
         """
         args = parser.parse_args()
-        team = Team.query.get(args['team_id'])
+        team = Team.query.get(team_id)
         response = Response(dumps("Team not found"), status=404,
                             mimetype="application/json")
         if team is not None:

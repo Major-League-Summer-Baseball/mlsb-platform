@@ -82,7 +82,8 @@ api.add_resource(GameAPI, Routes['game'] + "/<int:game_id>",
 api.add_resource(BatListAPI, Routes['bat'], endpoint="bats")
 api.add_resource(BatAPI, Routes['bat'] + "/<int:bat_id>", 
                  endpoint="bat")
-api.add_resource(TeamRosterAPI, Routes['team_roster'], endpoint="teamrosters")
+api.add_resource(TeamRosterAPI, Routes['team_roster']+ "/<int:team_id>",
+                 endpoint="teamrosters")
 
 # add advanced routes
 from api.advanced.game_stats import GameStatsAPI

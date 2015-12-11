@@ -1,16 +1,13 @@
 {% extends "documentation/documentation_base.html" %}
 {% block content %}
-<h1>Sponsor</h1>
+<h1>Bat</h1>
 
-<p>
-	All responses use a <a href="{{route.dresponse}}">response object</a>
-</p>
 <h4>GET</h4>
 <code>{{route.bat}}/:id</code>
 <p style="color:#808080">
 	Permission: none
 </p>
-<strong>Parameter</strong>
+<strong>Parameters</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -28,50 +25,25 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">bat_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Bats-ID</td>
+				<td class="colo-md-3">200</td>
+				<td class="colo-md-3"><a href="{{route.dobat}}">Bat Object</a></td>
+				<td class="colo-md-3">Successful</td>
 			</tr>			
 			<tr>
-				<td class="colo-md-3">game_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Games-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">player_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Players-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">rbi</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The number of runs batted in</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">team_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">inning</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The inning the hit occurred</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">hit</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The type of hit it was</td>
+				<td class="colo-md-3">404</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Player not found</td>
 			</tr>
 		</tbody>
 	</table>
@@ -82,7 +54,7 @@
 <p style="color:#808080">
 	Permission: admin
 </p>
-<strong>Parameter</strong>
+<strong>Parameters</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -100,20 +72,25 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
+				<td class="colo-md-3">200</td>
 				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Succesfull</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">404</td>
 				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Bat not found</td>
 			</tr>
 		</tbody>
 	</table>
@@ -124,7 +101,7 @@
 <p style="color:#808080">
 	Permission: admin
 </p>
-<strong>Parameter</strong>
+<strong>Parameters</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -166,32 +143,55 @@
 			</tr>
 		</tbody>
 	</table>
-
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
+				<td class="colo-md-3">200</td>
+				<td class="colo-md-3">None</td>
 				<td class="colo-md-3">--</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">404</td>
 				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Bat not found</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">432</td>
 				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Invalid field</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">433</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Player does not exist</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">434</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Team does not exist</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">436</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Game does not exist</td>
 			</tr>
 		</tbody>
 	</table>
-
 
 <h4>POST</h4>
 <code>{{route.bat}}</code>
 <p style="color:#808080">
 	Permission: admin
 </p>
-<strong>Parameter</strong>
+<strong>Parameters</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -234,20 +234,40 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">bat_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The created Bat-ID</td>
+				<td class="colo-md-3">200</td>
+				<td class="colo-md-3">int: bat_id (created bat id)</td>
+				<td class="colo-md-3">SuccessfulThe created Bat-ID</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">432</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Invalid field</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">433</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Player does not exist</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">434</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Team does not exist</td>
+			</tr>
+			<tr>
+				<td class="colo-md-3">436</td>
+				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">Game does not exist</td>
 			</tr>
 		</tbody>
 	</table>
@@ -258,7 +278,7 @@
 <p style="color:#808080">
 	Permission: none
 </p>
-<strong>Parameter</strong>
+<strong>Parameters</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
@@ -276,20 +296,20 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">List of Bats</td>
-				<td class="colo-md-3"><a href="{{route.dobat}}">Bat</a></td>
-				<td class="colo-md-3"></td>
+				<td class="colo-md-3">200</td>
+				<td class="colo-md-3">List of <a href="{{route.dobat}}">Bats</a></td>
+				<td class="colo-md-3">Success</td>
 			</tr>
 		</tbody>
 	</table>

@@ -21,7 +21,7 @@
     		<tr>
 	    		<td>bat_id</td>
 	    		<td>integer</td>
-	    		<td>yes</td>
+	    		<td>Generated</td>
 	    		<td>The bat's identifier</td>
                 <td>--</td>
                 <td>--</td>
@@ -34,11 +34,35 @@
                 <td>--</td>
                 <td>--</td>
     		</tr>
+            <tr>
+                <td>team</td>
+                <td>string</td>
+                <td>Comes from team_id</td>
+                <td>The team's name</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td>team_id</td>
+                <td>integer</td>
+                <td>yes</td>
+                <td>The team's identifier</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>            
+            <tr>
+                <td>player</td>
+                <td>string</td>
+                <td>Comes from player_id</td>
+                <td>The player's name</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
     		<tr>
     			<td>player_id</td>
     			<td>integer</td>
     			<td>yes</td>
-    			<td>The player identifier</td>
+    			<td>The player's identifier</td>
                 <td>--</td>
                 <td>--</td>
     		</tr>
@@ -74,9 +98,7 @@
                     'FO' = fly-out<br/>
                     'GO' = ground out<br/>
                 </td>
-                
             </tr>
-            
     	</tbody>
     </table>
 {% endblock %}

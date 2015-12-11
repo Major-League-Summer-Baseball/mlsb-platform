@@ -1,9 +1,6 @@
 {% extends "documentation/documentation_base.html" %}
 {% block content %}
 <h1>Game</h1>
-<p>
-	All responses use a <a href="{{route.dresponse}}">response object</a>
-</p>
 <h4>GET</h4>
 <code>{{route.game}}/:id</code>
 <p style="color:#808080">
@@ -27,55 +24,25 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">game_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Games-ID</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3"><a href="route.dogame">Game Object</a></td>
+				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">home_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The home Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">away_team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The away Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">league_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Leagues-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">date</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The date of the game (%Y-%M-%D)</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">time</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The time of the game (%H:%M)</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">status</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The status of the game</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">field</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The field of the game</td>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Game not found</td>
 			</tr>
 		</tbody>
 	</table>
@@ -104,21 +71,26 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
+				<td class="col-md-3">200</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
+				<td class="col-md-3">Successful</td>
 			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Game not found</td>
+			</tr>		
 		</tbody>
 	</table>
 
@@ -171,20 +143,40 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
+				<td class="col-md-3">200</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Game not found</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">432</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Invalid field</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">434</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Team does not exist</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">435</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">League does not exist</td>
 			</tr>
 		</tbody>
 	</table>
@@ -238,20 +230,40 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">game_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The created Games-ID</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">int: the created game id</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">400</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Missing parameters</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">432</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Invalid field</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">434</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Team does not exist</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">435</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">League does not exist</td>
 			</tr>
 		</tbody>
 	</table>
@@ -279,19 +291,19 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">List of Games</td>
-				<td class="col-md-3"><a href="{{route.dogame}}">Game</a></td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">List of <a href="{{route.dogame}}">Games</a></td>
 				<td class="col-md-3">--</td>
 			</tr>
 		</tbody>

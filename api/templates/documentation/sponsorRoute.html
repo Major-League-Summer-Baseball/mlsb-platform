@@ -2,9 +2,6 @@
 {% block content %}
 <h1>Sponsor</h1>
 
-<p>
-	All responses use a <a href="{{route.dresponse}}">response object</a>
-</p>
 <h4>GET</h4>
 <code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
@@ -28,27 +25,26 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">sponsor_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Sponsors-ID</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3"><a href="{{route.dosponsor}}">Sponsor Object</a></td>
+				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="colo-md-3">sponsor_name</td>
-				<td class="colo-md-3">string</td>
-				<td class="colo-md-3">The name of the Sponsor</td>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Sponsor not found</td>
 			</tr>
-			
 		</tbody>
 	</table>
 
@@ -76,20 +72,25 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Sponsor not found</td>
 			</tr>
 		</tbody>
 	</table>
@@ -111,27 +112,37 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
+				<td class="colo-md-3">sponsor_name</td>
+				<td class="colo-md-3">string</td>
+				<td class="colo-md-3">The name of the Sponsor</td>
 			</tr>
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3"></td>
-				<td class="colo-md-3"></td>
-				<td class="colo-md-3"></td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3"></td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Sponsor not found</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">432</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Invalid field</td>
 			</tr>
 		</tbody>
 	</table>
@@ -160,20 +171,30 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">sponsor_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The created Sponsor-ID</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">int: the created sponsor id</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">400</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Missing parameter</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">432</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Invalid field</td>
 			</tr>
 		</tbody>
 	</table>
@@ -202,20 +223,20 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="colo-md-3">List of Sponsors</td>
-				<td class="colo-md-3"><a href="{{route.dosponsor}}">Sponsor</a></td>
-				<td class="colo-md-3"></td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">List of <a href="{{route.dosponsor}}">Sponsors</a></td>
+				<td class="col-md-3">Successful</td>
 			</tr>
 		</tbody>
 	</table>

@@ -3,45 +3,92 @@
 
     <h1>Team Roster Object</h1>
     <p>
-    	A team roster Object is the information stored relating to a team roster and its attributes.
+    	A team roster Object is the information returned from Team Roster View
     </p>
     <p>
     The following table shows all team roster attributes, what type each attribute is, and any restrictions on that attribute:
     </p>
     <table class="table table-bordered">
     	<thead>
-    		<th>Attribute</th>
+    		<th>Key</th>
     		<th>Type</th>
-    		<th>Required</th>
     		<th>Description</th>
-            <th>Restrictions</th>
-    		<th>Default</th>
+    		<th>Example</th>
     	</thead>
     	<tbody>
-    		<tr>
-	    		<td>player_id</td>
-	    		<td>integer</td>
-	    		<td>yes</td>
-	    		<td>The player's identifier</td>
-                <td>--</td>
-                <td>--</td>
-    		</tr>
-    		<tr>
-    			<td>team_id</td>
-    			<td>integer</td>
-    			<td>yes</td>
-    			<td>The team's identifier</td>
-                <td>--</td>
-                <td>--</td>
-    		</tr>
             <tr>
-                <td>league_id</td>
-                <td>integer</td>
-                <td>yes</td>
-                <td>The tournament's identifier</td>
-                <td>--</td>
-                <td>--</td>
-            </tr>         
+                <td class="col-md-3">Teams-ID</td>
+                <td class="col-md-3">Team Object</td>
+                <td class="col-md-3">See more infromation on the <a href="{{route.doteam}}">Team Object</a></td>
+                <td class="col-md-3">
+                    <code>
+                    '0': {'color': 'Black',
+                           'league_id': None,
+                           'sponsor_id': 2,
+                           'team_id': 2,
+                           'year': 2015}
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">captain</td>
+                <td class="col-md-3">Player Object</td>
+                <td class="col-md-3">The captain of the team. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
+                <td class="col-md-3">
+                    <code>
+                    'captain': {'email': 'fras2560@mylaurier.ca',
+                               'gender': 'm',
+                               'player_id': 1,
+                               'player_name': 'Dallas Fraser'}
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">players</td>
+                <td class="col-md-3">List of Player Object</td>
+                <td class="col-md-3">The players on the team's roster. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
+                <td class="col-md-3">
+                    <code>
+                   'players': [{'email': 'dream@mylaurier.ca',
+                                'gender': 'f',
+                                'player_id': 2,
+                                'player_name': 'My Dream Girl'}]
+                    </code>
+                </td>
+
+            </tr>        
     	</tbody>
     </table>
+    <h4>Example:</h4>
+    <code>
+{   '0': {   'captain': None,
+                                 'color': 'Black',
+                                 'espys': 0,
+                                 'league_id': None,
+                                 'sponsor_id': 2,
+                                 'team_id': 2,
+                                 'team_name': 'Chainsaw Black',
+                                 'year': 2015},
+                        'captain': None,
+                        'players': []},
+                    {   '1': {   'captain': {   'email': 'fras2560@mylaurier.ca',
+                                                'gender': 'm',
+                                                'player_id': 1,
+                                                'player_name': 'Dallas Fraser'},
+                                 'color': 'Green',
+                                 'espys': 0,
+                                 'league_id': None,
+                                 'sponsor_id': 1,
+                                 'team_id': 1,
+                                 'team_name': 'Domus Green',
+                                 'year': 2015},
+                        'captain': {   'email': 'fras2560@mylaurier.ca',
+                                       'gender': 'm',
+                                       'player_id': 1,
+                                       'player_name': 'Dallas Fraser'},
+                        'players': [   {   'email': 'dream@mylaurier.ca',
+                                           'gender': 'f',
+                                           'player_id': 2,
+                                           'player_name': 'My Dream Girl'}
+    </code>
 {% endblock %}

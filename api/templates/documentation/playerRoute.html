@@ -1,9 +1,6 @@
 {% extends "documentation/documentation_base.html" %}
 {% block content %}
 <h1>Player</h1>
-<p>
-	All responses use a <a href="{{route.dresponse}}">response object</a>
-</p>
 <h4>GET</h4>
 <code>{{route.player}}/:id</code>
 <p style="color:#808080">
@@ -26,31 +23,25 @@
 			</tr>
 		</tbody>
 	</table>
-
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">player_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Players-ID</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3"><a href="{{route.doplayer}}">Player Object</a></td>
+				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">player_name</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The name of the Player</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">gender</td>
-				<td class="col-md-3">string</td>
-				<td class="col-md-3">The gender of the Player</td>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Player not found</td>
 			</tr>
 		</tbody>
 	</table>
@@ -79,25 +70,28 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">--</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3"></td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Player not found</td>
 			</tr>
 		</tbody>
 	</table>
-
-
 <h4>PUT</h4>
 <code>{{route.player}}/:id</code>
 <p style="color:#808080">
@@ -126,20 +120,35 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
+				<td class="col-md-3">200</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">404</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Player not found</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">432</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Invalid field</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">438</td>
 				<td class="col-md-3">--</td>
+				<td class="col-md-3">Email was not unique</td>
 			</tr>
 		</tbody>
 	</table>
@@ -173,20 +182,35 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">player_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The created Player-ID</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">int: the created player id</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">400</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Missing parameters</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">432</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Invalid field</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">438</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Email was not unique</td>
 			</tr>
 		</tbody>
 	</table>
@@ -214,20 +238,20 @@
 		</tbody>
 	</table>
 
-<strong>Success 200</strong>
+<strong>Responses</strong>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">list of Players</td>
-				<td class="col-md-3"><a href="{{route.dbplayer}}">Player</a></td>
-				<td class="col-md-3">--</td>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">List of <a href="{{route.doplayer}}">Players</a></td>
+				<td class="col-md-3">Successful</td>
 			</tr>
 		</tbody>
 	</table>
