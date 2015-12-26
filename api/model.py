@@ -30,12 +30,13 @@ class Player(DB.Model):
     team = DB.relationship('Team',
                               backref='player',
                               lazy='dynamic')
-
+    active = DB.Column(DB.Boolean)
     def __init__(self,
                  name,
                  email,
                  gender=None,
-                 password="default"):
+                 password="default",
+                 active=True):
         if not string_validator(name):
             raise InvalidField("Invalid name for Player")
         # check if email is unique
@@ -54,6 +55,7 @@ class Player(DB.Model):
             gender = gender.lower()
         self.gender = gender
         self.set_password(password)
+        self.active = active
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -91,6 +93,12 @@ class Player(DB.Model):
             self.name = name
         elif name is not None:
             raise InvalidField("Invalid name for Player")
+
+    def activate(self):
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
 
 class Team(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
