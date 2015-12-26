@@ -1,6 +1,5 @@
 from api import DB
 from api.model import Player, Team, Sponsor, Game, League, Bat
-from datetime import datetime
 DB.create_all()
 # add some
 DB.session.add(League(name="Monday & Wednesday"))
@@ -17,6 +16,9 @@ DB.session.add(Sponsor("Nightschool"))
 DB.session.add(Sponsor("Mortys"))
 DB.session.add(Sponsor("Sportzone"))
 DB.session.add(Sponsor("Fat Bastards"))
+DB.session.commit()
+s = Sponsor.query.get(1)
+print(s)
 # add some teams
 DB.session.add(Team(
                     color="Green", 
@@ -59,9 +61,10 @@ sentry.players.append(Player.query.get(4))
 night.players.append(Player.query.get(1))
 
 # create a game
-date = datetime.strptime("2015-10-01-11:45",'%Y-%m-%d-%H:%M')
-g = Game(date, 1, 2, 1, status="Championship", field="WP1")
-g2 = Game(date, 3,6,2, status="Semis", field="WP2")
+date = "2015-10-01"
+time = '11:45'
+g = Game(date, time, 1, 2, 1, status="Championship", field="WP1")
+g2 = Game(date, time, 3,6,2, status="Semis", field="WP2")
 DB.session.add(g)
 DB.session.add(g2)
 

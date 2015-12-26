@@ -10,10 +10,11 @@ Purpose: Holds the routes for the admin side
 from os.path import join
 from flask.ext.restful import Resource, reqparse
 from flask import Response, render_template, make_response
-from json import dumps
+from json import dumps, loads
 from api.routes import Routes
 from api import app, PICTURES
 from api.routes import Routes
+from api import DB
 from flask import render_template, send_file, url_for, send_from_directory,\
                   redirect, session, request, make_response
 from api.model import Team, Player, Sponsor, League, Game, Bat
@@ -194,10 +195,7 @@ def admin_home(year):
 def admin_edit_player(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    results = Player.query.all()
-    players = []
-    for player in results:
-        players.append(player.json())
+    players = get_players()
     return render_template("admin/editPlayer.html",
                            year=year,
                            route=Routes,
@@ -248,6 +246,40 @@ def admin_edit_game(year):
                            leagues=get_leagues(),
                            games=games)
 
+@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>")
+def admin_activate_player(year, player_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    player = Player.query.get(player_id)
+    if player is None:
+        return render_template("admin/notFound.html",
+                               route=Routes,
+                               year=year,
+                               title="Player not found"
+                               )
+    return render_template("admin/activatePlayer.html",
+                           year=year,
+                           player=player.json(),
+                           route=Routes,
+                           title="Activate/Deactivate Player")
+
+
+@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>", methods=["POST"])
+def admin_activate_player_post(year, player_id):
+    if not logged_in():
+        return dumps(False)
+    player = Player.query.get(player_id)
+    if player is None:
+        return dumps(False)
+    activate = request.get_json()['active']
+    print(activate)
+    if activate:
+        player.activate()
+    else:
+        player.deactivate()
+    DB.session.commit()
+    return dumps(True)
+
 @app.route(Routes['editbat'] + "/<int:year>" + "/<int:game_id>")
 def admin_edit_bat(year, game_id):
     if not logged_in():
@@ -259,7 +291,8 @@ def admin_edit_bat(year, game_id):
     if game is None:
         return render_template("admin/notFound.html",
                                route=Routes,
-                               title="Game not found"
+                               title="Game not found",
+                               year=year
                                )
     away_bats = []
     home_bats = []
@@ -343,7 +376,7 @@ def get_leagues():
     return leagues
 
 def get_players():
-    results = Player.query.all()
+    results = Player.query.filter(Player.active==True).all()
     players = []
     for player in results:
         players.append(player.json())

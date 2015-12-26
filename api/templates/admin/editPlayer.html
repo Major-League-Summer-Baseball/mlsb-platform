@@ -19,7 +19,7 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
 		{% for entry in players %}
 			<tr class="playerEntry" id="{{entry.player_id}}">
 				<td>
-					{{entry.player_id}}
+					<a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}	">{{entry.player_id}}</a>
 				</td>
 				<td>
 					<input class="input" value="{{entry.player_name}}" id='{{entry.player_id}}_player_name' onchange="change({{entry.player_id}}, 'player_name');">
