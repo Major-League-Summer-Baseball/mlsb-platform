@@ -326,16 +326,18 @@ def admin_logout():
 @app.route(Routes['aportal'], methods=['POST'])
 def admin_portal():
     if 'admin' in session and 'password' in session:
-        return redirect(url_for('admin_home'))
+        admin = session['admin']
+        password = session['password']
     else:
         admin = request.form.get('admin')
         password = request.form.get('password')
-        if check_auth(admin, password):
-            session['admin'] = admin
-            session['password'] = password
-            return redirect(url_for('admin_home', year=date.today().year))
-        else:
-            return redirect(url_for('admin_form'))
+    if check_auth(admin, password):
+        session['admin'] = admin
+        session['password'] = password
+        return redirect(url_for('admin_home', year=date.today().year))
+    else:
+        session['error'] = 'INVALID CREDENTIALS'
+        return redirect(url_for('admin_login'))
 
 @app.route(Routes['alogin'])
 def admin_login():
