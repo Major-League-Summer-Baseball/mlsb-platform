@@ -14,7 +14,7 @@ local = False
 try:
     # running local
     local = True
-    from api.credentials import PWD, URL, SECRET_KEY
+    from api.credentials import URL, SECRET_KEY
     print("Running Locally")
 except:
     URL = os.environ['DATABASE_URL']
