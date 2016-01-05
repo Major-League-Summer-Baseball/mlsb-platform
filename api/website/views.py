@@ -18,6 +18,7 @@ from api.variables import HITS
 
 
 @app.route("/")
+@app.route(Routes["homepage"])
 def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
