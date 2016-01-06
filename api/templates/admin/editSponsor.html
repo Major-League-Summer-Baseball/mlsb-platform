@@ -14,7 +14,7 @@
 		{% for entry in sponsors %}
 			<tr class="sponsorEntry" id="{{entry.sponsor_id}}">
 				<td>
-					{{entry.sponsor_id}}
+					<a href="{{route.adeactivatesponsor}}/{{year}}/{{entry.sponsor_id}}">{{entry.sponsor_id}}</a>
 				</td>
 				<td>
 					<input class="input" value="{{entry.sponsor_name}}" id='{{entry.sponsor_id}}_sponsor_name' onchange="change({{entry.sponsor_id}}, 'sponsor_name');">

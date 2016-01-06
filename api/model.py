@@ -19,6 +19,17 @@ roster = DB.Table('roster',
                   DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
                 )
 
+class Fun(DB.Model):
+    id = DB.Column(DB.Integer, primary_key=True)
+    year = DB.Column(DB.Integer)
+    count = DB.Column(DB.Integer)
+    def __init__(self, year=date.today().year):
+        self.year = year
+        self.count = 0
+
+    def increment(self, change):
+        self.count += change
+
 class Player(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(80))
@@ -229,8 +240,8 @@ class Sponsor(DB.Model):
                                 lazy='dynamic')
     description = DB.Column(DB.String(200))
     link = DB.Column(DB.String(100))
-    
-    def __init__(self, name, link=None, description=None):
+    active = DB.Column(DB.Boolean)
+    def __init__(self, name, link=None, description=None, active=True):
         if not string_validator(name):
             raise InvalidField("Invalid name for Sponsor")
         if not string_validator(link):
@@ -240,6 +251,7 @@ class Sponsor(DB.Model):
         self.name = name
         self.description = description
         self.link = link
+        self.active = True
 
     def __repr__(self):
         return self.name
@@ -263,6 +275,12 @@ class Sponsor(DB.Model):
             self.link = link
         elif link is not None:
             raise InvalidField("Invalid link for Sponsor")
+
+    def activate(self):
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
 
 class League(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)

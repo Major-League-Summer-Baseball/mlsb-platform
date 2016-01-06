@@ -263,7 +263,6 @@ def admin_activate_player(year, player_id):
                            route=Routes,
                            title="Activate/Deactivate Player")
 
-
 @app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>", methods=["POST"])
 def admin_activate_player_post(year, player_id):
     if not logged_in():
@@ -277,6 +276,39 @@ def admin_activate_player_post(year, player_id):
         player.activate()
     else:
         player.deactivate()
+    DB.session.commit()
+    return dumps(True)
+
+@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>")
+def admin_activate_sponsor(year, sponsor_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    sponsor = Sponsor.query.get(sponsor_id)
+    if sponsor is None:
+        return render_template("admin/notFound.html",
+                               route=Routes,
+                               year=year,
+                               title="Sponsor not found"
+                               )
+    return render_template("admin/activateSponsor.html",
+                           year=year,
+                           sponsor=sponsor.json(),
+                           route=Routes,
+                           title="Activate/Deactivate Sponsor")
+
+@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>", methods=["POST"])
+def admin_activate_sponsor_post(year, sponsor_id):
+    if not logged_in():
+        return dumps(False)
+    sponsor = Sponsor.query.get(sponsor_id)
+    if sponsor is None:
+        return dumps(False)
+    activate = request.get_json()['active']
+    if activate:
+        sponsor.activate()
+    else:
+        sponsor.deactivate()
+    print(activate, "Done")
     DB.session.commit()
     return dumps(True)
 
@@ -364,7 +396,7 @@ def logout():
     return
 
 def get_sponsors():
-    results = Sponsor.query.all()
+    results = Sponsor.query.filter(Sponsor.active==True).all()
     sponsors = []
     for sponsor in results:
         sponsors.append(sponsor.json())

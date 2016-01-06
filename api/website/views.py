@@ -346,12 +346,11 @@ def get_team(year, id):
     return team
 
 def get_teams(year):
-    result =teams = Team.query.filter_by(year=year).all()
+    result = Team.query.filter_by(year=year).all()
     teams = []
     for team in result:
         teams.append({'id': team.id,
                      'name': str(team)})
-    #TODO
     return teams
 
 def get_games(year):
@@ -407,7 +406,7 @@ def get_leagues(year):
     return leagues
 
 def get_sponsors():
-    info = Sponsor.query.all()
+    info = Sponsor.filter_by(active=True).all()
     sponsors = []
     for i in range(0, len(info)):
         sponsors.append({"name":info[i].name,
