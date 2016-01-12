@@ -406,7 +406,7 @@ def get_leagues(year):
     return leagues
 
 def get_sponsors():
-    info = Sponsor.filter_by(active=True).all()
+    info = Sponsor.query.filter_by(active=True).all()
     sponsors = []
     for i in range(0, len(info)):
         sponsors.append({"name":info[i].name,
