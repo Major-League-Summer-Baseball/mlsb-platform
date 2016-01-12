@@ -1,6 +1,17 @@
 from api import DB
 from api.model import Player, Team, Sponsor, Game, League, Bat
 from random import randint
+# delete old information
+DB.session.commit()
+DB.engine.execute('''   
+                        DROP TABLE IF EXISTS roster;
+                        DROP TABLE IF EXISTS bat;
+                        DROP TABLE IF EXISTS game;
+                        DROP TABLE IF EXISTS team;
+                        DROP TABLE IF EXISTS player;
+                        DROP TABLE IF EXISTS sponsor;
+                        DROP TABLE IF EXISTS league;
+                ''')
 DB.create_all()
 # add the two leagues
 DB.session.add(League(name="Monday & Wednesday"))
