@@ -4,12 +4,11 @@
 @organization: MLSB API
 @summary: The views for player stats
 '''
-from sqlalchemy.sql.expression import or_
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Team, Player, roster, Bat, Game
+from api.model import Player
 parser = reqparse.RequestParser()
 parser.add_argument('email', type=str)
 parser.add_argument('player_name', type=str)
@@ -27,7 +26,6 @@ class PlayerLookupAPI(Resource):
                 mimetype: application/json
                 data: list of possible Players
         """
-        player_name = None
         data = []
         args = parser.parse_args()
         players = None

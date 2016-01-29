@@ -9,7 +9,6 @@ from flask import Response
 from json import dumps
 from api.model import Player
 from api import DB
-from api.validators import string_validator, gender_validator
 from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)

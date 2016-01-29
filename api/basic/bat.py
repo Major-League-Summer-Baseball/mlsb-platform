@@ -5,12 +5,11 @@ Project: MLSB API
 Purpose: A Bat API
 '''
 from flask.ext.restful import Resource, reqparse
-from flask import Response, request
+from flask import Response
 from api import DB
-from api.model import Team, Game, Bat, Player
+from api.model import Bat
 from json import dumps
-from api.validators import rbi_validator, hit_validator, inning_validator
-from api.authentication import requires_admin, requires_captain
+from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int)
 parser.add_argument('rbi', type=int)

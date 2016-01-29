@@ -14,6 +14,7 @@ from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat
 from api.errors import IFSC, NUESC, SDNESC, LDNESC, TDNESC, PDNESC, GDNESC
 from api.credentials import ADMIN, PASSWORD
+from datetime import date
 from base64 import b64encode
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
@@ -805,7 +806,7 @@ class TestTeam(BaseTest):
                   'color': 'Green',
                   'sponsor_id': 1,
                   'league_id': None,
-                  'year': 2015,
+                  'year': date.today().year,
                   'captain': None,
                   'team_name': 'Domus Green'}
         self.output(loads(rv.data))
@@ -1657,7 +1658,6 @@ class TestTeamRoster(BaseTest):
 
     def testGet(self):
         #empty get
-        self.show_results = True
         rv = self.app.get(Routes['team_roster'] + "/1")
         expect = 'Team not found'
         self.output(loads(rv.data))
@@ -1682,7 +1682,7 @@ class TestTeamRoster(BaseTest):
                     'sponsor_id': 1,
                     'team_id': 1,
                     'team_name': 'Domus Green',
-                    'year': 2015
+                    'year': date.today().year
                 }
         self.output(loads(rv.data))
         self.output(expect)

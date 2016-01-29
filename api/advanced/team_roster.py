@@ -7,9 +7,8 @@ Purpose: To create an application to act as an api for the database
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.validators import date_validator
 from api import DB
-from api.model import Team, Player, roster
+from api.model import Team
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int, required=True)
 parser.add_argument('captain', type=int)

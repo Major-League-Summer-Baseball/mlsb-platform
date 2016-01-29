@@ -6,14 +6,13 @@
 '''
 from api import app
 import unittest
-import os
 import tempfile
 from api.helper import loads
 from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
-from api.model import Player, Team, Sponsor, League, Game, Bat, roster
-from datetime import datetime, date, time
+from api.model import Player, Team, Sponsor, League, Game, Bat
+from datetime import datetime, date
 from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
 headers = {
@@ -174,8 +173,6 @@ class BaseTest(unittest.TestCase):
         self.addLeagues()
         self.teams.append(Team("Blue"))
         DB.session.add(self.teams[-1])
-        print(self.teams[1].id,
-                           self.teams[2].id,)
         self.games = [Game(
                            self.d,
                            self.t,
@@ -429,7 +426,7 @@ class GameTest(BaseTest):
                                          'sponsor_id': 2,
                                          'team_id': 2,
                                          'team_name': 'Chainsaw Black',
-                                         'year': 2015},
+                                         'year': 2016},
                         'date': '2014-08-23 11:37',
                         'game_id': 1,
                         'home_bats': [   {   'hit': 's',
@@ -448,7 +445,7 @@ class GameTest(BaseTest):
                                          'sponsor_id': 1,
                                          'team_id': 1,
                                          'team_name': 'Domus Green',
-                                         'year': 2015},
+                                         'year': 2016},
                         'league': {'league_id': 1, 'league_name': 'Monday & Wedneday'},
                         'status': ''}]
         self.output(loads(rv.data))
@@ -458,67 +455,67 @@ class GameTest(BaseTest):
         # no parameters
         rv = self.app.post(Routes['vgame'], data={})
         expect = [   {   'away_bats': [],
-                        'away_score': 0,
-                        'away_team': {   'captain': None,
-                                         'color': 'Black',
-                                         'espys': 0,
-                                         'league_id': None,
-                                         'sponsor_id': 2,
-                                         'team_id': 2,
-                                         'team_name': 'Chainsaw Black',
-                                         'year': 2015},
-                        'date': '2014-08-23 11:37',
-                        'game_id': 1,
-                        'home_bats': [   {   'hit': 's',
-                                             'inning': 5,
-                                             'name': 'Dallas Fraser',
-                                             'rbi': 1},
-                                         {   'hit': 'k',
-                                             'inning': 5,
-                                             'name': 'My Dream Girl',
-                                             'rbi': 0}],
-                        'home_score': 1,
-                        'home_team': {   'captain': None,
-                                         'color': 'Green',
-                                         'espys': 0,
-                                         'league_id': None,
-                                         'sponsor_id': 1,
-                                         'team_id': 1,
-                                         'team_name': 'Domus Green',
-                                         'year': 2015},
-                        'league': {'league_id': 1, 'league_name': 'Monday & Wedneday'},
-                        'status': ''},
-                    {   'away_bats': [],
-                        'away_score': 0,
-                        'away_team': {   'captain': None,
-                                         'color': 'Black',
-                                         'espys': 0,
-                                         'league_id': None,
-                                         'sponsor_id': 2,
-                                         'team_id': 2,
-                                         'team_name': 'Chainsaw Black',
-                                         'year': 2015},
-                        'date': '2014-08-23 11:37',
-                        'game_id': 2,
-                        'home_bats': [   {   'hit': 's',
-                                             'inning': 5,
-                                             'name': 'Dallas Fraser',
-                                             'rbi': 1},
-                                         {   'hit': 'k',
-                                             'inning': 5,
-                                             'name': 'My Dream Girl',
-                                             'rbi': 0}],
-                        'home_score': 1,
-                        'home_team': {   'captain': None,
-                                         'color': 'Green',
-                                         'espys': 0,
-                                         'league_id': None,
-                                         'sponsor_id': 1,
-                                         'team_id': 1,
-                                         'team_name': 'Domus Green',
-                                         'year': 2015},
-                        'league': {'league_id': 2, 'league_name': 'Tuesday & Thursday'},
-                        'status': ''}]
+                            'away_score': 0,
+                            'away_team': {   'captain': None,
+                                             'color': 'Black',
+                                             'espys': 0,
+                                             'league_id': None,
+                                             'sponsor_id': 2,
+                                             'team_id': 2,
+                                             'team_name': 'Chainsaw Black',
+                                             'year': 2016},
+                            'date': '2014-08-23 11:37',
+                            'game_id': 1,
+                            'home_bats': [   {   'hit': 's',
+                                                 'inning': 5,
+                                                 'name': 'Dallas Fraser',
+                                                 'rbi': 1},
+                                             {   'hit': 'k',
+                                                 'inning': 5,
+                                                 'name': 'My Dream Girl',
+                                                 'rbi': 0}],
+                            'home_score': 1,
+                            'home_team': {   'captain': None,
+                                             'color': 'Green',
+                                             'espys': 0,
+                                             'league_id': None,
+                                             'sponsor_id': 1,
+                                             'team_id': 1,
+                                             'team_name': 'Domus Green',
+                                             'year': 2016},
+                            'league': {'league_id': 1, 'league_name': 'Monday & Wedneday'},
+                            'status': ''},
+                        {   'away_bats': [],
+                            'away_score': 0,
+                            'away_team': {   'captain': None,
+                                             'color': 'Black',
+                                             'espys': 0,
+                                             'league_id': None,
+                                             'sponsor_id': 2,
+                                             'team_id': 2,
+                                             'team_name': 'Chainsaw Black',
+                                             'year': 2016},
+                            'date': '2014-08-23 11:37',
+                            'game_id': 2,
+                            'home_bats': [   {   'hit': 's',
+                                                 'inning': 5,
+                                                 'name': 'Dallas Fraser',
+                                                 'rbi': 1},
+                                             {   'hit': 'k',
+                                                 'inning': 5,
+                                                 'name': 'My Dream Girl',
+                                                 'rbi': 0}],
+                            'home_score': 1,
+                            'home_team': {   'captain': None,
+                                             'color': 'Green',
+                                             'espys': 0,
+                                             'league_id': None,
+                                             'sponsor_id': 1,
+                                             'team_id': 1,
+                                             'team_name': 'Domus Green',
+                                             'year': 2016},
+                            'league': {'league_id': 2, 'league_name': 'Tuesday & Thursday'},
+                            'status': ''}]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -619,7 +616,6 @@ class PlayerTest(BaseTest):
 
 class TeamTest(BaseTest):
     def TestPostNoParameters(self):
-        self.show_results = True
         rv = self.app.post(Routes['vteam'])
         expect = {'data': {},
                   'failures': [],
@@ -685,7 +681,6 @@ class TeamTest(BaseTest):
                  Routes['vteam'] + " Post: View of Team")
 
     def testParameters(self):
-        self.show_results = True
         expect = {   '1': {   'away_losses': 1,
                              'away_wins': 0,
                              'games': 0,
@@ -761,7 +756,6 @@ class TeamTest(BaseTest):
 class testPlayerLookup(BaseTest):
     def testMain(self):
         self.addPlayers()
-        self.show_results = True
         # players email
         expect = [   {   'email': 'fras2560@mylaurier.ca',
                             'gender': 'm',

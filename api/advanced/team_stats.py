@@ -4,13 +4,11 @@
 @organization: MLSB API
 @summary: The views for player stats
 '''
-from sqlalchemy.sql.expression import or_
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.validators import date_validator
 from api import DB
-from api.model import Team, Player, roster, Bat, Game
+from api.model import Team, Game
 from api.variables import HITS
 from datetime import datetime, date, time
 parser = reqparse.RequestParser()
@@ -125,7 +123,6 @@ def team_stats(year, league_id):
         home_score = 0
         away_score = 0
         for bat in game.bats:
-            print(bat)
             if bat.team_id == game.away_team_id:
                 away_score += bat.rbi
                 if bat.classification in HITS:
