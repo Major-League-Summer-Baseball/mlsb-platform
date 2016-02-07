@@ -9,12 +9,17 @@ from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, send_file, url_for, send_from_directory, \
                     redirect
-from api.model import Team, Player, Sponsor, League, Game, Bat
-from api.variables import SPONSORS
+from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
+from api.variables import SPONSORS, UNASSIGNED
 from datetime import date, datetime, time
 from sqlalchemy import desc
 from api.advanced.team_stats import single_team
 from api.variables import HITS
+from api import DB
+from flask_sqlalchemy import get_debug_queries
+from sqlalchemy.sql import func
+import requests
+import json
 
 
 @app.route("/")
@@ -234,47 +239,50 @@ def get_sponsor(id):
 
 def get_leaders(gender, year, hit):
     leaders = []
-    teams = Team.query.filter_by(year=year).all()
-    for team in teams:
-        # loop through each team and its games7
-        result = {}
-        players = {}
-        for player in team.players:
-            # initialize a lookup for the players
-            if player.gender == gender:
-                players[player.id] = player.name
-                result[player.name] = 0
-        for game in team.away_games:
-            for bat in game.bats:
-                player = players.get(bat.player_id, None)
-                print(player, bat)
-                if player is not None and bat.classification == hit:
-                    result[player] += 1
-        for game in team.home_games:
-            for bat in game.bats:
-                player = players.get(bat.player_id, None)
-                print(player, bat)
-                if player is not None and bat.classification == hit:
-                    result[player] += 1
-        for player, hits in result.items():
-            print(player)
-            if hits > 0:
-                leaders.append({'name':player, 
-                                'team':str(team),
-                                'hits':hits})
-    #TODO
-    print(leaders)
+    hits = func.count(Bat.classification==hit).label("hits")
+    d1 = date(year, 1, 1)
+    t = time(0, 0)
+    d2 = date(year, 12, 30)
+    start = datetime.combine(d1, t)
+    end = datetime.combine(d2, t)
+    players = (DB.session.query(Player.name,
+                                Player.id,
+                                Bat.team_id,
+                                hits
+                               )
+                               .join(Player.bats)
+                               .join(Game)
+                               .filter(Game.date.between(start, end))
+                               .filter(Player.id != UNASSIGNED)
+                               .group_by(Bat.team_id)
+                               .group_by(Player.id)
+                               .order_by(hits.desc()).all()
+                               )
+    for player in players:
+        result = {'name': player[0],
+                  'id': player[1],
+                  'team': str(Team.query.get(player[2])),
+                  'hits': player[3]
+                  }
+        print(result)
+        leaders.append(result)
     return leaders
 
 def get_espy(year):
     espy = []
-    teams = Team.query.filter_by(year=year).order_by("espys desc").all()
-    rank = 0
+    espys = func.sum(Espys.points).label("espys")
+    teams = (DB.session.query(Team,
+                              espys
+                               )
+                               .join(Team.espys)
+                               .filter(Team.year==year)
+                               .group_by(Team.id)
+                               .order_by(espys.desc()).all()
+                               )
     for team in teams:
-        rank += 1
-        espy.append({'rank': rank,
-                     'espys': team.espys,
-                     'name': str(team)})
+        espy.append({
+                     'espys': team[1],
+                     'name': str(team[0])})
     return espy
 
 def get_team(year, id):

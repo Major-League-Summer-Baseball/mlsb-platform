@@ -31,8 +31,10 @@ class BaseTest(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         DB.engine.execute('''   
+                                DROP TABLE IF EXISTS fun;
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
+                                DROP TABLE IF EXISTS espys;
                                 DROP TABLE IF EXISTS game;
                                 DROP TABLE IF EXISTS team;
                                 DROP TABLE IF EXISTS player;
@@ -44,8 +46,10 @@ class BaseTest(unittest.TestCase):
     def tearDown(self):
         DB.session.commit()
         DB.engine.execute('''   
+                                DROP TABLE IF EXISTS fun;
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
+                                DROP TABLE IF EXISTS espys;
                                 DROP TABLE IF EXISTS game;
                                 DROP TABLE IF EXISTS team;
                                 DROP TABLE IF EXISTS player;
@@ -536,19 +540,25 @@ class PlayerTest(BaseTest):
         expect = {   'Dallas Fraser': {   'avg': 1.0,
                          'bats': 1,
                          'd': 0,
+                         'e': 0,
+                         'fc': 0,
+                         'fo': 0,
                          'go': 0,
                          'hr': 0,
                          'k': 0,
-                         'pf': 0,
-                         's': 1},
+                         's': 1,
+                         'ss': 0},
                     'My Dream Girl': {   'avg': 0.0,
                                          'bats': 1,
                                          'd': 0,
+                                         'e': 0,
+                                         'fc': 0,
+                                         'fo': 0,
                                          'go': 0,
                                          'hr': 0,
                                          'k': 1,
-                                         'pf': 0,
-                                         's': 0}}
+                                         's': 0,
+                                         'ss': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -560,19 +570,25 @@ class PlayerTest(BaseTest):
         expect = {   'Dallas Fraser': {   'avg': 1.0,
                          'bats': 1,
                          'd': 0,
+                         'e': 0,
+                         'fc': 0,
+                         'fo': 0,
                          'go': 0,
                          'hr': 0,
                          'k': 0,
-                         'pf': 0,
-                         's': 1},
+                         's': 1,
+                         'ss': 0},
                     'My Dream Girl': {   'avg': 0.0,
                                          'bats': 2,
                                          'd': 0,
+                                         'e': 0,
+                                         'fc': 0,
+                                         'fo': 0,
                                          'go': 0,
                                          'hr': 0,
                                          'k': 2,
-                                         'pf': 0,
-                                         's': 0}}
+                                         's': 0,
+                                         'ss': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -580,13 +596,16 @@ class PlayerTest(BaseTest):
         # filter based on league
         rv = self.app.post(Routes['vplayer'], data={'league_id': 1})
         expect = {   'Dallas Fraser': {   'avg': 1.0,
-                         'bats': 1,
-                         'd': 0,
-                         'go': 0,
-                         'hr': 0,
-                         'k': 0,
-                         'pf': 0,
-                         's': 1}}
+                                         'bats': 1,
+                                         'd': 0,
+                                         'e': 0,
+                                         'fc': 0,
+                                         'fo': 0,
+                                         'go': 0,
+                                         'hr': 0,
+                                         'k': 0,
+                                         's': 1,
+                                         'ss': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -596,19 +615,25 @@ class PlayerTest(BaseTest):
         expect = {   'Dallas Fraser': {   'avg': 1.0,
                          'bats': 1,
                          'd': 0,
+                         'e': 0,
+                         'fc': 0,
+                         'fo': 0,
                          'go': 0,
                          'hr': 0,
                          'k': 0,
-                         'pf': 0,
-                         's': 1},
+                         's': 1,
+                         'ss': 0},
                     'My Dream Girl': {   'avg': 0.0,
                                          'bats': 1,
                                          'd': 0,
+                                         'e': 0,
+                                         'fc': 0,
+                                         'fo': 0,
                                          'go': 0,
                                          'hr': 0,
                                          'k': 1,
-                                         'pf': 0,
-                                         's': 0}}
+                                         's': 0,
+                                         'ss': 0}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),

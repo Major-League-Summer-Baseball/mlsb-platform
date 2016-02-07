@@ -1,11 +1,13 @@
 from api import DB
-from api.model import Player, Team, Sponsor, Game, League, Bat
+from api.model import Player, Team, Sponsor, Game, League, Bat, Espys
 from random import randint
 # delete old information
 DB.session.commit()
 DB.engine.execute('''   
+                        DROP TABLE IF EXISTS fun;
                         DROP TABLE IF EXISTS roster;
                         DROP TABLE IF EXISTS bat;
+                        DROP TABLE IF EXISTS espys;
                         DROP TABLE IF EXISTS game;
                         DROP TABLE IF EXISTS team;
                         DROP TABLE IF EXISTS player;
@@ -56,281 +58,242 @@ teams = [
                color="Blue",
                sponsor_id=1,
                league_id=2,
-               year=2015,
-               espys=73
+               year=2015
                ),
           Team(
                color="Bronze",
                sponsor_id=1,
                league_id=2,
-               year=2015,
-               espys=75
+               year=2015
+               
                ),
           Team(
                color="Charcoal",
                sponsor_id=2,
                league_id=1,
-               year=2015,
-               espys=175
+               year=2015
                ),
           Team(
                color="Cherry",
                sponsor_id=2,
                league_id=2,
-               year=2015,
-               espys=495
+               year=2015
                ),
           Team(
                color="Crimson",
                sponsor_id=3,
                league_id=1,
-               year=2015,
-               espys=248
+               year=2015
                ),
           Team(
                color="Desert",
                sponsor_id=4,
                league_id=1,
-               year=2015,
-               espys=152
+               year=2015
                ),
           Team(
                color="Diamond",
                sponsor_id=4,
                league_id=1,
-               year=2015,
-               espys=975
+               year=2015
                ),
           Team(
                color="Sapphire",
                sponsor_id=5,
                league_id=1,
-               year=2015,
-               espys=583
+               year=2015
                ),
           Team(
                color="Black",
                sponsor_id=6,
                league_id=2,
-               year=2015,
-               espys=303
+               year=2015
                ),
           Team(
                color="Flame",
                sponsor_id=7,
                league_id=1,
-               year=2015,
-               espys=133
+               year=2015
                ),
           Team(
                color="Green",
                sponsor_id=8,
                league_id=2,
-               year=2015,
-               espys=321
+               year=2015
                ),
           Team(
                color="Electric Purple",
                sponsor_id=9,
                league_id=2,
-               year=2015,
-               espys=226
+               year=2015
                ),
           Team(
                color="Jasper",
                sponsor_id=10,
                league_id=2,
-               year=2015,
-               espys=153
+               year=2015
                ),
           Team(
                color="Honeydew",
                sponsor_id=11,
                league_id=2,
-               year=2015,
-               espys=218
+               year=2015
                ),
           Team(
                color="Kryptonite",
                sponsor_id=12,
                league_id=1,
-               year=2015,
-               espys=1029
+               year=2015
                ),
           Team(
                color="Marble",
                sponsor_id=13,
                league_id=2,
-               year=2015,
-               espys=169
+               year=2015
                ),
           Team(
                color="Mint",
                sponsor_id=14,
                league_id=1,
-               year=2015,
-               espys=236
+               year=2015
                ),
           Team(
                color="Mauve",
                sponsor_id=15,
                league_id=1,
-               year=2015,
-               espys=290
+               year=2015
                ),
           Team(
                color="Moonstone",
                sponsor_id=15,
                league_id=2,
-               year=2015,
-               espys=671
+               year=2015
                ),
           Team(
                color="Navy",
                sponsor_id=16,
                league_id=2,
-               year=2015,
-               espys=197
+               year=2015
                ),
           Team(
                color="Arsenic",
                sponsor_id=17,
                league_id=1,
-               year=2015,
-               espys=253
+               year=2015
                ),
           Team(
                color="Blue",
                sponsor_id=26,
                league_id=2,
-               year=2015,
-               espys=603
+               year=2015
                ),
           Team(
                color="Fuchsia",
                sponsor_id=18,
                league_id=2,
-               year=2015,
-               espys=44
+               year=2015
                ),
           Team(
                color="Burgundy",
                sponsor_id=19,
                league_id=1,
-               year=2015,
-               espys=766
+               year=2015
                ),
           Team(
                color="Saffron",
                sponsor_id=20,
                league_id=1,
-               year=2015,
-               espys=90
+               year=2015
                ),
           Team(
                color="Silver",
                sponsor_id=20,
                league_id=1,
-               year=2015,
-               espys=211
+               year=2015
                ),
           Team(
                color="Sky",
                sponsor_id=21,
                league_id=1,
-               year=2015,
-               espys=458
+               year=2015
                ),
           Team(
                color="Jade",
                sponsor_id=22,
                league_id=1,
-               year=2015,
-               espys=253
+               year=2015
                ),
           Team(
                color="Jasmine",
                sponsor_id=22,
                league_id=2,
-               year=2015,
-               espys=161
+               year=2015
                ),
           Team(
                color="Yellow",
                sponsor_id=23,
                league_id=2,
-               year=2015,
-               espys=44
+               year=2015
                ),
           Team(
                color="Vulcan",
                sponsor_id=24,
                league_id=2,
-               year=2015,
-               espys=376
+               year=2015
                ),
           Team(
                color="Sunflower",
                sponsor_id=8,
                league_id=1,
-               year=2015,
-               espys=906
+               year=2015
                ),
           Team(
                color="Stark Pink",
                sponsor_id=25,
                league_id=1,
-               year=2015,
-               espys=1399
+               year=2015
                ),
           Team(
                color="Tan",
                sponsor_id=26,
                league_id=2,
-               year=2015,
-               espys=385
+               year=2015
                ),
           Team(
                color="Tangerine",
                sponsor_id=27,
                league_id=2,
-               year=2015,
-               espys=110
+               year=2015
                ),
           Team(
                color="Turquoise",
                sponsor_id=27,
                league_id=2,
-               year=2015,
-               espys=280
+               year=2015
                ),
           Team(
                color="Vermillion",
                sponsor_id=28,
                league_id=2,
-               year=2015,
-               espys=268
+               year=2015
                ),
           Team(
                color="Wintergreen",
                sponsor_id=29,
                league_id=1,
-               year=2015,
-               espys=431
+               year=2015
                ),
           Team(
                color="Walnut",
                sponsor_id=30,
                league_id=1,
-               year=2015,
-               espys=0
+               year=2015
                ),
           Team(
                color="Watermelon",
                sponsor_id=30,
                league_id=1,
-               year=2015,
-               espys=417
+               year=2015
                )
           ]
 
@@ -338,6 +301,14 @@ for team in teams:
     DB.session.add(team)
 DB.session.commit()
 
+#add espys points
+espys = [73,75,175,495,248,152,975,583,303,133,321,226,153,218,1029,169,236,
+         290,671,197,253,603,44,766,90,211,458,253,161,44,376,906,1399,385,110,
+         280,268,431,0,417]
+for i in range(0, len(espys)):
+    teams[i].espys.append(Espys(teams[i].id, points=espys[i], description="Season"))
+UNASSIGNED = Player("Unassigned runs", "doNotUser", "m")
+DB.session.add(UNASSIGNED)
 captains = [
                Player("Kyle Morrison", "1X", gender="m"),
                Player("Ty Ackerman", "2X", gender="m"),
@@ -383,8 +354,7 @@ captains = [
 for index, player in enumerate(captains):
     DB.session.add(player)
     teams[index].insert_player(index+1, captain=True)
-UNASSIGNED = Player("Unassigned runs", "doNotUser", "m")
-DB.session.add(UNASSIGNED)
+
 DB.session.commit()
 
 games  = [

@@ -13,6 +13,7 @@ SPONSORS = {0: "notFound.png",
 TEAMS = {
          0: "noTeam.png",
          }
+UNASSIGNED = 1
 HITS = ["s", "ss", "d", "hr"]
 BATS = ['s', 'd', 'ss', 'hr', 'k', 'e','fc', 'fo','go']
 GENDERS = ["f", "m"]

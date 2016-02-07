@@ -11,7 +11,7 @@ from api.helper import loads
 from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
-from api.model import Player, Team, Sponsor, League, Game, Bat
+from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
 from api.errors import IFSC, NUESC, SDNESC, LDNESC, TDNESC, PDNESC, GDNESC
 from api.credentials import ADMIN, PASSWORD
 from datetime import date
@@ -31,8 +31,10 @@ class BaseTest(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         DB.engine.execute('''   
+                                DROP TABLE IF EXISTS fun;
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
+                                DROP TABLE IF EXISTS espys;
                                 DROP TABLE IF EXISTS game;
                                 DROP TABLE IF EXISTS team;
                                 DROP TABLE IF EXISTS player;
@@ -44,8 +46,10 @@ class BaseTest(unittest.TestCase):
     def tearDown(self):
         DB.session.commit()
         DB.engine.execute('''   
+                                DROP TABLE IF EXISTS fun;
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
+                                DROP TABLE IF EXISTS espys;
                                 DROP TABLE IF EXISTS game;
                                 DROP TABLE IF EXISTS team;
                                 DROP TABLE IF EXISTS player;
@@ -206,6 +210,23 @@ class BaseTest(unittest.TestCase):
         team.insert_player(2, captain=False)
         DB.session.commit()
 
+    def addEspys(self):
+        self.addTeams()
+        espys = [Espys( 1, 
+                        sponsor_id=None, 
+                        description="Kik transaction", 
+                        points=1, 
+                        receipt=None),
+                 Espys( 2, 
+                        sponsor_id=1, 
+                        description="Purchase", 
+                        points=2, 
+                        receipt="12019209129"),
+                 ]
+        for espy in espys:
+            DB.session.add(espy)
+        DB.session.commit()
+
 class TestSponsor(BaseTest):
     def testSponsorListAPI(self):
         # test an empty get
@@ -344,6 +365,229 @@ class TestSponsor(BaseTest):
                          Routes['sponsor'] + " PUT: Failed to update Sponsor")
         self.assertEqual(200, rv.status_code,
                          Routes['sponsor'] + " PUT: Failed to update Sponsor")
+
+class TestEspys(BaseTest):
+    def testEspysApiGet(self):
+        # proper insertion
+        self.addEspys()
+        # invalid player id
+        rv = self.app.get(Routes['espy'] + "/100")
+        result = None
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " GET invalid espy id")
+        self.assertEqual(rv.status_code, 404, Routes['espy'] +
+                         " GET invalid espy id")
+        # valid user
+        rv = self.app.get(Routes['espy'] + "/1")
+        result = {   'description': 'Kik transaction',
+                    'espy_id': 1,
+                    'points': 1,
+                    'receipt': None,
+                    'sponsor': None,
+                    'team': 'Domus Green'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " GET valid espy id")
+        self.assertEqual(rv.status_code, 200, Routes['espy'] +
+                         " GET valid player id")
+        rv = self.app.get(Routes['espy'] + "/2")
+        result = {   'description': 'Purchase',
+                    'espy_id': 2,
+                    'points': 2,
+                    'receipt': '12019209129',
+                    'sponsor': 'Domus',
+                    'team': 'Chainsaw Black'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " GET valid espy id")
+        self.assertEqual(rv.status_code, 200, Routes['espy'] +
+                         " GET valid player id")
+
+    def testEspysApiDelete(self):
+        # proper insertion with post
+        self.addEspys()
+        # delete of invalid espy id
+        rv = self.app.delete(Routes['espy'] + "/100", headers=headers)
+        result = None
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " DELETE Invalid espy id ")
+        self.assertEqual(rv.status_code, 404, Routes['espy'] +
+                         " DELETE Invalid espy id ")
+        rv = self.app.delete(Routes['espy'] + "/1", headers=headers)
+        result = None
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         ' DELETE Valid espy id')
+        self.assertEqual(rv.status_code, 200, Routes['espy'] +
+                         ' DELETE Valid espy id')
+
+
+    def testEspysApiPut(self):
+        # must add a espy
+        self.addEspys()
+        # invalid espy id
+        params = {'team_id':1,
+                  'sponsor_id':1,
+                  'description': "Transaction",
+                  'points': 10,
+                  'receipt': "212309"}
+        rv = self.app.put(Routes['espy'] + '/100', data=params, headers=headers)
+        result = None
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         ' PUT: Invalid espy ID')
+        self.assertEqual(rv.status_code, 404, Routes['espy'] +
+                         ' PUT: Invalid espy ID')
+        # invalid team id
+        params = {'team_id':100,
+                  'sponsor_id':1,
+                  'description': "Transaction",
+                  'points': 10,
+                  'receipt': "212309"}
+        rv = self.app.put(Routes['espy'] + '/1', data=params, headers=headers)
+        result = {'message': 'Team does not Exist 100'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         ' PUT: Invalid espy name')
+        self.assertEqual(rv.status_code, TDNESC, Routes['player'] +
+                         ' PUT: Invalid espy name')
+        # invalid sponsor id
+        params = {'team_id':1,
+                  'sponsor_id':100,
+                  'description': "Transaction",
+                  'points': 10,
+                  'receipt': "212309"}
+        rv = self.app.put(Routes['espy'] + '/1', data=params, headers=headers)
+        result = {'message': 'Sponsor does not Exist 100'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         ' PUT: Invalid sponsor for Espy')
+        self.assertEqual(rv.status_code, SDNESC, Routes['espy'] +
+                         ' PUT: Invalid sponsor Espy')
+        # successfully update
+        params = {'team_id':1,
+                  'sponsor_id':1,
+                  'description': "Transaction",
+                  'points': 10,
+                  'receipt': "212309"}
+        rv = self.app.put(Routes['espy'] + '/1', data=params, headers=headers)
+        result = None
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         ' PUT: Valid espy update')
+        self.assertEqual(rv.status_code, 200, Routes['espy'] +
+                         ' PUT: Valid espy update')
+
+    def testEspysApiPost(self):
+        # test an empty get
+        rv = self.app.get(Routes['espy'])
+        empty = loads(rv.data)
+        self.assertEqual([], empty,Routes['espy'] +
+                         " GET: did not return empty list")
+        self.assertEqual(rv.status_code, 200,Routes['espy'] +
+                         " GET: did not return empty list")
+        # missing parameters
+        params = {}
+        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        message = 'Missing required parameter in the JSON body or the post body or the query string'
+        result = {   'message': { 
+                                 'points': message,
+                                 'team_id': message
+                                 }
+                  }
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result , Routes['espy'] +
+                         " POST: POST request with missing parameter"
+                         )
+        self.assertEqual(rv.status_code, 400 , Routes['espy'] +
+                         " POST: POST request with missing parameter"
+                         )
+        # testing a team id parameter
+        self.addTeams()
+        params = {'team_id':100,
+                  'sponsor_id':1,
+                  'points': 5}
+        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        result = {'message': 'Team does not Exist 100'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " POST: POST request with invalid team"
+                         )
+        self.assertEqual(rv.status_code, TDNESC, Routes['espy'] +
+                         " POST: POST request with invalid team"
+                         )
+        # testing sponsor id parameter
+        params = {'team_id':1,
+                  'sponsor_id':100,
+                  'points': 5}
+        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        result = {'message': 'Sponsor does not Exist 100'}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " POST: POST request with invalid sponsor"
+                         )
+        self.assertEqual(rv.status_code, SDNESC, Routes['espy'] +
+                         " POST: POST request with invalid sponsor"
+                         )
+        # testing points parameter
+        params = {'team_id':1,
+                  'sponsor_id':100,
+                  'points': "XX"}
+        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        result = {'message':
+                        {'points': 
+                                "invalid literal for int() with base 10: 'XX'"
+                        }
+                  }
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " POST: POST request with invalid points"
+                         )
+        self.assertEqual(rv.status_code, 400, Routes['espy'] +
+                         " POST: POST request with invalid points"
+                         )
+        # proper insertion with post
+        params = {'team_id':1,
+                  'sponsor_id':1,
+                  'points': 1}
+        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        result = 1
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['espy'] +
+                         " POST: POST request with valid data"
+                         )
+        self.assertEqual(rv.status_code, 200, Routes['espy'] +
+                         " POST: POST request with valid data"
+                         )
+        rv = self.app.get(Routes['espy'])
+        empty = loads(rv.data)
+        expect = [{ 
+                    'description': None,
+                    'espy_id': 1,
+                    'points': 1,
+                    'receipt': None,
+                    'sponsor': 'Domus',
+                    'team': 'Domus Green'}]
+        self.output(empty)
+        self.output(expect)
+        self.assertEqual(expect, empty,Routes['espy'] +
+                         " GET: did not receive espy list")
 
 class TestPlayer(BaseTest):
     def testPlayerApiGet(self):
@@ -845,8 +1089,7 @@ class TestTeam(BaseTest):
         params = {'sponsor_id': 1,
                   'league_id': 1,
                   'color': "Black",
-                  'year': 2015,
-                  'espys': 10}
+                  'year': 2015}
         rv = self.app.put(Routes['team'] + '/2', data=params, headers=headers)
         expect = None
         self.output(loads(rv.data))
@@ -860,8 +1103,7 @@ class TestTeam(BaseTest):
         params = {'sponsor_id': 999,
                   'league_id': 1,
                   'color': "Black",
-                  'year': 2015,
-                  'espys': 10}
+                  'year': 2015}
         rv = self.app.put(Routes['team'] + '/1', data=params, headers=headers)
         expect = {'message': 'Sponsor does not Exist 999'}
         self.output(loads(rv.data))
@@ -874,8 +1116,7 @@ class TestTeam(BaseTest):
         params = {'sponsor_id': 1,
                   'league_id': 999,
                   'color': "Black",
-                  'year': 2015,
-                  'espys': 10}
+                  'year': 2015}
         rv = self.app.put(Routes['team'] + '/1', data=params, headers=headers)
         expect = {'message': 'League does not Exist 999'}
         self.output(loads(rv.data))
@@ -888,8 +1129,7 @@ class TestTeam(BaseTest):
         params = {'sponsor_id': 1,
                   'league_id': 1,
                   'color': 1,
-                  'year': 2015,
-                  'espys': 10}
+                  'year': 2015}
         rv = self.app.put(Routes['team'] + '/1', data=params, headers=headers)
         expect = {'message': 'Invalid color for Team'}
         self.output(loads(rv.data))
@@ -902,8 +1142,7 @@ class TestTeam(BaseTest):
         params = {'sponsor_id': 1,
                   'league_id': 1,
                   'color': "Black",
-                  'year': -1,
-                  'espys': 10}
+                  'year': -1}
         rv = self.app.put(Routes['team'] + '/1', data=params, headers=headers)
         expect = {'message': 'Invalid year for Team'}
         self.output(loads(rv.data))

@@ -30,6 +30,73 @@ class Fun(DB.Model):
     def increment(self, change):
         self.count += change
 
+class Espys(DB.Model):
+    id = DB.Column(DB.Integer, primary_key=True)
+    team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
+    description = DB.Column(DB.String(120))
+    sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
+    points = DB.Column(DB.Integer)
+    date = DB.Column(DB.DateTime)
+    receipt = DB.Column(DB.String(30))
+
+    def __init__(self,
+                 team_id,
+                 sponsor_id=None,
+                 description=None,
+                 points=0,
+                 receipt=None):
+        self.points = points
+        self.date = datetime.now()
+        sponsor = None
+        if sponsor_id is not None:
+            sponsor = Sponsor.query.get(sponsor_id)
+        self.receipt = receipt
+        if sponsor_id is not None and sponsor is None:
+            raise SponsorDoesNotExist("Sponsor does not Exist {}".format(sponsor_id))
+        team = Team.query.get(team_id)
+        if team is None:
+            raise TeamDoesNotExist("Team does not Exist {}".format(team_id))
+        self.description = description
+        self.team_id = team_id
+        self.sponsor_id = sponsor_id
+
+    def update(self,
+               team_id=None,
+               sponsor_id=None,
+               description=None,
+               points=None,
+               receipt=None):
+        if points is not None:
+            self.points = points
+        if description is not None:
+            self.description = description
+        if team_id is not None:
+            if Team.query.get(team_id) is not None:
+                self.team_id = team_id
+            else:
+                raise TeamDoesNotExist("Team does not Exist {}".format(team_id))
+        if sponsor_id is not None:
+            if Sponsor.query.get(sponsor_id) is not None:
+                self.sponsor_id = sponsor_id
+            else:
+                raise SponsorDoesNotExist("Sponsor does not Exist {}".format(sponsor_id))
+        if receipt is not None:
+            self.receipt = receipt
+
+    def json(self):
+        if self.sponsor_id is not None:
+            sponsor = str(Sponsor.query.get(self.sponsor_id))
+        else:
+            sponsor = None
+        return {
+                'espy_id': self.id,
+                'team': str(Team.query.get(self.team_id)),
+                'sponsor': sponsor,
+                'description': self.description,
+                'points': self.points,
+                'receipt': self.receipt
+                }
+
 class Player(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(80))
@@ -132,14 +199,15 @@ class Team(DB.Model):
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     year = DB.Column(DB.Integer)
     player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
-    espys = DB.Column(DB.Integer)
+    espys = DB.relationship('Espys',
+                            backref='team',
+                            lazy='dynamic')
 
     def __init__(self,
                  color=None,
                  sponsor_id=None,
                  league_id=None,
-                 year=date.today().year,
-                 espys=0):
+                 year=date.today().year):
         if color is not None and not string_validator(color):
             raise InvalidField("Invalid color for Team")
         if sponsor_id is not None and Sponsor.query.get(sponsor_id) is None:
@@ -150,13 +218,10 @@ class Team(DB.Model):
             raise LeagueDoesNotExist(message)
         if year is not None and not year_validator(year):
             raise InvalidField("Invalid year for Team")
-        if espys is not None and not int_validator(espys):
-            raise InvalidField("Invalid espys for Team")
         self.color = color
         self.sponsor_id = sponsor_id
         self.league_id = league_id
         self.year = year
-        self.espys = espys
 
     def __repr__(self):
         result = []
@@ -165,6 +230,12 @@ class Team(DB.Model):
         if self.color is not None:
             result.append( self.color)
         return " ".join(result)
+
+    def espys_awarded(self):
+        count = 0
+        for espy in self.espys:
+            count += espy.points
+        return count
 
     def json(self):
         captain = None
@@ -177,7 +248,7 @@ class Team(DB.Model):
                'sponsor_id': self.sponsor_id,
                'league_id': self.league_id,
                'year': self.year,
-               'espys': self.espys,
+               'espys': self.espys_awarded(),
                'captain': captain}
 
     def update(self,
@@ -241,6 +312,7 @@ class Sponsor(DB.Model):
     description = DB.Column(DB.String(200))
     link = DB.Column(DB.String(100))
     active = DB.Column(DB.Boolean)
+    espys = DB.relationship('Espys', backref='sponsor', lazy='dynamic')
     def __init__(self, name, link=None, description=None, active=True):
         if not string_validator(name):
             raise InvalidField("Invalid name for Sponsor")
@@ -304,7 +376,6 @@ class League(DB.Model):
             raise InvalidField("Invalid name for League")
         self.name= league
 
-    
 class Game(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     home_team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id',

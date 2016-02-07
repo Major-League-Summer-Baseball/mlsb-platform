@@ -8,40 +8,41 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Team
+from api.model import Espys
 from datetime import date
 from api.authentication import requires_admin
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
-parser.add_argument('color', type=str)
-parser.add_argument('league_id', type=int)
-parser.add_argument('year', type=int)
+parser.add_argument('team_id', type=int)
+parser.add_argument('description', type=str)
+parser.add_argument('points', type=int)
+parser.add_argument('receipt', type=str)
+
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
-post_parser.add_argument('sponsor_id', type=int, required=True)
-post_parser.add_argument('color', type=str, required=True)
-post_parser.add_argument('league_id', type=int, required=True)
-post_parser.add_argument('year', type=int, required=True)
+post_parser.add_argument('sponsor_id', type=int)
+post_parser.add_argument('team_id', type=int, required=True)
+post_parser.add_argument('description', type=str)
+post_parser.add_argument('points', type=int, required=True)
+post_parser.add_argument('receipt', type=str)
 
-class TeamAPI(Resource):
-    def get(self, team_id):
+class EspyAPI(Resource):
+    def get(self, espy_id):
         """
-            GET request for Team Object matching given team_id
-            Route: Routes['team']/<team_id:int>
+            GET request for Espys Object matching given espy_id
+            Route: Routes['team']/<espy_id:int>
             Returns:
                 if found
                     status: 200 
                     mimetype: application/json
                     data:  
                         {
-                           'team_id':  int,
-                           'team_name': string,
-                           'color': string,
-                           'sponsor_id': int,
-                           'league_id': int,
-                           'year': int,
-                           'espys': int,
-                           'captain': string
+                           'date':  date,
+                           'team': string,
+                           'sponsor': string,
+                           'description': string,
+                           'points': int,
+                           'receipt': string
                         }
                 otherwise
                     status: 404 
@@ -50,7 +51,7 @@ class TeamAPI(Resource):
                         None
         """
         # expose a single team
-        entry  = Team.query.get(team_id)
+        entry  = Espys.query.get(espy_id)
         response = Response(dumps(None),
                             status=404, mimetype="application/json")
         if entry is not None:
@@ -59,10 +60,10 @@ class TeamAPI(Resource):
         return response
 
     @requires_admin
-    def delete(self, team_id):
+    def delete(self, espy_id):
         """
-            DELETE request for Team
-            Route: Routes['team']/<team_id:int>
+            DELETE request for Espy
+            Route: Routes['espy']/<espy_id:int>
             Returns:
                 if found
                     status: 200 
@@ -73,61 +74,65 @@ class TeamAPI(Resource):
                     mimetype: application/json
                     data: None
         """
-        team = Team.query.get(team_id)
+        espy = Espys.query.get(espy_id)
         response = Response(dumps(None), status=404, mimetype="application/json")
-        if team is not None:
-            # delete a single team
-            DB.session.delete(team)
+        if espy is not None:
+            # delete a single espy
+            DB.session.delete(espy)
             DB.session.commit()
             response = Response(dumps(None), status=200,
                                 mimetype="application/json")
         return response
 
     @requires_admin
-    def put(self, team_id):
+    def put(self, espy_id):
         """
-            PUT request for team
-            Route: Routes['team']/<team_id:int>
+            PUT request for espy
+            Route: Routes['team']/<espy_id:int>
             Parameters :
-                team_id: The team's id (int)
-                team_name: The team's name (string)
+                espy_id: The espy's id (int)
+                description: The description of the transaction (string)
                 sponsor_id: The sponsor's id (int)
-                league_id: The league's id (int)
-                color: the color of the team (string)
-                year: the year of the team (int)
-                espys: the total espys points of the team (int)
+                team_id: The team's id (int)
+                points: The points awarded (int)
+                receipt: the receipt number (string)
             Returns:
                 if found and updated successfully
                     status: 200 
                     mimetype: application/json
                     data: None
                 otherwise possible errors are
-                    status: 404, IFSC, LDNESC, PDNESC or SDNESC
+                    status: 404, IFSC, TDNESC, SDNESC
                     mimetype: application/json
                     data: None
         """
         # update a single user
-        team = Team.query.get(team_id)
+        espy = Espys.query.get(espy_id)
         args = parser.parse_args()
         response = Response(dumps(None), status=404,
                             mimetype="application/json")
-        color = None
+        description = None
         sponsor_id = None
-        league_id = None
-        year = None
-        if team is not None:
-            if args['color']:
-                color = args['color']
+        team_id = None
+        points = None
+        receipt = None
+        if espy is not None:
+            if args['description']:
+                description = args['description']
             if args['sponsor_id']:
                 sponsor_id = args['sponsor_id']
-            if args['league_id']:
-                league_id = args['league_id']
-            if args['year']:
-                year = args['year']
-            team.update(color=color,
-                        sponsor_id=sponsor_id,
-                        league_id=league_id,
-                        year=year
+            if args['team_id']:
+                team_id = args['team_id']
+            if args['points']:
+                points = args['points']
+            if args['receipt']:
+                points = args['points']
+        
+            espy.update(sponsor_id=sponsor_id,
+                        team_id=team_id,
+                        description=description,
+                        points=points,
+                        receipt=receipt
                         )
             DB.session.commit()
             response = Response(dumps(None), status=200,
@@ -139,41 +144,40 @@ class TeamAPI(Resource):
                 { 'Access-Control-Allow-Origin': '*', \
                  'Access-Control-Allow-Methods' : 'PUT,GET' }
 
-class TeamListAPI(Resource):
+class EspyListAPI(Resource):
     def get(self):
         """
-            GET request for Teams List
-            Route: Routes['team']
+            GET request for Espys List
+            Route: Routes['espy']
             Parameters :
             Returns:
                 status: 200 
                 mimetype: application/json
                 data: 
-                    teams: [  {
-                                'team_id':  int,
-                               'team_name': string,
-                               'color': string,
-                               'sponsor_id': int,
-                               'league_id': int,
-                               'year': int,
-                               'espys': int,
-                               'captain': string
-                                }
+                    teams: {
+                            {
+                               'date':  date,
+                               'team': string,
+                               'sponsor': string,
+                               'description': string,
+                               'points': int,
+                               'receipt': string
+                            }
                               ,{...}
                             ]
         """
         # return a list of teams
-        teams = Team.query.all()
+        espys = Espys.query.all()
         result = []
-        for i in range(0, len(teams)):
-            result.append(teams[i].json())
+        for i in range(0, len(espys)):
+            result.append(espys[i].json())
         resp = Response(dumps(result), status=200, mimetype="application/json")
         return resp
 
     @requires_admin
     def post(self):
         """
-            POST request for Teams List
+            POST request for Espys List
             Route: Routes['team']
             Parameters :
                 league_id: the league's id (int)
@@ -193,25 +197,31 @@ class TeamListAPI(Resource):
         """
         # create a new user
         args = post_parser.parse_args()
-        color = None
+        description = None
         sponsor_id = None
-        league_id = None
-        year = date.today().year
-        if args['color']:
-            color = args['color']
+        team_id = None
+        points = None
+        receipt = None
+        if args['description']:
+            description = args['description']
         if args['sponsor_id']:
             sponsor_id = args['sponsor_id']
-        if args['league_id']:
-            league_id = args['league_id']
-        if args['year']:
-            year = args['year']
-        t = Team(color=color,
-                 sponsor_id=sponsor_id,
-                 league_id=league_id,
-                 year=year)
-        DB.session.add(t)
+        if args['team_id']:
+            team_id = args['team_id']
+        if args['points']:
+            points = args['points']
+        if args['receipt']:
+            points = args['receipt']
+        
+        espy = Espys(sponsor_id=sponsor_id,
+                    team_id=team_id,
+                    description=description,
+                    points=points,
+                    receipt=receipt
+                    )
+        DB.session.add(espy)
         DB.session.commit()
-        result = t.id
+        result = espy.id
         return Response(dumps(result), status=200, mimetype="application/json")
 
     def options (self):

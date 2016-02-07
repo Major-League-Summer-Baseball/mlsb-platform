@@ -25,13 +25,16 @@ def check_auth(username, password):
     """
     return username == ADMIN and password == PASSWORD
 
-def check_captain(player, password, game):
-    player = Player.query.filter_by(name=player).first()
-    game = Game.query.get(game)
-    away_team = Team.query.get(game.away_team_id)
-    home_team = Team.query.get(game.home_team_id)
-    return (home_team.player_id == player.id or away_team.player_id)\
-             and player.check_password(password)
+def check_captain(player, password):
+    players = Player.query.filter_by(name=player).first()
+    player = None
+    for p in players:
+        if p.check_password(password):
+            player = p
+    if player is None:
+        return authenticate()
+    session['captain'] = player.id
+    return True
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -58,7 +61,7 @@ def requires_captain(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth  = request.authorization
-        if not auth or not check_captain(auth.name, auth.password, auth.game):
+        if not auth or not check_captain(auth.name, auth.password):
             return authenticate()
         return f(*args, **kwargs)
     return decorated

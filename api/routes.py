@@ -16,6 +16,7 @@ Routes['team'] = "/api/teams"
 Routes['game'] = "/api/games"
 Routes['bat'] = "/api/bats"
 Routes['team_roster'] = "/api/tearmroster"
+Routes['espy'] = "/api/espys"
 # advanced routes
 Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"

@@ -10,6 +10,7 @@ from flask.ext.restful import Api
 from flask.ext.restful.utils import cors
 from flask.ext.sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
+
 local = False
 try:
     # running local
@@ -62,6 +63,7 @@ from api.basic.league import LeagueAPI, LeagueListAPI
 from api.basic.team import TeamAPI, TeamListAPI
 from api.basic.game import GameAPI, GameListAPI
 from api.basic.bat import BatAPI, BatListAPI
+from api.basic.epsys import EspyAPI, EspyListAPI
 from api.advanced.team_roster import TeamRosterAPI
 from api.routes import Routes
 api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
@@ -82,6 +84,9 @@ api.add_resource(GameAPI, Routes['game'] + "/<int:game_id>",
 api.add_resource(BatListAPI, Routes['bat'], endpoint="bats")
 api.add_resource(BatAPI, Routes['bat'] + "/<int:bat_id>", 
                  endpoint="bat")
+api.add_resource(EspyListAPI, Routes['espy'], endpoint="Espys")
+api.add_resource(EspyAPI, Routes['espy'] + "/<int:espy_id>", 
+                 endpoint="basic-espy")
 api.add_resource(TeamRosterAPI, Routes['team_roster']+ "/<int:team_id>",
                  endpoint="teamrosters")
 
