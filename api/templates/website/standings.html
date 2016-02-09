@@ -1,45 +1,96 @@
 {% extends "website/new-base.html" %}
 {% block content %}
 
-	{% for id, league in leagues.items() %}
-		<h4>{{league.name}}</h4>
-		<table id="{{id}}" width="100%" class="display">
-			<thead>
-				<tr>
-					<th>Team</th>
-					<th>GP</th>
-					<th>W</th>
-					<th>L</th>
-					<th>T</th>
-					<th>RF</th>
-					<th>RA</th>
-					<th>+/-</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for team in league.teams %}
-					<tr>
-						<th>{{team.name}}</th>
-						<th>{{team.games}}</th>
-						<th>{{team.wins}}</th>
-						<th>{{team.lossess}}</th>
-						<th>{{team.ties}}</th>
-						<th>{{team.runs_for}}</th>
-						<th>{{team.runs_against}}</th>
-						<th>{{team.plus_minus}}</th>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	{% endfor %}
+	<ul class="nav nav-pills">
+		<li role="presentation" class="active"><a data-toggle="pill" href="#leagues">By Leagues</a></li>
+		<li role="presentation"><a data-toggle="pill" href="#whole">Whole League</a></li>
+	</ul>
+	<div class="tab-content">
+		<div id="leagues" class="tab-pane fade in active">
+				{% for id, league in leagues.items() %}
+				<h4>{{league.name}}</h4>
+				<table id="league_{{id}}" width="100%" class="display">
+					<thead>
+						<tr>
+							<th>Team</th>
+							<th>Espys</th>
+							<th>GP</th>
+							<th>W</th>
+							<th>L</th>
+							<th>T</th>
+							<th>RF</th>
+							<th>RA</th>
+							<th>+/-</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for team in league.teams %}
+							<tr>
+								<td><a href="{{route.teampage}}/{{year}}/{{id}}">{{team.name}}</a></td>
+								<td>{{team.espys}}</td>
+								<td>{{team.games}}</td>
+								<td>{{team.wins}}</td>
+								<td>{{team.losses}}</td>
+								<td>{{team.ties}}</td>
+								<td>{{team.runs_for}}</td>
+								<td>{{team.runs_against}}</td>
+								<td>{{team.plus_minus}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			{% endfor %}
+		</div>
+		<div id="whole" class="tab-pane fade in">
+				<h4>Both Leagues</h4>
+				<table id="whole_league" width="100%" class="display">
+					<thead>
+						<tr>
+							<th>Team</th>
+							<th>Espys</th>
+							<th>GP</th>
+							<th>W</th>
+							<th>L</th>
+							<th>T</th>
+							<th>RF</th>
+							<th>RA</th>
+							<th>+/-</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for id, league in leagues.items() %}
+							{% for team in league.teams %}
+								<tr>
+									<td><a href="{{route.teampage}}/{{year}}/{{id}}">{{team.name}}</a></td>
+									<td>{{team.espys}}</td>
+									<td>{{team.games}}</td>
+									<td>{{team.wins}}</td>
+									<td>{{team.losses}}</td>
+									<td>{{team.ties}}</td>
+									<td>{{team.runs_for}}</td>
+									<td>{{team.runs_against}}</td>
+									<td>{{team.plus_minus}}</td>
+								</tr>
+							{% endfor %}
+						{% endfor %}
+					</tbody>
+				</table>
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
 <script>
+$(document).ready(ready());
 function ready(){
 	console.log("Done");
 	{% for id, league in leagues.items()  %}
-		$('#'+{{id}}).DataTable({
-		"order": [[2, "desc"]]
+		$('#league_{{id}}').DataTable({
+		"order": [[3, "desc"]]
 	});
 	{% endfor %}
+	$('#whole_league').DataTable({
+		"order": [[1, "desc"]]
+	})
 }
 </script>
 {% endblock %}

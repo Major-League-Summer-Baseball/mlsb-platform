@@ -8,9 +8,11 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Team, Game
+from api.model import Team, Game, Bat
 from api.variables import HITS
 from datetime import datetime, date, time
+from sqlalchemy.sql import func
+from sqlalchemy import or_
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
@@ -25,134 +27,96 @@ def post(team_id, year, league_id):
     return team
 
 def single_team(team_id):
-    away_games = DB.session.query(Game).filter_by(away_team_id = team_id)
-    home_games = DB.session.query(Game).filter_by(home_team_id = team_id)
+    games = (DB.session.query(Game)
+             .filter(or_(Game.away_team_id == team_id,
+                         Game.home_team_id == team_id)
+                     ).all())
     team = {team_id: {'wins': 0,
-                'losses': 0,
-                'games': 0,
-                'ties': 0,
-                "away_wins": 0,
-                "away_losses": 0,
-                'home_wins': 0,
-                'home_losses': 0,
-                'runs_for': 0,
-                "runs_against": 0,
-                'hits_for': 0,
-                'hits_allowed': 0}
-            }
-    for game in away_games:
-        team_score = 0
-        opponent_score = 0
-        for bat in game.bats:
-            if bat.team_id == team_id:
-                team_score += bat.rbi
-                if bat.classification in HITS:
-                    team[team_id]['hits_for'] += 1
-            else:
-                opponent_score += bat.rbi
-                if bat.classification in HITS:
-                    team[team_id]['hits_allowed'] += 1
-        if team_score > opponent_score:
+                      'losses': 0,
+                      'games': 0,
+                      'ties': 0,
+                      'runs_for': 0,
+                      "runs_against": 0,
+                      'hits_for': 0,
+                      'hits_allowed': 0,
+                      'name': str(Team.query.get(team_id))}
+            }    
+    for game in games:
+        # loop through each game
+        scores = game.summary()
+        if game.away_team_id == team_id:
+            score = scores['away_score']
+            hits = scores['away_bats']
+            opp = scores['home_score']
+            opp_hits = scores['home_bats']
+        else:
+            score = scores['home_score']
+            hits = scores['home_bats']
+            opp = scores['away_score']
+            opp_hits = scores['away_bats']
+        if score > opp:
             team[team_id]['wins'] += 1
-            team[team_id]['away_wins'] += 1
-        elif team_score < opponent_score:
+        elif score < opp:
             team[team_id]['losses'] += 1
-            team[team_id]['away_losses'] += 1
         else:
             team[team_id]['ties'] += 1
-        team[team_id]['runs_for'] += team_score
-        team[team_id]['runs_against'] += opponent_score
-    for game in home_games:
-        team_score = 0
-        opponent_score = 0
-        for bat in game.bats:
-            if bat.team_id == team_id:
-                team_score += bat.rbi
-                if bat.classification in HITS:
-                    team[team_id]['hits_for'] += 1
-            else:
-                opponent_score += bat.rbi
-                if bat.classification in HITS:
-                    team[team_id]['hits_allowed'] += 1
-        if team_score > opponent_score:
-            team[team_id]['wins'] += 1
-            team[team_id]['home_wins'] += 1
-        elif team_score < opponent_score:
-            team[team_id]['losses'] += 1
-            team[team_id]['home_losses'] += 1
-        else:
-            team[team_id]['ties'] += 1
-        team[team_id]['runs_for'] += team_score
-        team[team_id]['runs_against'] += opponent_score
+        team[team_id]['runs_for'] += score
+        team[team_id]['runs_against'] += opp
+        team[team_id]['hits_for'] += hits
+        team[team_id]['hits_allowed'] += opp_hits
+        team[team_id]['games'] += 1
     return team
 
 def team_stats(year, league_id):
-    t1 = time(0, 0)
-    t2 = time(0 , 0)
+    t = time(0, 0)
+    games = DB.session.query(Game)
+    teams = DB.session.query(Team)
     if year is not None:
         d1 = date(year, 1, 1)
-        t1 = time(0, 0)
         d2 = date(year, 12, 30)
-        t2 = time(0 , 0)
-        teams = DB.session.query(Team).filter(year=year)
-    else:
-        d1 = date(2014, 1, 1)
-        d2 = date(date.today().year, 12, 30)
-        teams = DB.session.query(Team)
-    start = datetime.combine(d1, t1)
-    end = datetime.combine(d2, t2)
-    games = DB.session.query(Game).filter(Game.date.between(start, end))
-    if id is not None and year is not None:
-        games = games.filter_by(league_id=id, )
-        teams = teams.filter_by(league_id=id)
-    team = {}
-    for t in teams:
-        team[t.id] ={'wins': 0,
-                    'losses': 0,
-                    'games': 0,
-                    'ties': 0,
-                    "away_wins": 0,
-                    "away_losses": 0,
-                    'home_wins': 0,
-                    'home_losses': 0,
-                    'runs_for': 0,
-                    "runs_against": 0,
-                    'hits_for': 0,
-                    'hits_allowed': 0}
+        start = datetime.combine(d1, t)
+        end = datetime.combine(d2, t)
+        games = games.filter(Game.date.between(start,end))
+        teams = teams.filter(Team.year==year)
+    if league_id is not None:
+        games = games.filter(Game.league_id==league_id)
+        teams = teams.filter(Team.league_id==league_id)
+    
+    result = {}
+    for team in teams:
+        # initialize each team
+        result[team.id] = {'wins': 0,
+                           'losses': 0,
+                           'games': 0,
+                           'ties': 0,
+                           'runs_for': 0,
+                           "runs_against": 0,
+                           'hits_for': 0,
+                           'hits_allowed': 0,
+                           'name': str(team)}
     for game in games:
-        home_score = 0
-        away_score = 0
-        for bat in game.bats:
-            if bat.team_id == game.away_team_id:
-                away_score += bat.rbi
-                if bat.classification in HITS:
-                    team[game.away_team_id]['hits_for'] += 1
-                    team[game.home_team_id]['hits_allowed']
-            else:
-                home_score += bat.rbi
-                if bat.classification in HITS:
-                    team[game.home_team_id]['hits_for'] += 1
-                    team[game.away_team_id]['hits_allowed'] += 1
-                    team[bat.team_id]['hits_allowed'] += 1
-        if away_score > home_score:
-            team[game.away_team_id]['wins'] += 1
-            team[game.away_team_id]['away_wins'] += 1
-            team[game.home_team_id]['losses'] += 1
-            team[game.home_team_id]['home_losses'] += 1
-            
-        elif away_score < home_score:
-            team[game.home_team_id]['wins'] += 1
-            team[game.home_team_id]['home_wins'] += 1
-            team[game.away_team_id]['losses'] += 1
-            team[game.away_team_id]['away_losses'] += 1
+        # loop through each game (max ~400 for a season)
+        score = game.summary()
+        result[game.away_team_id]['runs_for'] += score['away_score'] 
+        result[game.away_team_id]['runs_against'] += score['home_score']
+        result[game.away_team_id]['hits_for'] += score['away_bats'] 
+        result[game.away_team_id]['hits_allowed'] += score['home_bats']
+        result[game.away_team_id]['games'] += 1
+        result[game.home_team_id]['runs_for'] += score['home_score'] 
+        result[game.home_team_id]['runs_against'] += score['away_score']
+        result[game.home_team_id]['hits_for'] += score['home_bats'] 
+        result[game.home_team_id]['hits_allowed'] += score['away_bats']
+        result[game.home_team_id]['games'] += 1
+        if score['away_score'] > score['home_score']:
+            result[game.away_team_id]['wins'] += 1
+            result[game.home_team_id]['losses'] += 1
+        elif score['away_score'] < score['home_score']:
+            result[game.home_team_id]['wins'] += 1
+            result[game.away_team_id]['losses'] += 1
         else:
-            team[game.home_team_id]['ties'] += 1
-            team[game.away_team_id]['ties'] += 1
-        team[game.home_team_id]['runs_for'] += away_score
-        team[game.home_team_id]['runs_against'] += home_score
-        team[game.away_team_id]['runs_for'] += home_score
-        team[game.away_team_id]['runs_against'] += away_score
-    return team
+            result[game.home_team_id]['ties'] += 1
+            result[game.away_team_id]['ties'] += 1
+    return result
 
 class TeamStatsAPI(Resource):
     def post(self):
@@ -169,7 +133,6 @@ class TeamStatsAPI(Resource):
                 data: list of Teams
         """
         year = None
-        id = None
         args = parser.parse_args()
         if args['team_id']:
             tid = args['team_id']

@@ -13,13 +13,15 @@ from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
 from api.variables import SPONSORS, UNASSIGNED
 from datetime import date, datetime, time
 from sqlalchemy import desc
-from api.advanced.team_stats import single_team
+from api.advanced.team_stats import team_stats
+from api.advanced.players_stats import post as player_summary
 from api.variables import HITS
 from api import DB
 from flask_sqlalchemy import get_debug_queries
 from sqlalchemy.sql import func
 import requests
 import json
+from api.advanced import players_stats
 
 
 @app.route("/")
@@ -91,19 +93,20 @@ def standings(year):
                            leagues=get_leagues(year),
                            title="Standings",
                            year=year)
-
-@app.route(Routes['teamspage'] + "/<int:year>")
-def teams_page(year):
-    return render_template("website/teams.html",
+@app.route(Routes['statspage'] + "/<int:year>")
+def stats_page(year):
+    players = player_summary(year)
+    return render_template("website/stats.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
-                           teams=get_teams(year),
-                           title="Teams",
-                           year=year)
+                           sponsor=get_sponsors(),
+                           title="Players Stats",
+                           year=year,
+                           players=players
+                           )
 
-@app.route(Routes['teampage'] + "/<int:year>/<int:id>")
-def team_page(year, id):
-    team = get_team(year, id)
+@app.route(Routes['teampage'] + "/<int:year>/<int:team_id>")
+def team_page(year, team_id):
+    team = get_team(year, team_id)
     return render_template("website/team.html",
                        route=Routes,
                        sponsors=get_sponsors(),
@@ -111,116 +114,37 @@ def team_page(year, id):
                        title="Team - " + str(team['name']),
                        year=year)
 
-@app.route(Routes['leaderspage'] + "/<int:year>")
-def leaders(year):
-    return render_template("website/leaders.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           leaders=get_leaders("m", year, "hr"),
-                           title="Race for the Domus Cup",
-                           year=year)
-
-@app.route(Routes['wleaderspage'] + "/<int:year>")
-def wleaders(year):
-    return render_template("website/wleaders.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           leaders=get_leaders("f", year, "ss"),
-                           title="Sentry Singles",
-                           year=year)
-
-@app.route(Routes['espystandingspage'] + "/<int:year>")
-def espy_standings(year):
-    return render_template("website/espystandings.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           standings=get_espy(year),
-                           title="ESPY Standings",
-                           year=year)
+@app.route(Routes['playerpage']+ "/<int:year>/<int:player_id>")
+def player_page(year, player_id):
+    team = get_team(year, player_id)
+    return render_template("website/team.html",
+                       route=Routes,
+                       sponsors=get_sponsors(),
+                       team=team,
+                       title="Team - " + str(team['name']),
+                       year=year)
 '''
 # -----------------------------------------------------------------------------
 #             STATIC PAGES
 # -----------------------------------------------------------------------------
 '''
-@app.route(Routes['mysterybuspage'] + "/<int:year>")
-def mystery_bus(year):
-    return render_template("website/mysterybus.html",
+@app.route(Routes['eventspage'] + "/<int:year>")
+def events_page(year):
+    return render_template("website/events.html",
                            route=Routes,
                            sponsors=get_sponsors(),
-                           title="Mystery Bus",
+                           title="Events",
                            year=year)
 
-@app.route(Routes['bluejayspage'] + "/<int:year>")
-def blue_jays(year):
-    return render_template("website/bluejays.html",
+@app.route(Routes['fieldsrulespage'] + "/<int:year>")
+def rules_fields(year):
+    return render_template("website/fields-and-rules.html",
                            route=Routes,
                            sponsors=get_sponsors(),
-                           title="Blue Jays Game",
+                           title="Fields & Rules",
                            year=year)
 
-@app.route(Routes['beerfestpage'] + "/<int:year>")
-def beerfest(year):
-    return render_template("website/beerfest.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Beerfest",
-                           year=year)
 
-@app.route(Routes['raftingpage'] + "/<int:year>")
-def rafting(year):
-    return render_template("website/rafting.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Rafting",
-                           year=year)
-
-@app.route(Routes['beerwellpage'] + "/<int:year>")
-def beerwell(year):
-    return render_template("website/beerwell.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Beerwell",
-                           year=year)
-
-@app.route(Routes['hftcpage'] + "/<int:year>")
-def hftc(year):
-    return render_template("website/hftc.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Hitting for the Cycle",
-                           year=year)
-
-@app.route(Routes['summerweenpage'] + "/<int:year>")
-def summerween(year):
-    return render_template("website/summerween.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Summerween",
-                           year=year)
-
-@app.route(Routes['espypage'] + "/<int:year>")
-def espy(year):
-    return render_template("website/espy.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="ESPY Awards",
-                           year=year)
-
-@app.route(Routes['rulespage'] + "/<int:year>")
-def rules(year):
-    return render_template("website/rules.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Rules",
-                           year=year)
-
-@app.route(Routes['fieldspage'] + "/<int:year>")
-def fields(year):
-    return render_template("website/fields.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Fields",
-                           year=year)
 '''
 # -----------------------------------------------------------------------------
 
@@ -285,67 +209,32 @@ def get_espy(year):
                      'name': str(team[0])})
     return espy
 
-def get_team(year, id):
-    result = Team.query.get(id)
+def get_team(year, tid):
+    result = Team.query.get(tid)
     team = None
-    print(result)
-    print(result.player_id)
     if result is not None:
         captain = "TBD"
-        stats = {}
-        players = {}
-        if result.player_id is not None:
-            captain = Player.query.get(result.player_id)
-            players[result.player_id] = captain
-            stats[captain] = {'s': 0,
-                               'd': 0,
-                               'ss': 0,
-                               'hr': 0,
-                               'bats': 0,
-                               'id': result.player_id}
-        for player in result.players:
-            # initialize a lookup for the players
-            players[player.id] = player.name
-            stats[player.name] = {'s': 0,
-                                   'd': 0,
-                                   'ss': 0,
-                                   'hr': 0,
-                                   'bats': 0,
-                                   'id': player.id}
-        for game in result.away_games:
-            for bat in game.bats:
-                player = players.get(bat.player_id, None)
-                if player is not None:
-                    if bat.classification in HITS:
-                        stats[player][bat.classification] += 1
-                    stats[player]['bats'] += 1
-        for game in result.home_games:
-            for bat in game.bats:
-                player = players.get(bat.player_id, None)
-                if player is not None:
-                    if bat.classification in HITS:
-                        stats[player][bat.classification] += 1
-                    stats[player]['bats'] += 1
+        p_ = player_summary(team_id=tid)
         players = []
-        for player, hits in stats.items():
-            if hits['bats'] > 0:
-                ba = (hits['ss'] + hits['s'] + hits['d'] + hits['hr']) / hits['bats']
-                sp = ((hits['ss'] + hits['s'] + hits['d'] * 2 + hits['hr'] * 4)
-                      / hits['bats'])
-            else:
-                ba = 0
-                sp = 0
+        for name in p_:
+            sp = (
+                    (
+                      p_[name]["s"]
+                      + p_[name]["ss"]
+                      + p_[name]["d"] * 2
+                      + p_[name]["hr"] * 4
+                      ) / p_[name]['bats']
+                  )
             players.append({
-                            'id':hits['id'],
-                            'name': player, 
-                            'ss': hits['ss'],
-                            's': hits['s'],
-                            'd': hits['d'],
-                            'hr': hits['hr'],
-                            'bats': hits['bats'],
-                            'ba': "{0:.3f}".format(ba),
-                            'sp': "{0:.3f}".format(sp)})
-        print(players)
+                'id':p_[name]['id'],
+                'name': name, 
+                'ss': p_[name]['ss'],
+                's': p_[name]['s'],
+                'd': p_[name]['d'],
+                'hr': p_[name]['hr'],
+                'bats': p_[name]['bats'],
+                'ba': "{0:.3f}".format(p_[name]['avg']),
+                'sp': "{0:.3f}".format(sp)})
         team = {'name': str(result),
                 'league': str(League.query.get(result.league_id)),
                 'captain': str(captain),
@@ -361,56 +250,52 @@ def get_teams(year):
                      'name': str(team)})
     return teams
 
-def get_games(year):
+def get_games(year=None, summary=False):
     games = {}
     leagues = League.query.all()
+    t = time(0, 0)
     if year is not None:
         d1 = date(year, 1, 1)
-        t1 = time(0, 0)
         d2 = date(year, 12, 30)
-        t2 = time(0 , 0)
-    start = datetime.combine(d1, t1)
-    end = datetime.combine(d2, t2)
+    elif summary:
+        today = date.today()
+        d1 = date(today.year, today.month, today.day - 3)
+        d2 = date(today.year, today.month, today.day + 3)
+    else:
+        d1 = date(2014, 1, 1)
+        d2 = date(date.today().year, 12, 30)
+    start = datetime.combine(d1, t)
+    end = datetime.combine(d2, t)
     for league in leagues:
         g = Game.query.filter(and_(Game.league_id==league.id,Game.date.between(start, end) )).order_by("date").all()
         games[league.id] = {'league_name': league.name, 'games': []}
         for game in g:
             result = game.json()
             if game.date < datetime.today():
-                result['score'] = get_score(game)
+                scores = game.summary()
+                result['score'] = (str(scores['home_score']) + '-' 
+                                   + str(scores['away_score']))
             games[league.id]['games'].append(result)
-    print(games)
     return games
-
-def get_score(game):
-    home_team_id = game.home_team_id
-    home_score = 0
-    away_score = 0
-    for bat in game.bats:
-        if bat.team_id == home_team_id:
-            home_score += bat.rbi
-        else:
-            away_score += bat.rbi
-    return str(home_score) + " - " + str(away_score)
 
 def get_leagues(year):
     result = League.query.all()
     leagues = {}
     for league in result:
-        leagues[league.id] = {'name':league.name, 'teams':[]}
-    teams = Team.query.filter_by(year=year).all()
-    for team in teams:
-        result = single_team(team.id)[team.id]
-        print(result)
-        format = {'name': str(team),
-                  'games': result['games'],
-                  'wins': result['away_wins'] + result['home_wins'],
-                  'losses': result['away_losses'] + result['home_losses'],
-                  'runs_for': result['runs_for'],
-                  'runs_against': result['runs_against'],
-                  'plus_minus': result['runs_for'] - result['runs_against']
+        leagues[league.id] = {'name':league.name, 'teams':[]} 
+        teams = team_stats(year, league.id)
+        for team in teams:
+            valid_form = {'name': teams[team]['name'],
+                          'espys': Team.query.get(team).espys_awarded(),
+                          'games': teams[team]['games'],
+                          'wins': teams[team]['wins'],
+                          'losses': teams[team]['losses'],
+                          'ties': teams[team]['ties'],
+                          'runs_for': teams[team]['runs_for'],
+                          'runs_against': teams[team]['runs_against'],
+                          'plus_minus': teams[team]['runs_for'] - teams[team]['runs_against']
                    }
-        leagues[team.league_id]['teams'].append(format)
+            leagues[league.id]['teams'].append(valid_form)
     return leagues
 
 def get_sponsors():

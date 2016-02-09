@@ -29,7 +29,10 @@
 			</tbody>
 		</table>
 	{% endfor %}
+{% endblock %}
+{% block script %}
 <script>
+$(document).ready(ready());
 function ready(){
 	console.log("Done");
 	{% for id, league in games.items() %}

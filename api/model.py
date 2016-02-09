@@ -5,8 +5,10 @@
 @summary: Holds the model for the database
 '''
 from api import DB
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime
+from api.variables import HITS
 from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
                         NonUniqueEmail, MissingPlayer
@@ -303,6 +305,9 @@ class Team(DB.Model):
         player = Player.query.get(self.player_id)
         return player.name == player_name and player.check_password(password)
 
+    def team_stats(self):
+        pass
+
 class Sponsor(DB.Model):
     __tablename__ = 'sponsor'
     id = DB.Column(DB.Integer, primary_key=True)
@@ -486,6 +491,45 @@ class Game(DB.Model):
             raise InvalidField("Invalid field for Game")
         # worse case just overwrites it with same date or time
         self.date = datetime.strptime(d + "-" +t, '%Y-%m-%d-%H:%M')
+
+    def summary(self):
+        away_score = DB.session.query(
+                                      func.sum(Bat.rbi)
+                                      .filter(Bat.game_id==self.id)
+                                      .filter(Bat.team_id==self.away_team_id)
+                                      ).first()[0]
+        away_bats  = DB.session.query(
+                                      func.count(Bat.classification)
+                                      .filter(Bat.game_id==self.id)
+                                      .filter(Bat.team_id==self.away_team_id)
+                                      .filter(Bat.classification.in_(HITS))
+                                      ).first()[0]
+        home_score = DB.session.query(
+                                      func.sum(Bat.rbi)
+                                      .filter(Bat.game_id==self.id)
+                                      .filter(Bat.team_id==self.home_team_id)
+                                      ).first()[0]
+
+        home_bats  = DB.session.query(
+                                      func.count(Bat.classification)
+                                      .filter(Bat.game_id==self.id)
+                                      .filter(Bat.team_id==self.home_team_id)
+                                      .filter(Bat.classification.in_(HITS))
+                                      ).first()[0]
+        if away_score is None:
+            away_score = 0
+        if home_score is None:
+            home_score = 0
+        if away_bats is None:
+            away_bats = 0
+        if home_bats is None:
+            home_bats = 0
+        return {
+                'away_score': away_score,
+                'away_bats': away_bats,
+                'home_score': home_score,
+                'home_bats': home_bats
+                }
 
 class Bat(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)

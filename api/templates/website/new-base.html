@@ -74,26 +74,9 @@
                     <ul class="nav navbar-nav">
                           <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
                           <li><a href="{{route.standingspage}}/{{year}}">Standings</a></li>
-                          <li><a href="{{route.teamspage}}/{{year}}">Teams</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Events <i class="fa fa-angle-down"></i></a>
-                            <ul class="dropdown-menu">
-                              <li><a href="{{route.mysterybuspage}}/{{year}}">Mystery Bus</a></li>
-                              <li><a href="{{route.bluejayspage}}/{{year}}">Blue Jays Game</a></li>
-                              <li><a href="{{route.beerfestpage}}/{{year}}">Beerfest</a></li>
-                              <li><a href="{{route.raftingpage}}/{{year}}">Rafting</a></li>
-                              <li><a href="{{route.beerwellpage}}/{{year}}">Beerwell Classic</a></li>
-                              <li><a href="{{route.hftcpage}}/{{year}}">Hitting for the Cycle</a></li>
-                              <li><a href="{{route.summerweenpage}}/{{year}}">Summerween</a></li>
-                              <li><a href="{{route.espypage}}/{{year}}">ESPY Awards</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="{{route.sponsorspage}}/{{year}}">Sponsors</a></li>
-                        <li><a href="{{route.leaderspage}}/{{year}}">Race for the Domus Cup</a></li>
-                        <li><a href="{{route.wleaderspage}}/{{year}}">Sentry Singles</a></li>
-                        <li><a href="{{route.espystandingspage}}/{{year}}">ESPY Standings</a></li>
-                        <li><a href="{{route.rulespage}}/{{year}}">Rules</a></li>
-                        <li><a href="{{route.fieldspage}}/{{year}}">Fields</a></li>                        
+                          <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
+                        <li><a href="{{route.statspage}}/{{year}}">Player Stats</a></li>
+                        <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>                        
                     </ul>
                 </div>
             </div><!--/.container-->
@@ -183,11 +166,8 @@
     <script src="{{ url_for('static', filename="js/main.js") }}"></script>
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
+    {% block script %}
 
-    <script>
-        $(document).ready(function() {
-            ready();        
-        } );
-    </script>
+    {% endblock %}
 </body>
 </html>

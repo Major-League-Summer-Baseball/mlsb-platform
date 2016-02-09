@@ -53,8 +53,7 @@ Routes['dvteam'] = "/documentation/views/team"
 # Website
 # -----------------------------------------------------------------------------
 # static pages
-Routes['rulespage'] = "/website/rules"
-Routes['fieldspage'] = "/website/fields"
+Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
 # sponsors pages
 Routes['sponsorspage'] = "/website/sponsor"
@@ -66,18 +65,10 @@ Routes['teampage'] = "/website/teams"
 Routes['schedulepage'] = "/website/schedule"
 Routes['standingspage'] = "/website/standings"
 Routes['teamspage'] = "/website/teams"
-Routes['leaderspage'] = "/website/leaders"
-Routes['wleaderspage'] = "/website/wleaders"
-Routes['espystandingspage'] = "/website/espy"
+Routes['statspage'] = "/website/stats"
+Routes['playerpage'] = "/website/player"
 # events
-Routes['mysterybuspage'] = "/website/event/mysterybus"
-Routes['bluejayspage'] = "/website/event/bluejays"
-Routes['beerfestpage'] = "/website/event/beerfest"
-Routes['raftingpage'] = "/website/event/rafting"
-Routes['beerwellpage'] = "/website/event/beerwell"
-Routes['hftcpage'] = "/website/event/hftc"
-Routes['summerweenpage'] = "/website/event/summerween"
-Routes['espypage'] = "/website/event/espy"
+Routes['eventspage'] = "/website/event"
 # -----------------------------------------------------------------------------
 
 # Admin

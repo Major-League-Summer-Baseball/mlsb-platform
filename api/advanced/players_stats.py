@@ -32,7 +32,8 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
     end = datetime.combine(d2, t)
     players = (DB.session.query(Player.name,
                                 Bat.classification,
-                                bats
+                                bats,
+                                Player.id
                                    )
                                    .join(Player.bats)
                                    .join(Game)
@@ -58,7 +59,8 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                                  'fo': 0,
                                  'fc': 0,
                                  'e': 0,
-                                 'go': 0
+                                 'go': 0,
+                                 'id': player[3]
                                  }
         result[player[0]][player[1]] = player[2]
     for player in result:
