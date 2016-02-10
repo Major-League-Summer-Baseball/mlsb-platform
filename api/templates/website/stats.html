@@ -1,0 +1,55 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+	
+	<h4>All Players Stats</h4>
+	<table id="players_stats" width="100%" class="display">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>S</th>
+				<th>SS</th>
+				<th>D</th>
+				<th>HR</th>
+				<th>K</th>
+				<th>PF</th>
+				<th>FC</th>
+				<th>GO</th>
+				<th>AB</th>
+				<th>AVE</th>
+				<th>SP</th>
+				<th>RBI</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for name, entry in players.items() %}
+				<tr>
+					<td><a href="{{route.playerpage}}/{{year}}/{{entry.id}}">{{name}}</a></td>
+					<td>{{entry.s}}</td>
+					<td>{{entry.ss}}</td>
+					<td>{{entry.d}}</td>
+					<td>{{entry.hr}}</td>
+					<td>{{entry.k}}</td>
+					<td>{{entry.fo}}</td>
+					<td>{{entry.fc}}</td>
+					<td>{{entry.go}}</td>
+					<td>{{entry.bats}}</td>
+					<td>{{entry.ave}}</td>
+					<td>{{entry.sp}}</td>
+					<td>{{entry.rbi}}</td>
+				</tr>
+
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(ready());
+function ready(){
+	console.log("Done");
+		$('#players_stats').DataTable({
+		"order": [[4, "desc"]]
+	});
+}
+</script>
+{% endblock %}

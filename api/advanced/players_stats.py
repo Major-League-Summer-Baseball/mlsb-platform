@@ -20,6 +20,7 @@ parser.add_argument('team_id', type=int)
 
 def post(year=None, team_id=None, league_id=None, player_id=None):
     bats = func.count(Bat.classification).label('bats')
+    rbi = func.count(Bat.rbi).label('rbis')
     if year is not None:
         d1 = date(year, 1, 1)
         t = time(0, 0)
@@ -33,7 +34,8 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
     players = (DB.session.query(Player.name,
                                 Bat.classification,
                                 bats,
-                                Player.id
+                                Player.id,
+                                rbi
                                    )
                                    .join(Player.bats)
                                    .join(Game)
@@ -60,9 +62,11 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                                  'fc': 0,
                                  'e': 0,
                                  'go': 0,
-                                 'id': player[3]
+                                 'id': player[3],
+                                 'rbi': 0
                                  }
         result[player[0]][player[1]] = player[2]
+        result[player[0]]['rbi'] += player[4]
     for player in result:
         # calculate the bats and average
         result[player]['bats'] =  (result[player]['s'] +

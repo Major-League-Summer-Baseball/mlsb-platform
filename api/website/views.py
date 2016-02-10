@@ -98,7 +98,7 @@ def stats_page(year):
     players = player_summary(year)
     return render_template("website/stats.html",
                            route=Routes,
-                           sponsor=get_sponsors(),
+                           sponsors=get_sponsors(),
                            title="Players Stats",
                            year=year,
                            players=players
@@ -116,12 +116,27 @@ def team_page(year, team_id):
 
 @app.route(Routes['playerpage']+ "/<int:year>/<int:player_id>")
 def player_page(year, player_id):
-    team = get_team(year, player_id)
-    return render_template("website/team.html",
+    name = Player.query.get(player_id).name
+    years = (DB.session.query(Team.year, Team.id).join(Player)
+                .filter(Player.id==player_id)
+                .order_by(Team.year.desc()).all())
+    print(years)
+    stats = []
+    for entry in years:
+        player = player_summary(year=entry[0],
+                                team_id=entry[1],
+                                player_id=player_id)[name]
+        player['team'] = str(Team.query.get(entry[1]))
+        player['team_id'] = entry[1]
+        player['year'] = entry[0]
+        stats.append(player)
+    print(stats)
+    return render_template("website/player.html",
                        route=Routes,
                        sponsors=get_sponsors(),
-                       team=team,
-                       title="Team - " + str(team['name']),
+                       stats=stats,
+                       title="Player Stats",
+                       name=name,
                        year=year)
 '''
 # -----------------------------------------------------------------------------

@@ -547,6 +547,7 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 1,
                                          'k': 0,
+                                         'rbi': 1,
                                          's': 1,
                                          'ss': 0},
                     'My Dream Girl': {   'avg': 0.0,
@@ -559,6 +560,7 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 2,
                                          'k': 1,
+                                         'rbi': 1,
                                          's': 0,
                                          'ss': 0}}
         self.output(loads(rv.data))
@@ -579,6 +581,7 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 1,
                                          'k': 0,
+                                         'rbi': 1,
                                          's': 1,
                                          'ss': 0},
                     'My Dream Girl': {   'avg': 0.0,
@@ -591,11 +594,13 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 2,
                                          'k': 2,
+                                         'rbi': 2,
                                          's': 0,
                                          'ss': 0}}
         
         self.output(loads(rv.data))
         self.output(expect)
+        
         self.assertEqual(expect, loads(rv.data),
                          Routes['vplayer'] + " Post: View of Player")
         # filter based on league
@@ -610,6 +615,7 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 1,
                                          'k': 0,
+                                         'rbi': 1,
                                          's': 1,
                                          'ss': 0}}
 
@@ -629,6 +635,7 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 1,
                                          'k': 0,
+                                         'rbi': 1,
                                          's': 1,
                                          'ss': 0},
                     'My Dream Girl': {   'avg': 0.0,
@@ -641,6 +648,7 @@ class PlayerTest(BaseTest):
                                          'hr': 0,
                                          'id': 2,
                                          'k': 1,
+                                         'rbi': 1,
                                          's': 0,
                                          'ss': 0}}
         self.output(loads(rv.data))
