@@ -138,6 +138,18 @@ def player_page(year, player_id):
                        title="Player Stats",
                        name=name,
                        year=year)
+
+@app.route(Routes['leagueleaderpage'] + "/<int:year>")
+def leaders_page(year):
+    women = get_leaders("F", year, "SS")[:5]
+    men = get_leaders("M", year, "HR")[:5]
+    return render_template("website/new-leaders.html",
+                       route=Routes,
+                       sponsors=get_sponsors(),
+                       men=men,
+                       women=women,
+                       title="League Leaders",
+                       year=year)
 '''
 # -----------------------------------------------------------------------------
 #             STATIC PAGES

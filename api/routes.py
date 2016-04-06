@@ -67,6 +67,7 @@ Routes['standingspage'] = "/website/standings"
 Routes['teamspage'] = "/website/teams"
 Routes['statspage'] = "/website/stats"
 Routes['playerpage'] = "/website/player"
+Routes['leagueleaderpage'] = "/website/leaders"
 # events
 Routes['eventspage'] = "/website/event"
 # -----------------------------------------------------------------------------
