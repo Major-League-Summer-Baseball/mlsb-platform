@@ -12,7 +12,7 @@ from datetime import date
 from api.errors import InvalidField
 import logging
 # constants
-CREATED = "Created Team (no league was specified"
+CREATED = "Created Team (no league was specified)"
 NO_SPONSOR = "Cannot find sponsor, please ensure spelt correctly or create sponsor"
 INVALID_FILE = "File was not given in right format (use template)"
 EXAMPLE_FOUND = "First entry contain the templates example, just skipped it"

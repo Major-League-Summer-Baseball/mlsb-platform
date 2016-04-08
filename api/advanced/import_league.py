@@ -118,7 +118,7 @@ class LeagueList():
 
     def import_game(self, info):
         '''
-        a method the imports a one game
+        a method the imports one game
         Parameters:
             info: the string that contains the information of a player (str)
         Returns:

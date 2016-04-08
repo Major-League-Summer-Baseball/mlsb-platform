@@ -150,6 +150,8 @@ def admin_edit_roster(year, team_id):
         players = []
         for player in team.players:
             players.append(player.json())
+        if (team.player_id is not None):
+            players.append(Player.query.get(team.player_id).json())
         all_players = Player.query.order_by("id desc").all()
         non_roster = []
         for player in all_players:
@@ -180,6 +182,7 @@ def admin_edit_sponsor(year):
                            year=year,
                            route=Routes,
                            sponsors=get_sponsors(),
+                           not_active=get_sponsors(active=False),
                            title="Edit Leagues")
 
 @app.route(Routes['aindex'] + "/<int:year>")
@@ -201,6 +204,17 @@ def admin_edit_player(year):
                            route=Routes,
                            players=players,
                            title="Edit Players")
+
+@app.route(Routes['nonactiveplayers'] + "/<int:year>")
+def admin_non_active_players(year):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    players = get_players(active=False)
+    return render_template("admin/nonActivePlayers.html",
+                           year=year,
+                           route=Routes,
+                           players=players,
+                           title="Activate Old Players")
 
 @app.route(Routes['editteam'] + "/<int:year>")
 def admin_edit_team(year):
@@ -395,8 +409,8 @@ def logout():
     session.pop('password', None)
     return
 
-def get_sponsors():
-    results = Sponsor.query.filter(Sponsor.active==True).all()
+def get_sponsors(active=True):
+    results = Sponsor.query.filter(Sponsor.active==active).order_by("id").all()
     sponsors = []
     for sponsor in results:
         sponsors.append(sponsor.json())
@@ -409,8 +423,8 @@ def get_leagues():
         leagues.append(league.json())
     return leagues
 
-def get_players():
-    results = Player.query.filter(Player.active==True).all()
+def get_players(active=True):
+    results = Player.query.filter(Player.active==active).order_by("id").all()
     players = []
     for player in results:
         players.append(player.json())

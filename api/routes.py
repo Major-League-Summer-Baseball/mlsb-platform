@@ -86,6 +86,7 @@ Routes['editteam'] = "/admin/edit/team"
 Routes['editsponsor'] = "/admin/edit/sponsor"
 Routes['editbat'] = "/admin/edit/bat"
 Routes['editroster'] = "/admin/edit/roster"
+Routes['nonactiveplayers'] = "/admin/edit/non_active_players"
 Routes['adeactivateplayer'] = "/admin/edit/player/deactivate"
 Routes['adeactivatesponsor'] = "/admin/edit/sponsor/deactivate"
 # imports from csv

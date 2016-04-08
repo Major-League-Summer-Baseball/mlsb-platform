@@ -11,6 +11,7 @@ from api.validators import string_validator
 from api.model import Sponsor
 from api import DB
 from api.authentication import requires_admin
+from nt import link
 
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
@@ -108,6 +109,8 @@ class SponsorAPI(Resource):
         """
         # update a single user
         sponsor = Sponsor.query.get(sponsor_id)
+        link = None
+        description = None
         args = parser.parse_args()
         name = None
         response = Response(dumps(None), status=404,
@@ -116,7 +119,11 @@ class SponsorAPI(Resource):
             args = parser.parse_args()
             if args['sponsor_name']:
                 name = args['sponsor_name']
-            sponsor.update(name=name)    
+            if args['link']:
+                link = args['link']
+            if args['description']:
+                description = args['description']
+            sponsor.update(name=name, link=link, description=description)    
             DB.session.commit()
             response = Response(dumps(None), status=200,
                             mimetype="application/json")

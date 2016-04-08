@@ -1,0 +1,24 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-3">
+		<h4>
+		Sleeman Sluggers
+		</h4>
+		{% for player in men %}
+			<p>{{player.name}} - {{player.hits}} </p>
+		{% endfor %}
+	</div>	
+	<div class="col-sm-3">
+		<h4>
+		Sapporo Singles
+		</h4>
+		{% for player in women %}
+			<p>{{player.name}} - {{player.hits}} </p>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+{% block script %}
+</script>
+{% endblock %}

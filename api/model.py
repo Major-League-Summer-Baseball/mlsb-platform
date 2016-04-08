@@ -339,7 +339,7 @@ class Sponsor(DB.Model):
                 'link': self.link,
                 'description': self.description}
 
-    def update(self, name=None,link=None, description=None):
+    def update(self, name=None, link=None, description=None):
         if name is not None and string_validator(name):
             self.name = name
         elif name is not None:

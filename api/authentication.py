@@ -26,10 +26,10 @@ def check_auth(username, password):
     return username == ADMIN and password == PASSWORD
 
 def check_captain(player, password):
-    players = Player.query.filter_by(name=player).first()
+    players = Player.query.filter_by(name=player).all()
     player = None
     for p in players:
-        if p.check_password(password):
+        if p.check_password(password): # correct password
             player = p
     if player is None:
         return authenticate()
