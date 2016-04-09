@@ -14,6 +14,8 @@ SDNESC = ERROR + 6
 NUESC = ERROR + 7
 THCSC = ERROR + 8
 MPSC = ERROR + 9
+PNOT = ERROR + 10
+PAST = ERROR + 11
 class TeamDoesNotExist(Exception):
     status_code = TDNESC
     def __init__(self, message, status_code=None, payload=None):
@@ -128,6 +130,34 @@ class MissingPlayer(Exception):
 
 class NonUniqueEmail(Exception):
     status_code = NUESC
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+class PlayerNotOnTeam(Exception):
+    status_code = PNOT
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+class PlayerAlreadySubscriedToTeam(Exception):
+    status_code = PAST
     def __init__(self, message, status_code=None, payload=None):
         Exception.__init__(self)
         self.message = message

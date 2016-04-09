@@ -39,7 +39,7 @@ app.config['UPLOAD_FOLDER'] =  "./static"
 
 from api.website import views
 from api import admin
-from api import errrorHandlers
+from api import errorHandlers
 @app.after_request
 def add_cors(resp):
     """ Ensure all responses have the CORS headers. 
@@ -100,6 +100,13 @@ api.add_resource(PlayerStatsAPI, Routes['vplayer'], endpoint="vplayer")
 api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
 api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'], endpoint="vplayerlookup")
 
+# add kik routes
+from api.advanced.submit_scores import SubmitScoresAPI
+from api.advanced.authenticate_captain import AuthenticateCaptainAPI
+from api.advanced.subscribe import SubscribeToTeamAPI
+api.add_resource(AuthenticateCaptainAPI, Routes['kikcaptain'], endpoint="kikcaptain")
+api.add_resource(SubscribeToTeamAPI, Routes['kiksubscribe'], endpoint="kiksubscribe")
+api.add_resource(SubmitScoresAPI, Routes['kiksubmitscore'], endpoint="kiksubmitscore")
 # add documentation
 from api.documentation import Document , PlayerObjectDocument,\
                               TeamObjectDocument, BatObjectDocument,\

@@ -7,11 +7,11 @@
 from api import DB
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date, datetime
-from api.variables import HITS
+from datetime import date, datetime, time
+from api.variables import HITS, KIKPOINTS
 from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-                        NonUniqueEmail, MissingPlayer
+                        NonUniqueEmail, MissingPlayer, PlayerNotOnTeam
 from api.validators import  rbi_validator, hit_validator, inning_validator,\
                             string_validator, date_validator, time_validator,\
                             field_validator, year_validator, int_validator,\
@@ -20,6 +20,8 @@ roster = DB.Table('roster',
                   DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
                   DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
                 )
+
+SUBSCRIBED = "{} SUBSCRIBED"
 
 class Fun(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
@@ -61,6 +63,7 @@ class Espys(DB.Model):
         self.description = description
         self.team_id = team_id
         self.sponsor_id = sponsor_id
+        self.kik = None
 
     def update(self,
                team_id=None,
@@ -111,6 +114,8 @@ class Player(DB.Model):
                               backref='player',
                               lazy='dynamic')
     active = DB.Column(DB.Boolean)
+    kik = DB.Column(DB.String(120))
+
     def __init__(self,
                  name,
                  email,
@@ -145,6 +150,10 @@ class Player(DB.Model):
  
     def __repr__(self):
         return self.name + " email:" + self.email
+
+    def update_kik(self, kik):
+        self.kik = kik
+
 
     def json(self):
         return {"player_id": self.id,
@@ -204,6 +213,7 @@ class Team(DB.Model):
     espys = DB.relationship('Espys',
                             backref='team',
                             lazy='dynamic')
+    
 
     def __init__(self,
                  color=None,
@@ -224,6 +234,7 @@ class Team(DB.Model):
         self.sponsor_id = sponsor_id
         self.league_id = league_id
         self.year = year
+        self.kik = None
 
     def __repr__(self):
         result = []
@@ -621,6 +632,48 @@ class Bat(DB.Model):
         elif inning is not None:
             raise InvalidField("Invalid inning for Bat")
 
+def subscribe(kik, name, team_id):
+    team = Team.query.get(team_id)
+    if team is None:
+        # wrong team was given
+        raise TeamDoesNotExist("Team does not Exist {}".format(team_id))
+    found = False
+    player = None
+    for p in team.players:
+        if p.name == name:
+            found = True
+            player = p
+            break
+    if not found:
+        # player is not on the team
+        raise PlayerNotOnTeam("Player {} not on team {}".format(name, str(team)))
+    player.kik = kik
+    espy = Espys.query.filter_by(team_id=team_id).filter_by(description=SUBSCRIBED.format(str(player))).first()
+    points = KIKPOINTS
+    if espy is not None:
+        # player already subscribed to this team
+        # no points awarded
+        points = 0
+    espy = Espys(team_id, description = SUBSCRIBED.format(str(player)), points=points)
+    DB.session.add(espy)
+    DB.session.commit()
+    return True
+
+def find_team_subscribed(kik):
+    result = []
+    t1 = time(0, 0)
+    t2 = time(0 , 0)
+    d1 = date(date.today().year, 1, 1)
+    d2 = date(date.today().year, 12, 30)
+    start = datetime.combine(d1, t1)
+    end = datetime.combine(d2, t2)
+    player = Player.query.filter_by(kik=kik).one()
+    if player is not None:
+        teams = DB.session.query(Espys).filter(Espys.data.between(start, end))
+        teams = teams.filter_by(description=SUBSCRIBED.format(str(player))).order_by("date").all()
+        for team in teams:
+            result.append(team.team_id)
+    return result
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

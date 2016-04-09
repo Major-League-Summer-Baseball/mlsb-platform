@@ -11,10 +11,12 @@ import os
 try:
     # running local
     local = True
-    from api.credentials import ADMIN, PASSWORD
+    from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 except:
     ADMIN = os.environ['ADMIN']
     PASSWORD = os.environ['PASSWORD']
+    KIK = os.environ['KIK']
+    KIKPW = os.environ['KIKPW']
     
 
 from api.model import Team, Player
@@ -24,6 +26,12 @@ def check_auth(username, password):
     password combination is valid.
     """
     return username == ADMIN and password == PASSWORD
+
+def check_kik(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == KIK and password == KIKPW
 
 def check_captain(player, password):
     players = Player.query.filter_by(name=player).all()
@@ -56,6 +64,21 @@ def requires_admin(f):
                 return authenticate()
         return f(*args, **kwargs)
     return decorated
+
+def requires_kik(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_kik(auth.username, auth.password):
+            return authenticate()
+        elif 'admin' in session and 'password' in session:
+            # check if user signed in already
+            logged = check_kik(session['admin'], session['password'])
+            if not logged:
+                return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 
 def requires_captain(f):
     @wraps(f)

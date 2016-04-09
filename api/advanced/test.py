@@ -11,12 +11,17 @@ from api.helper import loads
 from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
-from api.model import Player, Team, Sponsor, League, Game, Bat
+from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
 from datetime import datetime, date
-from api.credentials import ADMIN, PASSWORD
+from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
+from api.errors import TDNESC, PNOT, GDNESC
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
+}
+
+kik = {
+    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' + KIKPW, "utf-8")).decode("ascii")
 }
 
 
@@ -142,7 +147,8 @@ class BaseTest(unittest.TestCase):
     def addGame(self):
         self.addTeams()
         self.addLeague()
-        self.game = Game(datetime.combine(self.d, self.t),
+        self.game = Game(self.d,
+                         self.t,
                          self.teams[0].id,
                          self.teams[1].id,
                          self.league.id)
@@ -269,6 +275,19 @@ class BaseTest(unittest.TestCase):
         team.insert_player(1, captain=False)
         DB.session.commit()
 
+    def mockScoreSubmission(self):
+        self.addLeague()
+        self.addPlayersToTeam()
+        team = Team.query.get(1)
+        team.insert_player(2)
+        self.game = Game(self.d,
+                         self.t,
+                         self.teams[0].id,
+                         self.teams[1].id,
+                         self.league.id)
+        DB.session.add(self.game)
+        DB.session.commit()
+        
     def addSeason(self):
         self.sponsors = [Sponsor("Domus"),
                          Sponsor("Sentry"),
@@ -777,6 +796,245 @@ class testPlayerLookup(BaseTest):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                  Routes['vteam'] + " Post: View of Team")
+
+class testAuthenticateCaptain(BaseTest):
+    def testMain(self):
+        self.addCaptainToTeam()
+        # valid request
+        data = {
+                'kik': "frase2560",
+                "captain": "Dallas Fraser",
+                "team": 1
+                }
+        expect = 1
+        rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+                         " POST: Authenticate Captain"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: Authenticate Captain")
+        # invalid team
+        data = {
+                'kik': "frase2560",
+                "captain": "Dallas Fraser",
+                "team": -1
+                }
+        expect = "Team does not exist"
+        rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, TDNESC, Routes['kikcaptain'] +
+                         " POST: invalid team"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: invalid team")
+        # captain name does not match
+        data = {
+                'kik': "frase2560",
+                "captain": "Fucker",
+                "team": 1
+                }
+        expect = "Name of captain does not match"
+        rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 401, Routes['kikcaptain'] +
+                         " POST: name of captain does not match"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: name of captain does not match")
+        # if someone else tries to say captain with same name but different
+        # kik name than one previously stated
+        data = {
+                'kik': "fucker",
+                "captain": "Dallas Fraser",
+                "team": 1
+                }
+        expect = "Captain was authenticate under different kik name before"
+        rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 403, Routes['kikcaptain'] +
+                         " POST: sketchy shit"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: sketchy shit")
+        # invalid credentials
+        data = {
+                'kik': "fucker",
+                "captain": "Dallas Fraser",
+                "team": 1
+                }
+        rv = self.app.post(Routes['kikcaptain'], data=data, headers=headers)
+        self.assertEqual(rv.status_code, 401, Routes['kikcaptain'] +
+                         " POST: invalid credentials"
+                         )
+
+class testSubscribe(BaseTest):
+    def testMain(self):
+        self.addPlayersToTeam()
+        # valid request
+        data = {
+                'kik': "frase2560",
+                "name": "Dallas Fraser",
+                "team": 1
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+                         " POST: valid request"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: subscribe")
+        # team does not exist
+        data = {
+                'kik': "frase2560",
+                "name": "Dallas Fraser",
+                "team": -1
+                }
+        expect = {'message': 'Team does not Exist -1'}
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, TDNESC, Routes['kikcaptain'] +
+                         " POST: team does not exist"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: team does not exist")
+        # player not on team
+        data = {
+                'kik': "frase2560",
+                "name": "fucker",
+                "team": 1
+                }
+        expect = {'message': 'Player fucker not on team Domus Green'}
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, PNOT, Routes['kikcaptain'] +
+                         " POST: player not on team"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: player not on team")
+        # player already subscribed
+        data = {
+                'kik': "frase2560",
+                "name": "Dallas Fraser",
+                "team": 1
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+                         " POST: already subscribed"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: already subscribed")
+        espys = Espys.query.all()
+        # check to make sure not additional points were rewarded
+        expect = [{'points': 2, 'receipt': None, 'espy_id': 1,
+                   'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
+                   'sponsor': None, 'team': 'Domus Green'},
+                  {'points': 0, 'receipt': None, 'espy_id': 2,
+                   'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
+                   'sponsor': None, 'team': 'Domus Green'}
+                  ]
+        for index, espy in enumerate(espys):
+            self.output(espy.json())
+            self.assertEqual(espy.json(), expect[index])
+        # invalid credentials
+        data = {
+                'kik': "fucker",
+                "captain": "Dallas Fraser",
+                "team": 1
+                }
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=headers)
+        self.assertEqual(rv.status_code, 401, Routes['kiksubscribe'] +
+                         " POST: invalid credentials"
+                         )
+
+class testSubmitScores(BaseTest):
+    def testMain(self):
+        self.mockScoreSubmission()
+        # invalid captain
+        data = {
+                'kik': "frase2560",
+                'game_id': 1,
+                'score': 1,
+                'hr': [1, 2],
+                'ss': []
+                }
+        expect = 'Kik name does not match'
+        rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 404, Routes['kiksubmitscore'] +
+                         " POST: invalid kik user name"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubmitscore'] + " POST: invalid kik user name")
+        player = Player.query.get(1)
+        player.kik = "frase2560" # add the kik name to the captain
+        DB.session.commit()
+        # invalid game
+        data = {
+                'kik': "frase2560",
+                'game_id': -1,
+                'score': 1,
+                'hr': [1, 2],
+                'ss': []
+                }
+        expect = 'Game not found'
+        rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, GDNESC, Routes['kiksubmitscore'] +
+                         " POST: invalid game id"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubmitscore'] + " POST: invalid game id")
+        # more hr than runs scored
+        data = {
+                'kik': "frase2560",
+                'game_id': 1,
+                'score': 1,
+                'hr': [1, 2],
+                'ss': []
+                }
+        expect = 'More hr than runs'
+        rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 400, Routes['kiksubmitscore'] +
+                         " POST: more hr than runs"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubmitscore'] + " POST: more hr than runs")
+        # normal request
+        data = {
+                'kik': "frase2560",
+                'game_id': 1,
+                'score': 5,
+                'hr': [1, 2],
+                'ss': []
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kiksubmitscore'] +
+                         " POST: valid request"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubmitscore'] + " POST: valid request")
+        # game = Game.query.get(1)
+        # print(game.summary())
+        # used to check the runs went through
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

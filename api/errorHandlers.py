@@ -8,12 +8,19 @@
 from api import app
 from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
                         PlayerDoesNotExist, GameDoesNotExist,\
-                        LeagueDoesNotExist, SponsorDoesNotExist, MissingPlayer
+                        LeagueDoesNotExist, SponsorDoesNotExist, MissingPlayer,\
+                        PlayerNotOnTeam, PlayerAlreadySubscriedToTeam
 from flask import Response
 from json import dumps
 
 @app.errorhandler(MissingPlayer)
 def handle_missing_player(error):
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return  response
+
+@app.errorhandler(PlayerNotOnTeam)
+def handle_player_not_on_team(error):
     response = Response(dumps(error.to_dict()), status=error.status_code,
                         mimetype="application/json")
     return  response
