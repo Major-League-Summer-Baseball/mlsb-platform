@@ -15,7 +15,7 @@ from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
 from datetime import datetime, date
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
-from api.errors import TDNESC, PNOT, GDNESC
+from api.errors import TDNESC, PNOT, GDNESC, PNS, SDNESC
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
@@ -1035,6 +1035,56 @@ class testSubmitScores(BaseTest):
         # game = Game.query.get(1)
         # print(game.summary())
         # used to check the runs went through
+
+class testSubmitTransaction(BaseTest):
+    def testMain(self):
+        self.show_results = True
+        self.addPlayersToTeam()
+        # player not subscribed
+        data = {
+                'kik': "frase2560",
+                "sponsor": "Domus",
+                "amount": 1
+                }
+        expect = 'frase2560 not subscribed'
+        rv = self.app.post(Routes['kiktransaction'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, PNS, Routes['kiktransaction'] +
+                         " Post: transaction for player not subscribed"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiktransaction'] + " Post: transaction for player not subscribed")
+        # subscribe the player
+        data = {
+                'kik': "frase2560",
+                "name": "Dallas Fraser",
+                "team": 1
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+                         " POST: valid request"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: subscribe")
+        # sponsor does not exist
+        data = {
+                'kik': "frase2560",
+                "sponsor": "FUCKINGDOESNOTEXIST",
+                "amount": 1
+                }
+        expect = 'Sponsor not found'
+        rv = self.app.post(Routes['kiktransaction'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, SDNESC, Routes['kiktransaction'] +
+                         " Post: sponsor does not exist"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiktransaction'] + " Post: sponsor does not exist")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -104,9 +104,12 @@ api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'], endpoint="vplayerlook
 from api.advanced.submit_scores import SubmitScoresAPI
 from api.advanced.authenticate_captain import AuthenticateCaptainAPI
 from api.advanced.subscribe import SubscribeToTeamAPI
+from api.advanced.submit_transaction import SubmitTransactionAPI
 api.add_resource(AuthenticateCaptainAPI, Routes['kikcaptain'], endpoint="kikcaptain")
 api.add_resource(SubscribeToTeamAPI, Routes['kiksubscribe'], endpoint="kiksubscribe")
 api.add_resource(SubmitScoresAPI, Routes['kiksubmitscore'], endpoint="kiksubmitscore")
+api.add_resource(SubmitTransactionAPI, Routes['kiktransaction'], endpoint="kiktransaction")
+
 # add documentation
 from api.documentation import Document , PlayerObjectDocument,\
                               TeamObjectDocument, BatObjectDocument,\

@@ -27,7 +27,7 @@ Routes['kiksubscribe'] = "/api/kik/subscribe"
 Routes['kiksubmitscore'] = "/api/kik/submit-score"
 Routes['kikcaptain'] = "/api/kik/captain"
 Routes['kikupcominggames'] = "/api/kik/upcoming_games"
-Routes['kiktrasaction'] = "/api/kik/transaction"
+Routes['kiktransaction'] = "/api/kik/transaction"
 Routes['kikcaptaingames'] = "/api/kik/captain/games"
  
 # -----------------------------------------------------------------------------
