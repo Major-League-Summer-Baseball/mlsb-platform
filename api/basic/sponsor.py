@@ -11,7 +11,6 @@ from api.validators import string_validator
 from api.model import Sponsor
 from api import DB
 from api.authentication import requires_admin
-from nt import link
 
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
