@@ -19,7 +19,6 @@ from api.variables import HITS
 from api import DB
 from flask_sqlalchemy import get_debug_queries
 from sqlalchemy.sql import func
-import requests
 import json
 from api.advanced import players_stats
 
