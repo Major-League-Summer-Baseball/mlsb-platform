@@ -53,6 +53,6 @@ class AuthenticateCaptainAPI(Resource):
             DB.session.commit()
         elif team_captain.kik != kik:
             # something fishy is going on
-            return Response(dumps("Captain was authenticate under different kik name before"), status=403, mimetype="application/json")
+            return Response(dumps("Captain was authenticate under different kik name before"), status=401, mimetype="application/json")
         # captain is authenticated
         return Response(dumps(team.id), status=200, mimetype="application/json")

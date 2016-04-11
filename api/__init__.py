@@ -39,6 +39,7 @@ app.config['UPLOAD_FOLDER'] =  "./static"
 
 from api.website import views
 from api import admin
+from api import documentation
 from api import errorHandlers
 @app.after_request
 def add_cors(resp):
@@ -101,66 +102,16 @@ api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
 api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'], endpoint="vplayerlookup")
 
 # add kik routes
-from api.advanced.submit_scores import SubmitScoresAPI
-from api.advanced.authenticate_captain import AuthenticateCaptainAPI
-from api.advanced.subscribe import SubscribeToTeamAPI
-from api.advanced.submit_transaction import SubmitTransactionAPI
+from api.kik.submit_scores import SubmitScoresAPI
+from api.kik.authenticate_captain import AuthenticateCaptainAPI
+from api.kik.subscribe import SubscribeToTeamAPI
+from api.kik.submit_transaction import SubmitTransactionAPI
+from api.kik.get_captain_games import CaptainGamesAPI
+from api.kik.get_upcoming_games import UpcomingGamesAPI
 api.add_resource(AuthenticateCaptainAPI, Routes['kikcaptain'], endpoint="kikcaptain")
 api.add_resource(SubscribeToTeamAPI, Routes['kiksubscribe'], endpoint="kiksubscribe")
 api.add_resource(SubmitScoresAPI, Routes['kiksubmitscore'], endpoint="kiksubmitscore")
 api.add_resource(SubmitTransactionAPI, Routes['kiktransaction'], endpoint="kiktransaction")
+api.add_resource(CaptainGamesAPI, Routes['kikcaptaingames'], endpoint="kikcaptaingames")
+api.add_resource(UpcomingGamesAPI, Routes['kikupcominggames'], endpoint="kikupcominggames")
 
-# add documentation
-from api.documentation import Document , PlayerObjectDocument,\
-                              TeamObjectDocument, BatObjectDocument,\
-                              GameObjectDocument, LeagueObjectDocument,\
-                              SponsorObjectDocument ,TeamRosterObjectDocument
-from api.documentation import PlayerRoute, TeamRoute, BatRoute,\
-                              GameRoute, LeagueRoute, SponsorRoute,\
-                              TeamRosterRoute, Response
-from api.documentation import PlayerView, GameView, TeamView
-
-api.add_resource(Document, Routes["dindex"], endpoint="documentation")
-api.add_resource(Response, Routes["dresponse"], endpoint="dresponse")
-
-# player
-api.add_resource(PlayerObjectDocument, Routes['doplayer'], endpoint="doplayer")
-api.add_resource(PlayerRoute, Routes['dbplayer'], endpoint="dbplayer")
-
-# team
-api.add_resource(TeamObjectDocument, Routes['doteam'], endpoint="doteam")
-api.add_resource(TeamRoute, Routes['dbteam'], endpoint="dbteam")
-
-# bat
-api.add_resource(BatObjectDocument, Routes['dobat'], endpoint="dobat")
-api.add_resource(BatRoute, Routes['dbbat'], endpoint="dbbat")
-
-# game
-api.add_resource(GameObjectDocument, Routes['dogame'], endpoint="dogame")
-api.add_resource(GameRoute, Routes['dbgame'], endpoint="dbgame")
-
-# tournament
-api.add_resource(LeagueObjectDocument, Routes['doleague'],
-                 endpoint="doleague")
-api.add_resource(LeagueRoute, Routes['dbleague'], endpoint="dbleague")
-
-# sponsor
-api.add_resource(SponsorObjectDocument, Routes['dosponsor'], 
-                 endpoint="dosponsor")
-api.add_resource(SponsorRoute, Routes['dbsponsor'], 
-                 endpoint="dbsponsor")
-
-# team roster
-api.add_resource(TeamRosterObjectDocument, Routes['doteamroster'], 
-                 endpoint="doteamroster")
-
-api.add_resource(TeamRosterRoute, Routes['dbteamroster'], 
-                 endpoint="dbteamroster")
-
-# view documentation
-api.add_resource(TeamView, Routes['dvteam'],
-                 endpoint="dvteam")
-api.add_resource(GameView, Routes['dvgame'],
-                 endpoint="dvgame")
-api.add_resource(PlayerView, Routes['dvplayer'],
-                 endpoint="dvplayer")

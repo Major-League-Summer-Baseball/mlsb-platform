@@ -21,10 +21,10 @@ Routes['espy'] = "/api/espys"
 Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"
 Routes['vgame'] = "/api/view/games"
-Routes['vplayerLookup'] = "/api/view/player-lookup"
+Routes['vplayerLookup'] = "/api/view/player_lookup"
 # Kik APIS
 Routes['kiksubscribe'] = "/api/kik/subscribe"
-Routes['kiksubmitscore'] = "/api/kik/submit-score"
+Routes['kiksubmitscore'] = "/api/kik/submit_score"
 Routes['kikcaptain'] = "/api/kik/captain"
 Routes['kikupcominggames'] = "/api/kik/upcoming_games"
 Routes['kiktransaction'] = "/api/kik/transaction"
@@ -56,6 +56,16 @@ Routes['dbleague'] = "/documentation/basic/league"
 Routes['dvgame'] = "/documentation/views/game"
 Routes['dvplayer'] = "/documentation/views/player"
 Routes['dvteam'] = "/documentation/views/team"
+# kik documentation 
+Routes['dkiksubscribe'] = "/documentation/kik/subscribe"
+Routes['dkiksubmitscore'] = "/documentation/kik/submit_score"
+Routes['dkikcaptain'] = "/documentation/kik/captain"
+Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
+Routes['dkiktransaction'] = "/documentation/kik/transaction"
+Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
+
+
+
 # -----------------------------------------------------------------------------
 
 # Website

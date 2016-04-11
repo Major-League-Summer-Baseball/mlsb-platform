@@ -12,7 +12,7 @@ from api import DB
 from pprint import PrettyPrinter
 from api.routes import Routes
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
 from api.errors import TDNESC, PNOT, GDNESC, PNS, SDNESC
@@ -287,7 +287,28 @@ class BaseTest(unittest.TestCase):
                          self.league.id)
         DB.session.add(self.game)
         DB.session.commit()
-        
+
+    def mockUpcomingGames(self):
+        self.addLeague()
+        self.addPlayersToTeam()
+        t = "11:45"
+        today = datetime.today()
+        previous_game = (today+timedelta(-1)).strftime("%Y-%m-%d")
+        game_one_day = today.strftime("%Y-%m-%d")
+        game_two_day = (today+timedelta(1)).strftime("%Y-%m-%d")
+        game_five_day = (today+timedelta(5)).strftime("%Y-%m-%d")
+        # few upcoming games, one in the past, and one the player is not on
+        games = [
+                 Game(game_one_day, t, self.teams[0].id, self.teams[1].id, self.league.id),
+                 Game(game_two_day, t, self.teams[1].id, self.teams[0].id, self.league.id),
+                 Game(game_five_day, t, self.teams[0].id, self.teams[1].id, self.league.id),
+                 Game(previous_game, t, self.teams[0].id, self.teams[1].id, self.league.id),
+                 Game(game_one_day, t, self.teams[1].id, self.teams[2].id, self.league.id),
+                 ]
+        for game in games:
+            DB.session.add(game)
+        DB.session.commit()
+
     def addSeason(self):
         self.sponsors = [Sponsor("Domus"),
                          Sponsor("Sentry"),
@@ -856,7 +877,7 @@ class testAuthenticateCaptain(BaseTest):
         rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 403, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, 401, Routes['kikcaptain'] +
                          " POST: sketchy shit"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -1038,7 +1059,6 @@ class testSubmitScores(BaseTest):
 
 class testSubmitTransaction(BaseTest):
     def testMain(self):
-        self.show_results = True
         self.addPlayersToTeam()
         # player not subscribed
         data = {
@@ -1086,6 +1106,160 @@ class testSubmitTransaction(BaseTest):
         self.assertEqual(expect, loads(rv.data),
                          Routes['kiktransaction'] + " Post: sponsor does not exist")
 
+class testCaptainGames(BaseTest):
+    def testMain(self):
+        self.mockScoreSubmission()
+        # invalid captian request
+        self.show_results = True
+        data = {
+                'kik': "frase2560",
+                "team": 1
+                }
+        expect = 'Not the right captain for the team'
+        rv = self.app.post(Routes['kikcaptaingames'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 401, Routes['kikcaptaingames'] +
+                         " POST: Invalid Captain's games"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: Invalid Captain's games")
+
+        # subscribe the captain to a team
+        data = {
+                'kik': "frase2560",
+                'captain': 'Dallas Fraser',
+                "team": 1
+                }
+        expect = 1
+        rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+                         " POST: Authenticate Captain"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: Authenticate Captain")
+        # valid request
+        data = {
+                'kik': "frase2560",
+                "team": 1
+                }
+        expect = [   {  'away_team': 'Chainsaw Black',
+                        'away_team_id': 2,
+                        'date': '2014-08-23',
+                        'field': '',
+                        'game_id': 1,
+                        'home_team': 'Domus Green',
+                        'home_team_id': 1,
+                        'league_id': 1,
+                        'status': '',
+                        'time': '11:37'}]
+        rv = self.app.post(Routes['kikcaptaingames'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptaingames'] +
+                         " POST: Valid Captain's games"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: Invalid Captain's games")
+        # submit score
+        data = {
+                'kik': "frase2560",
+                'game_id': 1,
+                'score': 5,
+                'hr': [1, 2],
+                'ss': []
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kiksubmitscore'] +
+                         " POST: valid request"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubmitscore'] + " POST: valid request")
+        # second valid request
+        data = {
+                'kik': "frase2560",
+                "team": 1
+                }
+        expect = []
+        rv = self.app.post(Routes['kikcaptaingames'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptaingames'] +
+                         " POST: Invalid Captain's games"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikcaptain'] + " Post: Invalid Captain's games")
+
+class testUpcomingGames(BaseTest):
+    def testMain(self):
+        # non-subscribed player
+        self.mockUpcomingGames()
+        self.show_results = True
+        data = {
+                'kik': 'frase2560'
+                }
+        expect = 'frase2560 not registered'
+        rv = self.app.post(Routes['kikupcominggames'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, PNS, Routes['kikupcominggames'] +
+                         " POST: Unsubscribed player for upcoming games"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikupcominggames'] + " Post: Unsubscribed player for upcoming games")
+        # subscribe the player
+        data = {
+                'kik': "frase2560",
+                "name": "Dallas Fraser",
+                "team": 1
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+                         " POST: valid request"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: subscribe")
+        # subscribed player upcoming games
+        data = {
+                'kik': 'frase2560'
+                }
+        expect = [   {   'away_team': 'Chainsaw Black',
+                        'away_team_id': 2,
+                        'date': '2016-04-11',
+                        'field': '',
+                        'game_id': 1,
+                        'home_team': 'Domus Green',
+                        'home_team_id': 1,
+                        'league_id': 1,
+                        'status': '',
+                        'time': '11:45'},
+                    {   'away_team': 'Domus Green',
+                        'away_team_id': 1,
+                        'date': '2016-04-12',
+                        'field': '',
+                        'game_id': 2,
+                        'home_team': 'Chainsaw Black',
+                        'home_team_id': 2,
+                        'league_id': 1,
+                        'status': '',
+                        'time': '11:45'}]
+        rv = self.app.post(Routes['kikupcominggames'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kikupcominggames'] +
+                         " POST: Subscribed player for upcoming games"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikupcominggames'] + " Post: Unsubscribed player for upcoming games")
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -8,156 +8,157 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response, render_template, make_response
 from json import dumps
 from api.routes import Routes
+from api import app
 
-class Response(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/responseObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dindex"])
+def index_doc():
+    return render_template('documentation/documentation.html',
+                                         route = Routes
+                                         )
 
-class Document(Resource):
-    
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/documentation.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dresponse"])
+def response_object_doc():
+    return render_template('documentation/responseObject.html',
+                                         route = Routes
+                                         )
 
-class PlayerObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/playerObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["doplayer"])
+def player_object_doc():
+    return render_template('documentation/playerObject.html',
+                                         route = Routes
+                                         )
 
-class TeamObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/teamObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["doteam"])
+def team_object_doc():
+    return render_template('documentation/teamObject.html',
+                                         route = Routes
+                                         )
 
-class BatObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/batObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dobat"])
+def bat_object_doc():
+    return render_template('documentation/batObject.html',
+                                         route = Routes
+                                         )
+@app.route(Routes["dogame"])
+def game_object_doc():
+    return render_template('documentation/gameObject.html',
+                                         route = Routes
+                                         )
 
-class GameObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/gameObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["doleague"])
+def league_object_doc():
+    return render_template('documentation/leagueObject.html',
+                                         route = Routes
+                                         )
+@app.route(Routes["dosponsor"])
+def sponsor_object_doc():
+    return render_template('documentation/sponsorObject.html',
+                                         route = Routes
+                                         )
 
-class LeagueObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/leagueObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["doteamroster"])
+def teamroster_object_doc():
+    return render_template('documentation/teamRosterObject.html',
+                                         route = Routes
+                                         )
 
-class SponsorObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/sponsorObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbteamroster"])
+def teamroster_route_doc():
+    return render_template('documentation/teamRosterRoute.html',
+                                         route = Routes
+                                         )
 
-class TeamRosterObjectDocument(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/teamRosterObject.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbteam"])
+def team_route_doc():
+    return render_template('documentation/teamRoute.html',
+                                         route = Routes
+                                         )
 
-class TeamRosterRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/teamRosterRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbplayer"])
+def player_route_doc():
+    return render_template('documentation/playerRoute.html',
+                                         route = Routes
+                                         )
 
-class TeamRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/teamRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbbat"])
+def bat_route_doc():
+    return render_template('documentation/batRoute.html',
+                                         route = Routes
+                                         )
 
-class PlayerRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/playerRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbgame"])
+def game_route_doc():
+    return render_template('documentation/gameRoute.html',
+                                         route = Routes
+                                         )
 
-class BatRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/batRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbsponsor"])
+def sponsor_route_doc():
+    return render_template('documentation/sponsorRoute.html',
+                                         route = Routes
+                                         )
 
-class GameRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/gameRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dbleague"])
+def league_route_doc():
+    return render_template('documentation/leagueRoute.html',
+                                         route = Routes
+                                         )
 
-class SponsorRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/sponsorRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dvteam"])
+def team_view_doc():
+    return render_template('documentation/teamView.html',
+                                         route = Routes
+                                         )
+@app.route(Routes["dvgame"])
+def game_view_doc():
+    return render_template('documentation/gameView.html',
+                                         route = Routes
+                                         )
 
-class LeagueRoute(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/leagueRoute.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes["dvplayer"])
+def player_view_doc():
+    return render_template('documentation/playerView.html',
+                                         route = Routes
+                                         )
 
-class TeamView(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/teamView.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+# -----------------------------------------------------------------------------
+# KIK documentation
+# -----------------------------------------------------------------------------
+@app.route(Routes['dkiksubscribe'])
+def subscribe_kik_doc():
+    return render_template('documentation/kikSubscribe.html',
+                            route = Routes
+                            )
 
-class GameView(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/gameView.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes['dkikcaptain'])
+def authenticate_kik_doc():
+    return render_template('documentation/kikAuthenticateCaptain.html',
+                            route = Routes
+                            )
 
-class PlayerView(Resource):
-    def get(self):
-        headers = {'Content-Type': 'text/html'}
-        return make_response(render_template('documentation/playerView.html',
-                                             route = Routes
-                                             )
-                             ,200,headers)
+@app.route(Routes['dkiksubmitscore'])
+def submit_score_kik_doc():
+    return render_template('documentation/kikSubmitScore.html',
+                            route = Routes
+                            )
+
+@app.route(Routes['dkiktransaction'])
+def submit_transaction_kik_doc():
+    return render_template('documentation/kikSubmitTransaction.html',
+                            route = Routes
+                            )
+
+@app.route(Routes['dkikupcominggames'])
+def upcoming_games_kik_doc():
+    return render_template('documentation/kikUpcomingGames.html',
+                            route = Routes
+                            )
+
+@app.route(Routes['dkikcaptaingames'])
+def captain_games_kik_doc():
+    return render_template('documentation/kikCaptainGames.html',
+                            route = Routes
+                            )
+
+
+
