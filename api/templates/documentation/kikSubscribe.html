@@ -1,0 +1,67 @@
+{% extends "documentation/documentation_base.html" %}
+{% block content %}
+<h1>Kik - Player Subscribe to Team</h1>
+<p>Allows a player to subscribe to a team</p>
+<h4>POST</h4>
+<code>{{route.kiksubscribe}}/</code>
+<p style="color:#808080">
+	Permission: Kik
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">kik</td>
+				<td class="col-md-3">str</td>
+				<td class="col-md-3">The kik user name</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">team</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The team's id</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">name</td>
+				<td class="col-md-3">str</td>
+				<td class="col-md-3">The name of the player</td>
+			</tr>
+			
+		</tbody>
+	</table>
+
+<strong>Responses</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">True</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">434</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Team does not Exist</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">441</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">Player not on team</td>
+			</tr>
+		</tbody>
+	</table>
+
+{% endblock %}
