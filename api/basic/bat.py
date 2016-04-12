@@ -1,8 +1,8 @@
 '''
-Name: Dallas Fraser
-Date: 2014-08-23
-Project: MLSB API
-Purpose: A Bat API
+@author: Dallas Fraser
+@date: 2016-04-12
+@organization: MLSB API
+@summary: The basic bat API
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response

@@ -1,17 +1,14 @@
 '''
 @author: Dallas Fraser
-@author: 2015-08-25
+@date: 2016-04-12
 @organization: MLSB API
 @summary: Tests all the basic APIs
 '''
-from api import app
 import unittest
-import tempfile
 from api.helper import loads
 from api import DB
-from pprint import PrettyPrinter
 from api.routes import Routes
-from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
+from api.model import Player
 from api.errors import IFSC, NUESC, SDNESC, LDNESC, TDNESC, PDNESC, GDNESC
 from api.credentials import ADMIN, PASSWORD
 from datetime import date
@@ -20,214 +17,9 @@ headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
 
-class BaseTest(unittest.TestCase):
+from api.BaseTest import TestSetup
 
-    def setUp(self):
-        self.show_results = False
-        self.pp = PrettyPrinter(indent=4)
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        self.d = "2014-8-23"
-        self.t = "11:37"
-        app.config['TESTING'] = True
-        self.app = app.test_client()
-        DB.engine.execute('''   
-                                DROP TABLE IF EXISTS fun;
-                                DROP TABLE IF EXISTS roster;
-                                DROP TABLE IF EXISTS bat;
-                                DROP TABLE IF EXISTS espys;
-                                DROP TABLE IF EXISTS game;
-                                DROP TABLE IF EXISTS team;
-                                DROP TABLE IF EXISTS player;
-                                DROP TABLE IF EXISTS sponsor;
-                                DROP TABLE IF EXISTS league;
-                        ''')
-        DB.create_all()
-
-    def tearDown(self):
-        DB.session.commit()
-        DB.engine.execute('''   
-                                DROP TABLE IF EXISTS fun;
-                                DROP TABLE IF EXISTS roster;
-                                DROP TABLE IF EXISTS bat;
-                                DROP TABLE IF EXISTS espys;
-                                DROP TABLE IF EXISTS game;
-                                DROP TABLE IF EXISTS team;
-                                DROP TABLE IF EXISTS player;
-                                DROP TABLE IF EXISTS sponsor;
-                                DROP TABLE IF EXISTS league;
-                        ''')
-
-    def output(self, data):
-        if self.show_results:
-            self.pp.pprint(data)
-
-    def addSponsor(self):
-        self.sponsor = Sponsor("Domus")
-        DB.session.add(self.sponsor)
-        DB.session.commit()
-        self.assertEqual(self.sponsor.id, 1, "Could not add sponsor")
-
-    def addAnotherSponsor(self):
-        self.sponsor = Sponsor("Chainsaw")
-        DB.session.add(self.sponsor)
-        DB.session.commit()
-        self.assertEqual(self.sponsor.id, 2, "Could not add sponsor")
-
-    def addSponsors(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Chainsaw")
-                         ]
-        for s in range(0,len(self.sponsors)):
-            DB.session.add(self.sponsors[s])
-        DB.session.commit()
-
-    def addPlayer(self):
-        p = Player("Dallas Fraser",
-                   "fras2560@mylaurier.ca",
-                   gender="m")
-        DB.session.add(p)
-        DB.session.commit()
-        self.assertEqual(p.id, 1, "Could not add player")
-
-    def addPlayers(self):
-        self.players = [Player("Dallas Fraser",
-                   "fras2560@mylaurier.ca",
-                   gender="m"),
-                   Player("My Dream Girl",
-                   "dream@mylaurier.ca",
-                   gender="f"),
-                   Player("Barry Bonds",
-                          "bonds@hallOfFame.ca",
-                          gender="M")]
-        for player in range(0, len(self.players)):
-            DB.session.add(self.players[player])
-        DB.session.commit()
-
-    def addTeam(self):
-        self.addPlayer()
-        self.addSponsor()
-        self.team = Team(color="Green")
-        self.team.sponsor_id = self.sponsor.id
-        DB.session.add(self.team)
-        DB.session.commit()
-        self.assertEqual(self.team.id, 1)
-
-    def addTeams(self):
-        self.addPlayers()
-        self.addSponsors()
-        # team one
-        self.teams = [Team(color="Green"),
-                      Team(color="Black")
-                      ]
-        self.teams[0].sponsor_id = self.sponsors[0].id
-        self.teams[1].sponsor_id = self.sponsors[1].id
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
-        DB.session.commit()
-
-    def addLeague(self):
-        self.league = League("Monday & Wedneday")
-        DB.session.add(self.league)
-        DB.session.commit()
-        self.assertEqual(1, self.league.id)
-
-    def addLeagues(self):
-        self.leagues = [League("Monday & Wedneday"), League("Tuesday & Thursday")]
-        for t in range(0, len(self.leagues)):
-            DB.session.add(self.leagues[t])
-        DB.session.commit()
-
-    def addGame(self):
-        self.addTeams()
-        self.addLeague()
-        self.game = Game(self.d,
-                         self.t,
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.league.id)
-        DB.session.add(self.game)
-        DB.session.commit()
-        self.assertEqual(1, self.game.id)
-
-    def addGames(self):
-        self.addTeams()
-        self.addLeagues()
-        self.games = [Game(self.d,
-                           self.t,
-                           self.teams[0].id,
-                           self.teams[1].id,
-                           self.leagues[0].id),
-                      Game(self.d,
-                           self.t,
-                           self.teams[0].id,
-                           self.teams[1].id,
-                           self.leagues[1].id)
-                      ]
-        DB.session.add(self.games[0])
-        DB.session.add(self.games[1])
-        DB.session.commit()
-
-    def addBat(self):
-        self.addGame()
-        self.bat = Bat(self.players[0].id,
-                       self.teams[0].id,
-                       self.game.id,
-                       "S",
-                       5,
-                       rbi=1)
-        DB.session.add(self.bat)
-        DB.session.commit()
-        self.assertEqual(self.bat.id, 1)
-    
-    def addBats(self):
-        self.addGames()
-        self.bats = [Bat(self.players[0].id,
-                       self.teams[0].id,
-                       self.games[0].id,
-                       "S",
-                       5,
-                       
-                       rbi=1),
-                     Bat(self.players[1].id,
-                         self.teams[0].id,
-                         self.games[1].id,
-                         "K",
-                         5)
-                     ]
-        for i in range(0, len(self.bats)):
-            DB.session.add(self.bats[i])
-        DB.session.commit()
-
-    def addCaptainToTeam(self):
-        self.addTeam()
-        team = Team.query.get(1)
-        team.insert_player(1, captain=True)
-    
-    def addPlayersToTeam(self):
-        self.addTeams()
-        team = Team.query.get(1)
-        team.insert_player(1, captain=True)
-        team.insert_player(2, captain=False)
-        DB.session.commit()
-
-    def addEspys(self):
-        self.addTeams()
-        espys = [Espys( 1, 
-                        sponsor_id=None, 
-                        description="Kik transaction", 
-                        points=1, 
-                        receipt=None),
-                 Espys( 2, 
-                        sponsor_id=1, 
-                        description="Purchase", 
-                        points=2, 
-                        receipt="12019209129"),
-                 ]
-        for espy in espys:
-            DB.session.add(espy)
-        DB.session.commit()
-
-class TestSponsor(BaseTest):
+class TestSponsor(TestSetup):
     def testSponsorListAPI(self):
         # test an empty get
         rv = self.app.get(Routes['sponsor'])
@@ -287,9 +79,9 @@ class TestSponsor(BaseTest):
 
     def testSponsorAPIGet(self):
         # proper insertion with post
-        self.addSponsor()
+        self.addSponsors()
         # invalid sponsor
-        rv = self.app.get(Routes['sponsor']+ "/2")
+        rv = self.app.get(Routes['sponsor']+ "/999")
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -312,9 +104,9 @@ class TestSponsor(BaseTest):
 
     def testSponsorAPIDelete(self):
         # proper insertion with post
-        self.addSponsor()
+        self.addSponsors()
         # delete of invalid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/2", headers=headers)
+        rv = self.app.delete(Routes['sponsor'] + "/999", headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -334,10 +126,10 @@ class TestSponsor(BaseTest):
 
     def testSponsorAPIPut(self):
         # proper insertion with post
-        self.addSponsor()
+        self.addSponsors()
         # invalid sponsor id
         params = {'sponsor_name': 'New League'}
-        rv = self.app.put(Routes['sponsor'] + '/2', data=params, headers=headers)
+        rv = self.app.put(Routes['sponsor'] + '/999', data=params, headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -366,7 +158,7 @@ class TestSponsor(BaseTest):
         self.assertEqual(200, rv.status_code,
                          Routes['sponsor'] + " PUT: Failed to update Sponsor")
 
-class TestEspys(BaseTest):
+class TestEspys(TestSetup):
     def testEspysApiGet(self):
         # proper insertion
         self.addEspys()
@@ -427,7 +219,6 @@ class TestEspys(BaseTest):
                          ' DELETE Valid espy id')
         self.assertEqual(rv.status_code, 200, Routes['espy'] +
                          ' DELETE Valid espy id')
-
 
     def testEspysApiPut(self):
         # must add a espy
@@ -589,12 +380,12 @@ class TestEspys(BaseTest):
         self.assertEqual(expect, empty,Routes['espy'] +
                          " GET: did not receive espy list")
 
-class TestPlayer(BaseTest):
+class TestPlayer(TestSetup):
     def testPlayerApiGet(self):
         # proper insertion with post
-        self.addPlayer()
+        self.addPlayers()
         # invalid player id
-        rv = self.app.get(Routes['player'] + "/2")
+        rv = self.app.get(Routes['player'] + "/999")
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -617,9 +408,9 @@ class TestPlayer(BaseTest):
 
     def testPlayerApiDelete(self):
         # proper insertion with post
-        self.addPlayer()
+        self.addPlayers()
         # delete of invalid player id
-        rv = self.app.delete(Routes['player'] + "/2", headers=headers)
+        rv = self.app.delete(Routes['player'] + "/999", headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -638,10 +429,10 @@ class TestPlayer(BaseTest):
 
     def testPlayerApiPut(self):
         # must add a player
-        self.addPlayer()
+        self.addPlayers()
         # invalid player id
         params = {'player_name':'David Duchovny', 'gender':"F"}
-        rv = self.app.put(Routes['player'] + '/2', data=params, headers=headers)
+        rv = self.app.put(Routes['player'] + '/999', data=params, headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -783,12 +574,12 @@ class TestPlayer(BaseTest):
                          " POST: POST request with valid data"
                          )
 
-class TestLeague(BaseTest):
+class TestLeague(TestSetup):
     def testLeagueAPIGet(self):
         # proper insertion with post
-        self.addLeague()
+        self.addLeagues()
         # invalid league id
-        rv = self.app.get(Routes['league'] + "/2")
+        rv = self.app.get(Routes['league'] + "/999")
         self.output(loads(rv.data))
         self.assertEqual(loads(rv.data), None, Routes['league'] +
                          " GET invalid league id")
@@ -806,9 +597,9 @@ class TestLeague(BaseTest):
 
     def testLeagueAPIDelete(self):
         # proper insertion with post
-        self.addLeague()
+        self.addLeagues()
         # delete of invalid league id
-        rv = self.app.delete(Routes['league'] + "/2", headers=headers)
+        rv = self.app.delete(Routes['league'] + "/999", headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -828,10 +619,10 @@ class TestLeague(BaseTest):
 
     def testLeagueAPIPut(self):
         # must add a League
-        self.addLeague()
+        self.addLeagues()
         # invalid league id
         params = {'league_name':'Chainsaw Classic'}
-        rv = self.app.put(Routes['league'] + '/2', data=params, headers=headers)
+        rv = self.app.put(Routes['league'] + '/999', data=params, headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -897,10 +688,32 @@ class TestLeague(BaseTest):
                          " POST: request with invalid league_name"
                          )
         # proper insertion with post
-        self.addLeague()
+        params = {'league_name':"Monday & Wednesday"}
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
+        result = 1
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         " POST: request with valid league_name"
+                         )
+        self.assertEqual(rv.status_code, 200, Routes['league'] + 
+                         " POST: request with valid league_name"
+                         )
+        params = {'league_name':"Tuesday & Thursday"}
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
+        result = 2
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['league'] + 
+                         " POST: request with valid league_name"
+                         )
+        self.assertEqual(rv.status_code, 200, Routes['league'] + 
+                         " POST: request with valid league_name"
+                         )
         # test a get with league
         rv = self.app.get(Routes['league'])
-        result = [{'league_id': 1,'league_name':"Monday & Wedneday"}]
+        result = [   {'league_id': 1, 'league_name': 'Monday & Wednesday'},
+                     {'league_id': 2, 'league_name': 'Tuesday & Thursday'}]
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(result, loads(rv.data), Routes['league'] + 
@@ -908,7 +721,7 @@ class TestLeague(BaseTest):
         self.assertEqual(200, rv.status_code, Routes['league'] + 
                          " GET: Failed to return list of leagues")
 
-class TestTeam(BaseTest):
+class TestTeam(TestSetup):
     def testTeamListAPI(self):
         # test an empty get
         rv = self.app.get(Routes['team'])
@@ -936,8 +749,8 @@ class TestTeam(BaseTest):
         self.assertEqual(rv.status_code, 400 , Routes['team']
                          + " POST: request with missing parameter"
                          )
-        self.addSponsor()
-        self.addLeague()
+        self.addSponsors()
+        self.addLeagues()
         # testing a all invalid color
         params = {'color': 1,
                   'sponsor_id': 1,
@@ -1033,9 +846,9 @@ class TestTeam(BaseTest):
 
     def testTeamGet(self):
         # proper insertion with post
-        self.addTeam()
+        self.addTeams()
         # test invalid team id
-        rv = self.app.get(Routes['team'] + "/2")
+        rv = self.app.get(Routes['team'] + "/999")
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -1062,9 +875,9 @@ class TestTeam(BaseTest):
 
     def testTeamDelete(self):
         # proper insertion with post
-        self.addTeam()
+        self.addTeams()
         # delete of invalid team id
-        rv = self.app.delete(Routes['team'] + "/2", headers=headers)
+        rv = self.app.delete(Routes['team'] + "/999", headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -1083,14 +896,14 @@ class TestTeam(BaseTest):
 
     def testTeamPut(self):
         # proper insertion with post
-        self.addTeam()
-        self.addLeague()
+        self.addTeams()
+        self.addLeagues()
         # invalid team id
         params = {'sponsor_id': 1,
                   'league_id': 1,
                   'color': "Black",
                   'year': 2015}
-        rv = self.app.put(Routes['team'] + '/2', data=params, headers=headers)
+        rv = self.app.put(Routes['team'] + '/999', data=params, headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -1098,7 +911,6 @@ class TestTeam(BaseTest):
                          Routes['team'] + " PUT: given invalid team ID")
         self.assertEqual(404, rv.status_code,
                          Routes['team'] + " PUT: given invalid team ID")
-
         # invalid sponsor_id
         params = {'sponsor_id': 999,
                   'league_id': 1,
@@ -1152,7 +964,6 @@ class TestTeam(BaseTest):
         self.assertEqual(IFSC, rv.status_code,
                          Routes['team'] + " PUT: given invalid year")
         # successful update
-        self.addAnotherSponsor()
         self.addLeagues()
         # valid update
         params = {
@@ -1168,7 +979,7 @@ class TestTeam(BaseTest):
         self.assertEqual(rv.status_code, 200, Routes['team'] +
                          " PUT: Failed to update a team")
 
-class TestGame(BaseTest):
+class TestGame(TestSetup):
     def testGameListAPI(self):
         # test an empty get
         rv = self.app.get(Routes['game'])
@@ -1192,7 +1003,7 @@ class TestGame(BaseTest):
         self.assertEqual(400, rv.status_code, Routes['game']
                          + " POST: request with missing parameters")
         self.addTeams()
-        self.addLeague()
+        self.addLeagues()
         # testing invalid date
         params = {
                   'home_team_id': 1,
@@ -1274,9 +1085,9 @@ class TestGame(BaseTest):
 
     def testGameGet(self):
         # proper insertion
-        self.addGame()
+        self.addGames()
         # invalid id
-        rv = self.app.get(Routes['game'] + "/2")
+        rv = self.app.get(Routes['game'] + "/999")
         expect = None
         self.output(expect)
         self.output(loads(rv.data))
@@ -1305,9 +1116,9 @@ class TestGame(BaseTest):
 
     def testGameDelete(self):
         # proper insertion
-        self.addGame()
+        self.addGames()
         # delete invalid game id
-        rv = self.app.delete(Routes['game'] + "/2", headers=headers)
+        rv = self.app.delete(Routes['game'] + "/999", headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -1492,10 +1303,10 @@ class TestGame(BaseTest):
         self.assertEqual(200, rv.status_code,
                          Routes['game'] + " PUT: valid update")
 
-class TestBat(BaseTest):
+class TestBat(TestSetup):
     def testBatList(self):
         # test an empty get
-        self.addGame()
+        self.addGames()
         rv = self.app.get(Routes['bat'])
         empty = loads(rv.data)
         self.assertEqual([], empty,
@@ -1643,9 +1454,9 @@ class TestBat(BaseTest):
 
     def testBatGet(self):
         # proper insertion of get
-        self.addBat()
+        self.addBats()
         # get on invalid id
-        rv = self.app.get(Routes['bat']+ "/2")
+        rv = self.app.get(Routes['bat']+ "/999")
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -1673,9 +1484,9 @@ class TestBat(BaseTest):
 
     def testBatDelete(self):
         # proper insertion of get
-        self.addBat()
+        self.addBats()
         # delete invalid id
-        rv = self.app.delete(Routes['bat']+ "/2", headers=headers)
+        rv = self.app.delete(Routes['bat']+ "/999", headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -1832,101 +1643,6 @@ class TestBat(BaseTest):
                          Routes['bat'] + " PUT: valid parameters")
         self.assertEqual(200, rv.status_code, 
                          Routes['bat'] + " PUT: valid parameters")
-
-class TestTeamRoster(BaseTest):
-    def testPost(self):
-        #invalid update
-        params = {"player_id": 1}
-        rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = 'Team not found'
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['team_roster'] + " POST: invalid data")
-        self.assertEqual(404, rv.status_code, 
-                         Routes['team_roster'] + " PUT: invalid data")
-        # add player to team        
-        self.addTeams()
-        params = {"player_id": 1}
-        rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['team_roster'] + " POST: proper data")
-        self.assertEqual(200, rv.status_code, 
-                         Routes['team_roster'] + " PUT: invalid data")
-        # add a captain
-        params = {"player_id": 2, "captain": 1}
-        rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['team_roster'] + " POST: proper data")
-        self.assertEqual(200, rv.status_code, 
-                         Routes['team_roster'] + " PUT: invalid data")
-
-    def testDelete(self):
-        #add player to team
-        self.addPlayersToTeam()
-        # missing data
-        rv = self.app.delete(Routes['team_roster']+"/2")
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
-        expect = {   'message': {   'player_id': message}}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " DELETE: Missing header")
-        # invalid combination
-        query = "?player_id=2"
-        rv = self.app.delete(Routes['team_roster'] + "/1" + query)
-        expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " DELETE: Invalid combination")
-        # proper deletion
-        query = "?player_id=2"
-        rv = self.app.delete(Routes['team_roster'] + "/1" + query)
-        expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " DELETE: Invalid combination")
-
-    def testGet(self):
-        #empty get
-        rv = self.app.get(Routes['team_roster'] + "/1")
-        expect = 'Team not found'
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " GET: on empty set")
-        self.addPlayersToTeam()
-        # get one team
-        rv = self.app.get(Routes['team_roster'] + "/1")
-        expect =  {   
-                   'captain': {   'email': 'fras2560@mylaurier.ca',
-                                           'gender': 'm',
-                                           'player_id': 1,
-                                           'player_name': 'Dallas Fraser'},
-                    'color': 'Green',
-                    'espys': 0,
-                    'league_id': None,
-                    'players': [   {   'email': 'dream@mylaurier.ca',
-                                       'gender': 'f',
-                                       'player_id': 2,
-                                       'player_name': 'My Dream Girl'}],
-                    'sponsor_id': 1,
-                    'team_id': 1,
-                    'team_name': 'Domus Green',
-                    'year': date.today().year
-                }
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " GET: on non-empty set")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

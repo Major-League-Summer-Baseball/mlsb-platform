@@ -1,8 +1,8 @@
 '''
-Name: Dallas Fraser
-Date: 2014-08-22
-Project: MLSB API
-Purpose: To create an application to act as an api for the database
+@author: Dallas Fraser
+@date: 2016-04-12
+@organization: MLSB API
+@summary: The basic team API
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response
