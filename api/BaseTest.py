@@ -204,7 +204,7 @@ class TestSetup(unittest.TestCase):
         DB.session.commit()
 
     def addCaptainToTeam(self):
-        self.addTeam()
+        self.addTeams()
         team = Team.query.get(1)
         team.insert_player(1, captain=True)
         DB.session.commit()
@@ -217,7 +217,7 @@ class TestSetup(unittest.TestCase):
         DB.session.commit()
 
     def mockScoreSubmission(self):
-        self.addLeague()
+        self.addLeagues()
         self.addPlayersToTeam()
         team = Team.query.get(1)
         team.insert_player(2)
@@ -225,12 +225,12 @@ class TestSetup(unittest.TestCase):
                          self.t,
                          self.teams[0].id,
                          self.teams[1].id,
-                         self.league.id)
+                         self.leagues[0].id)
         DB.session.add(self.game)
         DB.session.commit()
 
     def mockUpcomingGames(self):
-        self.addLeague()
+        self.addLeagues()
         self.addPlayersToTeam()
         t = "11:45"
         today = datetime.today()
@@ -240,11 +240,11 @@ class TestSetup(unittest.TestCase):
         game_five_day = (today+timedelta(5)).strftime("%Y-%m-%d")
         # few upcoming games, one in the past, and one the player is not on
         games = [
-                 Game(game_one_day, t, self.teams[0].id, self.teams[1].id, self.league.id),
-                 Game(game_two_day, t, self.teams[1].id, self.teams[0].id, self.league.id),
-                 Game(game_five_day, t, self.teams[0].id, self.teams[1].id, self.league.id),
-                 Game(previous_game, t, self.teams[0].id, self.teams[1].id, self.league.id),
-                 Game(game_one_day, t, self.teams[1].id, self.teams[2].id, self.league.id),
+                 Game(game_one_day, t, self.teams[0].id, self.teams[1].id, self.leagues[0].id),
+                 Game(game_two_day, t, self.teams[1].id, self.teams[0].id, self.leagues[0].id),
+                 Game(game_five_day, t, self.teams[0].id, self.teams[1].id, self.leagues[0].id),
+                 Game(previous_game, t, self.teams[0].id, self.teams[1].id, self.leagues[0].id),
+                 Game(game_one_day, t, self.teams[1].id, self.teams[2].id, self.leagues[0].id),
                  ]
         for game in games:
             DB.session.add(game)

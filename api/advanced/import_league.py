@@ -1,8 +1,8 @@
 '''
-Name: Dallas Fraser
-Date: 2015-11-08
-Project: MLSB API
-Purpose: Holds a class TeamList that helps imports a team roster
+@author: Dallas Fraser
+@date: 2016-04-12
+@organization: MLSB API
+@summary: Holds a class LeagueList that helps imports a League (list of games)
 '''
 # imports
 from api.model import Sponsor, Team, Game, League
@@ -11,7 +11,7 @@ from api.validators import time_validator, string_validator, date_validator
 from api.errors import InvalidField
 import logging
 # constants
-CREATED = "Created Team (no league was specified"
+CREATED = "Created Team (no league was specified)"
 NO_LEAGUE = "Cannot find league, please ensure spelt correctly or create the league"
 INVALID_FILE = "File was not given in right format (use template)"
 EXAMPLE_FOUND = "First entry contain the templates example, just skipped it"

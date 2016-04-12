@@ -1,10 +1,9 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
 @summary: The views for player stats
 '''
-from sqlalchemy.sql.expression import or_
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps

@@ -27,7 +27,6 @@ post_parser.add_argument('description', type=str)
 HEADERS = [{'header':'sponsor_name', 'required':True, 
             'validator':string_validator}]
 
-
 class SponsorAPI(Resource):
     def get(self, sponsor_id):
         """

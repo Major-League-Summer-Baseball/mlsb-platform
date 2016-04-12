@@ -213,5 +213,9 @@ ERRORS = {
             'NonUniqueEmail': {
                 'message': "The player's email was not unique",
                 'status': NUESC,
-            }
+            },
+            'MissingPlayer': {
+                              'message': "Player was not a member of the team",
+                              'status': 400
+                              }
           }

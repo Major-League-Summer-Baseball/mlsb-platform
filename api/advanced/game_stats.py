@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@date: 2016-04-12
 @organization: MLSB API
 @summary: The views for game stats
 '''

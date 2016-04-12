@@ -1,6 +1,6 @@
 '''
 Name: Dallas Fraser
-Date: 2014-08-25
+Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds the routes for the documentation
 '''
@@ -159,6 +159,3 @@ def captain_games_kik_doc():
     return render_template('documentation/kikCaptainGames.html',
                             route = Routes
                             )
-
-
-

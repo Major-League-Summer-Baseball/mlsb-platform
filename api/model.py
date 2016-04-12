@@ -449,6 +449,7 @@ class Team(DB.Model):
             player = Player.query.get(player_id)
             if player not in self.players:
                 raise MissingPlayer("Player was not a member of the team")
+            self.players.remove(player)
         
     def check_captain(self, player_name, password):
         '''
@@ -813,7 +814,6 @@ class Bat(DB.Model):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist("Player does not Exist {}".format(player_id))
-        print(hit_validator(classification, player.gender))
         if not hit_validator(classification, player.gender):
             raise InvalidField("Invalid hit for Bat")
         if not rbi_validator(rbi):

@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
 @summary: The views for player stats
 '''
@@ -8,16 +8,13 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Team, Game, Bat
-from api.variables import HITS
+from api.model import Team, Game
 from datetime import datetime, date, time
-from sqlalchemy.sql import func
 from sqlalchemy import or_
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('team_id', type=int)
-
 
 def post(team_id, year, league_id):
     if team_id is not None:

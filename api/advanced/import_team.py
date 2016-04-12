@@ -1,8 +1,8 @@
 '''
-Name: Dallas Fraser
-Date: 2015-11-08
-Project: MLSB API
-Purpose: Holds a class TeamList that helps imports a team roster
+@author: Dallas Fraser
+@date: 2016-04-12
+@organization: MLSB API
+@summary: Holds a class TeamList that helps imports a team roster
 '''
 # imports
 from api.model import Sponsor, Team, Player

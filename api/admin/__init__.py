@@ -1,6 +1,6 @@
 '''
 Name: Dallas Fraser
-Date: 2014-08-25
+Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds the routes for the admin side
 '''
@@ -9,18 +9,15 @@ Purpose: Holds the routes for the admin side
 # -----------------------------------------------------------------------------
 from os.path import join
 from flask.ext.restful import Resource, reqparse
-from flask import Response, render_template, make_response
+from flask import Response, render_template, make_response, send_file, url_for,\
+                  send_from_directory, redirect, session, request
 from json import dumps, loads
 from api.routes import Routes
 from api import app, PICTURES
-from api.routes import Routes
 from api import DB
-from flask import render_template, send_file, url_for, send_from_directory,\
-                  redirect, session, request, make_response
 from api.model import Team, Player, Sponsor, League, Game, Bat
 from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
-from api.model import Player
 from datetime import date
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
