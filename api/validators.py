@@ -1,6 +1,6 @@
 '''
 Name: Dallas Fraser
-Date: 2014-07-31
+Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds data validators
 '''
@@ -32,6 +32,15 @@ def string_validator(value):
     return validated
 
 def year_validator(year):
+    '''
+    year_validator
+        a general function to validate the year parameter
+        Parameters:
+            year: the year to validate (int)
+        Returns:
+            True if valid
+            False otherwise
+    '''
     validated = False
     if int_validator(year) and year >= 2014 and year <= date.today().year:
         validated = True
@@ -187,6 +196,7 @@ def field_validator(field):
     if field in FIELDS:
         valid = True
     return valid
+# the tests
 from pprint import PrettyPrinter
 class Test(unittest.TestCase):
 
@@ -313,8 +323,6 @@ class Test(unittest.TestCase):
         test = "WP1"
         self.assertEqual(hit_validator(test), False,
                          'Field Validator: WP1 was not a valid Field')
-        
-        
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

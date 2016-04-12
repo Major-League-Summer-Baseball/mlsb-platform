@@ -1,10 +1,11 @@
 '''
 @author: Dallas Fraser
-@author: 2015-08-25
+@author: 2016-04-12
 @organization: MLSB API
 @summary: Contains all the routes for the API
 '''
 Routes = {}
+# -----------------------------------------------------------------------------
 # APIs
 # -----------------------------------------------------------------------------
 # basic routes
@@ -29,9 +30,8 @@ Routes['kikcaptain'] = "/api/kik/captain"
 Routes['kikupcominggames'] = "/api/kik/upcoming_games"
 Routes['kiktransaction'] = "/api/kik/transaction"
 Routes['kikcaptaingames'] = "/api/kik/captain/games"
- 
-# -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
 # documentation routes
 # -----------------------------------------------------------------------------
 Routes['dindex'] = "/documentation"
@@ -64,10 +64,7 @@ Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
 Routes['dkiktransaction'] = "/documentation/kik/transaction"
 Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
 
-
-
 # -----------------------------------------------------------------------------
-
 # Website
 # -----------------------------------------------------------------------------
 # static pages
@@ -88,8 +85,8 @@ Routes['playerpage'] = "/website/player"
 Routes['leagueleaderpage'] = "/website/leaders"
 # events
 Routes['eventspage'] = "/website/event"
-# -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
 # Admin
 # -----------------------------------------------------------------------------
 # editting columns

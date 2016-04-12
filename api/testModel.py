@@ -1,7 +1,8 @@
 '''
-Created on Nov 21, 2015
-
-@author: Dallas
+Name: Dallas Fraser
+Date: 2016-04-12
+Project: MLSB API
+Purpose: holds test for the model
 '''
 import unittest
 from api.model import Player, Team, Bat, Sponsor, League, Game
@@ -11,7 +12,6 @@ from api.errors import InvalidField,PlayerDoesNotExist,TeamDoesNotExist,\
 from pprint import PrettyPrinter
 from api import app, DB
 import tempfile
-
 
 class BaseModel(unittest.TestCase):
     def setUp(self):

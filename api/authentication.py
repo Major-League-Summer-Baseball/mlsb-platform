@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
 @summary: Holds the authentication functions
 '''
@@ -34,6 +34,9 @@ def check_kik(username, password):
     return username == KIK and password == KIKPW
 
 def check_captain(player, password):
+    '''
+    check a if a player is the captain of a team
+    '''
     players = Player.query.filter_by(name=player).all()
     player = None
     for p in players:

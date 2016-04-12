@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2015-11-21
+@author: 2016-04-12
 @organization: MLSB API
 @summary: Holds the errors for the database
 '''

@@ -1,6 +1,6 @@
 '''
 Name: Dallas Fraser
-Date: 2014-08-23
+Date: 2016-04-12
 Project: MLSB API
 Purpose: Some random helper functions
 '''
@@ -13,21 +13,16 @@ def loads(data):
         data = loader(data.decode('utf-8'))
     return data
 
-
 class Test(unittest.TestCase):
-
 
     def setUp(self):
         pass
 
-
     def tearDown(self):
         pass
 
-
     def testLoads(self):
         pass
-
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testLoads']

@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2015-08-27
+@author: 2016-04-12
 @organization: MLSB API
 @summary: Holds the model for the database
 '''
@@ -24,6 +24,13 @@ roster = DB.Table('roster',
 SUBSCRIBED = "{} SUBSCRIBED"
 
 class Fun(DB.Model):
+    '''
+        A class used to store the amount of fun had by all
+        Columns:
+            id: the unique id
+            year: the year the fun count is for
+            count: the total count for the year
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     year = DB.Column(DB.Integer)
     count = DB.Column(DB.Integer)
@@ -32,9 +39,24 @@ class Fun(DB.Model):
         self.count = 0
 
     def increment(self, change):
+        '''
+        increasement the fun count
+        Paramenters:
+            change: the amount the fun count has changed by (int)
+        '''
         self.count += change
 
 class Espys(DB.Model):
+    '''
+        A class that stores transaction for ESPY points
+        Columns:
+            id: the unique id
+            description: the description of the transaction (used for additional notes)
+            sponsor_id: the id of sponsor that was involved in the transaction
+            points: the amount of points awarded for the transaction ($1 is 1 point)
+            date: the date of the transaction
+            receipt: any information regarding the receipt (receipt number)
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
     description = DB.Column(DB.String(120))
@@ -49,6 +71,11 @@ class Espys(DB.Model):
                  description=None,
                  points=0,
                  receipt=None):
+        '''
+            Raises:
+                SponsorDoesNotExist
+                TeamDoesNotExist
+        '''
         self.points = points
         self.date = datetime.now()
         sponsor = None
@@ -71,6 +98,12 @@ class Espys(DB.Model):
                description=None,
                points=None,
                receipt=None):
+        '''
+            used to update an existing espy transaction
+            Raises:
+                TeamDoesNotExist
+                SponsorDoesNotExist
+        '''
         if points is not None:
             self.points = points
         if description is not None:
@@ -89,6 +122,9 @@ class Espys(DB.Model):
             self.receipt = receipt
 
     def json(self):
+        '''
+            returns a jsonserializable object
+        '''
         if self.sponsor_id is not None:
             sponsor = str(Sponsor.query.get(self.sponsor_id))
         else:
@@ -103,6 +139,17 @@ class Espys(DB.Model):
                 }
 
 class Player(DB.Model):
+    '''
+    A class that stores a player's information
+        id: the player's unique id
+        name: the name of the player
+        email: the unique player's email
+        gender: the player's gender
+        password: the password for the player
+        team: the teams the player plays for
+        active: a boolean to say whether the player is active currently or not (retired or not)
+        kik: the kik user name associated with the player
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(80))
     email = DB.Column(DB.String(120), unique=True)
@@ -122,6 +169,11 @@ class Player(DB.Model):
                  gender=None,
                  password="default",
                  active=True):
+        '''
+            Raises:
+                InvalidField
+                NonUniqueEmail
+        '''|
         if not string_validator(name):
             raise InvalidField("Invalid name for Player")
         # check if email is unique
@@ -143,19 +195,40 @@ class Player(DB.Model):
         self.active = active
 
     def set_password(self, password):
+        '''
+            update a player's password
+            Parameters:
+                password: the player's new password (str)
+        '''
         self.password = generate_password_hash(password)
  
     def check_password(self, password):
+        '''
+            check a player's password
+            Paramters:
+                password: attempted password (str)
+            Returns:
+                True passwords match
+                False otherwise
+        '''
         return check_password_hash(self.password, password)
  
     def __repr__(self):
+        '''
+            the string representation of the player
+        '''
         return self.name + " email:" + self.email
 
     def update_kik(self, kik):
+        '''
+        update the player's kik profile
+        '''
         self.kik = kik
 
-
     def json(self):
+        '''
+            returns a jsonserializable object
+        '''
         return {"player_id": self.id,
                 "player_name":self.name,
                 "email": self.email,
@@ -166,6 +239,17 @@ class Player(DB.Model):
                email=None,
                gender=None,
                password=None):
+        '''
+        updates an existing player
+            Parameters:
+                name: the name of the player
+                email: the unique email of the player
+                gender: the gender of the player
+                password: the password of the player
+            Raises:
+                InvalidField
+                NonUniqueEmail
+        '''
         if email is not None:   
             # check if email is unique
             if not string_validator(email):
@@ -184,12 +268,31 @@ class Player(DB.Model):
             raise InvalidField("Invalid name for Player")
 
     def activate(self):
+        '''
+        activate the player
+        '''
         self.active = True
 
     def deactivate(self):
+        '''
+        deactivate the player (retire them)
+        '''
         self.active = False
 
 class Team(DB.Model):
+    '''
+    A class that stores information about a team
+    Columns:
+        id: the unique team id
+        sponsor_id: the sponsor id the team is associated with
+        home_games: the home games of the team
+        away_games: the away games of the team
+        players: the players on the team's roster
+        bats: the bats of the team
+        league_id: the league id the team is part of
+        year: the year the team played
+        espys: the espy transaction that team has
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     color = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
@@ -213,13 +316,18 @@ class Team(DB.Model):
     espys = DB.relationship('Espys',
                             backref='team',
                             lazy='dynamic')
-    
 
     def __init__(self,
                  color=None,
                  sponsor_id=None,
                  league_id=None,
                  year=date.today().year):
+        '''
+        Raises
+            InvalidField
+            SponsorDoesNotExist
+            LeagueDoesNotExist
+        '''
         if color is not None and not string_validator(color):
             raise InvalidField("Invalid color for Team")
         if sponsor_id is not None and Sponsor.query.get(sponsor_id) is None:
@@ -237,6 +345,9 @@ class Team(DB.Model):
         self.kik = None
 
     def __repr__(self):
+        '''
+            the string representation
+        '''
         result = []
         if self.sponsor_id is not None:
             result.append(str( Sponsor.query.get(self.sponsor_id)))
@@ -245,12 +356,18 @@ class Team(DB.Model):
         return " ".join(result)
 
     def espys_awarded(self):
+        '''
+            returns the number of espy ponts the team has
+        '''
         count = 0
         for espy in self.espys:
             count += espy.points
         return count
 
     def json(self):
+        '''
+            returns a jsonserializable object
+        '''
         captain = None
         if self.player_id is not None:
             captain = Player.query.get(self.player_id).json()
@@ -270,6 +387,13 @@ class Team(DB.Model):
                league_id=None,
                year=None,
                espys=None):
+        '''
+        updates an existing team
+        Raises:
+            InvalidField
+            SponsorDoesNotExist
+            LeagueDoesNotExist
+        '''
         if color is not None and string_validator(color):
             self.color = color
         elif color is not None:
@@ -294,6 +418,17 @@ class Team(DB.Model):
             raise InvalidField("Invalid espys for Team")
 
     def insert_player(self, player_id, captain=False):
+        '''
+        insert a player on to the team
+        Parameter:
+            player_id: the id of the player to add
+            captain: True if the player is the team's captain
+        Returns:
+            True if player was added
+            False otherwise
+        Raises:
+            PlayerDoesNotExist
+        '''
         valid = False
         player = Player.query.get(player_id)
         if player is None:
@@ -305,6 +440,13 @@ class Team(DB.Model):
         return valid
 
     def remove_player(self, player_id):
+        '''
+        removes a player from a team
+        Parameter:
+            player_id: the id of the player to remove
+        Raises:
+            MissingPlayer
+        '''
         if self.player_id == player_id:
             self.player_id = None
         else:
@@ -313,6 +455,15 @@ class Team(DB.Model):
                 raise MissingPlayer("Player was not a member of the team")
         
     def check_captain(self, player_name, password):
+        '''
+        checks if the player is the captain of the team
+        Parameters:
+            player_name: the name of the player (str)
+            password: the password of the player (str)
+        Return:
+            True of player is the captain
+            False otherwise
+        '''
         player = Player.query.get(self.player_id)
         return player.name == player_name and player.check_password(password)
 
@@ -320,6 +471,17 @@ class Team(DB.Model):
         pass
 
 class Sponsor(DB.Model):
+    '''
+    A class that stores information about a sponsor
+    Columns:
+        id: the sponsor's unique id
+        name: the name of the sponsor
+        teams: the teams the sponsor is associated with
+        description: a description of the sponsor
+        link: a link to the sponsor's website or facebook
+        active: a boolean telling whether the sponsor is currently sponsoring a team
+        espys: all the espys transaction associated with the sponsor
+    '''
     __tablename__ = 'sponsor'
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120), unique=True)
@@ -342,15 +504,26 @@ class Sponsor(DB.Model):
         self.active = True
 
     def __repr__(self):
+        '''
+            the string representation of the sponsor
+        '''
         return self.name
 
     def json(self):
+        '''
+            returns a jsonserializable object
+        '''
         return {'sponsor_id': self.id,
                 'sponsor_name': self.name,
                 'link': self.link,
                 'description': self.description}
 
     def update(self, name=None, link=None, description=None):
+        '''
+            updates an existing sponsor
+            Raises:
+                InvalidField
+        '''
         if name is not None and string_validator(name):
             self.name = name
         elif name is not None:
@@ -365,17 +538,35 @@ class Sponsor(DB.Model):
             raise InvalidField("Invalid link for Sponsor")
 
     def activate(self):
+        '''
+        activate a sponsor (they are back baby)
+        '''
         self.active = True
 
     def deactivate(self):
+        '''
+        deactivate a sponsor (they are no longer sponsoring)
+        '''
         self.active = False
 
 class League(DB.Model):
+    '''
+    a class that holds all the information for a league
+    Columns:
+        id: the league unique id
+        name: the name of the league
+        games: the games associated with the league
+        teams: the teams part of the league
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120))
     games = DB.relationship('Game', backref='league', lazy='dynamic')
     teams = DB.relationship('Team', backref='league', lazy='dynamic')
     def __init__(self, name=None):
+        '''
+        Raises:
+            InvalidField
+        '''
         if not string_validator(name):
             raise InvalidField("Invalid name for League")
         self.name = name
@@ -388,11 +579,27 @@ class League(DB.Model):
                 'league_name': self.name}
 
     def update(self, league):
+        '''
+        updates an existing league
+        Raises:
+            InvalidField
+        '''
         if not string_validator(league):
             raise InvalidField("Invalid name for League")
         self.name= league
 
 class Game(DB.Model):
+    '''
+    A class that holds information about a Game
+    Columns:
+        id: the game id
+        home_team_id: the home team's id
+        away_team_id: the away team's id
+        league_id: the league id the game is part of
+        date: the date of the game
+        status: the status of the game
+        field: the field the game is to be played on
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     home_team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id',
                                                        use_alter=True,
@@ -414,6 +621,12 @@ class Game(DB.Model):
                  league_id,
                  status="",
                  field=""):
+        '''
+        Raises:
+            InvalidField
+            TeamDoesNotExist
+            LeagueDoesNotExist
+        '''
         # check for all the invalid parameters
         if not date_validator(date):
             raise InvalidField("Invalid date for Game")
@@ -439,6 +652,9 @@ class Game(DB.Model):
         self.field = field
 
     def __repr__(self):
+        '''
+            the string representation of the game
+        '''
         home = str(Team.query.get(self.home_team_id))
         away = str(Team.query.get(self.away_team_id))
         result = (home + " vs " + away + " on " +
@@ -448,6 +664,9 @@ class Game(DB.Model):
         return result
 
     def json(self):
+        '''
+            returns a jsonserializable object
+        '''
         return {
                 'game_id': self.id,
                 'home_team_id': self.home_team_id,
@@ -468,6 +687,13 @@ class Game(DB.Model):
                league_id=None,
                status=None,
                field=None):
+        '''
+        updates an existing game
+        Raises:
+            InvalidField
+            TeamDoesNotExist
+            LeagueDoesNotExist
+        '''
         d = self.date.strftime("%Y-%m-%d")
         t = self.date.strftime("%H:%M")
         if date is not None and date_validator(date):
@@ -504,6 +730,16 @@ class Game(DB.Model):
         self.date = datetime.strptime(d + "-" +t, '%Y-%m-%d-%H:%M')
 
     def summary(self):
+        '''
+        returns a game summary
+        Returns:
+            {
+            away_score: int,
+            away_bat: [Bat,],
+            home_score: int,
+            home_bats: [Bat, ]
+            }
+        '''
         away_score = DB.session.query(
                                       func.sum(Bat.rbi)
                                       .filter(Bat.game_id==self.id)
@@ -543,6 +779,17 @@ class Game(DB.Model):
                 }
 
 class Bat(DB.Model):
+    '''
+    A class that stores information about a Bat
+    Columns:
+        id: the bat id
+        game_id: the game that bat took place in
+        team_id: the team the bat was for
+        player_id: the player who took the bat
+        rbi: the number of runs batted in
+        inning: the inning the bat took place
+        classification: how the bat would be classified (see BATS)
+    '''
     id = DB.Column(DB.Integer, primary_key=True)
     game_id = DB.Column(DB.Integer, DB.ForeignKey('game.id'))
     team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
@@ -558,6 +805,13 @@ class Bat(DB.Model):
                  classification,
                  inning=1,
                  rbi=0):
+        '''
+        Raises:
+            PlayerDoesNotExist
+            InvalidField
+            TeamDoesNotExist
+            GameDoesNotExist
+        '''
         # check for exceptions
         classification = classification.lower().strip()
         player = Player.query.get(player_id)
@@ -583,11 +837,17 @@ class Bat(DB.Model):
         self.inning = inning
 
     def __repr__(self):
+        '''
+            the string representation of the Bat
+        '''        
         player = Player.query.get(self.player_id)
         return (player.name  + "-" + self.classification + " in " 
                 + str(self.inning))
 
     def json(self):
+        '''
+            returns a jsonserializable object
+        '''
         return{
                'bat_id': self.id,
                'game_id':self.game_id,
@@ -607,6 +867,14 @@ class Bat(DB.Model):
                rbi=None,
                hit=None,
                inning=None):
+        '''
+        update a existing bat
+        Raises:
+            TeamDoesNotExist
+            GameDoesNotExist
+            PlayerDoesNotExist
+            InvalidField
+        '''
         if team_id is not None and Team.query.get(team_id) is not None:
             self.team_id = team_id
         elif team_id is not None:
@@ -633,6 +901,18 @@ class Bat(DB.Model):
             raise InvalidField("Invalid inning for Bat")
 
 def subscribe(kik, name, team_id):
+    '''
+    a function used to subscribe a kik user name to a player
+    Parameters:
+        kik: the kik user name
+        name: the name of the player
+        team_id: the id of the team the player belongs to
+    Returns:
+        True
+    Raises:
+        TeamDoesNotExist
+        PlayerNotOnTeam
+    '''
     team = Team.query.get(team_id)
     if team is None:
         # wrong team was given
@@ -660,6 +940,14 @@ def subscribe(kik, name, team_id):
     return True
 
 def find_team_subscribed(kik):
+    '''
+    a function to find the team the kik user name is subscribed to
+    Parameters;
+        kik: the kik user name
+    Returns:
+        result: a lsit of team's id
+
+    '''
     result = []
     t1 = time(0, 0)
     t2 = time(0 , 0)
