@@ -173,7 +173,7 @@ class Player(DB.Model):
             Raises:
                 InvalidField
                 NonUniqueEmail
-        '''|
+        '''
         if not string_validator(name):
             raise InvalidField("Invalid name for Player")
         # check if email is unique
@@ -385,8 +385,7 @@ class Team(DB.Model):
                color=None,
                sponsor_id=None,
                league_id=None,
-               year=None,
-               espys=None):
+               year=None):
         '''
         updates an existing team
         Raises:
@@ -394,6 +393,7 @@ class Team(DB.Model):
             SponsorDoesNotExist
             LeagueDoesNotExist
         '''
+        # does nothing with espys given
         if color is not None and string_validator(color):
             self.color = color
         elif color is not None:
@@ -412,10 +412,6 @@ class Team(DB.Model):
             self.year = year
         elif year is not None:
             raise InvalidField("Invalid year for Team")
-        if espys is not None and int_validator(espys):
-            self.espys = espys
-        elif espys is not None:
-            raise InvalidField("Invalid espys for Team")
 
     def insert_player(self, player_id, captain=False):
         '''

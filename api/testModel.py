@@ -23,8 +23,10 @@ class BaseModel(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         DB.engine.execute('''   
+                                DROP TABLE IF EXISTS fun;
                                 DROP TABLE IF EXISTS roster;
                                 DROP TABLE IF EXISTS bat;
+                                DROP TABLE IF EXISTS espys;
                                 DROP TABLE IF EXISTS game;
                                 DROP TABLE IF EXISTS team;
                                 DROP TABLE IF EXISTS player;
@@ -36,13 +38,15 @@ class BaseModel(unittest.TestCase):
     def tearDown(self):
         DB.session.commit()
         DB.engine.execute('''   
-                        DROP TABLE IF EXISTS roster;
-                        DROP TABLE IF EXISTS bat;
-                        DROP TABLE IF EXISTS game;
-                        DROP TABLE IF EXISTS team;
-                        DROP TABLE IF EXISTS player;
-                        DROP TABLE IF EXISTS sponsor;
-                        DROP TABLE IF EXISTS league;
+                             DROP TABLE IF EXISTS fun;
+                             DROP TABLE IF EXISTS roster;
+                             DROP TABLE IF EXISTS bat;
+                             DROP TABLE IF EXISTS espys;
+                             DROP TABLE IF EXISTS game;
+                             DROP TABLE IF EXISTS team;
+                             DROP TABLE IF EXISTS player;
+                             DROP TABLE IF EXISTS sponsor;
+                             DROP TABLE IF EXISTS league;
                 ''')
 
     def insertLeague(self):
@@ -230,7 +234,6 @@ class testTeam(BaseModel):
                   sponsor_id=1, 
                   league_id=1,
                   year = 2014,
-                  espys = 200
                   )
         # now for bad teams
         try:
@@ -258,14 +261,6 @@ class testTeam(BaseModel):
             __ = Team(color="Black", 
                       sponsor_id=1, 
                       league_id=1,
-                      espys="x")
-            self.assertEqual(False, True, "Should raise invalid field")
-        except InvalidField:
-            pass
-        try:
-            __ = Team(color="Black", 
-                      sponsor_id=1, 
-                      league_id=1,
                       year=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
@@ -282,7 +277,6 @@ class testTeam(BaseModel):
                  sponsor_id=1, 
                  league_id=1,
                  year = 2014,
-                 espys = 200
                   )
         # now for bad teams
         try:
@@ -303,14 +297,6 @@ class testTeam(BaseModel):
             l.update(color=1, 
                      sponsor_id=1, 
                      league_id=1)
-            self.assertEqual(False, True, "Should raise invalid field")
-        except InvalidField:
-            pass
-        try:
-            l.update(color="Black", 
-                     sponsor_id=1, 
-                     league_id=1,
-                     espys="x")
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass

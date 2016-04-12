@@ -9,7 +9,7 @@ from api import app
 from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
                         PlayerDoesNotExist, GameDoesNotExist,\
                         LeagueDoesNotExist, SponsorDoesNotExist, MissingPlayer,\
-                        PlayerNotOnTeam, PlayerAlreadySubscriedToTeam
+                        PlayerNotOnTeam
 from flask import Response
 from json import dumps
 
