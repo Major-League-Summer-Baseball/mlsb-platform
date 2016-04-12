@@ -1,27 +1,21 @@
 '''
 @author: Dallas Fraser
-@since: 2015-09-22
+@since: 2016-04-12
 @organization: MLSB API
 @summary: Holds the the views for the website
 '''
 from sqlalchemy.sql.expression import and_
 from api import app, PICTURES
 from api.routes import Routes
-from flask import render_template, send_file, url_for, send_from_directory, \
+from flask import render_template, url_for, send_from_directory, \
                     redirect
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
 from api.variables import SPONSORS, UNASSIGNED
 from datetime import date, datetime, time
-from sqlalchemy import desc
 from api.advanced.team_stats import team_stats
 from api.advanced.players_stats import post as player_summary
-from api.variables import HITS
 from api import DB
-from flask_sqlalchemy import get_debug_queries
 from sqlalchemy.sql import func
-import json
-from api.advanced import players_stats
-
 
 @app.route("/")
 @app.route(Routes["homepage"])

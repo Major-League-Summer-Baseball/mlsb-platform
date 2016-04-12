@@ -1,8 +1,8 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
-@summary: The route for authenticating a captain
+@summary: The Kik api for authenticating a captain
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response
@@ -11,10 +11,6 @@ from api import DB
 from api.model import Player, Team
 from api.errors import TDNESC
 from api.authentication import requires_kik
-from flask import session
-from api.errors import InvalidField 
-from api.variables import UNASSIGNED
-from datetime import datetime
 parser = reqparse.RequestParser()
 parser.add_argument('team', type=int, required=True)
 parser.add_argument('captain', type=str, required=True)
@@ -26,7 +22,7 @@ class AuthenticateCaptainAPI(Resource):
     def post(self):
         """
             POST request for authenticating a player is a captain of a team
-            Route: Route['authenticate_captain']
+            Route: Route['kikcaptain']
             Parameters:
                 team: the team's id (str)
                 captain: the name of the captain (str)

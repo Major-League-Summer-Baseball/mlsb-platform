@@ -1,27 +1,25 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
-@summary: The route for subscribing to a team
+@summary: The Kik API for subscribing to a team
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.model import subscribe, Team
+from api.model import subscribe
 from api.authentication import requires_kik
-from datetime import datetime
 parser = reqparse.RequestParser()
 parser.add_argument('team', type=int, required=True)
 parser.add_argument('kik', type=str, required=True)
 parser.add_argument('name', type=str, required=True)
 
-
 class SubscribeToTeamAPI(Resource):
     @requires_kik
     def post(self):
         """
-            POST request for authenticating a player is a captain of a team
-            Route: Route['authenticate_captain']
+            POST request for a player subscribing to a team
+            Route: Route['kiksubscribe']
             Parameters:
                 kik: the kik user name(str)
                 team: the id of the team the player is subscribing to (int)

@@ -1,8 +1,8 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
-@summary: The views for player stats
+@summary: The Kik API for a captain submitting scores
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response
@@ -10,31 +10,21 @@ from json import dumps
 from api import DB
 from api.model import Player, Bat, Game, Team
 from api.authentication import requires_kik
-from flask import session
 from api.errors import InvalidField , GDNESC
 from api.variables import UNASSIGNED
 parser = reqparse.RequestParser()
-
 parser.add_argument('game_id', type=int, required=True)
 parser.add_argument('kik', type=str, required=True)
 parser.add_argument('score', type=int, required=True)
 parser.add_argument('hr', type=int, action="append")
 parser.add_argument('ss', type=int, action="append")
 
-def find_player(team_id, player_name):
-    team = Team.query.get(team_id)
-    player = None
-    for p in team.players:
-        if player_name == p.name:
-            player = p.id
-    return player
-
 class SubmitScoresAPI(Resource):
     @requires_kik
     def post(self):
         """
             POST request for submitting Score Summaries
-            Route: Route['submit_scores']
+            Route: Route['kiksubmitscore']
             Parameters:
                 game_id: the game_id (int)
                 kik: the kik user name of the captain (str)
@@ -44,7 +34,7 @@ class SubmitScoresAPI(Resource):
             Returns:
                 status: 200 
                 mimetype: application/json
-                data: list of Players
+                data: True
         """
         args = parser.parse_args()
         game_id = args['game_id']

@@ -1,8 +1,8 @@
 '''
 @author: Dallas Fraser
-@author: 2015-09-29
+@author: 2016-04-12
 @organization: MLSB API
-@summary: The route for authenticating a captain
+@summary: The Kik API for submitting transactions
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response
@@ -16,13 +16,12 @@ parser.add_argument('kik', type=str, required=True)
 parser.add_argument('amount', type=int, required=True)
 parser.add_argument('sponsor', type=str, required=True)
 
-
 class SubmitTransactionAPI(Resource):
     @requires_kik
     def post(self):
         """
-            POST request for authenticating a player is a captain of a team
-            Route: Route['authenticate_captain']
+            POST request for submitting a transaction
+            Route: Route['kiktransaction']
             Parameters:
                 kik: the kik user name (str)
                 amount: the amount spent (str)
