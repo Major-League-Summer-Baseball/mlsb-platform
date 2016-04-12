@@ -9,7 +9,6 @@ from api import DB
 from api.routes import Routes
 from api.model import Player, Espys
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
-from datetime import date
 from base64 import b64encode
 from api.errors import TDNESC, PNOT, GDNESC, PNS, SDNESC
 headers = {
@@ -313,7 +312,6 @@ class testCaptainGames(TestSetup):
     def testMain(self):
         self.mockScoreSubmission()
         # invalid captian request
-        self.show_results = True
         data = {
                 'kik': "frase2560",
                 "team": 1
@@ -402,7 +400,6 @@ class testUpcomingGames(TestSetup):
     def testMain(self):
         # non-subscribed player
         self.mockUpcomingGames()
-        self.show_results = True
         data = {
                 'kik': 'frase2560'
                 }

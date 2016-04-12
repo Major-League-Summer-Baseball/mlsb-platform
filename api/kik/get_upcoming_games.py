@@ -43,7 +43,6 @@ class UpcomingGamesAPI(Resource):
         games  = DB.session.query(Game).filter(or_(Game.away_team_id.in_(teams),
                                                   (Game.home_team_id.in_(teams))))
         games = games.filter(Game.date.between(today,this_week ))
-        print(str(games))
         result = []
         for game in games:
             result.append(game.json())

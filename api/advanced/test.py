@@ -4,18 +4,11 @@
 @organization: MLSB API
 @summary: Tests all the basic APIs
 '''
-from api import app
 import unittest
-import tempfile
 from api.helper import loads
-from api import DB
-from pprint import PrettyPrinter
 from api.routes import Routes
-from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
-from datetime import datetime, timedelta, date
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
-from api.errors import TDNESC, PNOT, GDNESC, PNS, SDNESC, MissingPlayer
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }

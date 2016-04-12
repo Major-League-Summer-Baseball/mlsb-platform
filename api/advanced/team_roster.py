@@ -72,9 +72,7 @@ class TeamRosterAPI(Resource):
         response = Response(dumps("Team not found"),
                             status=404, mimetype="application/json")
         if team is not None:
-            print("sdfkjsdhjkfsh")
             team.remove_player(args['player_id'])
-            print("After")
             DB.session.commit()
             response = Response(dumps(None), status=200,
                                 mimetype="application/json")
