@@ -46,19 +46,14 @@
 				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">401</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Not captain of the team</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">434</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Team does not Exist</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">441</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">Player not on team</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.message}}</td>
 			</tr>
 		</tbody>
 	</table>

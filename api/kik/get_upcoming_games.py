@@ -35,7 +35,6 @@ class UpcomingGamesAPI(Resource):
         if player is None:
             raise PlayerNotSubscribed(payload={'details': kik})
         teams = []
-
         today = date.today()
         this_week = today + timedelta(days=4)
         for team in player.teams:

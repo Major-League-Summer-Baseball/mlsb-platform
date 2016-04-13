@@ -51,18 +51,21 @@
 				<td class="col-md-3">--</td>
 				<td class="col-md-3">int: Captain's Id</td>
 			</tr>
-			
 			<tr>
-				<td class="col-md-3">434</td>
+				<td class="col-md-3">{{errors.TeamAlreadyHasCaptain.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Team does not Exist</td>
+				<td class="col-md-3">{{errors.TeamAlreadyHasCaptain.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">401</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Player is not the captain</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.message}}</td>
 			</tr>
-			
+			<tr>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.message}}</td>
+			</tr>
 		</tbody>
 	</table>
 

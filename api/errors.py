@@ -18,7 +18,7 @@ THCSC = 400
 MPSC = 400
 PNOT = 400
 PAST = 400
-PNS = 400
+PNS = 401
 NTCSC = 401
 class TeamDoesNotExist(Exception):
     status_code = TDNESC
@@ -201,7 +201,7 @@ class PlayerNotSubscribed(Exception):
         return rv
 
 class NotTeamCaptain(Exception):
-    status_code = THCSC
+    status_code = NTCSC
     message = "Not team's captain"
     def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
@@ -217,35 +217,55 @@ class NotTeamCaptain(Exception):
     
 ERRORS = {
             'InvalidField': {
-                'message': "A field given was invalid",
-                'status': IFSC,
+                'message': InvalidField.message,
+                'status_code': InvalidField.status_code,
             },
             'PlayerDoesNotExist': {
-                'message': "The player requested does not exist",
-                'status': PDNESC,
+                'message': PlayerDoesNotExist.message,
+                'status_code': PlayerDoesNotExist.status_code,
             },
             'TeamDoesNotExist': {
-                'message': "The team requested does not exist",
-                'status': TDNESC,
+                'message': TeamDoesNotExist.message,
+                'status_code': TeamDoesNotExist.status_code,
             },
             'LeagueDoesNotExist': {
-                'message': "The league requested does not exist",
-                'status': LDNESC,
+                'message': LeagueDoesNotExist.message,
+                'status_code': LeagueDoesNotExist.status_code,
             },
             'SponsorDoesNotExist': {
-                'message': "The sponsor requested does not exist",
-                'status': SDNESC,
+                'message': SponsorDoesNotExist.message,
+                'status_code': SponsorDoesNotExist.status_code,
             },
-            'GameoesNotExist': {
-                'message': "The game requested does not exist",
-                'status': GDNESC,
+            'GameDoesNotExist': {
+                'message': GameDoesNotExist.message,
+                'status_code': GameDoesNotExist.status_code,
             },
             'NonUniqueEmail': {
-                'message': "The player's email was not unique",
-                'status': NUESC,
+                'message': NonUniqueEmail.message,
+                'status_code': NonUniqueEmail.status_code,
             },
-            'MissingPlayer': {
-                              'message': "Player was not a member of the team",
-                              'status': 400
+            'NotTeamCaptain': {
+                              'message': NotTeamCaptain.message,
+                              'status_code': NotTeamCaptain.status_code
+                              },
+           'PlayerNotSubscribed': {
+                              'message': PlayerNotSubscribed.message,
+                              'status_code': PlayerNotSubscribed.status_code
+                              },
+            'PlayerNotOnTeam': {
+                              'message': PlayerNotOnTeam.message,
+                              'status_code': PlayerNotOnTeam.status_code
+                              },
+            'EspysDoesNotExist': {
+                              'message': EspysDoesNotExist.message,
+                              'status_code': EspysDoesNotExist.status_code
+                              },
+            'BatDoesNotExist': {
+                              'message': BatDoesNotExist.message,
+                              'status_code': BatDoesNotExist.status_code
+                              },
+            'TeamAlreadyHasCaptain': {
+                              'message': TeamAlreadyHasCaptain.message,
+                              'status_code': TeamAlreadyHasCaptain.status_code
                               }
           }

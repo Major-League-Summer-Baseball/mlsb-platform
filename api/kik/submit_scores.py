@@ -10,7 +10,7 @@ from json import dumps
 from api import DB
 from api.model import Player, Bat, Game, Team
 from api.authentication import requires_kik
-from api.errors import InvalidField , GDNESC, NotTeamCaptain, GameDoesNotExist,\
+from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist,\
     PlayerNotSubscribed
 from api.variables import UNASSIGNED
 parser = reqparse.RequestParser()

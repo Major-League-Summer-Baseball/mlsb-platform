@@ -62,30 +62,26 @@
 				<td class="col-md-3">True</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">436</td>
+				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Game does not exist</td>
+				<td class="col-md-3">{{errors.InvalidField.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">404</td>
+				<td class="col-md-3">{{errors.PlayerNotSubscribed.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Captains kik name was not found</td>
+				<td class="col-md-3">{{errors.PlayerNotSubscribed.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">403</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Captain not a captain of either team for the game</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">400</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Bad request: read message for more details</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.message}}</td>
 			</tr>
-			<tr>
-				<td class="col-md-3">432</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">Invalid Field: player cannot hit a special single</td>
-			</tr>
+			
 			
 			
 		</tbody>

@@ -9,7 +9,7 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Player, Team, Game, Bat
-from api.errors import TDNESC, TeamDoesNotExist, NotTeamCaptain
+from api.errors import TeamDoesNotExist, NotTeamCaptain
 from api.authentication import requires_kik
 from datetime import datetime
 from sqlalchemy import or_
