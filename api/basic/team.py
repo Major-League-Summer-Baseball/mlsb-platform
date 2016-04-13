@@ -11,12 +11,12 @@ from api import DB
 from api.model import Team
 from datetime import date
 from api.authentication import requires_admin
+from api.errors import TeamDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
 parser.add_argument('league_id', type=int)
 parser.add_argument('year', type=int)
-
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('sponsor_id', type=int, required=True)
 post_parser.add_argument('color', type=str, required=True)
@@ -51,11 +51,10 @@ class TeamAPI(Resource):
         """
         # expose a single team
         entry  = Team.query.get(team_id)
-        response = Response(dumps(None),
-                            status=404, mimetype="application/json")
-        if entry is not None:
-            response = Response(dumps(entry.json()), status=200,
-                                mimetype="application/json")
+        if entry is None:
+            raise TeamDoesNotExist(payload={'details':team_id})
+        response = Response(dumps(entry.json()), status=200,
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -74,13 +73,13 @@ class TeamAPI(Resource):
                     data: None
         """
         team = Team.query.get(team_id)
-        response = Response(dumps(None), status=404, mimetype="application/json")
-        if team is not None:
-            # delete a single team
-            DB.session.delete(team)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if team is None:
+            raise TeamDoesNotExist(payload={'details':team_id})
+        # delete a single team
+        DB.session.delete(team)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -109,29 +108,28 @@ class TeamAPI(Resource):
         # update a single user
         team = Team.query.get(team_id)
         args = parser.parse_args()
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         color = None
         sponsor_id = None
         league_id = None
         year = None
-        if team is not None:
-            if args['color']:
-                color = args['color']
-            if args['sponsor_id']:
-                sponsor_id = args['sponsor_id']
-            if args['league_id']:
-                league_id = args['league_id']
-            if args['year']:
-                year = args['year']
-            team.update(color=color,
-                        sponsor_id=sponsor_id,
-                        league_id=league_id,
-                        year=year
-                        )
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if team is None:
+            raise TeamDoesNotExist(payload={'details':team_id})
+        if args['color']:
+            color = args['color']
+        if args['sponsor_id']:
+            sponsor_id = args['sponsor_id']
+        if args['league_id']:
+            league_id = args['league_id']
+        if args['year']:
+            year = args['year']
+        team.update(color=color,
+                    sponsor_id=sponsor_id,
+                    league_id=league_id,
+                    year=year
+                    )
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     def option(self):
@@ -212,7 +210,7 @@ class TeamListAPI(Resource):
         DB.session.add(t)
         DB.session.commit()
         result = t.id
-        return Response(dumps(result), status=200, mimetype="application/json")
+        return Response(dumps(result), status=201, mimetype="application/json")
 
     def options (self):
         return {'Allow' : 'PUT' }, 200, \

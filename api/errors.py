@@ -5,23 +5,26 @@
 @summary: Holds the errors for the database
 '''
 ERROR = 431
-IFSC = ERROR + 1
-PDNESC = ERROR + 2
-TDNESC = ERROR + 3
-LDNESC = ERROR + 4
-GDNESC = ERROR + 5
-SDNESC = ERROR + 6
-NUESC = ERROR + 7
-THCSC = ERROR + 8
-MPSC = ERROR + 9
-PNOT = ERROR + 10
-PAST = ERROR + 11
-PNS = ERROR + 12
+IFSC = 400
+PDNESC = 404
+TDNESC = 404
+LDNESC = 404
+GDNESC = 404
+SDNESC = 404
+BDNESC = 404
+EDNESC = 404
+NUESC = 400
+THCSC = 400
+MPSC = 400
+PNOT = 400
+PAST = 400
+PNS = 400
 class TeamDoesNotExist(Exception):
     status_code = TDNESC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Team does not exist"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -33,9 +36,10 @@ class TeamDoesNotExist(Exception):
 
 class PlayerDoesNotExist(Exception):
     status_code = PDNESC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Player does not exist"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -47,9 +51,10 @@ class PlayerDoesNotExist(Exception):
 
 class GameDoesNotExist(Exception):
     status_code = GDNESC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Game does not exist"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -61,9 +66,10 @@ class GameDoesNotExist(Exception):
 
 class InvalidField(Exception):
     status_code = IFSC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Invalid field"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -75,9 +81,10 @@ class InvalidField(Exception):
 
 class LeagueDoesNotExist(Exception):
     status_code = LDNESC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "League does not exist"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -89,9 +96,10 @@ class LeagueDoesNotExist(Exception):
 
 class SponsorDoesNotExist(Exception):
     status_code = SDNESC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Sponsor does not exist"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -103,9 +111,10 @@ class SponsorDoesNotExist(Exception):
 
 class TeamAlreadyHasCaptain(Exception):
     status_code = THCSC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Team has captain already"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -115,11 +124,27 @@ class TeamAlreadyHasCaptain(Exception):
         rv['message'] = self.message
         return rv
 
-class MissingPlayer(Exception):
-    status_code = MPSC
-    def __init__(self, message, status_code=None, payload=None):
+class BatDoesNotExist(Exception):
+    status_code = BDNESC
+    message = "Bat does not exist"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+class EspysDoesNotExist(Exception):
+    status_code = EDNESC
+    message = "Espys does not exist"
+    def __init__(self, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -131,9 +156,10 @@ class MissingPlayer(Exception):
 
 class NonUniqueEmail(Exception):
     status_code = NUESC
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Email is not unique"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -145,23 +171,10 @@ class NonUniqueEmail(Exception):
 
 class PlayerNotOnTeam(Exception):
     status_code = PNOT
-    def __init__(self, message, status_code=None, payload=None):
+    message = "Player is not on team"
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
-
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-class PlayerAlreadySubscriedToTeam(Exception):
-    status_code = PAST
-    def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
@@ -173,9 +186,10 @@ class PlayerAlreadySubscriedToTeam(Exception):
 
 class PlayerNotSubscribed(Exception):
     status_code = PNS
+    message = "Player is not subscribed"
     def __init__(self, message, status_code=None, payload=None):
         Exception.__init__(self)
-        self.message = message
+        self.message = self.message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload

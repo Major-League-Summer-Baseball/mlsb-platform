@@ -10,6 +10,7 @@ from json import dumps
 from api import DB
 from api.model import Game
 from api.authentication import requires_admin
+from api.errors import GameDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('home_team_id', type=int)
 parser.add_argument('away_team_id', type=int)
@@ -18,7 +19,6 @@ parser.add_argument('time', type=str)
 parser.add_argument('league_id', type=int)
 parser.add_argument('status', type=str)
 parser.add_argument('field', type=str)
-
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('home_team_id', type=int, required=True)
 post_parser.add_argument('away_team_id', type=int, required=True)
@@ -55,12 +55,11 @@ class GameAPI(Resource):
                     data:   None
         """
         # expose a single game
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         entry = Game.query.get(game_id)
-        if entry is not None:
-            response = Response(dumps(entry.json()), status=200,
-                        mimetype="application/json")
+        if entry is None:
+            raise GameDoesNotExist(payload={'details':game_id})
+        response = Response(dumps(entry.json()), status=200,
+                    mimetype="application/json")
         return response
 
     @requires_admin
@@ -78,14 +77,13 @@ class GameAPI(Resource):
                     mimetype: application/json
                     data: None
         """
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         game = Game.query.get(game_id)
-        if game is not None:
-            DB.session.delete(game)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if game is None:
+            raise GameDoesNotExist(payload={'details':game_id})
+        DB.session.delete(game)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -111,8 +109,6 @@ class GameAPI(Resource):
                     mimetype: application/json
                     data: None
         """
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         game = Game.query.get(game_id)
         args = parser.parse_args()
         home_team_id = None
@@ -122,32 +118,32 @@ class GameAPI(Resource):
         time = None
         field = None
         status = None
-        if game is not None:
-            if args['home_team_id']:
-                home_team_id = args['home_team_id']
-            if args['away_team_id']:
-                away_team_id = args['away_team_id']
-            if args['date']:
-                date = args['date']
-            if args['time']:
-                time = args['time']
-    
-            if args['field']:
-                field = args['field']
-            if args['status']:
-                status = args['status']
-            if args['league_id']:
-                league_id = args['league_id']
-            game.update(date=date,
-                        time=time,
-                        home_team_id=home_team_id,
-                        away_team_id=away_team_id,
-                        league_id=league_id,
-                        status=status,
-                        field=field)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if game is None:
+            raise GameDoesNotExist(payload={'details':game_id})
+        if args['home_team_id']:
+            home_team_id = args['home_team_id']
+        if args['away_team_id']:
+            away_team_id = args['away_team_id']
+        if args['date']:
+            date = args['date']
+        if args['time']:
+            time = args['time']
+        if args['field']:
+            field = args['field']
+        if args['status']:
+            status = args['status']
+        if args['league_id']:
+            league_id = args['league_id']
+        game.update(date=date,
+                    time=time,
+                    home_team_id=home_team_id,
+                    away_team_id=away_team_id,
+                    league_id=league_id,
+                    status=status,
+                    field=field)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     def option(self):
@@ -239,7 +235,7 @@ class GameListAPI(Resource):
         DB.session.add(game)
         DB.session.commit()
         result = game.id
-        return Response(dumps(result), status=200, mimetype="application/json")
+        return Response(dumps(result), status=201, mimetype="application/json")
 
     def option(self):
         return {'Allow' : 'PUT' }, 200, \

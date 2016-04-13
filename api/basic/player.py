@@ -10,21 +10,19 @@ from json import dumps
 from api.model import Player
 from api import DB
 from api.authentication import requires_admin
+from api.errors import PlayerDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
 parser.add_argument('email', type=str)
 parser.add_argument('password', type=str)
-
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('player_name', type=str, required=True)
 post_parser.add_argument('gender', type=str)
 post_parser.add_argument('email', type=str, required=True)
 post_parser.add_argument('password', type=str)
 
-
 class PlayerAPI(Resource):
-    
     def get(self, player_id):
         """
             GET request for Player List
@@ -40,12 +38,11 @@ class PlayerAPI(Resource):
                     data: None
         """
         # expose a single user
-        response = Response(dumps(None), status=404, 
-                            mimetype="application/json")
         entry  = Player.query.get(player_id)
-        if entry is not None:
-            response = Response(dumps(entry.json()),
-                                status=200, mimetype="application/json")
+        if entry is None:
+            raise PlayerDoesNotExist(payload={'details':player_id})
+        response = Response(dumps(entry.json()),
+                            status=200, mimetype="application/json")
         return response
 
     @requires_admin
@@ -64,14 +61,13 @@ class PlayerAPI(Resource):
                     data: None
         """
         player = Player.query.get(player_id)
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
-        if player is not None:
-            # delete a single user
-            DB.session.delete(player)
-            DB.session.commit()
-            response = Response(dumps(None),
-                                status=200, mimetype="application/json")
+        if player is None:
+            raise PlayerDoesNotExist(payload={'details':player_id})
+        # delete a single user
+        DB.session.delete(player)
+        DB.session.commit()
+        response = Response(dumps(None),
+                            status=200, mimetype="application/json")
         return response
 
     @requires_admin
@@ -104,24 +100,23 @@ class PlayerAPI(Resource):
         # update a single user
         player = DB.session.query(Player).get(player_id)
         args = parser.parse_args()
-        response = Response(dumps(None), status=404,
+        if player is None:
+            raise PlayerDoesNotExist(payload={'details':player_id})
+        player_name = None
+        gender = None
+        email = None
+        if args['player_name']:
+            player_name = args['player_name']
+        if args['gender']:
+            gender = args['gender']
+        if args['email']:
+            email = args['email']
+        player.update(name=player_name,
+                      gender=gender,
+                      email=email)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
                             mimetype="application/json")
-        if player is not None:
-            player_name = None
-            gender = None
-            email = None
-            if args['player_name']:
-                player_name = args['player_name']
-            if args['gender']:
-                gender = args['gender']
-            if args['email']:
-                email = args['email']
-            player.update(name=player_name,
-                          gender=gender,
-                          email=email)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
         return response
 
     def options (self):
@@ -199,7 +194,7 @@ class PlayerListAPI(Resource):
         DB.session.add(player)
         DB.session.commit()
         result = player.id
-        return Response(dumps(result), status=200,
+        return Response(dumps(result), status=201,
                         mimetype="application/json")
 
     def options (self):

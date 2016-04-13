@@ -10,6 +10,7 @@ from api.model import League
 from json import dumps
 from api import DB
 from api.authentication import requires_admin
+from api.errors import LeagueDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('league_name', type=str)
 post_parser = reqparse.RequestParser()
@@ -32,12 +33,11 @@ class LeagueAPI(Resource):
                 
         """
         # expose a single League
-        response = Response(dumps(None), status=404,
-                             mimetype="application/json")
         entry  = League.query.get(league_id)
-        if entry is not None:
-            response = Response(dumps(entry.json()), status=200,
-                             mimetype="application/json")
+        if entry is None:
+            raise LeagueDoesNotExist(payload={'details':league_id})
+        response = Response(dumps(entry.json()), status=200,
+                         mimetype="application/json")
         return response
 
     @requires_admin
@@ -55,15 +55,14 @@ class LeagueAPI(Resource):
                     mimetype: application/json
                     data: None
         """
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         # delete a single user
         league = League.query.get(league_id)
-        if league is not None:
-            DB.session.delete(league)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                            mimetype="application/json")
+        if league is None:
+            raise LeagueDoesNotExist(payload={'details':league_id})
+        DB.session.delete(league)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                        mimetype="application/json")
         return response 
 
     @requires_admin
@@ -89,18 +88,17 @@ class LeagueAPI(Resource):
                 
         """
         # update a single user
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         args = parser.parse_args()
         league = League.query.get(league_id)
         league_name = None
-        if league is not None:
-            if args['league_name']:
-                league_name = args['league_name']
-            league.update(league_name)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                            mimetype="application/json")
+        if league is None:
+            raise LeagueDoesNotExist(payload={'details':league_id})
+        if args['league_name']:
+            league_name = args['league_name']
+        league.update(league_name)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                        mimetype="application/json")
         return response
 
     def options (self):
@@ -162,7 +160,7 @@ class LeagueListAPI(Resource):
         DB.session.add(league)
         DB.session.commit()
         result = league.id
-        return Response(dumps(result), status=200,
+        return Response(dumps(result), status=201,
                         mimetype="application/json")
 
     def options (self):

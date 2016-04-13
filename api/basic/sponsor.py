@@ -11,19 +11,15 @@ from api.validators import string_validator
 from api.model import Sponsor
 from api import DB
 from api.authentication import requires_admin
-
+from api.errors import SponsorDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
 parser.add_argument('link', type=str)
 parser.add_argument('description', type=str)
-
-
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('sponsor_name', type=str, required=True)
 post_parser.add_argument('link', type=str)
 post_parser.add_argument('description', type=str)
-
-
 HEADERS = [{'header':'sponsor_name', 'required':True, 
             'validator':string_validator}]
 
@@ -50,11 +46,10 @@ class SponsorAPI(Resource):
         """
         # expose a single Sponsor
         entry  = Sponsor.query.get(sponsor_id)
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
-        if entry is not None:
-            response = Response(dumps(entry.json()),
-                                status=200, mimetype="application/json")
+        if entry is None:
+            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+        response = Response(dumps(entry.json()),
+                            status=200, mimetype="application/json")
         return response
 
     @requires_admin
@@ -77,8 +72,7 @@ class SponsorAPI(Resource):
         sponsor = Sponsor.query.get(sponsor_id)
         if sponsor is None:
             # Sponsor is not in the table
-            return Response(dumps(None), status=404,
-                            mimetype="application/json")
+            raise SponsorDoesNotExist(payload={'details':sponsor_id})
         DB.session.delete(sponsor)
         DB.session.commit()
         return Response(dumps(None), status=200, mimetype="application/json")
@@ -109,22 +103,20 @@ class SponsorAPI(Resource):
         sponsor = Sponsor.query.get(sponsor_id)
         link = None
         description = None
-        args = parser.parse_args()
         name = None
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
-        if sponsor is not None:
-            args = parser.parse_args()
-            if args['sponsor_name']:
-                name = args['sponsor_name']
-            if args['link']:
-                link = args['link']
-            if args['description']:
-                description = args['description']
-            sponsor.update(name=name, link=link, description=description)    
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                            mimetype="application/json")
+        if sponsor is None:
+            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+        args = parser.parse_args()
+        if args['sponsor_name']:
+            name = args['sponsor_name']
+        if args['link']:
+            link = args['link']
+        if args['description']:
+            description = args['description']
+        sponsor.update(name=name, link=link, description=description)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                        mimetype="application/json")
         return response
 
     def options (self):
@@ -194,7 +186,7 @@ class SponsorListAPI(Resource):
         DB.session.add(sponsor)
         DB.session.commit()
         sponsor_id = sponsor.id
-        return Response(dumps(sponsor_id), status=200,
+        return Response(dumps(sponsor_id), status=201,
                         mimetype="application/json")
  
     def options (self):

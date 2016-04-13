@@ -10,16 +10,14 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Espys
-from datetime import date
 from api.authentication import requires_admin
+from api.errors import EspysDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('team_id', type=int)
 parser.add_argument('description', type=str)
 parser.add_argument('points', type=int)
 parser.add_argument('receipt', type=str)
-
-
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('sponsor_id', type=int)
 post_parser.add_argument('team_id', type=int, required=True)
@@ -53,10 +51,9 @@ class EspyAPI(Resource):
         """
         # expose a single team
         entry  = Espys.query.get(espy_id)
-        response = Response(dumps(None),
-                            status=404, mimetype="application/json")
-        if entry is not None:
-            response = Response(dumps(entry.json()), status=200,
+        if entry is None:
+            raise EspysDoesNotExist(payload={'details':espy_id})
+        response = Response(dumps(entry.json()), status=200,
                                 mimetype="application/json")
         return response
 
@@ -76,13 +73,13 @@ class EspyAPI(Resource):
                     data: None
         """
         espy = Espys.query.get(espy_id)
-        response = Response(dumps(None), status=404, mimetype="application/json")
-        if espy is not None:
-            # delete a single espy
-            DB.session.delete(espy)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if espy is None:
+            raise EspysDoesNotExist(payload={'details':espy_id})
+        # delete a single espy
+        DB.session.delete(espy)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -110,34 +107,32 @@ class EspyAPI(Resource):
         # update a single user
         espy = Espys.query.get(espy_id)
         args = parser.parse_args()
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         description = None
         sponsor_id = None
         team_id = None
         points = None
         receipt = None
-        if espy is not None:
-            if args['description']:
-                description = args['description']
-            if args['sponsor_id']:
-                sponsor_id = args['sponsor_id']
-            if args['team_id']:
-                team_id = args['team_id']
-            if args['points']:
-                points = args['points']
-            if args['receipt']:
-                points = args['points']
-        
-            espy.update(sponsor_id=sponsor_id,
-                        team_id=team_id,
-                        description=description,
-                        points=points,
-                        receipt=receipt
-                        )
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if espy is None:
+            raise EspysDoesNotExist(payload={'details':espy_id})
+        if args['description']:
+            description = args['description']
+        if args['sponsor_id']:
+            sponsor_id = args['sponsor_id']
+        if args['team_id']:
+            team_id = args['team_id']
+        if args['points']:
+            points = args['points']
+        if args['receipt']:
+            points = args['points']
+        espy.update(sponsor_id=sponsor_id,
+                    team_id=team_id,
+                    description=description,
+                    points=points,
+                    receipt=receipt
+                    )
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     def option(self):
@@ -213,7 +208,6 @@ class EspyListAPI(Resource):
             points = args['points']
         if args['receipt']:
             points = args['receipt']
-        
         espy = Espys(sponsor_id=sponsor_id,
                     team_id=team_id,
                     description=description,
@@ -223,7 +217,7 @@ class EspyListAPI(Resource):
         DB.session.add(espy)
         DB.session.commit()
         result = espy.id
-        return Response(dumps(result), status=200, mimetype="application/json")
+        return Response(dumps(result), status=201, mimetype="application/json")
 
     def options (self):
         return {'Allow' : 'PUT' }, 200, \

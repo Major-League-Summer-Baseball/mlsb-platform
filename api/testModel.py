@@ -1,8 +1,8 @@
 '''
-Name: Dallas Fraser
-Date: 2016-04-12
-Project: MLSB API
-Purpose: holds test for the model
+@author: Dallas Fraser
+@author: 2016-04-12
+@organization: MLSB API
+@summary: Holds the tests for the model
 '''
 import unittest
 from api.model import Player, Team, Bat, Sponsor, League, Game
@@ -582,6 +582,7 @@ class testBat(BaseModel):
             self.assertEqual(True, False, "should raise no league")
         except GameDoesNotExist:
             pass
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

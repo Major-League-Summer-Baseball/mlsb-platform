@@ -10,6 +10,7 @@ from api import DB
 from api.model import Bat
 from json import dumps
 from api.authentication import requires_admin
+from api.errors import BatDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int)
 parser.add_argument('rbi', type=int)
@@ -51,12 +52,10 @@ class BatAPI(Resource):
                     mimetype: application/json
                     data: None
         """
-        # expose a single bat
-        response = Response(dumps(None), status=404,
-                            mimetype="application/json")
         entry = Bat.query.get(bat_id)
-        if entry is not None:
-            response = Response(dumps(entry.json()), status=200,
+        if entry is None:
+            raise BatDoesNotExist(payload={'details':bat_id})
+        response = Response(dumps(entry.json()), status=200,
                         mimetype="application/json")
         return response
 
@@ -73,12 +72,12 @@ class BatAPI(Resource):
                     message: the status message (string)
         """
         bat = Bat.query.get(bat_id)
-        response = Response(dumps(None), status=404, mimetype="application/json")
-        if bat is not None:
-            # delete a single bat
-            DB.session.delete(bat)
-            DB.session.commit()
-            response = Response(dumps(None), status=200, mimetype="application/json")
+        if bat is None:
+            raise BatDoesNotExist(payload={'details':bat_id})
+        # delete a single bat
+        DB.session.delete(bat)
+        DB.session.commit()
+        response = Response(dumps(None), status=200, mimetype="application/json")
         return response
 
     @requires_admin
@@ -111,30 +110,29 @@ class BatAPI(Resource):
         rbi=None,
         hit=None,
         inning=None
-        response = Response(dumps(None), status=404,
+        if bat is None:
+            raise BatDoesNotExist(payload={'details':bat_id})
+        if args['team_id']:
+            team_id= args['team_id']
+        if args['game_id']:
+            game_id = args['game_id']
+        if args['player_id']:
+            player_id = args['player_id']
+        if args['rbi']:
+            rbi = args['rbi']
+        if args['hit']:
+            hit = args['hit']
+        if args['inning']:
+            inning = args['inning']
+        bat.update(player_id=player_id,
+                   team_id=team_id,
+                   game_id=game_id,
+                   rbi=rbi,
+                   hit=hit,
+                   inning=inning)
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
                             mimetype="application/json")
-        if bat is not None:
-            if args['team_id']:
-                team_id= args['team_id']
-            if args['game_id']:
-                game_id = args['game_id']
-            if args['player_id']:
-                player_id = args['player_id']
-            if args['rbi']:
-                rbi = args['rbi']
-            if args['hit']:
-                hit = args['hit']
-            if args['inning']:
-                inning = args['inning']
-            bat.update(player_id=player_id,
-                       team_id=team_id,
-                       game_id=game_id,
-                       rbi=rbi,
-                       hit=hit,
-                       inning=inning)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
         return response
 
     def option(self):
@@ -225,7 +223,7 @@ class BatListAPI(Resource):
         DB.session.add(bat)
         DB.session.commit()
         bat_id = bat.id
-        resp = Response(dumps(bat_id), status=200, mimetype="application/json")
+        resp = Response(dumps(bat_id), status=201, mimetype="application/json")
         return resp
 
     def option(self):
