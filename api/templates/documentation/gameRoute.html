@@ -40,9 +40,9 @@
 				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">404</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Game not found</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.message}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -87,10 +87,10 @@
 				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">404</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Game not found</td>
-			</tr>		
+				<td class="col-md-3">{{errors.GameDoesNotExist.message}}</td>
+			</tr>	
 		</tbody>
 	</table>
 
@@ -159,24 +159,29 @@
 				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">404</td>
+				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Game not found</td>
+				<td class="col-md-3">{{errors.InvalidField.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">432</td>
+				<td class="col-md-3">{{errors.NonUniqueEmail.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Invalid field</td>
+				<td class="col-md-3">{{errors.NonUniqueEmail.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">434</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Team does not exist</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">435</td>
+				<td class="col-md-3">{{errors.LeagueDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">League does not exist</td>
+				<td class="col-md-3">{{errors.LeagueDoesNotExist.message}}</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">{{errors.GameDoesNotExist.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.message}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -241,29 +246,34 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td class="col-md-3">200</td>
+				<td class="col-md-3">201</td>
 				<td class="col-md-3">int: the created game id</td>
 				<td class="col-md-3">Successful</td>
 			</tr>
 			<tr>
 				<td class="col-md-3">400</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">Missing parameters</td>
+				<td class="col-md-3">--</a></td>
+				<td class="col-md-3">Missing required parameter</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">432</td>
+				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Invalid field</td>
+				<td class="col-md-3">{{errors.InvalidField.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">434</td>
+				<td class="col-md-3">{{errors.NonUniqueEmail.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">Team does not exist</td>
+				<td class="col-md-3">{{errors.NonUniqueEmail.message}}</td>
 			</tr>
 			<tr>
-				<td class="col-md-3">435</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.status_code}}</td>
 				<td class="col-md-3">--</td>
-				<td class="col-md-3">League does not exist</td>
+				<td class="col-md-3">{{errors.TeamDoesNotExist.message}}</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">{{errors.LeagueDoesNotExist.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.LeagueDoesNotExist.message}}</td>
 			</tr>
 		</tbody>
 	</table>
