@@ -16,15 +16,18 @@ parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('team_id', type=int)
 parser.add_argument('description', type=str)
-parser.add_argument('points', type=int)
+parser.add_argument('points', type=str)
 parser.add_argument('receipt', type=str)
+parser.add_argument('date', type=str)
+parser.add_argument('time', type=str)
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('sponsor_id', type=int)
 post_parser.add_argument('team_id', type=int, required=True)
 post_parser.add_argument('description', type=str)
-post_parser.add_argument('points', type=int, required=True)
+post_parser.add_argument('points', type=str, required=True)
 post_parser.add_argument('receipt', type=str)
-
+post_parser.add_argument('date', type=str)
+post_parser.add_argument('time', type=str)
 class EspyAPI(Resource):
     def get(self, espy_id):
         """
@@ -112,6 +115,8 @@ class EspyAPI(Resource):
         team_id = None
         points = None
         receipt = None
+        date = None
+        time = None
         if espy is None:
             raise EspysDoesNotExist(payload={'details':espy_id})
         if args['description']:
@@ -124,11 +129,16 @@ class EspyAPI(Resource):
             points = args['points']
         if args['receipt']:
             points = args['points']
+        if args['date'] and args['time']:
+            date = args['date']
+            time = args['time']
         espy.update(sponsor_id=sponsor_id,
                     team_id=team_id,
                     description=description,
                     points=points,
-                    receipt=receipt
+                    receipt=receipt,
+                    date=date,
+                    time=time
                     )
         DB.session.commit()
         response = Response(dumps(None), status=200,
@@ -198,6 +208,8 @@ class EspyListAPI(Resource):
         team_id = None
         points = None
         receipt = None
+        date = None
+        time = None
         if args['description']:
             description = args['description']
         if args['sponsor_id']:
@@ -208,11 +220,16 @@ class EspyListAPI(Resource):
             points = args['points']
         if args['receipt']:
             points = args['receipt']
+        if args['date'] and args['time']:
+            date = args['date']
+            time = args['time']
         espy = Espys(sponsor_id=sponsor_id,
                     team_id=team_id,
                     description=description,
                     points=points,
-                    receipt=receipt
+                    receipt=receipt,
+                    date=date,
+                    time=time
                     )
         DB.session.add(espy)
         DB.session.commit()

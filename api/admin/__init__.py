@@ -15,7 +15,7 @@ from json import dumps, loads
 from api.routes import Routes
 from api import app, PICTURES
 from api import DB
-from api.model import Team, Player, Sponsor, League, Game, Bat
+from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
 from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
 from datetime import date
@@ -234,7 +234,7 @@ def admin_edit_team(year):
 def admin_edit_game(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    results = Team.query.all()
+    results = Team.query.filter(Team.year==year).all()
     leagues = get_leagues()
     teams = []
     for league in leagues:
@@ -245,7 +245,9 @@ def admin_edit_game(year):
             t = team.json()
             t['team_name'] = str(team)
             teams[team.league_id].append(t)
-    results = Game.query.all()
+    d1 = date(year, 1, 1)
+    d2 = date(year, 12, 31)
+    results = Game.query.filter(Game.date.between(d1, d2)).all()
     games = []
     for game in results:
         games.append(game.json())
@@ -319,9 +321,24 @@ def admin_activate_sponsor_post(year, sponsor_id):
         sponsor.activate()
     else:
         sponsor.deactivate()
-    print(activate, "Done")
     DB.session.commit()
     return dumps(True)
+
+@app.route(Routes['editespys'] + "/<int:year>" + "/<int:team_id>")
+def admin_edit_espys(year, team_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    espys = Espys.query.filter(Espys.team_id==team_id).all()
+    result = []
+    for espy in espys:
+        result.append(espy.json())
+    return render_template("admin/editEspys.html",
+                           year=year,
+                           route=Routes,
+                           espys=result,
+                           team_id=team_id,
+                           title="Edit Espys",
+                           sponsors=get_sponsors(True))
 
 @app.route(Routes['editbat'] + "/<int:year>" + "/<int:game_id>")
 def admin_edit_bat(year, game_id):
@@ -424,7 +441,7 @@ def get_players(active=True):
     results = Player.query.filter(Player.active==active).order_by("id").all()
     players = []
     for player in results:
-        players.append(player.json())
+        players.append(player.admin_json())
     return players
 
 def get_team_players(team_id):

@@ -64,6 +64,25 @@ def int_validator(value):
         pass
     return validated
 
+def float_validator(value):
+    '''
+    int_validator
+        a general function to validate integer parameter
+        Parameters:
+            value: the passed parameter to validate (int)
+        Returns:
+            True if valid 
+            False otherwise
+    '''
+    validated = False
+    try:
+        if float(value) >= 0:
+            validated = True
+    except:
+        pass
+    return validated
+
+
 def gender_validator(value):
     '''
     gender_validator

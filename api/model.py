@@ -14,7 +14,8 @@ from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         NonUniqueEmail, PlayerNotOnTeam
 from api.validators import  rbi_validator, hit_validator, inning_validator,\
                             string_validator, date_validator, time_validator,\
-                            field_validator, year_validator, gender_validator
+                            field_validator, year_validator, gender_validator,\
+    float_validator
 roster = DB.Table('roster',
                   DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
                   DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
@@ -60,7 +61,7 @@ class Espys(DB.Model):
     team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
     description = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
-    points = DB.Column(DB.Integer)
+    points = DB.Column(DB.Float)
     date = DB.Column(DB.DateTime)
     receipt = DB.Column(DB.String(30))
 
@@ -68,14 +69,18 @@ class Espys(DB.Model):
                  team_id,
                  sponsor_id=None,
                  description=None,
-                 points=0,
-                 receipt=None):
+                 points=0.0,
+                 receipt=None,
+                 time=None,
+                 date=None):
         '''
             Raises:
                 SponsorDoesNotExist
                 TeamDoesNotExist
         '''
-        self.points = points
+        if not float_validator(points):
+            raise InvalidField(payload={"details": "Game - points"})
+        self.points = float(points)
         self.date = datetime.now()
         sponsor = None
         if sponsor_id is not None:
@@ -90,13 +95,23 @@ class Espys(DB.Model):
         self.team_id = team_id
         self.sponsor_id = sponsor_id
         self.kik = None
+        if date is not None and not date_validator(date):
+            raise InvalidField(payload={'details':"Game - date"})
+        if time is not None and not time_validator(time):
+            raise InvalidField(payload={'details':"Game - time"})
+        if date is not None and time is None:
+            self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
+        else:
+            self.date = datetime.today()
 
     def update(self,
                team_id=None,
                sponsor_id=None,
                description=None,
                points=None,
-               receipt=None):
+               receipt=None,
+               date=None,
+               time=None):
         '''
             used to update an existing espy transaction
             Raises:
@@ -119,6 +134,14 @@ class Espys(DB.Model):
                 raise SponsorDoesNotExist(payload={"details": sponsor_id})
         if receipt is not None:
             self.receipt = receipt
+        if date is not None and time is None:
+            self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
+        if date is not None and time is not None:
+            if date is not None and not date_validator(date):
+                raise InvalidField(payload={'details':"Game - date"})
+            if time is not None and not time_validator(time):
+                raise InvalidField(payload={'details':"Game - time"})
+            self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
 
     def json(self):
         '''
@@ -128,13 +151,20 @@ class Espys(DB.Model):
             sponsor = str(Sponsor.query.get(self.sponsor_id))
         else:
             sponsor = None
+        date = None
+        time = None
+        if self.date is not None:
+            date = self.date.strftime("%Y-%m-%d")
+            time = self.date.strftime("%H:%M")
         return {
                 'espy_id': self.id,
                 'team': str(Team.query.get(self.team_id)),
                 'sponsor': sponsor,
                 'description': self.description,
                 'points': self.points,
-                'receipt': self.receipt
+                'receipt': self.receipt,
+                'date': date,
+                'time': time
                 }
 
 class Player(DB.Model):
@@ -230,6 +260,15 @@ class Player(DB.Model):
                 "player_name":self.name,
                 "gender": self.gender}
 
+    def admin_json(self):
+        '''
+            returns a jsonserializable object
+        '''
+        return {"player_id": self.id,
+                "player_name":self.name,
+                "gender": self.gender,
+                "email": self.email}
+
     def update(self,
                name=None,
                email=None,
@@ -280,7 +319,7 @@ class Team(DB.Model):
     A class that stores information about a team
     Columns:
         id: the unique team id
-        sponsor_id: the sponsor id the team is associated with
+        sponsor_id: the sposor id the team is associated with
         home_games: the home games of the team
         away_games: the away games of the team
         players: the players on the team's roster

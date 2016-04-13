@@ -9,6 +9,7 @@ from api.helper import loads
 from api import DB
 from api.routes import Routes
 from api.model import Player
+from datetime import datetime
 from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist,\
     PlayerDoesNotExist, NonUniqueEmail, LeagueDoesNotExist, GameDoesNotExist,\
@@ -176,13 +177,17 @@ class TestEspys(TestSetup):
         self.assertEqual(rv.status_code, EspysDoesNotExist.status_code,
                          Routes['espy'] + " GET invalid espy id")
         # valid user
+        d = datetime.today().strftime("%Y-%m-%d")
+        t = datetime.today().strftime("%H:%M")
         rv = self.app.get(Routes['espy'] + "/1")
-        result = {   'description': 'Kik transaction',
+        result = {   'date': d,
+                    'description': 'Kik transaction',
                     'espy_id': 1,
-                    'points': 1,
+                    'points': 1.0,
                     'receipt': None,
                     'sponsor': None,
-                    'team': 'Domus Green'}
+                    'team': 'Domus Green',
+                    'time': t}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['espy'] +
@@ -190,12 +195,16 @@ class TestEspys(TestSetup):
         self.assertEqual(rv.status_code, 200, Routes['espy'] +
                          " GET valid player id")
         rv = self.app.get(Routes['espy'] + "/2")
-        result = {   'description': 'Purchase',
+        d = datetime.today().strftime("%Y-%m-%d")
+        t = datetime.today().strftime("%H:%M")
+        result = {   'date': d,
+                    'description': 'Purchase',
                     'espy_id': 2,
-                    'points': 2,
+                    'points': 2.0,
                     'receipt': '12019209129',
                     'sponsor': 'Domus',
-                    'team': 'Chainsaw Black'}
+                    'team': 'Chainsaw Black',
+                    'time': t}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['espy'] +
@@ -372,13 +381,16 @@ class TestEspys(TestSetup):
                          )
         rv = self.app.get(Routes['espy'])
         empty = loads(rv.data)
-        expect = [{ 
-                    'description': None,
-                    'espy_id': 1,
-                    'points': 1,
-                    'receipt': None,
-                    'sponsor': 'Domus',
-                    'team': 'Domus Green'}]
+        d = datetime.today().strftime("%Y-%m-%d")
+        t = datetime.today().strftime("%H:%M")
+        expect = [   {   'date': d,
+                            'description': None,
+                            'espy_id': 1,
+                            'points': 1.0,
+                            'receipt': None,
+                            'sponsor': 'Domus',
+                            'team': 'Domus Green',
+                            'time': t}]
         self.output(empty)
         self.output(expect)
         self.assertEqual(expect, empty,Routes['espy'] +

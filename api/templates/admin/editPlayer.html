@@ -219,18 +219,9 @@ function showErrors(response, status_code){
 	$('#file_modal').modal("show");
 	$('#errors').empty();
 	var element;
-	if (status_code == 400){
-		$('#modal-title').text("Bad Request - 400");
-		for (var key in response.message){
-			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
-			$('#errors').append(element);	
-		}
-
-	}else if (status_code == 432){
-		$('#modal-title').text("Invalid Field - 432");
-		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
-		$('#errors').append(element);			
-	}
+	$('#modal-title').text( response.message + " - " + status_code);
+	element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+	$('#errors').append(element);	
 }
 
 </script>

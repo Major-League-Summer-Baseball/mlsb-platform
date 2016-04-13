@@ -113,7 +113,7 @@
 					</select>
 				</td>
 				<td>
-					<select data-placeholder="Chooise a player" name="standard" class="chosen-select" id="away_outside_new_player_id">
+					<select data-placeholder="Choose a player" name="standard" class="chosen-select" id="away_outside_new_player_id">
 						<option value="default" selected="selected">Select a player from another team</option>
 						{% for player in players %}
 							<option value="{{player.player_id}}">{{player.player_name}}</option>
@@ -236,7 +236,7 @@
 					</select>
 				</td>
 				<td>
-					<select data-placeholder="Chooise a player" name="standard" class="chosen-select" id="home_outside_new_player_id">
+					<select data-placeholder="Choose a player" name="standard" class="chosen-select" id="home_outside_new_player_id">
 						<option value="default">Select a player from another team</option>
 						{% for player in players %}
 							<option value="{{player.player_id}}">{{player.player_name}}</option>
