@@ -361,7 +361,7 @@ class testPlayerLookup(TestSetup):
     def testMain(self):
         self.addPlayers()
         # players email
-        expect = [   {   'email': 'fras2560@mylaurier.ca',
+        expect = [   {  
                             'gender': 'm',
                             'player_id': 1,
                             'player_name': 'Dallas Fraser'}]
@@ -371,8 +371,7 @@ class testPlayerLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data),
                  Routes['vteam'] + " Post: View of Team")
         # players name
-        expect = [   {   'email': 'fras2560@mylaurier.ca',
-                        'gender': 'm',
+        expect = [   {  'gender': 'm',
                         'player_id': 1,
                         'player_name': 'Dallas Fraser'}]
         rv = self.app.post(Routes['vplayerLookup'], data={'player_name': 'Dallas'})
@@ -467,14 +466,14 @@ class TestTeamRoster(TestSetup):
         self.addPlayersToTeam()
         # get one team
         rv = self.app.get(Routes['team_roster'] + "/1")
-        expect =  {   'captain': {   'email': 'fras2560@mylaurier.ca',
+        expect =  {   'captain': {
                    'gender': 'm',
                    'player_id': 1,
                    'player_name': 'Dallas Fraser'},
                     'color': 'Green',
                     'espys': 0,
                     'league_id': None,
-                    'players': [   {   'email': 'fras2560@mylaurier.ca',
+                    'players': [   {   
                                        'gender': 'm',
                                        'player_id': 1,
                                        'player_name': 'Dallas Fraser'}],

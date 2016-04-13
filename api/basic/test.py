@@ -9,7 +9,7 @@ from api.helper import loads
 from api import DB
 from api.routes import Routes
 from api.model import Player
-from api.errors import IFSC, NUESC, SDNESC, LDNESC, TDNESC, PDNESC, GDNESC,\
+from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist,\
     PlayerDoesNotExist, NonUniqueEmail, LeagueDoesNotExist, GameDoesNotExist,\
     BatDoesNotExist
@@ -401,7 +401,6 @@ class TestPlayer(TestSetup):
         # valid user
         rv = self.app.get(Routes['player'] + "/1")
         result = {"player_id": 1,
-                  'email': 'fras2560@mylaurier.ca',
                   'gender': 'm',
                   'player_name': 'Dallas Fraser'}
         self.output(loads(rv.data))
@@ -564,7 +563,7 @@ class TestPlayer(TestSetup):
                          )
         rv = self.app.get(Routes['player'])
         empty = loads(rv.data)
-        expect = [{'email': 'fras2560@mylaurier.ca',
+        expect = [{
                    'gender': 'm',
                    'player_id': 1,
                    'player_name': 'Dallas Fraser'}]

@@ -228,7 +228,6 @@ class Player(DB.Model):
         '''
         return {"player_id": self.id,
                 "player_name":self.name,
-                "email": self.email,
                 "gender": self.gender}
 
     def update(self,

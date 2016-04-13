@@ -450,6 +450,7 @@ class testUpcomingGames(TestSetup):
         data = {
                 'kik': 'frase2560'
                 }
+        d = date.today().strftime("%YYYY-%mm-%")
         expect = [   {   'away_team': 'Chainsaw Black',
                         'away_team_id': 2,
                         'date': '2016-04-12',
