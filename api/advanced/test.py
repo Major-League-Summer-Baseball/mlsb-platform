@@ -9,6 +9,7 @@ from api.helper import loads
 from api.routes import Routes
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
+from api.errors import TeamDoesNotExist, PlayerNotOnTeam
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
@@ -392,14 +393,14 @@ class TestTeamRoster(TestSetup):
         #invalid update
         params = {"player_id": 1}
         rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = 'Team not found'
+        expect = {'details': 1, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: invalid data")
-        self.assertEqual(404, rv.status_code, 
+        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code, 
                          Routes['team_roster'] + " PUT: invalid data")
-        # add player to team        
+        # add player to team
         self.addTeams()
         params = {"player_id": 1}
         rv = self.app.post(Routes['team_roster'] + "/1", data=params)
@@ -408,7 +409,7 @@ class TestTeamRoster(TestSetup):
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: proper data")
-        self.assertEqual(200, rv.status_code, 
+        self.assertEqual(201, rv.status_code, 
                          Routes['team_roster'] + " PUT: invalid data")
         # add a captain
         params = {"player_id": 2, "captain": 1}
@@ -418,7 +419,7 @@ class TestTeamRoster(TestSetup):
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: proper data")
-        self.assertEqual(200, rv.status_code, 
+        self.assertEqual(201, rv.status_code, 
                          Routes['team_roster'] + " PUT: invalid data")
 
     def testDelete(self):
@@ -437,14 +438,13 @@ class TestTeamRoster(TestSetup):
         # invalid combination
         query = "?player_id=2"
         rv = self.app.delete(Routes['team_roster'] + "/1" + query)
-        expect = {'message': 'Player was not a member of the team'}
+        expect = {'details': 2, 'message': PlayerNotOnTeam.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
                          " DELETE: Invalid combination")
-        self.assertEqual(440, rv.status_code, 
+        self.assertEqual(PlayerNotOnTeam.status_code, rv.status_code, 
                          Routes['team_roster'] + " PUT: invalid data")
-        
         # proper deletion
         query = "?player_id=1"
         rv = self.app.delete(Routes['team_roster'] + "/1" + query)
@@ -457,11 +457,13 @@ class TestTeamRoster(TestSetup):
     def testGet(self):
         #empty get
         rv = self.app.get(Routes['team_roster'] + "/1")
-        expect = 'Team not found'
+        expect = {'details': 1, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " GET: on empty set")
+                         " GET: team dne")
+        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code, 
+                         Routes['team_roster'] + " GET: team dne")
         self.addPlayersToTeam()
         # get one team
         rv = self.app.get(Routes['team_roster'] + "/1")

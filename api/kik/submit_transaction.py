@@ -10,7 +10,7 @@ from json import dumps
 from api import DB
 from api.model import Player, Espys,Sponsor, find_team_subscribed
 from api.authentication import requires_kik
-from api.errors import SDNESC, PNS
+from api.errors import SDNESC, PNS, PlayerNotSubscribed, SponsorDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('kik', type=str, required=True)
 parser.add_argument('amount', type=int, required=True)
@@ -38,17 +38,17 @@ class SubmitTransactionAPI(Resource):
         player = Player.query.filter_by(kik=kik).first()
         if player is None:
             # player is found
-            return Response(dumps("{} not subscribed".format(kik)), status=PNS, mimetype="application/json")
+            raise PlayerNotSubscribed(payload={'details': kik})
         sponsor = Sponsor.query.filter_by(name=sponsor_name).first()
         if sponsor is None:
             # sponsor is not found
-            return Response(dumps("Sponsor not found".format(kik)), status=SDNESC, mimetype="application/json")
+            raise SponsorDoesNotExist(payload={'details': sponsor_name})
         teams = find_team_subscribed(kik)
         if len(teams) == 0:
             # kik user is not subscribed to any teams
-            return Response(dumps("{} not subscribe to any teams".format(kik)), status=PNS, mimetype="application/json")
+            raise PlayerNotSubscribed(payload={'details': kik})
         # always give points to team first subscribed to (of current year)
         espy = Espys(team_id=teams[0], sponsor_id=sponsor.id, points=amount, description="Kik transaction")
         DB.session.add(espy)
         DB.session.commit()
-        return Response(dumps(""), status=200, mimetype="application/json")
+        return Response(dumps(espy.id), status=200, mimetype="application/json")

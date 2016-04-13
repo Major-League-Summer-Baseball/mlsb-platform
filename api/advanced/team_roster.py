@@ -9,6 +9,7 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Team
+from api.errors import TeamDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int, required=True)
 parser.add_argument('captain', type=int)
@@ -42,15 +43,14 @@ class TeamRosterAPI(Resource):
         """
         team = Team.query.get(team_id)
         
-        response = Response(dumps("Team not found"),
-                            status=404, mimetype="application/json")
-        if team is not None:
-            result = team.json()
-            result['players'] = []
-            for player in team.players:
-                result['players'].append(player.json())
-            response = Response(dumps(result),
-                            status=200, mimetype="application/json")
+        if team is None:
+            raise TeamDoesNotExist(payload={'details': team_id})
+        result = team.json()
+        result['players'] = []
+        for player in team.players:
+            result['players'].append(player.json())
+        response = Response(dumps(result),
+                        status=200, mimetype="application/json")
         return response
 
     def delete(self, team_id):
@@ -69,13 +69,12 @@ class TeamRosterAPI(Resource):
         """
         args = parser.parse_args()
         team = Team.query.get(team_id)
-        response = Response(dumps("Team not found"),
-                            status=404, mimetype="application/json")
-        if team is not None:
-            team.remove_player(args['player_id'])
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
+        if team is None:
+            raise TeamDoesNotExist(payload={'details': team_id})
+        team.remove_player(args['player_id'])
+        DB.session.commit()
+        response = Response(dumps(None), status=200,
+                            mimetype="application/json")
         return response
 
     def post(self, team_id):
@@ -95,16 +94,15 @@ class TeamRosterAPI(Resource):
         """
         args = parser.parse_args()
         team = Team.query.get(team_id)
-        response = Response(dumps("Team not found"), status=404,
+        if team is None:
+            raise TeamDoesNotExist(payload={'details': team_id})
+        captain = False
+        if args['captain'] and args['captain'] == 1:
+            captain = True
+        team.insert_player(args['player_id'], captain=captain)
+        DB.session.commit()
+        response = Response(dumps(None), status=201,
                             mimetype="application/json")
-        if team is not None:
-            captain = False
-            if args['captain'] and args['captain'] == 1:
-                captain = True
-            team.insert_player(args['player_id'], captain=captain)
-            DB.session.commit()
-            response = Response(dumps(None), status=200,
-                                mimetype="application/json")
         return response
 
     def option(self):

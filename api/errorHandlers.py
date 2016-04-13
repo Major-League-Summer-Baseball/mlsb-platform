@@ -9,7 +9,8 @@ from api import app
 from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
                         PlayerDoesNotExist, GameDoesNotExist,\
                         LeagueDoesNotExist, SponsorDoesNotExist, PlayerNotOnTeam,\
-                        EspysDoesNotExist, BatDoesNotExist
+                        EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
+                        TeamAlreadyHasCaptain, PlayerNotSubscribed
 from flask import Response
 from json import dumps
 
@@ -73,3 +74,20 @@ def handle_bat_does_not_exist(error):
                         mimetype="application/json")
     return  response
 
+@app.errorhandler(NotTeamCaptain)
+def handle_not_team_captain(error):
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return  response
+
+@app.errorhandler(TeamAlreadyHasCaptain)
+def handle_team_already_has_captain(error):
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return  response
+
+@app.errorhandler(PlayerNotSubscribed)
+def handle_player_not_subscribed(error):
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return  response

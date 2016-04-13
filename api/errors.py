@@ -19,6 +19,7 @@ MPSC = 400
 PNOT = 400
 PAST = 400
 PNS = 400
+NTCSC = 401
 class TeamDoesNotExist(Exception):
     status_code = TDNESC
     message = "Team does not exist"
@@ -187,7 +188,7 @@ class PlayerNotOnTeam(Exception):
 class PlayerNotSubscribed(Exception):
     status_code = PNS
     message = "Player is not subscribed"
-    def __init__(self, message, status_code=None, payload=None):
+    def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
         self.message = self.message
         if status_code is not None:
@@ -199,6 +200,21 @@ class PlayerNotSubscribed(Exception):
         rv['message'] = self.message
         return rv
 
+class NotTeamCaptain(Exception):
+    status_code = THCSC
+    message = "Not team's captain"
+    def __init__(self, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = self.message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+    
 ERRORS = {
             'InvalidField': {
                 'message': "A field given was invalid",

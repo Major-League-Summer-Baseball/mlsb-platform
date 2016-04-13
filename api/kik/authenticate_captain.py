@@ -9,7 +9,8 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Player, Team
-from api.errors import TDNESC
+from api.errors import TDNESC, TeamDoesNotExist, TeamAlreadyHasCaptain,\
+    NotTeamCaptain
 from api.authentication import requires_kik
 parser = reqparse.RequestParser()
 parser.add_argument('team', type=int, required=True)
@@ -38,17 +39,17 @@ class AuthenticateCaptainAPI(Resource):
         kik = args['kik']
         team = Team.query.get(team_id)
         if team is None:
-            return Response(dumps("Team does not exist"), status=TDNESC, mimetype="application/json")
+            raise TeamDoesNotExist(payload={'details': team_id})
         team_captain = Player.query.get(team.player_id)
         if team_captain.name != captain:
             # the names do not match
-            return Response(dumps("Name of captain does not match"), status=401, mimetype="application/json")
+            raise NotTeamCaptain(payload={'details': team_captain.name})
         if team_captain.kik is None:
             # update their kik name
             team_captain.kik = kik
             DB.session.commit()
         elif team_captain.kik != kik:
             # something fishy is going on
-            return Response(dumps("Captain was authenticate under different kik name before"), status=401, mimetype="application/json")
+            raise TeamAlreadyHasCaptain(payload={'details':team_captain.kik})
         # captain is authenticated
         return Response(dumps(team.id), status=200, mimetype="application/json")

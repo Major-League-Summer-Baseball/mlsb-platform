@@ -10,7 +10,9 @@ from api.routes import Routes
 from api.model import Player, Espys
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
-from api.errors import TDNESC, PNOT, GDNESC, PNS, SDNESC
+from api.errors import  TeamDoesNotExist,NotTeamCaptain, TeamAlreadyHasCaptain,\
+                        PlayerNotOnTeam, PlayerNotSubscribed,GameDoesNotExist,\
+                        InvalidField, SponsorDoesNotExist
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
@@ -44,11 +46,12 @@ class testAuthenticateCaptain(TestSetup):
                 "captain": "Dallas Fraser",
                 "team": -1
                 }
-        expect = "Team does not exist"
+        expect = {'details': -1, 'message': TeamDoesNotExist.message}
         rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, TDNESC, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
+                         Routes['kikcaptain'] +
                          " POST: invalid team"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -59,11 +62,12 @@ class testAuthenticateCaptain(TestSetup):
                 "captain": "Fucker",
                 "team": 1
                 }
-        expect = "Name of captain does not match"
+        expect = {'details': 'Dallas Fraser', 'message': NotTeamCaptain.message}
         rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 401, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, NotTeamCaptain.status_code,
+                         Routes['kikcaptain'] +
                          " POST: name of captain does not match"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -75,11 +79,13 @@ class testAuthenticateCaptain(TestSetup):
                 "captain": "Dallas Fraser",
                 "team": 1
                 }
-        expect = "Captain was authenticate under different kik name before"
+        expect = {'details': 'frase2560',
+                  'message': TeamAlreadyHasCaptain.message}
         rv = self.app.post(Routes['kikcaptain'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 401, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, TeamAlreadyHasCaptain.status_code,
+                         Routes['kikcaptain'] +
                          " POST: sketchy shit"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -119,11 +125,12 @@ class testSubscribe(TestSetup):
                 "name": "Dallas Fraser",
                 "team": -1
                 }
-        expect = {'message': 'Team does not Exist -1'}
+        expect = {'details': -1, 'message': TeamDoesNotExist.message}
         rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, TDNESC, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
+                         Routes['kikcaptain'] +
                          " POST: team does not exist"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -134,11 +141,12 @@ class testSubscribe(TestSetup):
                 "name": "fucker",
                 "team": 1
                 }
-        expect = {'message': 'Player fucker not on team Domus Green'}
+        expect = {'details': 'fucker', 'message': PlayerNotOnTeam.message}
         rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, PNOT, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, PlayerNotOnTeam.status_code,
+                         Routes['kikcaptain'] +
                          " POST: player not on team"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -192,11 +200,12 @@ class testSubmitScores(TestSetup):
                 'hr': [1, 2],
                 'ss': []
                 }
-        expect = 'Kik name does not match'
+        expect = {'details': 'frase2560', 'message': PlayerNotSubscribed.message}
         rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 404, Routes['kiksubmitscore'] +
+        self.assertEqual(rv.status_code, PlayerNotSubscribed.status_code,
+                         Routes['kiksubmitscore'] +
                          " POST: invalid kik user name"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -212,11 +221,12 @@ class testSubmitScores(TestSetup):
                 'hr': [1, 2],
                 'ss': []
                 }
-        expect = 'Game not found'
+        expect = {'details': -1, 'message': GameDoesNotExist.message}
         rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, GDNESC, Routes['kiksubmitscore'] +
+        self.assertEqual(rv.status_code, GameDoesNotExist.status_code,
+                         Routes['kiksubmitscore'] +
                          " POST: invalid game id"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -229,11 +239,13 @@ class testSubmitScores(TestSetup):
                 'hr': [1, 2],
                 'ss': []
                 }
-        expect = 'More hr than runs'
+        expect = {'details': 'More hr than score',
+                  'message': InvalidField.message}
         rv = self.app.post(Routes['kiksubmitscore'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 400, Routes['kiksubmitscore'] +
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['kiksubmitscore'] +
                          " POST: more hr than runs"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -268,11 +280,13 @@ class testSubmitTransaction(TestSetup):
                 "sponsor": "Domus",
                 "amount": 1
                 }
-        expect = 'frase2560 not subscribed'
+        expect = {'details': 'frase2560',
+                  'message': PlayerNotSubscribed.message}
         rv = self.app.post(Routes['kiktransaction'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, PNS, Routes['kiktransaction'] +
+        self.assertEqual(rv.status_code, PlayerNotSubscribed.status_code,
+                         Routes['kiktransaction'] +
                          " Post: transaction for player not subscribed"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -298,11 +312,13 @@ class testSubmitTransaction(TestSetup):
                 "sponsor": "FUCKINGDOESNOTEXIST",
                 "amount": 1
                 }
-        expect = 'Sponsor not found'
+        expect = {'details': 'FUCKINGDOESNOTEXIST',
+                  'message':SponsorDoesNotExist.message}
         rv = self.app.post(Routes['kiktransaction'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, SDNESC, Routes['kiktransaction'] +
+        self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
+                         Routes['kiktransaction'] +
                          " Post: sponsor does not exist"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -316,11 +332,12 @@ class testCaptainGames(TestSetup):
                 'kik': "frase2560",
                 "team": 1
                 }
-        expect = 'Not the right captain for the team'
+        expect = {'details': None, 'message': NotTeamCaptain.message}
         rv = self.app.post(Routes['kikcaptaingames'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 401, Routes['kikcaptaingames'] +
+        self.assertEqual(rv.status_code, NotTeamCaptain.status_code,
+                         Routes['kikcaptaingames'] +
                          " POST: Invalid Captain's games"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -403,11 +420,13 @@ class testUpcomingGames(TestSetup):
         data = {
                 'kik': 'frase2560'
                 }
-        expect = 'frase2560 not registered'
+        expect = {'details': 'frase2560',
+                  'message': PlayerNotSubscribed.message}
         rv = self.app.post(Routes['kikupcominggames'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, PNS, Routes['kikupcominggames'] +
+        self.assertEqual(rv.status_code, PlayerNotSubscribed.status_code,
+                         Routes['kikupcominggames'] +
                          " POST: Unsubscribed player for upcoming games"
                          )
         self.assertEqual(expect, loads(rv.data),

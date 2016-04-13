@@ -10,7 +10,8 @@ from json import dumps
 from api import DB
 from api.model import Player, Bat, Game, Team
 from api.authentication import requires_kik
-from api.errors import InvalidField , GDNESC
+from api.errors import InvalidField , GDNESC, NotTeamCaptain, GameDoesNotExist,\
+    PlayerNotSubscribed
 from api.variables import UNASSIGNED
 parser = reqparse.RequestParser()
 parser.add_argument('game_id', type=int, required=True)
@@ -42,9 +43,9 @@ class SubmitScoresAPI(Resource):
         kik = args['kik']
         captain = Player.query.filter_by(kik=kik).first()
         if captain is None:
-            return Response(dumps("Kik name does not match"), status=404, mimetype="application/json")
+            raise PlayerNotSubscribed(payload={'details': kik})
         if game is None:
-            return Response(dumps("Game not found"), status=GDNESC, mimetype="application/json")
+            raise GameDoesNotExist(payload={'details': game_id})
         # find the team
         away_team = Team.query.get(game.away_team_id)
         home_team = Team.query.get(game.home_team_id)
@@ -55,7 +56,7 @@ class SubmitScoresAPI(Resource):
             team = home_team # captain of the away squad
         else:
             # not a captain of a team
-            return Response(dumps("Not a captain of a team"), status=403, mimetype="application/json")
+            raise NotTeamCaptain(payload={'details': kik})
         homeruns = args['hr']
         ss = args['ss']
         score = args['score']
@@ -84,7 +85,7 @@ class SubmitScoresAPI(Resource):
                 except InvalidField:
                     pass
         if score < 0:
-            return Response(dumps("More hr than runs"), status=400, mimetype="application/json")
+            raise InvalidField(payload={'details': "More hr than score"})
         while score > 0:
             bat = Bat(UNASSIGNED,
                       team.id,

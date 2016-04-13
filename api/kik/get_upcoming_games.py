@@ -9,7 +9,7 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Player, Game
-from api.errors import PNS
+from api.errors import PNS, PlayerNotSubscribed
 from api.authentication import requires_kik
 from datetime import  timedelta, date
 from sqlalchemy import or_
@@ -33,7 +33,7 @@ class UpcomingGamesAPI(Resource):
         kik = args['kik']
         player = DB.session.query(Player).filter(Player.kik==kik).first()
         if player is None:
-            return Response(dumps("{} not registered".format(kik)), status=PNS, mimetype="application/json")
+            raise PlayerNotSubscribed(payload={'details': kik})
         teams = []
 
         today = date.today()
