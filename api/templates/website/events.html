@@ -18,7 +18,7 @@
 			What do you get when you cram over a hundred students on to school buses and send them to a bar in the middle of nowhere? A hell of a good time! This event marks the start of MLSB every year and takes place in the winter.
 			</p>
 			<img src="{{ url_for('static', filename="images/events/mystery.jpg") }}">
-			<h4> Date: TBD </h4>		
+			<h4> Date: {{dates.Mystery_Bus}}</h4>		
 		</div>
 		<div id="bjg" class="tab-pane fade in">
 			<p>
@@ -26,7 +26,7 @@
 			</p>
 			<img class="eventImage" src="{{ url_for('static', filename="images/events/bluejays.jpg") }}">
 			<p>We’ll have a few drinks and watch some baseball, it’s the closest you’ll ever get to playing in the big leagues.</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.Jays_Game}} </h4>
 		</div>
 		<div id="bf" class="tab-pane fade in">
 			<p>
@@ -34,7 +34,7 @@
 			</p>
 			<img class="eventImage" src="{{ url_for('static', filename="images/events/beerfest.jpg") }}">
 			<p>Actually, you probably won’t be able to remember much at all. Teams that do well will bring home points for the year end ESPYs.</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.Beerfest}} </h4>
 		</div>
 		<div id="bc" class="tab-pane fade in">
 			<p>
@@ -44,7 +44,7 @@
 			<p>
 				Bring your tents because we will be camping out for the night!
 			</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.Beerwell_Classic}}</h4>
 		</div>
 		<div id="hftc" class="tab-pane fade in">
 			<p>
@@ -54,7 +54,7 @@
 			<p>
 				Sleeve monsters are a must.
 			</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.Hitting_for_the_Cycle}}</h4>
 		</div>
 		<div id="rf" class="tab-pane fade in">
 			<p>
@@ -64,7 +64,7 @@
 			<p>
 				If there is one MLSB event you shouldn’t miss, it is definitely this one because it is going to be a wild weekend!
 			</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.Rafting}}</h4>
 		</div>
 		<div id="sw" class="tab-pane fade in">
 			<p>
@@ -74,7 +74,7 @@
 			<p>
 				Best costumes take home points for the ESPYs.
 			</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.Summerween}} </h4>
 		</div>
 		<div id="ea" class="tab-pane fade in">
 			<p>
@@ -82,30 +82,27 @@
 
 			Point breakdown as follows:
 			<ul>
-				<li>For each $1 spent at a MLSB sponsor (doesn’t have to be your team sponsor) you will receive 0.25 of a point. This is measured through submitted receipts.</li>
-				<li>Semis at Beerfest: 10 pts</li>
-				<li>Finals at Beerfest: 15 pts</li>
-				<li>Win Beerfest: 20 pts</li>
-				<li>Summerween best costume: 10 pts (per team member)</li>
-				<li>Semis at Rafting World Series of Flip Cup: 10 pts</li>
-				<li>Finals at Rafting World Series of Flip Cup: 15 pts</li>
-				<li>Win Rafting World Series of Flip Cup: 20 pts</li>
-				<li>Homerun derby at Beerwell Classic: 10 pts</li>
-				<li>Win a tournament (non competitive or competitive): 50 pts</li>
-				<li>Finals of a tournament (non competitive or competitive): 25 pts</li>
-				<li>Win the league: 200 pts</li>
+				<li>For each $1 spent at a MLSB sponsor (doesn’t have to be your team sponsor) you will receive 1 of a point. This is measured through submitted receipts.</li>
+				<li>Semis at Beerfest: 40 pts</li>
+				<li>Finals at Beerfest: 60 pts</li>
+				<li>Win Beerfest: 80 pts</li>
+				<li>Summerween best costume: 40 pts (per team member)</li>
+				<li>Semis at Rafting World Series of Flip Cup: 40 pts</li>
+				<li>Finals at Rafting World Series of Flip Cup: 60 pts</li>
+				<li>Win Rafting World Series of Flip Cup: 80 pts</li>
+				<li>Homerun derby at Beerwell Classic: 40 pts</li>
+				<li>Win a tournament (non competitive or competitive): 200 pts</li>
+				<li>Finals of a tournament (non competitive or competitive): 100 pts</li>
+				<li>Win the league: 800 pts</li>
 			</ul>
 			</p>
 			<img class="eventImage" src="{{ url_for('static', filename="images/events/summerween.jpg") }}">
 			<p>
 				Best costumes take home points for the ESPYs.
 			</p>
-			<h4> Date: TBD </h4>
+			<h4> Date: {{dates.ESPYS_Awards}}</h4>
 		</div>
-		
 
-
-		
 		<div id="fields" class="tab-pane fade in">
 			<p>
 			All regular season games take place on WP fields 1 through 4. Hillside upper and lower are used during tournaments. click on the maps for directions if you’re still lost

@@ -462,6 +462,8 @@ class Team(DB.Model):
             raise PlayerDoesNotExist(payload={'details':player_id})
         if captain:
             self.player_id = player_id
+            if player not in self.players:
+                self.players.append(player)
         else:
             self.players.append(player)
         return valid
@@ -476,11 +478,10 @@ class Team(DB.Model):
         '''
         if self.player_id == player_id:
             self.player_id = None
-        else:
-            player = Player.query.get(player_id)
-            if player not in self.players:
-                raise PlayerNotOnTeam(payload={'details':player_id})
-            self.players.remove(player)
+        player = Player.query.get(player_id)
+        if player not in self.players:
+            raise PlayerNotOnTeam(payload={'details':player_id})
+        self.players.remove(player)
         
     def check_captain(self, player_name, password):
         '''

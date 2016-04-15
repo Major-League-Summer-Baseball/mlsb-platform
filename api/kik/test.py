@@ -10,6 +10,7 @@ from api.routes import Routes
 from api.model import Player, Espys
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
+from datetime import date, datetime
 from api.errors import  TeamDoesNotExist,NotTeamCaptain, TeamAlreadyHasCaptain,\
                         PlayerNotOnTeam, PlayerNotSubscribed,GameDoesNotExist,\
                         InvalidField, SponsorDoesNotExist
@@ -168,15 +169,28 @@ class testSubscribe(TestSetup):
                          Routes['kiksubscribe'] + " Post: already subscribed")
         espys = Espys.query.all()
         # check to make sure not additional points were rewarded
-        expect = [{'points': 2, 'receipt': None, 'espy_id': 1,
-                   'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
-                   'sponsor': None, 'team': 'Domus Green'},
-                  {'points': 0, 'receipt': None, 'espy_id': 2,
-                   'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
-                   'sponsor': None, 'team': 'Domus Green'}
+        d = datetime.today().strftime("%Y-%m-%d")
+        t = datetime.today().strftime("%H:%M")
+        expect = [{   'date': d,
+                        'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
+                        'espy_id': 1,
+                        'points': 2.0,
+                        'receipt': None,
+                        'sponsor': None,
+                        'team': 'Domus Green',
+                        'time': t},
+                  {   'date': d,
+                    'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
+                    'espy_id': 2,
+                    'points': 0.0,
+                    'receipt': None,
+                    'sponsor': None,
+                    'team': 'Domus Green',
+                    'time': t}
                   ]
         for index, espy in enumerate(espys):
             self.output(espy.json())
+            self.output(expect[index])
             self.assertEqual(espy.json(), expect[index])
         # invalid credentials
         data = {
@@ -450,10 +464,11 @@ class testUpcomingGames(TestSetup):
         data = {
                 'kik': 'frase2560'
                 }
-        d = date.today().strftime("%YYYY-%mm-%")
+        d = date.today().strftime("%Y-%m-%d")
+        t = date.today().strftime("%H:%M")
         expect = [   {   'away_team': 'Chainsaw Black',
                         'away_team_id': 2,
-                        'date': '2016-04-12',
+                        'date': '2016-04-13',
                         'field': '',
                         'game_id': 1,
                         'home_team': 'Domus Green',
@@ -463,7 +478,7 @@ class testUpcomingGames(TestSetup):
                         'time': '11:45'},
                     {   'away_team': 'Domus Green',
                         'away_team_id': 1,
-                        'date': '2016-04-13',
+                        'date': '2016-04-14',
                         'field': '',
                         'game_id': 2,
                         'home_team': 'Chainsaw Black',

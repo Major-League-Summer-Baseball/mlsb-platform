@@ -8,14 +8,15 @@ from sqlalchemy.sql.expression import and_
 from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
-                    redirect
+                    redirect, request
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
-from api.variables import SPONSORS, UNASSIGNED
+from api.variables import SPONSORS, UNASSIGNED, EVENTS
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats
 from api.advanced.players_stats import post as player_summary
 from api import DB
 from sqlalchemy.sql import func
+import json
 
 @app.route("/")
 @app.route(Routes["homepage"])
@@ -68,7 +69,6 @@ def sponsor_page(year, id):
                            year=year)
     return page
 
-
 @app.route(Routes["schedulepage"] + "/<int:year>")
 def schedule(year):
     return render_template("website/schedule.html",
@@ -86,6 +86,7 @@ def standings(year):
                            leagues=get_leagues(year),
                            title="Standings",
                            year=year)
+
 @app.route(Routes['statspage'] + "/<int:year>")
 def stats_page(year):
     players = player_summary(year)
@@ -113,7 +114,6 @@ def player_page(year, player_id):
     years = (DB.session.query(Team.year, Team.id).join(Player)
                 .filter(Player.id==player_id)
                 .order_by(Team.year.desc()).all())
-    print(years)
     stats = []
     for entry in years:
         player = player_summary(year=entry[0],
@@ -123,7 +123,6 @@ def player_page(year, player_id):
         player['team_id'] = entry[1]
         player['year'] = entry[0]
         stats.append(player)
-    print(stats)
     return render_template("website/player.html",
                        route=Routes,
                        sponsors=get_sponsors(),
@@ -148,13 +147,29 @@ def leaders_page(year):
 #             STATIC PAGES
 # -----------------------------------------------------------------------------
 '''
+
+@app.route(Routes['eventspage'] + "/<int:year>" + "/json")
+def events_page_json(year):
+        if year in EVENTS:
+            return json.dumps(EVENTS[year])
+        else:
+            return json.dumps({year:{}})
+
 @app.route(Routes['eventspage'] + "/<int:year>")
 def events_page(year):
-    return render_template("website/events.html",
-                           route=Routes,
-                           sponsors=get_sponsors(),
-                           title="Events",
-                           year=year)
+        if year in EVENTS:
+            return render_template("website/events.html",
+                               dates = EVENTS[year],
+                               route=Routes,
+                               sponsors=get_sponsors(),
+                               title="Events",
+                               year=year)
+        else:
+            return render_template("notFound.html",
+                                   year=year,
+                                   route=Routes,
+                                   sponsors=get_sponsors())
+
 
 @app.route(Routes['fieldsrulespage'] + "/<int:year>")
 def rules_fields(year):

@@ -352,17 +352,14 @@ class TestEspys(TestSetup):
                   'sponsor_id':100,
                   'points': "XX"}
         rv = self.app.post(Routes['espy'], data=params, headers=headers)
-        result = {'message':
-                        {'points': 
-                                "invalid literal for int() with base 10: 'XX'"
-                        }
-                  }
+        result = {'details': 'Game - points', 'message': InvalidField.message}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['espy'] +
                          " POST: POST request with invalid points"
                          )
-        self.assertEqual(rv.status_code, 400, Routes['espy'] +
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['espy'] +
                          " POST: POST request with invalid points"
                          )
         # proper insertion with post

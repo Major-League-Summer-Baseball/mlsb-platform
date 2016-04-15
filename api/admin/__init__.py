@@ -144,12 +144,15 @@ def admin_edit_roster(year, team_id):
                                route=Routes,
                                title="Team not found")
     else:
+        p = (DB.session.query(Player)
+                   .join(Team)
+                   .filter(Team.id==team_id)
+                   .order_by(Player.name)).all()
         players = []
-        for player in team.players:
+        for player in p:
+            print(player)
             players.append(player.json())
-        if (team.player_id is not None):
-            players.append(Player.query.get(team.player_id).json())
-        all_players = Player.query.order_by("id desc").all()
+        all_players = Player.query.order_by(Player.name).all()
         non_roster = []
         for player in all_players:
             non_roster.append(player.json())
@@ -284,7 +287,6 @@ def admin_activate_player_post(year, player_id):
     if player is None:
         return dumps(False)
     activate = request.get_json()['active']
-    print(activate)
     if activate:
         player.activate()
     else:

@@ -1,5 +1,11 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
+<button type="button" class="btn btn-info"  onclick="changeCaptain({{team_id}})">
+	Change Captain
+</button>
+
+</br>
+</br>
 <table id="teamRoster" class="table table-bordered table-striped">
 	<thead>
 		<tr>
@@ -10,7 +16,7 @@
 	<tbody id="players">
 		{% for player in players %}
 			<tr id="{{player.player_id}}">
-				<td>{{player.player_name}} - {{player.email}}</td>
+				<td>{{player.player_name}}</td>
 				<td><button type="button" class="btn btn-warning" onclick="deletePlayer({{player.player_id}},{{team_id}})">Delete Player</button></td>
 			</tr>
 		{% endfor %}
@@ -21,9 +27,9 @@
 				<button type="button" class="btn btn-info" onclick="addPlayer({{team_id}});">Add Player</button>
 			</td>
 			<td>
-				<select data-placeholder="Chooise a player" id="selectPlayer" name="standard" class="chosen-select">
+				<select data-placeholder="Choose a player" id="selectPlayer" name="standard" class="chosen-select">
 				{% for player in non_roster %}
-					<option id="{{player.player_id}}" value="{{player.player_id}}">{{player.player_name}} - {{player.email}}</option>
+					<option id="{{player.player_id}}" value="{{player.player_id}}">{{player.player_name}}</option>
 				{% endfor %}
 				</select>
 			</td>
@@ -49,6 +55,33 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.k_modal -->
+<!-- the captain modal -->
+<div class="modal fade" id="captain_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" >Change the captain</h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+		<select id="captainSelect" data-placeholder="Choose a captain" name="standard" class="chosen-select">
+		{% for player in players %}
+			<option id="captain{{player.player_id}}" value="{{player.player_id}}"> 
+				{{player.player_name}}
+			</option>
+		{% endfor %}
+		</select>
+		<button class="btn btn-warning" onclick="submitCaptain({{team_id}})">
+			Submit Captain
+		</button>
+		
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
 {% endblock %}
 
 {% block script %}
@@ -59,15 +92,39 @@ function ready(){
 	})
 }
 
+function submitCaptain(team_id){
+	var captain_id = $('#captainSelect').val();
+	var data = {'player_id': captain_id, 'captain': 1};
+	$.ajax
+		({
+		  type: "POST",
+		  url: "{{route.team_roster}}/"+ team_id,
+		  contentType: "application/json",
+		  dataType: 'json',
+		  async: false,
+		  data: JSON.stringify(data),
+	      dataType: "json",
+		  success: function (results){
+	  		$('#captain_modal').modal('hide');
+		  }, error: function(request, error){
+		  	alert("Captain was not updated", + request.status);
+		  }
+		});	
+}
+
+function changeCaptain(team_id){
+	$('#captain_modal').modal("show");
+}
+
 function addPlayer(team_id){
 	var player_id  = $('#selectPlayer').val();
 	var player_name = $('#selectPlayer option:selected').text();
-	var data = { "player_id": player_id, "team_id": team_id};
+	var data = { "player_id": player_id};
 	console.log(data);
 	$.ajax
 	({
 	  type: "POST",
-	  url: "{{route.team_roster}}",
+	  url: "{{route.team_roster}}/"+ team_id,
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
@@ -80,6 +137,9 @@ function addPlayer(team_id){
   		i2 = '<button type="button" class="btn btn-warning" onclick="deletePlayer('+player_id+','+team_id+')">Delete Player</button>'
   		result = '<tr id="'+player_id+'"><td>'+i1+'</td><td>'+i2+'</td></tr>';
   		$("#players").append(result);
+  		var option;
+  		option = '<option id=captain' + player_id +' value=' + player_id + '>' + player_name + '</option>'
+  		$('#captainSelect').append(option);
 	  }, error: function(request, error){
         showErrors(request.responseJSON, request.status);
         console.log(request.text);
@@ -90,11 +150,11 @@ function addPlayer(team_id){
 
 function deletePlayer(player_id, team_id){
 	console.log("Fucker");
-	var data = { "player_id": player_id, "team_id": team_id};
+	var data = { "player_id": player_id};
 	$.ajax
 	({
 	  type: "DELETE",
-	  url: "{{route.team_roster}}",
+	  url: "{{route.team_roster}}/"+ team_id,
 	  contentType: "application/json",
 	  dataType: 'json',
 	  async: false,
