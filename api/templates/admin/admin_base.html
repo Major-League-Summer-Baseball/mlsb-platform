@@ -41,7 +41,7 @@
                       Edit Players
                     </a>
                 </li>
-                
+
                 <li class="indent-nav editsSidebar" style="display: none">
                     <a href="{{route.editgame}}/{{year}}">
                       Edit Games
@@ -67,7 +67,7 @@
                       Non-Active Players
                     </a>
                 </li>
-                
+
                 <li>
                     <a onclick="toggleImports();">
                       Imports from CSV
@@ -104,7 +104,7 @@
         </div><!-- /#page-content-wrapper -->
     </div><!-- /#wrapper -->
     <!-- jquery -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- bootstrap js -->
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/chosen.jquery.min.js") }}"></script>
@@ -115,11 +115,11 @@
           e.preventDefault();
           $("#wrapper").toggleClass("toggled");
       });
-      
+
       function toggleViews(){
         $(".viewsSidebar").toggle();
       }
-      
+
       function toggleEdits(){
         $(".editsSidebar").toggle();
       }

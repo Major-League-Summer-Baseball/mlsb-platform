@@ -37,7 +37,7 @@
                       Bat Route
                     </a>
                 </li>
-                
+
                 <li class="indent-nav basicsSidebar" style="display: none">
                     <a href="{{route.dbgame}}">
                       Game Route
@@ -162,7 +162,7 @@
                     <a href="{{route.dkiktransaction}}">
                       Submit Transaction
                     </a>
-                </li>  
+                </li>
             </ul>
         </div><!-- /#sidebar-wrapper -->
         <!-- Page Content -->
@@ -184,7 +184,7 @@
         </div><!-- /#page-content-wrapper -->
     </div><!-- /#wrapper -->
     <!-- jquery -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- bootstrap js -->
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
     <!-- Menu Toggle Script -->
@@ -194,11 +194,11 @@
           e.preventDefault();
           $("#wrapper").toggleClass("toggled");
       });
-      
+
       function toggleViews(){
         $(".viewsSidebar").toggle();
       }
-      
+
       function toggleBasics(){
         $(".basicsSidebar").toggle();
       }
