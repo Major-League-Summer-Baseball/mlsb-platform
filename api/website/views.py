@@ -10,12 +10,13 @@ from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
                     redirect, request
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
-from api.variables import SPONSORS, UNASSIGNED, EVENTS
+from api.variables import UNASSIGNED, EVENTS, NOTFOUND
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats
 from api.advanced.players_stats import post as player_summary
 from api import DB
 from sqlalchemy.sql import func
+import os.path
 import json
 
 @app.route("/")
@@ -26,22 +27,32 @@ def reroute():
 
 @app.route(Routes["homepage"] + "/<int:year>")
 def index(year):
-    print(get_sponsors())
+    games = get_upcoming_games(year) 
+    print(games)
     return render_template("website/index.html",
                            route=Routes,
                            sponsors=get_sponsors(),
                            title="Recent news",
-                           year=year)
+                           year=year,
+                           games=games)
 
-@app.route(Routes['sponsorspicture'] + "/<int:id>")
-def sponsor_picture(id):
-    print(PICTURES)
-    pic = SPONSORS.get(id, None)
-    if pic is None:
-        return send_from_directory(PICTURES,
-                                   filename=SPONSORS[0])
+
+@app.route(Routes['sponsorspicture'] + "/<int:name>")
+@app.route(Routes['sponsorspicture'] + "/<name>")
+def sponsor_picture(name):
+    if isinstance(name, int):
+        name = Sponsor.query.get(name)
+        if name is None:
+            name = "notFound"
+        else:
+            name = str(name)
+    name= name.lower().replace(" ", "_") + ".jpg"
+    f = os.path.join(PICTURES, "sponsors",  name)
+    fp = os.path.join(PICTURES, "sponsors")
+    if os.path.isfile(f):
+        return send_from_directory(fp, filename=name)
     else:
-        return send_from_directory(PICTURES, filename=pic)
+        return send_from_directory(fp, filename=NOTFOUND)
 
 @app.route(Routes['sponsorspage'] + "/<int:year>")
 def sponsors_page(year):
@@ -348,6 +359,10 @@ def get_sponsors():
         sponsors.append({"name":info[i].name,
                        "id": info[i].id})
     return sponsors
+
+from api.advanced.game_stats import post as game_summary
+def get_upcoming_games(year):
+    return game_summary(year=year, today=True)
 '''
 # -----------------------------------------------------------------------------
 '''

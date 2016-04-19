@@ -9,25 +9,28 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Team, Player, Game, League, Bat
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('game_id', type=int)
 
-def post(game_id=None, league_id=None, year=None):
+def post(game_id=None, league_id=None, year=None, today=False):
     result = []
     if game_id is not None:
         games = DB.session.query(Game).filter_by(id = game_id)
     else:
         t1 = time(0, 0)
-        t2 = time(0 , 0)
+        t2 = time(23 ,59)
         if year is not None:
             d1 = date(year, 1, 1)
             d2 = date(year, 12, 30)
         else:
             d1 = date(2014, 1, 1)
             d2 = date(date.today().year, 12, 30)
+        if today:
+            d1 = date.today() + timedelta(-2)
+            d2 = date.today() + timedelta(2)
         start = datetime.combine(d1, t1)
         end = datetime.combine(d2, t2)
         games = DB.session.query(Game).filter(Game.date.between(start, end))

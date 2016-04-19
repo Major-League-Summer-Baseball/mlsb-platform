@@ -14,9 +14,8 @@
     <link href="{{ url_for('static', filename="css/prettyPhoto.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/responsive.css") }}" rel="stylesheet">
-
     <link href="{{ url_for('static', filename="css/simple-sidebar.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/website.css") }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename="css/slidy.css") }}" rel="stylesheet">    
 
     
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -35,19 +34,16 @@
 <body class="homepage">
 
     <header id="header">
-        <div class="top-bar">
+        <div class="top-bar primary">
             <div class="container">
                 <div class="row">
-                    <div class="col-sm-2 col-xs-2">
-                        <div class="top-number"><p>Sponsors:</p></div>
-                    </div>
-                    <div class="col-sm-10 col-xs-10">
+                    <div class="col-sm-12 col-xs-12">
                        <div class="social">
                             <ul class="social-share">
                               {% for sponsor in sponsors %}
                                     <li>
                                       <a href="{{route.sponsorspage}}/{{year}}/{{sponsor.id}}" title="{{sponsor.name}}">
-                                        <img src="{{route.sponsorspicture}}/{{sponsor.id}}"  alt="" class="sponsor" style="">
+                                        <img src="{{route.sponsorspicture}}/{{sponsor.name}}"  alt="" class="sponsor" style="">
                                       </a>
                                     </li>
                               {% endfor %}
@@ -57,7 +53,45 @@
                 </div>
             </div><!--/.container-->
         </div><!--/.top-bar-->
-
+        <div class="frame secondary" id="centered">
+            <ul class="slidee">
+                {% for game in games %}
+                <li class="game">
+                    <a href="{{route.homepage}}/{{year}}">
+                        <div class="container">
+                            <div class="row">
+                                <div class="game col-xs-4" >
+                                    {{game.date}}
+                                </div>
+                                <div class="game col-xs-4" >
+                                    <div class="row">
+                                        <div class="gameTeam col-xs-2">
+                                            <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" class="game" style="">
+                                            {{game.away_team.team_name}}
+                                        </div>
+                                        <div class="gameScore col-xs-2">
+                                            {{game.away_score}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="game col-xs-4" >
+                                    <div class="row">
+                                        <div class="gameTeam col-xs-2">
+                                            <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" class="game" style="">
+                                            {{game.home_team.team_name}}
+                                        </div>
+                                        <div class="gameScore col-xs-2">
+                                            {{game.home_score}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>   
+        </div>
         <nav class="navbar navbar-inverse accent" role="banner">
             <div class="container">
                 <div class="navbar-header">
@@ -67,10 +101,10 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{{route.homepage}}/{{year}}"><img src="{{ url_for('static', filename="banner.jpg")}}" style=" width=100%; max-width=1000px;"></a>
+                    <a class="navbar-brand" href="{{route.homepage}}/{{year}}"><img src="{{ url_for('static', filename="banner.png")}}" style=" width=100%; max-width=1000px;"></a>
                 </div>
 				
-                <div class="collapse navbar-collapse navbar-right">
+                <div class="collapse navbar-collapse navbar-left">
                     <ul class="nav navbar-nav">
                           <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
                           <li><a href="{{route.standingspage}}/{{year}}">Prism Power Rankings</a></li>
@@ -172,6 +206,39 @@
     <script src="{{ url_for('static', filename="js/main.js") }}"></script>
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/sly.js") }} "></script>
+    
+    <script>
+        $(document).ready(function() {
+                // -------------------------------------------------------------
+    //   Centered Navigation
+    // -------------------------------------------------------------
+                var $frame = $('#centered');
+                var $wrap  = $frame.parent();
+
+                // Call Sly on frame
+                $frame.sly({
+                    horizontal: 1,
+                    itemNav: 'centered',
+                    smart: 1,
+                    activateOn: 'click',
+                    mouseDragging: 1,
+                    touchDragging: 1,
+                    releaseSwing: 1,
+                    scrollBar: $wrap.find('.scrollbar'),
+                    scrollBy: 1,
+                    speed: 300,
+                    elasticBounds: 1,
+                    dragHandle: 1,
+                    dynamicHandle: 1,
+                    clickBar: 1,
+
+                    // Buttons
+                    prev: $wrap.find('.prev'),
+                    next: $wrap.find('.next')
+                });
+        });
+    </script>
     {% block script %}
 
     {% endblock %}

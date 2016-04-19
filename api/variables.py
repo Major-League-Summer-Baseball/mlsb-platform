@@ -4,7 +4,7 @@ Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds constant variables that used
 '''
-
+NOTFOUND = "notFound.png"
 SPONSORS = {0: "notFound.png",
             1: "domus.jpg",
             2: "sentry.jpeg", 
