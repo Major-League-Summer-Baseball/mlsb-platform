@@ -545,7 +545,6 @@ class TestPlayerTeamLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
                          " View: on no one")
 
-
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
