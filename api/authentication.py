@@ -74,11 +74,6 @@ def requires_kik(f):
         auth = request.authorization
         if not auth or not check_kik(auth.username, auth.password):
             return authenticate()
-        elif 'admin' in session and 'password' in session:
-            # check if user signed in already
-            logged = check_kik(session['admin'], session['password'])
-            if not logged:
-                return authenticate()
         return f(*args, **kwargs)
     return decorated
 
