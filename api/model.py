@@ -34,9 +34,9 @@ class Fun(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     year = DB.Column(DB.Integer)
     count = DB.Column(DB.Integer)
-    def __init__(self, year=date.today().year):
+    def __init__(self, year=date.today().year, count=0):
         self.year = year
-        self.count = 0
+        self.count = count
 
     def increment(self, change):
         '''
@@ -45,6 +45,9 @@ class Fun(DB.Model):
             change: the amount the fun count has changed by (int)
         '''
         self.count += change
+
+    def json(self):
+        return {'year': self.year, 'count': self.count}
 
 class Espys(DB.Model):
     '''
@@ -465,7 +468,8 @@ class Team(DB.Model):
             if player not in self.players:
                 self.players.append(player)
         else:
-            self.players.append(player)
+            if player not in self.players:
+                self.players.append(player)
         return valid
 
     def remove_player(self, player_id):
@@ -476,13 +480,11 @@ class Team(DB.Model):
         Raises:
             MissingPlayer
         '''
-        if self.player_id == player_id:
-            self.player_id = None
         player = Player.query.get(player_id)
         if player not in self.players:
             raise PlayerNotOnTeam(payload={'details':player_id})
         self.players.remove(player)
-        
+
     def check_captain(self, player_name, password):
         '''
         checks if the player is the captain of the team

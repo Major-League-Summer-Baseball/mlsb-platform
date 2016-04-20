@@ -141,6 +141,12 @@ def player_view_doc():
                                          errors=ERRORS
                                          )
 
+@app.route(Routes['dvfun'])
+def fun_meter_view_doc():
+    return render_template('documentation/funView.html',
+                            route=Routes,
+                            errors=ERRORS)
+
 # -----------------------------------------------------------------------------
 # KIK documentation
 # -----------------------------------------------------------------------------

@@ -10,7 +10,7 @@ from api.routes import Routes
 from api.model import Player, Espys
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from api.errors import  TeamDoesNotExist,NotTeamCaptain, TeamAlreadyHasCaptain,\
                         PlayerNotOnTeam, PlayerNotSubscribed,GameDoesNotExist,\
                         InvalidField, SponsorDoesNotExist
@@ -465,10 +465,10 @@ class testUpcomingGames(TestSetup):
                 'kik': 'frase2560'
                 }
         d = date.today().strftime("%Y-%m-%d")
-        t = date.today().strftime("%H:%M")
+        d2 = (date.today() + timedelta(1)).strftime("%Y-%m-%d")
         expect = [   {   'away_team': 'Chainsaw Black',
                         'away_team_id': 2,
-                        'date': '2016-04-13',
+                        'date': d,
                         'field': '',
                         'game_id': 1,
                         'home_team': 'Domus Green',
@@ -478,7 +478,7 @@ class testUpcomingGames(TestSetup):
                         'time': '11:45'},
                     {   'away_team': 'Domus Green',
                         'away_team_id': 1,
-                        'date': '2016-04-14',
+                        'date': d2,
                         'field': '',
                         'game_id': 2,
                         'home_team': 'Chainsaw Black',

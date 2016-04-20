@@ -23,6 +23,7 @@ Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"
 Routes['vgame'] = "/api/view/games"
 Routes['vplayerLookup'] = "/api/view/player_lookup"
+Routes['vfun'] = "/api/view/fun"
 # Kik APIS
 Routes['kiksubscribe'] = "/api/kik/subscribe"
 Routes['kiksubmitscore'] = "/api/kik/submit_score"
@@ -63,6 +64,8 @@ Routes['dkikcaptain'] = "/documentation/kik/captain"
 Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
 Routes['dkiktransaction'] = "/documentation/kik/transaction"
 Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
+Routes['dvfun'] = "/documentation/views/fun"
+
 
 # -----------------------------------------------------------------------------
 # Website

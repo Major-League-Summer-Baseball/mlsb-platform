@@ -8,7 +8,7 @@ import unittest
 import tempfile
 from api import DB
 from pprint import PrettyPrinter
-from api.model import Player, Team, Sponsor, League, Game, Bat, Espys
+from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
 from datetime import datetime, timedelta
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
@@ -59,6 +59,27 @@ class TestSetup(unittest.TestCase):
     def output(self, data):
         if self.show_results:
             self.pp.pprint(data)
+
+    def addFun(self):
+        FUNS = {
+               2002:89,
+               2003: 100,
+               2004: 177,
+               2005:186,
+               2006:176,
+               2007: 254,
+               2008: 290,
+               2009: 342,
+               2010: 304,
+               2011: 377,
+               2012: 377,
+               2013: 461,
+               2014: 349,
+               2015: 501
+               }
+        for year, count in FUNS.items():
+            DB.session.add(Fun(year=year, count=count))
+        DB.session.commit()
 
     def addSponsors(self):
         self.sponsors = [Sponsor("Domus"),

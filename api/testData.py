@@ -1,5 +1,5 @@
 from api import DB
-from api.model import Player, Team, Sponsor, Game, League, Bat, Espys
+from api.model import Player, Team, Sponsor, Game, League, Bat, Espys, Fun
 from random import randint
 # delete old information
 DB.session.commit()
@@ -15,6 +15,24 @@ DB.engine.execute('''
                         DROP TABLE IF EXISTS league;
                 ''')
 DB.create_all()
+FUNS = {
+       2002:89,
+       2003: 100,
+       2004: 177,
+       2005:186,
+       2006:176,
+       2007: 254,
+       2008: 290,
+       2009: 342,
+       2010: 304,
+       2011: 377,
+       2012: 377,
+       2013: 461,
+       2014: 349,
+       2015: 501
+       }
+for year, count in FUNS.items():
+    DB.session.add(Fun(year=year, count=count))
 # add the two leagues
 DB.session.add(League(name="Monday & Wednesday"))
 DB.session.add(League(name="Tuesday & Thursday"))

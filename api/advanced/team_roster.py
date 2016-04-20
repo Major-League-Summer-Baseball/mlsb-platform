@@ -73,6 +73,9 @@ class TeamRosterAPI(Resource):
             raise TeamDoesNotExist(payload={'details': team_id})
         team.remove_player(args['player_id'])
         DB.session.commit()
+        if team.player_id == args['player_id']:
+            team.player_id = None
+            DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
         return response

@@ -486,6 +486,38 @@ class TestTeamRoster(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
                          " GET: on non-empty set")
 
+class TestFun(TestSetup):
+    def testPost(self):
+        self.addFun()
+        params = {'year': 2012}
+        rv = self.app.post(Routes['vfun'], data=params)
+        expect = [{'count': 377, 'year': 2012}]
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vfun'] +
+                         " View: on 2012 year")
+        params = {}
+        rv = self.app.post(Routes['vfun'], data=params)
+        expect = [  
+                    {'count': 89, 'year': 2002},
+                    {'count': 100, 'year': 2003},
+                    {'count': 177, 'year': 2004},
+                    {'count': 186, 'year': 2005},
+                    {'count': 176, 'year': 2006},
+                    {'count': 254, 'year': 2007},
+                    {'count': 290, 'year': 2008},
+                    {'count': 342, 'year': 2009},
+                    {'count': 304, 'year': 2010},
+                    {'count': 377, 'year': 2011},
+                    {'count': 377, 'year': 2012},
+                    {'count': 461, 'year': 2013},
+                    {'count': 349, 'year': 2014},
+                    {'count': 501, 'year': 2015}]
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vfun'] +
+                         " View: on 2012 year")
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
