@@ -97,11 +97,15 @@ from api.advanced.players_stats import PlayerStatsAPI
 from api.advanced.team_stats import TeamStatsAPI
 from api.advanced.player_lookup import PlayerLookupAPI
 from api.advanced.fun import AdvancedFunAPI
+from api.advanced.player_teams import PlayerTeamLookupAPI
 api.add_resource(GameStatsAPI, Routes['vgame'], endpoint="vgame")
 api.add_resource(PlayerStatsAPI, Routes['vplayer'], endpoint="vplayer")
 api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
-api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'], endpoint="vplayerlookup")
+api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'],
+                 endpoint="vplayerlookup")
 api.add_resource(AdvancedFunAPI, Routes['vfun'], endpoint="vfun")
+api.add_resource(PlayerTeamLookupAPI, Routes['vplayerteamLookup'],
+                 endpoint='vplayerteamLookup')
 # add kik routes
 from api.kik.submit_scores import SubmitScoresAPI
 from api.kik.authenticate_captain import AuthenticateCaptainAPI

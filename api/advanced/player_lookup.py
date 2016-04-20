@@ -2,7 +2,7 @@
 @author: Dallas Fraser
 @author: 2016-04-12
 @organization: MLSB API
-@summary: The views for player stats
+@summary: The views for looking up a player
 '''
 from flask.ext.restful import Resource, reqparse
 from flask import Response

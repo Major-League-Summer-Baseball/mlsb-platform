@@ -518,6 +518,34 @@ class TestFun(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['vfun'] +
                          " View: on 2012 year")
 
+class TestPlayerTeamLookup(TestSetup):
+    def testPost(self):
+        self.addPlayersToTeam()
+        params = {'player_name': "Dallas Fraser"}
+        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        expect = [   {   'captain': {   'gender': 'm',
+                       'player_id': 1,
+                       'player_name': 'Dallas Fraser'},
+                        'color': 'Green',
+                        'espys': 0,
+                        'league_id': None,
+                        'sponsor_id': 1,
+                        'team_id': 1,
+                        'team_name': 'Domus Green',
+                        'year': 2016}]
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
+                         " View: on Dallas Fraser")
+        params = {"player_name": "NotFuckingReal"}
+        rv = self.app.post(Routes['vfun'], data=params)
+        expect = []
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
+                         " View: on no one")
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

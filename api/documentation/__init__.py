@@ -147,6 +147,13 @@ def fun_meter_view_doc():
                             route=Routes,
                             errors=ERRORS)
 
+@app.route(Routes['dvplayerteamLookup'])
+def player_team_lookup_view_doc():
+    return render_template('documentation/playerTeamLookupView.html',
+                            route=Routes,
+                            errors=ERRORS)
+
+
 # -----------------------------------------------------------------------------
 # KIK documentation
 # -----------------------------------------------------------------------------

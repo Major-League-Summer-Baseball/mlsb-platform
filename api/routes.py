@@ -24,6 +24,8 @@ Routes['vteam'] = "/api/view/teams"
 Routes['vgame'] = "/api/view/games"
 Routes['vplayerLookup'] = "/api/view/player_lookup"
 Routes['vfun'] = "/api/view/fun"
+Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
+
 # Kik APIS
 Routes['kiksubscribe'] = "/api/kik/subscribe"
 Routes['kiksubmitscore'] = "/api/kik/submit_score"
@@ -57,6 +59,9 @@ Routes['dbleague'] = "/documentation/basic/league"
 Routes['dvgame'] = "/documentation/views/game"
 Routes['dvplayer'] = "/documentation/views/player"
 Routes['dvteam'] = "/documentation/views/team"
+Routes['dvfun'] = "/documentation/views/fun"
+Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
+
 # kik documentation 
 Routes['dkiksubscribe'] = "/documentation/kik/subscribe"
 Routes['dkiksubmitscore'] = "/documentation/kik/submit_score"
@@ -64,9 +69,6 @@ Routes['dkikcaptain'] = "/documentation/kik/captain"
 Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
 Routes['dkiktransaction'] = "/documentation/kik/transaction"
 Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
-Routes['dvfun'] = "/documentation/views/fun"
-
-
 # -----------------------------------------------------------------------------
 # Website
 # -----------------------------------------------------------------------------
