@@ -9,7 +9,7 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Player, Team, Game, Bat
-from api.errors import TeamDoesNotExist, NotTeamCaptain
+from api.errors import TeamDoesNotExist, NotTeamCaptain, PlayerDoesNotExist
 from api.authentication import requires_kik
 from datetime import datetime
 from sqlalchemy import or_
@@ -35,10 +35,13 @@ class CaptainGamesAPI(Resource):
         args = parser.parse_args()
         team_id = args['team']
         kik = args['kik']
+        print(team_id, kik)
         team = Team.query.get(team_id)
         if team is None:
             raise TeamDoesNotExist(payload={'details': team_id})
         team_captain = Player.query.get(team.player_id)
+        if team_captain is None:
+            raise PlayerDoesNotExist(payload={'details': team.player_id})
         if team_captain.kik != kik:
             # something fishy is going on
             raise NotTeamCaptain(payload={'details': team_captain.kik})

@@ -267,7 +267,7 @@ class PlayerTest(TestSetup):
                          Routes['vplayer'] + " Post: View of Player")
 
 class TeamTest(TestSetup):
-    def estPostNoParameters(self):
+    def testPostNoParameters(self):
         rv = self.app.post(Routes['vteam'])
         expect = {}
         self.output(loads(rv.data))
