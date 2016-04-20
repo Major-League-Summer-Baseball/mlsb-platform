@@ -791,7 +791,7 @@ class Game(DB.Model):
                                       .filter(Bat.classification.in_(HITS))
                                       ).first()[0]
         if away_score is None:
-            away_score = "asdasda"
+            away_score = 0
         if home_score is None:
             home_score = 0
         if away_bats is None:

@@ -9,7 +9,7 @@ from api import app, PICTURES
 from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
                     redirect, request
-from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
+from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
 from api.variables import UNASSIGNED, EVENTS, NOTFOUND
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats
@@ -31,7 +31,7 @@ def index(year):
     print(games)
     return render_template("website/index.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
+                           base=base_data(year),
                            title="Recent news",
                            year=year,
                            games=games)
@@ -58,7 +58,7 @@ def sponsor_picture(name):
 def sponsors_page(year):
     return render_template("website/sponsors.html",
                            route=Routes,
-                           sponsors=get_sponsors(), 
+                           base=base_data(year), 
                            title="Sponsors",
                            year=year)
 
@@ -68,13 +68,13 @@ def sponsor_page(year, id):
     if sponsor is None:
         page = render_template("website/notFound.html",
                                route=Routes,
-                               sponsors=get_sponsors(),
+                               base=base_data(year),
                                title = "Not Found",
                                year=year)
     else:
         page = render_template("website/sponsor.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
+                           base=base_data(year),
                            sponsor=sponsor, 
                            title="Sponsor | " + sponsor['name'],
                            year=year)
@@ -84,7 +84,7 @@ def sponsor_page(year, id):
 def schedule(year):
     return render_template("website/schedule.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
+                           base=base_data(year),
                            games=get_games(year),
                            title="Schedule",
                            year=year)
@@ -93,7 +93,7 @@ def schedule(year):
 def standings(year):
     return render_template("website/standings.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
+                           base=base_data(year),
                            leagues=get_leagues(year),
                            title="Standings",
                            year=year)
@@ -103,7 +103,7 @@ def stats_page(year):
     players = player_summary(year)
     return render_template("website/stats.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
+                           base=base_data(year),
                            title="Players Stats",
                            year=year,
                            players=players
@@ -114,7 +114,7 @@ def team_page(year, team_id):
     team = get_team(year, team_id)
     return render_template("website/team.html",
                        route=Routes,
-                       sponsors=get_sponsors(),
+                       base=base_data(year),
                        team=team,
                        title="Team - " + str(team['name']),
                        year=year)
@@ -136,7 +136,7 @@ def player_page(year, player_id):
         stats.append(player)
     return render_template("website/player.html",
                        route=Routes,
-                       sponsors=get_sponsors(),
+                       base=base_data(year),
                        stats=stats,
                        title="Player Stats",
                        name=name,
@@ -148,7 +148,7 @@ def leaders_page(year):
     men = get_leaders("m", year, "hr")[:5]
     return render_template("website/new-leaders.html",
                        route=Routes,
-                       sponsors=get_sponsors(),
+                       base=base_data(year),
                        men=men,
                        women=women,
                        title="League Leaders",
@@ -172,21 +172,21 @@ def events_page(year):
             return render_template("website/events.html",
                                dates = EVENTS[year],
                                route=Routes,
-                               sponsors=get_sponsors(),
+                               base=base_data(year),
                                title="Events",
                                year=year)
         else:
             return render_template("notFound.html",
                                    year=year,
                                    route=Routes,
-                                   sponsors=get_sponsors())
+                                   base=base_data(year))
 
 
 @app.route(Routes['fieldsrulespage'] + "/<int:year>")
 def rules_fields(year):
     return render_template("website/fields-and-rules.html",
                            route=Routes,
-                           sponsors=get_sponsors(),
+                           base=base_data(year),
                            title="Fields & Rules",
                            year=year)
 
@@ -363,6 +363,19 @@ def get_sponsors():
 from api.advanced.game_stats import post as game_summary
 def get_upcoming_games(year):
     return game_summary(year=year, today=True)
+
+def base_data(year):
+    base = {}
+    base['games'] = get_upcoming_games(year)
+    base['sponsors'] = get_sponsors()
+    fun_count = Fun.query.filter_by(year=year).first()
+    if fun_count is None:
+        fun_count = 0
+    else:
+        fun_count = fun_count
+    base['fun'] = fun_count
+    return base
+
 '''
 # -----------------------------------------------------------------------------
 '''

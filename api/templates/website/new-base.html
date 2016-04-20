@@ -16,8 +16,9 @@
     <link href="{{ url_for('static', filename="css/responsive.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/simple-sidebar.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/slidy.css") }}" rel="stylesheet">    
-
-    
+    <!-- Odometr includes -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/odometer-theme-car.css") }}"/>
+    <!-- Datatables include -->
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
@@ -40,7 +41,7 @@
                     <div class="col-sm-12 col-xs-12">
                        <div class="social">
                             <ul class="social-share">
-                              {% for sponsor in sponsors %}
+                              {% for sponsor in base.sponsors %}
                                     <li>
                                       <a href="{{route.sponsorspage}}/{{year}}/{{sponsor.id}}" title="{{sponsor.name}}">
                                         <img src="{{route.sponsorspicture}}/{{sponsor.name}}"  alt="" class="sponsor" style="">
@@ -53,41 +54,24 @@
                 </div>
             </div><!--/.container-->
         </div><!--/.top-bar-->
-        <div class="frame secondary" id="centered">
+        <div class="container frame secondary" id="centered">
             <ul class="slidee">
-                {% for game in games %}
+                {% for game in base.games %}
                 <li class="game">
-                    <a href="{{route.homepage}}/{{year}}">
-                        <div class="container">
-                            <div class="row">
-                                <div class="game col-xs-4" >
-                                    {{game.date}}
-                                </div>
-                                <div class="game col-xs-4" >
-                                    <div class="row">
-                                        <div class="gameTeam col-xs-2">
-                                            <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" class="game" style="">
-                                            {{game.away_team.team_name}}
-                                        </div>
-                                        <div class="gameScore col-xs-2">
-                                            {{game.away_score}}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="game col-xs-4" >
-                                    <div class="row">
-                                        <div class="gameTeam col-xs-2">
-                                            <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" class="game" style="">
-                                            {{game.home_team.team_name}}
-                                        </div>
-                                        <div class="gameScore col-xs-2">
-                                            {{game.home_score}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                    <span class="game">
+                        <a href="{{route.homepage}}/{{year}}">
+                            {{game.date}}
+                            <hr class="game"/>
+                            <br/>
+                            <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" class="game" style="">
+                            {{game.away_team.team_name}}
+                            {{game.away_score}}
+                            <br/>
+                            <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" class="game" style="">
+                            {{game.home_team.team_name}}
+                            {{game.home_score}}
+                        </a>
+                    </span>
                 </li>
                 {% endfor %}
             </ul>   
@@ -122,37 +106,25 @@
     <section id="bottom">
         <div class="container">
             <div class="row">
-                <div class="col-sm-3 primary">
-                    <table>
-                        <tr>
-                            <td><h4>Follow us:</h4>
-                            <td><a class="btn btn-mini btn-link " href="https://www.facebook.com/mlsb2015/?fref=ts" target="_blank"><i class="fa fa-facebook"></i></a></td>
-                            <td><a class="btn btn-mini btn-link" href="https://twitter.com/MLSB2015" target="_blank"><i class="fa fa-twitter"></i></a></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-sm-6">
+                <div class="col-xs-12">
                     <h4>
                         {{title}}
                     </h4>
-                </div>
-                <div class="col-sm-3 primary">
-                    <h4>
-                        More
-                    </h4>
+                    {% block content %}{% endblock %}
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 primary">
-                    <div class="fb-page" data-href="https://www.facebook.com/mlsb2015" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="true" data-show-posts="true"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/mlsb2015"><a href="https://www.facebook.com/mlsb2015">MLSB 2015</a></blockquote></div></div>
-
-                    Fun Meter
+                <div class="col-sm-6 col-xs-0">
+                    <table>
+                        <tr>
+                            <td><h4>Follow us:</h4>
+                            <td><a class="btn btn-mini btn-link " href="https://www.facebook.com/mlsb2016/?fref=ts" target="_blank"><i class="fa fa-facebook"></i></a></td>
+                            <td><a class="btn btn-mini btn-link" href="https://twitter.com/MLSB2015" target="_blank"><i class="fa fa-twitter"></i></a></td>
+                        </tr>
+                    </table>                    
+                    <h4>Fun Meter: <div id="odometer" class="odometer">{{base.fun}}</div></h4>
                 </div>
-
-                <div class="col-sm-6">
-                    {% block content %}{% endblock %}
-                </div>
-                <div class="col-sm-3 primary"> 
+                <div class="col-sm-6 col-xs-0">
                     <!-- weather widget start -->
                         <a href="http://www.accuweather.com/en/ca/waterloo/n2l/weather-forecast/55073" class="aw-widget-legal">
                         <!--
@@ -160,12 +132,8 @@
                         -->
                         </a><div id="awcc1459916225529" class="aw-widget-current"  data-locationkey="55073" data-unit="c" data-language="en-us" data-useip="false" data-uid="awcc1459916225529"></div><script type="text/javascript" src="http://oap.accuweather.com/launch.js"></script>
                     <!-- weather widget end -->
-
-                      <!-- Polling Option-->
-                        <div id="qp_all479944" style="width:100%;"><link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'><STYLE>#qp_main479944 .qp_btna:hover input {background: rgb(0, 53, 95)!important}</STYLE><div id="qp_main479944" fp='92D945c0-19' results=0 style="border-radius: 0px;margin: 0px auto;padding: 0.8em;font-family: 'Open Sans', sans-serif, Arial;color: rgb(0, 0, 0);border: 1px solid rgb(219, 217, 217);max-width: 792px;background: rgb(255, 255, 255)"><div style="font-size: 1.2em;color: rgb(255, 255, 255);font-family: 'Open Sans', sans-serif, Arial;background-color: rgb(0, 53, 95)"><div style="padding: 0.8em;line-height: 1.3em">Thoughts on the new website?</div></div><form id="qp_form479944" action="//www.poll-maker.com/results479944x92D945c0-19" method="post" target="_blank" style="display: inline;margin: 0px;padding: 0px"><div style="padding: 0px"><input type=hidden name="qp_d479944" value="42321.5716666669-42321.5716580928"><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="1" />Cool</span></div><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="2" />Fuck no</span></div><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="3" />Where is the beer?</span></div><div style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both" class="qp_a" onClick="var c=this.getElementsByTagName('INPUT')[0]; if((!event.target?event.srcElement:event.target).tagName!='INPUT'){c.checked=(c.type=='radio'?true:!c.checked)};var i=this.parentNode.parentNode.parentNode.getElementsByTagName('INPUT');for(var k=0;k!=i.length;k++){i[k].parentNode.parentNode.setAttribute('sel',i[k].checked?1:0)}"><span style="display: block;padding-left: 30px;cursor: inherit"><input style="float: left;width: 20px;margin-left: -25px;margin-top: 2px;padding: 0px;height: 20px" name="qp_v479944" type="radio" value="999" />Other</span></div><div id="qp_ot479944" style="color: rgb(107, 107, 107);font-family: 'Open Sans', sans-serif, Arial;font-size: 1.1em;line-height: 1.5;padding: 13px 8px 11px;margin: 10px 0px;clear: both"><div style="padding-left:33px">Please Specify: <input style="width:100%;position:relative;top:2px" name='qp_other479944' type=text value=''></div></div></div><div style="padding-left: 0px;min-height: 40px;clear: both"><a style="float: left;width: 50%;max-width: 140px;box-sizing: border-box;padding-right: 5px;text-decoration: none" class="qp_btna" href="#"><input name="qp_b479944" style="width: 100%;height: 40px;font-family: 'Open Sans', sans-serif, Arial;font-size: 16px;color: rgb(255, 255, 255);cursor: pointer;border: 0px;-webkit-appearance: none;border-radius: 0px;background-color: rgb(11, 121, 211)" type="submit" btype="v" value="Vote" /></a><a style="float: left;width: 50%;max-width: 140px;box-sizing: border-box;padding-left: 5px;text-decoration: none" class="qp_btna" href="#"><input name="qp_b479944" style="width: 100%;height: 40px;font-family: 'Open Sans', sans-serif, Arial;font-size: 16px;color: rgb(255, 255, 255);cursor: pointer;border: 0px;-webkit-appearance: none;border-radius: 0px;background-color: rgb(11, 121, 211)" type="submit" btype="r" value="Results" /></a></div><a id="qp_a479944" style="float:right;font-family:Arial;font-size:10px;color:rgb(0,0,0);text-decoration:none" href="http://www.poll-maker.com">Poll Maker</a></form><div style="display:none"><div id="qp_rp479944" style="font-size: 14px;width: 5ex;text-align: right;overflow: hidden;position: absolute;right: 5px;height: 1.5em;line-height: 1.5em"></div><div id="qp_rv479944" style="font-size: 14px;line-height: 1.5em;width: 0%;text-align: right;color: rgb(255, 255, 255);box-sizing: border-box;padding-right: 3px"></div><div id="qp_rb479944" style="font-size: 14px;line-height: 1.5em;color: rgb(255, 255, 255);display: block"></div><div id="qp_rva479944" style="border-color: rgb(0, 111, 185);background: rgb(0, 111, 185)"></div><div id="qp_rvb479944" style="border-color: rgb(22, 52, 99);background: rgb(22, 52, 99)"></div><div id="qp_rvc479944" style="border-color: rgb(20, 129, 171);background: rgb(91, 207, 252)"></div></div></div></div><script src="//scripts.poll-maker.com/3012/scpolls.js" language="javascript"></script>
-                      <!-- end of poll -->
-                </div>
-
+                </div> 
+            </div>
         </div>
     </section><!--/#bottom-->
 
@@ -188,17 +156,6 @@
             </div>
         </div>
     </footer><!--/#footer-->
-
-    <div id="fb-root"></div>
-    <script>
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-    </script>
     <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.prettyPhoto.js") }}"></script>
@@ -207,7 +164,7 @@
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/sly.js") }} "></script>
-    
+    <script src="{{ url_for('static', filename="js/odometer.min.js") }} "></script>
     <script>
         $(document).ready(function() {
                 // -------------------------------------------------------------
