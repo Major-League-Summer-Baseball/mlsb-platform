@@ -533,7 +533,6 @@ class Sponsor(DB.Model):
         self.description = description
         self.link = link
         self.active = True
-        print(self.link)
 
     def __repr__(self):
         '''
