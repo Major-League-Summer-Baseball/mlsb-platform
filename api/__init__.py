@@ -98,6 +98,7 @@ from api.advanced.team_stats import TeamStatsAPI
 from api.advanced.player_lookup import PlayerLookupAPI
 from api.advanced.fun import AdvancedFunAPI
 from api.advanced.player_teams import PlayerTeamLookupAPI
+from api.advanced.league_leaders import LeagueLeadersAPI
 api.add_resource(GameStatsAPI, Routes['vgame'], endpoint="vgame")
 api.add_resource(PlayerStatsAPI, Routes['vplayer'], endpoint="vplayer")
 api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
@@ -106,6 +107,9 @@ api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'],
 api.add_resource(AdvancedFunAPI, Routes['vfun'], endpoint="vfun")
 api.add_resource(PlayerTeamLookupAPI, Routes['vplayerteamLookup'],
                  endpoint='vplayerteamLookup')
+api.add_resource(LeagueLeadersAPI, Routes['vleagueleaders'],
+                 endpoint='vleagueleaders')
+
 # add kik routes
 from api.kik.submit_scores import SubmitScoresAPI
 from api.kik.authenticate_captain import AuthenticateCaptainAPI

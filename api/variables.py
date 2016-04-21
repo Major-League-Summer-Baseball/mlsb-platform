@@ -27,7 +27,7 @@ EVENTS = {2016: {
                   "Rafting": "July 9th",
                   "Hitting_for_the_Cycle": "July 16th",
                   "Beerwell_Classic": "July 23rd",
-                  "Tournaments": "May 21st, May27th, July 15th, July 22ond"}
+                  "Tournaments": "May 21st, May27th, July 15th, July 22nd"}
           } # all the events baby
 FIELDS = ["WP1", "WP2", "WP3", "WP4", "Hillside Upper", "Hillside Lower"] # the fields we play at
 KIKPOINTS = 2 # the kik points assigned for subscription

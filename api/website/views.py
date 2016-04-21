@@ -14,6 +14,7 @@ from api.variables import UNASSIGNED, EVENTS, NOTFOUND
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats
 from api.advanced.players_stats import post as player_summary
+from api.advanced.league_leaders import get_leaders
 from api import DB
 from sqlalchemy.sql import func
 import os.path
@@ -144,8 +145,8 @@ def player_page(year, player_id):
 
 @app.route(Routes['leagueleaderpage'] + "/<int:year>")
 def leaders_page(year):
-    women = get_leaders("f", year, "ss")[:5]
-    men = get_leaders("m", year, "hr")[:5]
+    women = get_leaders("ss", year=year)[:5]
+    men = get_leaders("hr", year=year)[:5]
     return render_template("website/new-leaders.html",
                        route=Routes,
                        base=base_data(year),
@@ -206,45 +207,6 @@ def get_sponsor(id):
         expect = {"name": s.name,
                   "id": s.id}
     return expect
-
-def get_leaders(gender, year, hit):
-    leaders = []
-    hits = func.count(Bat.player_id).label("total")
-    d1 = date(year, 1, 1)
-    t = time(0, 0)
-    d2 = date(year, 12, 30)
-    start = datetime.combine(d1, t)
-    end = datetime.combine(d2, t)
-    bats = (DB.session.query(Bat.player_id,
-                            hits,
-                            Bat.team_id,
-                            Bat.classification,
-                            Bat.team_id
-                            ).join(Game)
-                            .filter(Game.date.between(start, end))
-                            .filter(Bat.player_id != UNASSIGNED)
-                            .group_by(Bat.player_id)
-                            .group_by(Bat.classification)
-                            .group_by(Bat.team_id)).subquery("bats")
-    players = (DB.session.query(Player.name,
-                              Player.id,
-                              bats.c.total,
-                              bats.c.team_id,
-                              bats.c.classification
-                              )
-                              .join(bats)
-                              .filter(bats.c.classification == hit)
-                              .order_by(bats.c.total.desc())
-                              )
-    players = players.all()
-    for player in players:
-        result = {'name': player[0],
-                  'id': player[1],
-                  'hits': player[2],
-                  'team': str(Team.query.get(player[3]))
-                  }
-        leaders.append(result)
-    return leaders
 
 def get_espy(year):
     espy = []
@@ -353,11 +315,12 @@ def get_leagues(year):
     return leagues
 
 def get_sponsors():
-    info = Sponsor.query.filter_by(active=True).all()
+    info = (DB.session.query(Sponsor)
+                .filter(Sponsor.active==True)
+                .order_by(Sponsor.name)).all()
     sponsors = []
     for i in range(0, len(info)):
-        sponsors.append({"name":info[i].name,
-                       "id": info[i].id})
+        sponsors.append(info[i].json())
     return sponsors
 
 from api.advanced.game_stats import post as game_summary

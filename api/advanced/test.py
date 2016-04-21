@@ -545,6 +545,32 @@ class TestPlayerTeamLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
                          " View: on no one")
 
+class TestLeagueLeaders(TestSetup):
+    def testMain(self):
+        
+        # fuck this test isnt great since 
+        self.mockLeaders()
+        params = {'stat': "hr"}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        expect = [  {'hits': 3, 'id': 3, 'name': 'My Dream Girl', 'team': 'Sentry Sky Blue'},
+                    {'hits': 3, 'id': 3, 'name': 'My Dream Girl', 'team': 'Brick Blue'},
+                    {'hits': 3, 'id': 2, 'name': 'Dallas Fraser', 'team': 'Domus Green'},
+                    {'hits': 3, 'id': 2, 'name': 'Dallas Fraser', 'team': 'Nightschool Navy'}
+                ]
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
+                         " View: on all years")
+        params = {'stat': "hr", 'year': 2016}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        expect = [  {'hits': 1, 'id': 2, 'name': 'Dallas Fraser', 'team': 'Domus Green'},
+                    {'hits': 1, 'id': 3, 'name': 'My Dream Girl', 'team': 'Sentry Sky Blue'}]
+
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
+                         " View: on 2016")
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

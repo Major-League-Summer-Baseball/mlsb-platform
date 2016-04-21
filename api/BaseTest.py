@@ -411,6 +411,160 @@ class TestSetup(unittest.TestCase):
             DB.session.add(b)
         DB.session.commit()
 
+    def mockLeaders(self):
+        self.sponsors = [Sponsor("Domus"),
+                         Sponsor("Sentry"),
+                         Sponsor("Nightschool"),
+                         Sponsor("Brick")]
+        for s in self.sponsors:
+            DB.session.add(s)
+        DB.session.add(League("Monday & Wednesday"))
+        DB.session.add(League("Tuesday & Thursday"))
+        self.teams = [Team("Green",
+                           sponsor_id=1, 
+                           league_id=1),
+                      Team("Sky Blue",
+                           sponsor_id=2, 
+                           league_id=1),
+                      Team("Navy",
+                           sponsor_id=3, 
+                           league_id=2),
+                      Team('Blue',
+                           sponsor_id=4,
+                           league_id=2)]
+        for t in self.teams:
+            DB.session.add(t)
+        self.games = [Game(
+                           "2014-8-23",
+                           self.t,
+                           1,
+                           2,
+                           1),
+                     Game(
+                          "2015-8-23",
+                          self.t,
+                          2,
+                          1,
+                          1),
+                     Game(
+                          "2016-8-23",
+                          self.t,
+                          2,
+                          1,
+                          1),
+                    Game(
+                         self.d,
+                         self.t,
+                         3,
+                         4,
+                         2),
+                     Game(
+                          self.d,
+                          self.t,
+                          4,
+                          3,
+                          2),
+                     Game(
+                          self.d,
+                          self.t,
+                          4,
+                          3,
+                          2),
+                      ]
+        for g in self.games:
+            DB.session.add(g)
+        self.players = [Player("UNASSIGNED",
+                               "doNotUse",
+                               gender="f"),
+                        Player("Dallas Fraser", 
+                               "fras2560@mylaurier.ca", 
+                               gender="m"), 
+                        Player("My Dream Girl", 
+                               "dream@mylaurier.ca", 
+                               gender="f"), 
+                        Player("Barry Bonds", 
+                               "bonds@hallOfFame.ca", 
+                               gender="M")]
+        for player in range(0, len(self.players)):
+            DB.session.add(self.players[player])
+        DB.session.commit()
+        self.bats = [Bat(   2, 
+                            1, 
+                            1, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   3, 
+                            2, 
+                            1, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            1, 
+                            2, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   3, 
+                            2, 
+                            2, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   2, 
+                            1, 
+                            3, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   3, 
+                            2, 
+                            3, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            3, 
+                            4, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   3, 
+                            4, 
+                            4, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   2, 
+                            3, 
+                            5, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   3, 
+                            4, 
+                            5, 
+                            "HR", 
+                            1, 
+                            rbi=2),
+                     Bat(   2, 
+                            3, 
+                            6, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     Bat(   3, 
+                            4, 
+                            6, 
+                            "HR", 
+                            1, 
+                            rbi=1),
+                     ]
+        for b in self.bats:
+            DB.session.add(b)
+        DB.session.commit()
+
     def addEspys(self):
         self.addTeams()
         espys = [Espys( 1, 

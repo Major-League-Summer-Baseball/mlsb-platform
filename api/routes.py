@@ -25,6 +25,8 @@ Routes['vgame'] = "/api/view/games"
 Routes['vplayerLookup'] = "/api/view/player_lookup"
 Routes['vfun'] = "/api/view/fun"
 Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
+Routes['vleagueleaders'] = "/api/view/league_leaders"
+
 
 # Kik APIS
 Routes['kiksubscribe'] = "/api/kik/subscribe"
@@ -61,7 +63,7 @@ Routes['dvplayer'] = "/documentation/views/player"
 Routes['dvteam'] = "/documentation/views/team"
 Routes['dvfun'] = "/documentation/views/fun"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
-
+Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 # kik documentation 
 Routes['dkiksubscribe'] = "/documentation/kik/subscribe"
 Routes['dkiksubmitscore'] = "/documentation/kik/submit_score"

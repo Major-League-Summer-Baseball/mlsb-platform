@@ -153,6 +153,11 @@ def player_team_lookup_view_doc():
                             route=Routes,
                             errors=ERRORS)
 
+@app.route(Routes['dvleagueleaders'])
+def league_leaders_view_doc():
+    return render_template('documentation/leagueLeadersView.html',
+                           route=Routes,
+                           errors=ERRORS)
 
 # -----------------------------------------------------------------------------
 # KIK documentation

@@ -43,8 +43,8 @@
                             <ul class="social-share">
                               {% for sponsor in base.sponsors %}
                                     <li>
-                                      <a href="{{route.sponsorspage}}/{{year}}/{{sponsor.id}}" title="{{sponsor.name}}">
-                                        <img src="{{route.sponsorspicture}}/{{sponsor.name}}"  alt="" class="sponsor" style="">
+                                      <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}">
+                                        <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="" class="sponsor" style="">
                                       </a>
                                     </li>
                               {% endfor %}
@@ -115,6 +115,15 @@
             </div>
             <div class="row">
                 <div class="col-sm-6 col-xs-0">
+                    <!-- weather widget start -->
+                        <a href="http://www.accuweather.com/en/ca/waterloo/n2l/weather-forecast/55073" class="aw-widget-legal">
+                        <!--
+                        By accessing and/or using this code snippet, you agree to AccuWeather’s terms and conditions (in English) which can be found at http://www.accuweather.com/en/free-weather-widgets/terms and AccuWeather’s Privacy Statement (in English) which can be found at http://www.accuweather.com/en/privacy.
+                        -->
+                        </a><div id="awcc1459916225529" class="aw-widget-current"  data-locationkey="55073" data-unit="c" data-language="en-us" data-useip="false" data-uid="awcc1459916225529"></div><script type="text/javascript" src="http://oap.accuweather.com/launch.js"></script>
+                    <!-- weather widget end -->
+                </div> 
+                <div class="col-sm-6 col-xs-0">
                     <table>
                         <tr>
                             <td><h4>Follow us:</h4>
@@ -124,15 +133,6 @@
                     </table>                    
                     <h4>Fun Meter: <div id="odometer" class="odometer">{{base.fun}}</div></h4>
                 </div>
-                <div class="col-sm-6 col-xs-0">
-                    <!-- weather widget start -->
-                        <a href="http://www.accuweather.com/en/ca/waterloo/n2l/weather-forecast/55073" class="aw-widget-legal">
-                        <!--
-                        By accessing and/or using this code snippet, you agree to AccuWeather’s terms and conditions (in English) which can be found at http://www.accuweather.com/en/free-weather-widgets/terms and AccuWeather’s Privacy Statement (in English) which can be found at http://www.accuweather.com/en/privacy.
-                        -->
-                        </a><div id="awcc1459916225529" class="aw-widget-current"  data-locationkey="55073" data-unit="c" data-language="en-us" data-useip="false" data-uid="awcc1459916225529"></div><script type="text/javascript" src="http://oap.accuweather.com/launch.js"></script>
-                    <!-- weather widget end -->
-                </div> 
             </div>
         </div>
     </section><!--/#bottom-->
