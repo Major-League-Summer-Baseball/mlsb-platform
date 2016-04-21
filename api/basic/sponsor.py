@@ -171,15 +171,17 @@ class SponsorListAPI(Resource):
         """
         # create a new user
         args = post_parser.parse_args()
+        print(args)
         sponsor_name = None
         description = None
         link = None
         if args['sponsor_name']:
             sponsor_name = args['sponsor_name']
         if args['description']:
-            description = description
+            description = args['description']
         if args['link']:
-            link = link
+            link = args['link']
+        print("link", link)
         sponsor = Sponsor(sponsor_name,
                           link=link,
                           description=description)
