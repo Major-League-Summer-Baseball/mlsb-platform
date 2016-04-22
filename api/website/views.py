@@ -105,8 +105,9 @@ def sponsor_picture(name):
 
 @app.route(Routes['postpicture'] + "/<name>")
 def post_picture(name):
-    f = os.path.join(PICTURES, "posts",  name)
-    fp = os.path.join(PICTURES,"posts")
+    f = os.path.join(PICTURES, "posts", name)
+    fp = os.path.join(PICTURES,"posts" )
+    print(fp)
     if os.path.isfile(f):
         return send_from_directory(fp, filename=name)
     else:
@@ -448,8 +449,9 @@ def rip_summary(f, year):
                     result['title'] = line
             elif "<img" in line:
                 image = line.split('filename="')[1]
-                image = line.split("/")[-1]
-                image =image.split('"')[0]
+                image = image.split('"')[0]
+                image = image.split("/")[-1]
+                
                 if result['image'] is None:
                     result['image'] = image
             elif "<p" in line:
