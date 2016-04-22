@@ -10,7 +10,8 @@ from api.helper import loads
 from api.routes import Routes
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
-from api.errors import TeamDoesNotExist, PlayerNotOnTeam
+from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
+                    SponsorDoesNotExist, LeagueDoesNotExist
 from api.advanced.import_team import TeamList
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
@@ -576,7 +577,7 @@ class TestLeagueLeaders(TestSetup):
 
 class TestImportTeam(TestSetup):
     def testColumnsIndives(self):
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
         importer = TeamList([], logger=logger)
@@ -592,7 +593,7 @@ class TestImportTeam(TestSetup):
         self.assertEqual(importer.gender_index, 2, "Gender index not set properly")
 
     def testImportHeaders(self):
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
         lines = [   "Sponsor:,Domus,",
@@ -621,7 +622,7 @@ class TestImportTeam(TestSetup):
         self.assertNotEqual(importer.team, None, "Team no set properly")
 
     def testImportPlayers(self):
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
         lines = [   "Sponsor:,Domus,",
@@ -664,7 +665,7 @@ class TestImportTeam(TestSetup):
         importer.import_players(5)
 
     def testAddTeam(self):
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
         lines = [   "Sponsor:,Domus,",

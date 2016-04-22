@@ -39,11 +39,11 @@ class TeamList():
 
     def add_team(self):
         player_index = self.import_headers()
-        print(self.lines[player_index - 1])
+        self.logger.debug(self.lines[player_index - 1])
         self.set_columns_indices(self.lines[player_index - 1].split(","))
-        print(self.name_index, self.email_index, self.gender_index)
+        self.logger.debug(self.name_index, self.email_index, self.gender_index)
         self.import_players(player_index)
-        print("Imported players")
+        self.logger.debug("Imported players")
         # should be good no errors were raised
         DB.session.commit()
         if self.captain is None:
@@ -52,7 +52,7 @@ class TeamList():
             # set the captain
             self.team.player_id = self.captain.id
             DB.session.commit()
-        print("Captain set")
+        self.logger.debug("Captain set")
         return
 
     def import_headers(self):
@@ -127,11 +127,10 @@ class TeamList():
         return player_index
 
     def import_players(self, player_index):
-        print(self.lines)
         while (player_index < len(self.lines)
                and len(self.lines[player_index].split(",")) > 1):
             info = self.lines[player_index].split(",")
-            print(info, len(info))
+            self.logger.debug(info, len(info))
             if len(info) < 3:
                 raise InvalidField(payload={"details": "Missing a category"})
             name = info[self.name_index].strip()
