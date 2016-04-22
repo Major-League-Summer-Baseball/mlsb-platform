@@ -5,11 +5,13 @@
 @summary: Tests all the basic APIs
 '''
 import unittest
+import logging
 from api.helper import loads
 from api.routes import Routes
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam
+from api.advanced.import_team import TeamList
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
@@ -545,6 +547,7 @@ class TestPlayerTeamLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
                          " View: on no one")
 
+
 class TestLeagueLeaders(TestSetup):
     def testMain(self):
         
@@ -570,6 +573,135 @@ class TestLeagueLeaders(TestSetup):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
                          " View: on 2016")
+
+class TestImportTeam(TestSetup):
+    def testColumnsIndives(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        importer = TeamList([], logger=logger)
+        try:
+            importer.set_columns_indices("asd,asd,asd".split(","))
+            self.assertEqual(True, False, "Should have raised invalid field error")
+        except InvalidField as __:
+            pass
+        # if it runs then should be good
+        importer.set_columns_indices("Player Name,Player Email,Gender (M/F)".split(","))
+        self.assertEqual(importer.name_index, 0, "Name index not set properly")
+        self.assertEqual(importer.email_index, 1, "Email index not set properly")
+        self.assertEqual(importer.gender_index, 2, "Gender index not set properly")
+
+    def testImportHeaders(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        lines = [   "Sponsor:,Domus,",
+                    "Color:,Pink,",
+                    "Captain:,Dallas Fraser,",
+                    "League:,Monday & Wedneday,",
+                    "Player Name,Player Email,Gender (M/F)",]
+        importer = TeamList(lines, logger=logger)
+        # test a invalid sponsor
+        try:
+            importer.import_headers()
+            self.assertEqual(True, False, "Sponsor does not exist")
+        except SponsorDoesNotExist as __:
+            pass
+        self.addSponsors()
+        importer = TeamList(lines, logger=logger)
+        # test a invalid league
+        try:
+            importer.import_headers()
+            self.assertEqual(True, False, "League does not exist")
+        except LeagueDoesNotExist as __:
+            pass
+        self.addLeagues()
+        importer.import_headers()
+        self.assertEqual(importer.captain_name, "Dallas Fraser", "Captain name not set")
+        self.assertNotEqual(importer.team, None, "Team no set properly")
+
+    def testImportPlayers(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        lines = [   "Sponsor:,Domus,",
+                    "Color:,Pink,",
+                    "Captain:,Dallas Fraser,",
+                    "League:,Monday & Wedneday,",
+                    "Player Name,Player Email,Gender (M/F)"
+                    "Laura Visentin,vise3090@mylaurier.ca,F",
+                    "Dallas Fraser,fras2560@mylaurier.ca,M",
+                    "Mitchell Ellul,ellu6790@mylaurier.ca,M",
+                    "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
+                    "Adam Shaver,shav3740@mylaurier.ca,M",
+                    "Taylor Takamatsu,taka9680@mylaurier.ca,F",
+                    "Jordan Cross,cros7940@mylaurier.ca,M",
+                    "Erin Niepage,niep3130@mylaurier.ca,F",
+                    "Alex Diakun,diak1670@mylaurier.ca,M",
+                    "Kevin Holmes,holm4430@mylaurier.ca,M",
+                    "Kevin McGaire,kevinmcgaire@gmail.com,M",
+                    "Kyle Morrison,morr1090@mylaurier.ca,M",
+                    "Ryan Lackey,lack8060@mylaurier.ca,M",
+                    "Rory Landy,land4610@mylaurier.ca,M",
+                    "Claudia Vanderholst,vand6580@mylaurier.ca,F",
+                    "Luke MacKenzie,mack7980@mylaurier.ca,M",
+                    "Jaron Wu,wuxx9824@mylaurier.ca,M",
+                    "Tea Galli,gall2590@mylaurier.ca,F",
+                    "Cara Hueston ,hues8510@mylaurier.ca,F",
+                    "Derek Schoenmakers,scho8430@mylaurier.ca,M",
+                    "Marni Shankman,shan3500@mylaurier.ca,F",
+                    "Christie MacLeod ,macl5230@mylaurier.ca,F"
+                    ]
+        importer = TeamList(lines, logger=logger)
+        # mock the first half
+        self.addTeams()
+        importer.team = self.teams[0]
+        importer.captain_name = "Dakkas Fraser"
+        importer.email_index = 1
+        importer.name_index = 0
+        importer.gender_index = 2
+        # if no errors are raised then golden
+        importer.import_players(5)
+
+    def testAddTeam(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        lines = [   "Sponsor:,Domus,",
+                    "Color:,Pink,",
+                    "Captain:,Dallas Fraser,",
+                    "League:,Monday & Wedneday,",
+                    "Player Name,Player Email,Gender (M/F)"
+                    "Laura Visentin,vise3090@mylaurier.ca,F",
+                    "Dallas Fraser,fras2560@mylaurier.ca,M",
+                    "Mitchell Ellul,ellu6790@mylaurier.ca,M",
+                    "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
+                    "Adam Shaver,shav3740@mylaurier.ca,M",
+                    "Taylor Takamatsu,taka9680@mylaurier.ca,F",
+                    "Jordan Cross,cros7940@mylaurier.ca,M",
+                    "Erin Niepage,niep3130@mylaurier.ca,F",
+                    "Alex Diakun,diak1670@mylaurier.ca,M",
+                    "Kevin Holmes,holm4430@mylaurier.ca,M",
+                    "Kevin McGaire,kevinmcgaire@gmail.com,M",
+                    "Kyle Morrison,morr1090@mylaurier.ca,M",
+                    "Ryan Lackey,lack8060@mylaurier.ca,M",
+                    "Rory Landy,land4610@mylaurier.ca,M",
+                    "Claudia Vanderholst,vand6580@mylaurier.ca,F",
+                    "Luke MacKenzie,mack7980@mylaurier.ca,M",
+                    "Jaron Wu,wuxx9824@mylaurier.ca,M",
+                    "Tea Galli,gall2590@mylaurier.ca,F",
+                    "Cara Hueston ,hues8510@mylaurier.ca,F",
+                    "Derek Schoenmakers,scho8430@mylaurier.ca,M",
+                    "Marni Shankman,shan3500@mylaurier.ca,F",
+                    "Christie MacLeod ,macl5230@mylaurier.ca,F"
+                    ]
+        importer = TeamList(lines, logger=logger)
+        self.addLeagues()
+        self.addSponsors()
+        # no point checking for errors that were tested above
+        importer.add_team()
+        self.assertEqual(importer.warnings, ['Team was created'],
+                         "Should be no warnings")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
