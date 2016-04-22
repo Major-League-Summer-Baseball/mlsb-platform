@@ -9,7 +9,8 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Player, Team, Game, Bat
-from api.errors import TeamDoesNotExist, NotTeamCaptain, PlayerDoesNotExist
+from api.errors import TeamDoesNotExist, NotTeamCaptain, PlayerDoesNotExist,\
+                        InvalidField
 from api.authentication import requires_kik
 from datetime import datetime
 from sqlalchemy import or_
@@ -35,10 +36,11 @@ class CaptainGamesAPI(Resource):
         args = parser.parse_args()
         team_id = args['team']
         kik = args['kik']
-        print(team_id, kik)
         team = Team.query.get(team_id)
         if team is None:
             raise TeamDoesNotExist(payload={'details': team_id})
+        if team.player_id is None:
+            raise InvalidField(payload={"details": "Team's captain has not been set"})
         team_captain = Player.query.get(team.player_id)
         if team_captain is None:
             raise PlayerDoesNotExist(payload={'details': team.player_id})

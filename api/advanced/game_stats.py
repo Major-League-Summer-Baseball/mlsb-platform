@@ -52,22 +52,33 @@ def post(game_id=None, league_id=None, year=None, today=False):
              'league': League.query.get(game.league_id).json()}
         g['home_team'] = Team.query.get(hid).json()
         g['away_team'] = Team.query.get(aid).json()
-        away_bats = Bat.query.filter_by(team_id=aid).filter_by(game_id=game.id).all()
-        home_bats = Bat.query.filter_by(team_id=hid).filter_by(game_id=game.id).all()
+        away_bats = (DB.session.query(Bat,
+                                     Player)
+                                     .join(Player)
+                                     .filter(Bat.team_id==aid)
+                                     .filter(Bat.game_id==game.id)
+                     ).all()
+        home_bats = (DB.session.query(Bat,
+                                     Player).join(Player)
+                                     .filter(Bat.team_id==hid)
+                                     .filter(Bat.game_id==game.id)
+                     ).all()
+        #away_bats = Bat.query.filter_by(team_id=aid).filter_by(game_id=game.id).all()
+        #home_bats = Bat.query.filter_by(team_id=hid).filter_by(game_id=game.id).all()
         for bat in away_bats:
-            p = Player.query.get(bat.player_id)
-            g['away_bats'].append({'name': p.name,
-                                   'hit': bat.classification,
-                                   'inning': bat.inning,
-                                   'rbi':bat.rbi})
-            g['away_score'] += bat.rbi
-        for bat in range(0, len(home_bats)):
-            p = Player.query.get(home_bats[bat].player_id)
-            g['home_bats'].append({'name': p.name,
-                                   'hit': home_bats[bat].classification,
-                                   'inning': home_bats[bat].inning,
-                                   'rbi':home_bats[bat].rbi})
-            g['home_score'] += home_bats[bat].rbi
+            print(bat)
+            g['away_bats'].append({'name': bat[1].name,
+                                   'hit':  bat[0].classification,
+                                   'inning': bat[0].inning,
+                                   'rbi':  bat[0].rbi})
+            g['away_score'] += bat[0].rbi
+        for bat in home_bats:
+            print(bat)
+            g['home_bats'].append({'name': bat[1].name,
+                                   'hit':  bat[0].classification,
+                                   'inning': bat[0].inning,
+                                   'rbi':  bat[0].rbi})
+            g['home_score'] += bat[0].rbi
         result.append(g)
     return result
 
