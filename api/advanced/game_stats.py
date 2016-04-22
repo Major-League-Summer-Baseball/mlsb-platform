@@ -33,7 +33,7 @@ def post(game_id=None, league_id=None, year=None, today=False):
             d2 = date.today() + timedelta(2)
         start = datetime.combine(d1, t1)
         end = datetime.combine(d2, t2)
-        games = DB.session.query(Game).filter(Game.date.between(start, end))
+        games = DB.session.query(Game).filter(Game.date.between(start, end)).order_by(Game.date)
     if league_id is not None:
         games = games.filter_by(league_id=league_id)
     for game in games:
