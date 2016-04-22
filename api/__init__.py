@@ -30,13 +30,13 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 app.config['SECRET_KEY'] = SECRET_KEY
-app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.ERROR)
 DB = SQLAlchemy(app)
 if local:
     DB.create_all()
     print("Created Database")
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 api = Api(app, errors=ERRORS)
 api.decorators=[cors.crossdomain(origin='*',headers=['accept', 'Content-Type'])]
 PICTURES = join(getcwd(), "api", "static", "pictures")
