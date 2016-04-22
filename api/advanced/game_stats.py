@@ -52,8 +52,8 @@ def post(game_id=None, league_id=None, year=None, today=False):
              'league': League.query.get(game.league_id).json()}
         g['home_team'] = Team.query.get(hid).json()
         g['away_team'] = Team.query.get(aid).json()
-        away_bats = Bat.query.filter_by(team_id=aid).all()
-        home_bats = Bat.query.filter_by(team_id=hid).all()
+        away_bats = Bat.query.filter_by(team_id=aid).filter_by(game_id=game.id).all()
+        home_bats = Bat.query.filter_by(team_id=hid).filter_by(game_id=game.id).all()
         for bat in away_bats:
             p = Player.query.get(bat.player_id)
             g['away_bats'].append({'name': p.name,

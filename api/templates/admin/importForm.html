@@ -72,9 +72,11 @@ function submitForm(){
       processData: false,
       async: false,
       success: function(warnings) {
+          console.log(warnings);
           $('#file-div').hide();
           $('#file_modalText').text('--');
           $('#modal-title').text('Successful');
+
           for (var i = 0 ;i < warnings.length;i++){
             element = '<li class="list-group-item list-group-item-warning">'+warnings[i]+'</li>'
             $('#warnings').append(element);
