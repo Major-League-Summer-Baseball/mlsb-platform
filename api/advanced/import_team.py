@@ -179,11 +179,3 @@ class TeamList():
         if self.gender_index is None:
             raise InvalidField(payload={'details': "Gender header missing"})
         return
-
-from api.BaseTest import TestSetup
-import unittest
-
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()
