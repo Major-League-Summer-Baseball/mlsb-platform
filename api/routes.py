@@ -27,7 +27,6 @@ Routes['vfun'] = "/api/view/fun"
 Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
 Routes['vleagueleaders'] = "/api/view/league_leaders"
 
-
 # Kik APIS
 Routes['kiksubscribe'] = "/api/kik/subscribe"
 Routes['kiksubmitscore'] = "/api/kik/submit_score"
@@ -92,6 +91,9 @@ Routes['playerpage'] = "/website/player"
 Routes['leagueleaderpage'] = "/website/leaders"
 # events
 Routes['eventspage'] = "/website/event"
+# posts pages
+Routes['posts'] = "/website/posts"
+Routes['postpicture'] = "/website/post/pictures"
 
 # -----------------------------------------------------------------------------
 # Admin

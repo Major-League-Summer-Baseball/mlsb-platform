@@ -35,6 +35,7 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 api = Api(app, errors=ERRORS)
 api.decorators=[cors.crossdomain(origin='*',headers=['accept', 'Content-Type'])]
 PICTURES = join(getcwd(), "api", "static", "pictures")
+POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] =  "./static"
 
 from api.website import views

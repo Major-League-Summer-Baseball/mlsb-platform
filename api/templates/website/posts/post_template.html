@@ -1,0 +1,8 @@
+<!-- At the top is the some details about it, when the the post was made, summary automatically generated takes title, first p and img -->
+{% extends "website/new-base.html" %}
+{% block content %}
+	<h4> Sample title </h4>
+	<p>Some text ...</p>
+	<img src="{{ url_for('static', filename="posts/FILENAME") }}"  alt="" class="postImage" style="">
+	<p> Some more text </p>
+{% endblock %}
