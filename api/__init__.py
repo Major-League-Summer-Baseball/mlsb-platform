@@ -10,6 +10,8 @@ from flask.ext.restful import Api
 from flask.ext.restful.utils import cors
 from flask.ext.sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
+import logging
+import sys
 
 local = False
 try:
@@ -22,11 +24,14 @@ except:
     SECRET_KEY = os.environ['SECRET_KEY']
 from os import getcwd
 from os.path import join
+
 #create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 app.config['SECRET_KEY'] = SECRET_KEY
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 DB = SQLAlchemy(app)
 if local:
     DB.create_all()
