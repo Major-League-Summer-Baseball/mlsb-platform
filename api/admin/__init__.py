@@ -15,6 +15,7 @@ from json import dumps, loads
 from api.routes import Routes
 from api import app, PICTURES
 from api import DB
+from api.errors import InvalidField
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
 from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
@@ -41,22 +42,17 @@ def admin_import_team_list():
         results['errors'].append("Permission denied")
         return dumps(results)
     file = request.files['file']
+    result = None
     if file and allowed_file(file.filename):
         content = (file.read()).decode("UTF-8")
-        print(content)
         lines = content.replace("\r", "")
         lines = lines.split("\n")
         team = TeamList(lines)
-        team.import_team()
-        results['errors'] = team.errors
-        results['warnings'] = team.warnings
-        results['success'] = True
-        if len(results['errors']) > 0:
-            results['success'] = False
+        team.add_team()
+        result = team.warnings
     else:
-        results['errors'] = "File should ba CSV"
-        results['success'] = False
-    return dumps(results)
+        raise InvalidField(payload={'detail': "File format not accepted (csv)"})
+    return dumps(result)
 
 @app.route(Routes['import_game_list'], methods=["POST"])
 def admin_import_game_list():
@@ -144,14 +140,11 @@ def admin_edit_roster(year, team_id):
                                route=Routes,
                                title="Team not found")
     else:
-        p = (DB.session.query(Player)
-                   .join(Team)
-                   .filter(Team.id==team_id)
-                   .order_by(Player.name)).all()
         players = []
-        for player in p:
+        for player in team.players:
             print(player)
             players.append(player.json())
+        players = quick_sort(players)
         all_players = Player.query.order_by(Player.name).all()
         non_roster = []
         for player in all_players:
@@ -163,6 +156,26 @@ def admin_edit_roster(year, team_id):
                                team_id=team_id,
                                non_roster=non_roster,
                                year=year)
+
+def quick_sort(array):
+    less = []
+    equal = []
+    greater = []
+
+    if len(array) > 1:
+        pivot = array[0]
+        for x in array:
+            if x['player_name'] < pivot['player_name']:
+                less.append(x)
+            if x['player_name'] == pivot['player_name']:
+                equal.append(x)
+            if x['player_name'] > pivot['player_name']:
+                greater.append(x)
+        # Don't forget to return something!
+        return quick_sort(less)+equal+quick_sort(greater)  # Just use the + operator to join lists
+    # Note that you want equal ^^^^^ not pivot
+    else:  # You need to hande the part at the end of the recursion - when you only have one element in your array, just return the array.
+        return array
 
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):

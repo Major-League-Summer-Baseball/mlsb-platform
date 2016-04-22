@@ -5,12 +5,12 @@
 @summary: Holds a class TeamList that helps imports a team roster
 '''
 # imports
-from api.model import Sponsor, Team, Player
+from api.model import Sponsor, Team, Player, League
 from api import DB
-from api.validators import gender_validator, string_validator
 from datetime import date
-from api.errors import InvalidField
+from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 import logging
+
 # constants
 CREATED = "Created Team (no league was specified)"
 NO_SPONSOR = "Cannot find sponsor, please ensure spelt correctly or create sponsor"
@@ -30,425 +30,287 @@ class TeamList():
                             format='%(asctime)s %(message)s')
             logger = logging.getLogger(__name__)
         self.logger = logger
+        self.team = None
+        self.captain_name = None
+        self.captain = None
+        self.name_index = None
+        self.email_index = None
+        self.gender_index = None
 
-    def import_team(self):
-        '''
-        a method that imports a team list based on a csv template and imports
-        Parameters:
-            
-        Updates:
-            success: a boolean if the import was successful (boolean)
-            errors: a list of possible error (list)
-            warnings: a list of possible warnings (list)
-        '''
-        
-        if self.lines is None:
-            raise InvalidField("No lines were provided")
-        if self.check_header(self.lines[0:2]):
-            sponsor, color, headers = self.parse_header(self.lines[0:2])
-            self.team_id = self.get_team_id(sponsor, color)
-            self.set_columns_indices(headers)
-            if self.team_id is not None:
-                players = self.lines[2:]
-                for player in players:
-                    self.import_player(player)
+    def add_team(self):
+        player_index = self.import_headers()
+        print(self.lines[player_index - 1])
+        self.set_columns_indices(self.lines[player_index - 1].split(","))
+        print(self.name_index, self.email_index, self.gender_index)
+        self.import_players(player_index)
+        print("Imported players")
+        # should be good no errors were raised
+        DB.session.commit()
+        if self.captain is None:
+            self.warning.append("Captain was not assigned")
         else:
-            self.errors.append(INVALID_FILE)
-        if len(self.errors) < 1:
-            self.logger.debug("Successful completed import")
-            # no major errors so commit changes
+            # set the captain
+            self.team.player_id = self.captain.id
             DB.session.commit()
+        print("Captain set")
         return
 
-    def get_team_id(self, sponsor, color):
-        '''
-        a function that gets the team id for the corresponding sponsor or color
-        if no team id then creates the team, if no sponsor then returns none
-        Parameters:
-            sponsor: the team's sponsor (str)
-            color: the team's color (str)
-        Returns:
-            id: the id of the team (int) None if no team is found/created
-        '''
-        id = None
-        sponsor = Sponsor.query.filter_by(name=sponsor).first()
-        if sponsor is not None:
-            sponsor_id = sponsor.id
-            team = DB.session.query(Team)
-            team = team.filter(Team.sponsor_id==sponsor_id)
-            team = team.filter(Team.year==date.today().year)
-            team = team.filter_by(color=color).first()
-            # check if a previous team and if not create it
-            if team is None:
-                team = Team(color=color, sponsor_id=sponsor_id)
-                id = DB.session.add(team)
-                DB.session.commit()
-                self.warnings.append(CREATED)
-            id = team.id
+    def import_headers(self):
+        done = False
+        i = 0
+        sponsor = None
+        color = None
+        captain = None
+        league = None
+        while not done:
+            # read the headers
+            line = self.lines[i]
+            columns = line.split(",")
+            if self.clean_cell(columns[0]) == "sponsor":
+                sponsor = columns[1].strip()
+            elif self.clean_cell(columns[0]) == "color":
+                color = columns[1].strip()
+            elif self.clean_cell(columns[0]) == "captain":
+                captain =  columns[1].strip()
+            elif self.clean_cell(columns[0]) == "league":
+                league = columns[1].strip()
+            else:
+                # assuming done reading the headers
+                done = True
+            i += 1
+        player_index = i
+        if sponsor is None:
+            raise InvalidField(payload={"details": "No sponsor was given"})
+        if captain is None:
+            raise InvalidField(payload={"details": "No captain was given"})
+        if color is None:
+            raise InvalidField(payload={"details": "No color was given"})
+        if league is None:
+            raise InvalidField(payload={"details": "No league was given"})
+        # check no examples were left and actually real info
+        if (league.lower().startswith("ex.")
+            or sponsor.lower().startswith("ex.")
+            or color.lower().startswith("ex.")
+            or captain.lower().startswith("ex.")):
+            raise InvalidField(payload={"details": "The header's still had an example"})
+        sponsor_id = (DB.session.query(Sponsor).filter(Sponsor.name==sponsor)
+                      .first())
+        if sponsor_id is None:
+            # what kind of sponsor are you giving
+            raise SponsorDoesNotExist(payload={'details': "The sponsor does not exist (check case)"})
+        sponsor_id = sponsor_id.id
+        league_id = (DB.session.query(League).filter(League.name==league)).first()
+        if league_id is None:
+            raise LeagueDoesNotExist(payload={"details": "The league does not exist (check case)"})
+        league_id = league_id.id
+        # check to see if team was already created
+        teams = (DB.session.query(Team)
+                    .filter(Team.color==color)
+                    .filter(Team.sponsor_id==sponsor_id).all())
+        team_found = None
+        i = 0
+        current_year = date.today().year
+        while i < len(teams) and team_found is None:
+            if teams[i].year == current_year:
+                team_found = teams[i]
+            i += 1
+        # was the team not found then should create it
+        if team_found is None:
+            self.warnings.append("Team was created")
+            team_found = Team(color=color,
+                              sponsor_id=sponsor_id,
+                              league_id=league_id)
         else:
-            # cant assume some sponsor so return None
-            self.errors.append(NO_SPONSOR)
-        self.logger.debug("{} - Id received for {}-{}".format(id,sponsor,color))
-        return id
+            team_found.players = [] # remove all the players before
+        self.team = team_found # set the team
+        self.captain_name = captain # remember captains name
+        return player_index
 
-    def set_columns_indices(self, headers):
+    def import_players(self, player_index):
+        print(self.lines)
+        while (player_index < len(self.lines)
+               and len(self.lines[player_index].split(",")) > 1):
+            info = self.lines[player_index].split(",")
+            print(info, len(info))
+            if len(info) < 3:
+                raise InvalidField(payload={"details": "Missing a category"})
+            name = info[self.name_index].strip()
+            email = info[self.email_index].strip()
+            gender = info[self.gender_index].strip()
+            if not name.lower().startswith("ex."): 
+                player = (DB.session.query(Player)
+                            .filter(Player.email==email)).first()
+                if player is None:
+                    self.logger.debug(name + " " + email + " " + gender)
+                    player = Player(name, email,gender=gender)
+                    DB.session.add(player)
+                    self.logger.debug("Player was created")
+                else:
+                    # this player is active
+                    player.active = True
+                self.team.players.append(player)
+                if name == self.captain_name:
+                    self.captain = player
+            else:
+                self.warnings.append("Player Example was left")
+            player_index += 1
+        return
+
+    def clean_cell(self, cell):
+        return cell.strip().lower().replace(":", "")
+
+    def set_columns_indices(self, header):
         '''
         a method that set the indices for the column headers
         Parameters:
-            headers: the list of headers (list of str)
+            header: the list of columns for the header (list of str)
         Returns:
         '''
-        for i in range(0, len(headers)):
-            if "email" in headers[i].lower():
+        for i in range(0, len(header)):
+            if "email" in header[i].lower():
                 self.email_index = i
-            elif "name" in headers[i].lower():
+            elif "name" in header[i].lower():
                 self.name_index = i
-            elif "gender" in headers[i].lower():
+            elif "gender" in header[i].lower():
                 self.gender_index = i
+        if self.email_index is None:
+            raise InvalidField(payload={'details': "Email header missing"})
+        if self.name_index is None:
+            raise InvalidField(payload={'details': "Player header missing"})
+        if self.gender_index is None:
+            raise InvalidField(payload={'details': "Gender header missing"})
         return
 
-    def import_player(self, info):
-        '''
-        a method the imports a one player
-        Parameters:
-            info: the string that contains the information of a player (str)
-        Returns:
-        '''
-        info = info.split(",")
-        if (len(info) < self.name_index or 
-            len(info) < self.email_index or
-            len(info) < self.gender_index):
-            self.logger.debug("Missing field for player")
-            return # probably just an empty line
-        name = info[self.name_index]
-        email = info[self.email_index]
-        gender = info[self.gender_index]
-        # check if variables meet certain conditions
-        if (not string_validator(name) or
-            not string_validator(email) or
-            not gender_validator(gender)):
-            self.logger.debug("Invalid field for player")
-            self.errors.append(INVALID_FIELD.format(name +"-"+email))
-        else:
-            # check if similar to template example just skip if it is
-            if ("Dallas Fraser" in name or
-                "fras2560@mylaurier.ca" in email):
-                self.warnings.append(EXAMPLE_FOUND)
-                self.logger.debug("Example was given")
-            else:
-                # else should be good to add player
-                #check the player exists already
-                search = Player.query.filter_by(email=email).first()
-                if search is None:
-                    # player does not exist so need to add
-                    player = Player(name, email, gender)
-                    DB.session.add(player)
-                else:
-                    # player does exist
-                    player = search
-                    if search.name != name:
-                        self.warnings.append(EMAIL_NAME.format(email))
-                team = Team.query.get(self.team_id)
-                team.players.append(player)
-                self.logger.debug("{} was added to {}".format(name,str(team)))
-        return
-
-    def check_header(self,header):
-        '''
-        a method that checks if the header is valid
-        Parameters:
-            header: the header to check (list of str)
-        Returns:
-            valid: True if the header meets the template (boolean)
-        '''
-        valid = True 
-        if len(header) < 2:
-            valid = False
-        elif len(header[0].split(",")) < 4 or len(header[1].split(",")) < 4:
-            valid = False
-        else:
-            columns = header[1].lower()
-            if "email" not in columns:
-                valid = False
-            elif "name" not in columns:
-                valid = False
-            elif "gender" not in columns:  
-                valid = False
-        return valid
-    
-    def parse_header(self, header):
-        '''
-        a method that parses the header
-        Parameters:
-            header: the header to check (list of str)
-        Returns:
-            sponsor: the sponsor of the team (str)
-            color: the color of the team (str)
-            headers: the column headers (list)
-        '''
-        first = header[0].split(",")
-        sponsor = first[1]
-        color = first[3]
-        headers = header[1].split(",")
-        return sponsor, color, headers
-
-# the test for this class are not the best might need to be fixed later
+from api.BaseTest import TestSetup
 import unittest
-from pprint import PrettyPrinter
-from api import app
-import tempfile
-class testSubTester(unittest.TestCase):
-    # this is just to test the subroutines
-    # was having trouble and need to run the test individual of else
-    # the one query stalls
-    def setUp(self):
-        self.show_results = False
-        self.pp = PrettyPrinter(indent=4)
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        app.config['TESTING'] = True
-        self.app = app.test_client()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-        DB.create_all()
-        self.test = [
-                     "Sponsor:,SPORTZONE,Color:,Pink",
-                     "Player Name,Player Email,Gender (M/F),",
-                     "EX. Dallas Fraser,fras2560@mylaurier.ca,M,"]
-        self.too_short = ["Sponsor:,EX. SPORTZONE,Color:,Pink"]
-        self.too_few_columns = ["Sponsor:,EX. SPORTZONE,Color:,Pink",
-                                "Player Name,Player Email,Gender",
-                                ]
-        self.missing_player_name = [
-                                    "Sponsor:,EX. SPORTZONE,Color:,Pink",
-                                    ",Player Email,Gender (M/F),",
-                                    "EX. Dallas Fraser,fras2560@mylaurier.ca,M,"
-                                ]
+class TestImportTeam(TestSetup):
+    def testColumnsIndives(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        importer = TeamList([], logger=logger)
+        try:
+            importer.set_columns_indices("asd,asd,asd".split(","))
+            self.assertEqual(True, False, "Should have raised invalid field error")
+        except InvalidField as __:
+            pass
+        # if it runs then should be good
+        importer.set_columns_indices("Player Name,Player Email,Gender (M/F)".split(","))
+        self.assertEqual(importer.name_index, 0, "Name index not set properly")
+        self.assertEqual(importer.email_index, 1, "Email index not set properly")
+        self.assertEqual(importer.gender_index, 2, "Gender index not set properly")
 
-    def tearDown(self):
-        print("Teardown")
-        DB.session.commit()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
+    def testImportHeaders(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        lines = [   "Sponsor:,Domus,",
+                    "Color:,Pink,",
+                    "Captain:,Dallas Fraser,",
+                    "League:,Monday & Wedneday,",
+                    "Player Name,Player Email,Gender (M/F)",]
+        importer = TeamList(lines, logger=logger)
+        # test a invalid sponsor
+        try:
+            importer.import_headers()
+            self.assertEqual(True, False, "Sponsor does not exist")
+        except SponsorDoesNotExist as __:
+            pass
+        self.addSponsors()
+        importer = TeamList(lines, logger=logger)
+        # test a invalid league
+        try:
+            importer.import_headers()
+            self.assertEqual(True, False, "League does not exist")
+        except LeagueDoesNotExist as __:
+            pass
+        self.addLeagues()
+        importer.import_headers()
+        self.assertEqual(importer.captain_name, "Dallas Fraser", "Captain name not set")
+        self.assertNotEqual(importer.team, None, "Team no set properly")
 
-    def testParseHeader(self):
-        self.tl = TeamList(self.test)
-        s,c,h = self.tl.parse_header(self.test[0:2])
-        self.assertEqual(s ,'SPORTZONE')
-        self.assertEqual(c, 'Pink')
-        self.assertEqual(h, ['Player Name', 'Player Email', 'Gender (M/F)', ''])
+    def testImportPlayers(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        lines = [   "Sponsor:,Domus,",
+                    "Color:,Pink,",
+                    "Captain:,Dallas Fraser,",
+                    "League:,Monday & Wedneday,",
+                    "Player Name,Player Email,Gender (M/F)"
+                    "Laura Visentin,vise3090@mylaurier.ca,F",
+                    "Dallas Fraser,fras2560@mylaurier.ca,M",
+                    "Mitchell Ellul,ellu6790@mylaurier.ca,M",
+                    "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
+                    "Adam Shaver,shav3740@mylaurier.ca,M",
+                    "Taylor Takamatsu,taka9680@mylaurier.ca,F",
+                    "Jordan Cross,cros7940@mylaurier.ca,M",
+                    "Erin Niepage,niep3130@mylaurier.ca,F",
+                    "Alex Diakun,diak1670@mylaurier.ca,M",
+                    "Kevin Holmes,holm4430@mylaurier.ca,M",
+                    "Kevin McGaire,kevinmcgaire@gmail.com,M",
+                    "Kyle Morrison,morr1090@mylaurier.ca,M",
+                    "Ryan Lackey,lack8060@mylaurier.ca,M",
+                    "Rory Landy,land4610@mylaurier.ca,M",
+                    "Claudia Vanderholst,vand6580@mylaurier.ca,F",
+                    "Luke MacKenzie,mack7980@mylaurier.ca,M",
+                    "Jaron Wu,wuxx9824@mylaurier.ca,M",
+                    "Tea Galli,gall2590@mylaurier.ca,F",
+                    "Cara Hueston ,hues8510@mylaurier.ca,F",
+                    "Derek Schoenmakers,scho8430@mylaurier.ca,M",
+                    "Marni Shankman,shan3500@mylaurier.ca,F",
+                    "Christie MacLeod ,macl5230@mylaurier.ca,F"
+                    ]
+        importer = TeamList(lines, logger=logger)
+        # mock the first half
+        self.addTeams()
+        importer.team = self.teams[0]
+        importer.captain_name = "Dakkas Fraser"
+        importer.email_index = 1
+        importer.name_index = 0
+        importer.gender_index = 2
+        # if no errors are raised then golden
+        importer.import_players(5)
 
-    def testCheckHeader(self):
-        # check valid header
-        self.tl = TeamList(self.test)
-        valid = self.tl.check_header(self.test[0:2])
-        self.assertEqual(valid, True)
-        # check a header that is too short
-        self.tl = TeamList(self.too_short)
-        valid = self.tl.check_header(self.too_short[0:2])
-        self.assertEqual(valid, False)
-        # check a header that has too few columns
-        self.tl = TeamList(self.too_few_columns)
-        valid = self.tl.check_header(self.too_few_columns[0:2])
-        self.assertEqual(valid, False)
-        # check a header that is missing a column
-        self.tl = TeamList(self.missing_player_name)
-        valid = self.tl.check_header(self.too_few_columns[0:2])
-        self.assertEqual(valid, False)
-
-    def insertSponsors(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Chainsaw")
-                         ]
-        for s in range(0,len(self.sponsors)):
-            DB.session.add(self.sponsors[s])
-        DB.session.commit()
-
-    def insertTeams(self):
-        self.insertSponsors()
-        # team one
-        self.teams = [Team(color="Green"),
-                      Team(color="Black")
-                      ]
-        self.teams[0].sponsor_id = self.sponsors[0].id
-        self.teams[1].sponsor_id = self.sponsors[1].id
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
-        DB.session.commit()
-
-    def testGetTeamID(self):
-        self.insertTeams()
-        self.tl = TeamList(self.test)
-        team = self.tl.get_team_id("Domus", "Green") 
-        self.assertEqual(team, 1)
-        self.tl = TeamList(self.test)
-        team = self.tl.get_team_id("Domus", "Black") 
-        self.assertEqual(team, 3)
-        self.assertEqual(self.tl.warnings,
-                         [CREATED])
-        team = self.tl.get_team_id("No Sponsor", "Black") 
-        self.assertEqual(team, None)
-        self.assertEqual(self.tl.errors,
-                         [NO_SPONSOR])
-
-    def testImportPlayer(self):
-        self.insertTeams()
-        # add new player to new team
-        self.valid_test = [
-                     "Sponsor:,Domus,Color:,Green",
-                     "Player Name,Player Email,Gender (M/F),",
-                     "Marc Gallucci,gall4400@mylaurier.ca,M,"]
-        self.tl = TeamList(self.valid_test)
-        self.tl.team_id = 1
-        self.tl.set_columns_indices(self.valid_test[1].split(","))
-        self.tl.import_player(self.valid_test[2])
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [])
-        # add old player to another team
-        self.valid_test = [
-                     "Sponsor:,Chainsaw,Color:,Black",
-                     "Player Name,Player Email,Gender (M/F),",
-                     "Marc Gallucci,gall4400@mylaurier.ca,M,"]
-        self.tl = TeamList(self.valid_test)
-        self.tl.team_id = 2
-        self.tl.set_columns_indices(self.valid_test[1].split(","))
-        self.tl.import_player(self.valid_test[2])
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [])
-
-class testTeamImport(unittest.TestCase):
-    def setUp(self):
-        self.show_results = False
-        self.pp = PrettyPrinter(indent=4)
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        #app.config['TESTING'] = True
-        #self.app = app.test_client()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-        DB.create_all()
-        self.valid_test = [
-                             "Sponsor:,Domus,Color:,Green",
-                             "Player Name,Player Email,Gender (M/F),",
-                             "Marc Gallucci,gall4400@mylaurier.ca,M,"]
-        self.valid_create_test = ["Sponsor:,Domus,Color:,Black",
-                                  "Player Name,Player Email,Gender (M/F),",
-                                  "Dream Girl,dream@mylaurier.ca,F,"]
-        self.invalid_sponsor = [
-                             "Sponsor:,Sportzone,Color:,Green",
-                             "Player Name,Player Email,Gender (M/F),",
-                             "Marc Gallucci,gall4400@mylaurier.ca,M,"]
-        self.invalid_players = [
-                             "Sponsor:,Domus,Color:,Green",
-                             "Player Name,Player Email,Gender (M/F),",
-                             "1,gall4400@mylaurier.ca,M,",
-                             "t,1,M,",
-                             "g,g,X,"]
-        self.test_skip_example = ["Sponsor:,Domus,Color:,Green",
-                                  "Player Name,Player Email,Gender (M/F),",
-                                  "Dallas Fraser,fras2560@mylaurier.ca,M,"]
-        self.bad_header = ["Sponsor:,EX. SPORTZONE,Color:,Pink"]
-        self.bad_sponsor = ["Sponsor:,No Sponsor,Color:,Green",
-                            "Player Name,Player Email,Gender (M/F),",]
-        self.bad_player = ["Sponsor:,Domus,Color:,Green",
-                             "Player Name,Player Email,Gender (M/F),",
-                             "Marc Gallucci,gall4400@mylaurier.ca,M,"]
-        self.warning_player = ["Sponsor:,Domus,Color:,Black",
-                             "Player Name,Player Email,Gender (M/F),",
-                             "Marco Gallucci,gall4400@mylaurier.ca,M,"]
-    def tearDown(self):
-        DB.session.commit()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-
-    def insertSponsors(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Chainsaw")
-                         ]
-        for s in range(0,len(self.sponsors)):
-            DB.session.add(self.sponsors[s])
-        DB.session.commit()
-    
-    def insertTeams(self):
-        self.insertSponsors()
-        # team one
-        self.teams = [Team(color="Green"),
-                      Team(color="Black")
-                      ]
-        self.teams[0].sponsor_id = self.sponsors[0].id
-        self.teams[1].sponsor_id = self.sponsors[1].id
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
-        DB.session.commit()
-
-    def testValidCases(self):
-        self.insertTeams()
-        # first test just import player to created team
-        self.tl = TeamList(self.valid_test)
-        self.tl.import_team()
-        self.assertEqual([], self.tl.warnings)
-        self.assertEqual([], self.tl.errors)
-        # second test import player to a new team
-        self.tl = TeamList(self.valid_create_test)
-        self.tl.import_team()
-        self.assertEqual(['Created Team (no league was specified'],
-                         self.tl.warnings)
-        self.assertEqual([], self.tl.errors)
-        # third test that skips the template example
-        self.tl = TeamList(self.test_skip_example)
-        self.tl.import_team()
-        expect = ['First entry contain the templates example, just skipped it']
-        self.assertEqual(expect, self.tl.warnings)
-        self.assertEqual([], self.tl.errors)
-
-    def testInvalidCases(self):
-        # test bad header
-        self.tl = TeamList(self.bad_header)
-        self.tl.import_team()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [INVALID_FILE])
-        # test bad sponsor
-        self.tl = TeamList(self.bad_sponsor)
-        self.tl.import_team()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [NO_SPONSOR])
-        # test bad player
-        self.tl = TeamList(self.bad_player)
-        self.tl.import_team()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [NO_SPONSOR])
-        # test warning player
-        self.tl = TeamList(self.warning_player)
-        self.tl.import_team()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [NO_SPONSOR])
-        print("Done")
+    def testAddTeam(self):
+        logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
+        logger = logging.getLogger(__name__)
+        lines = [   "Sponsor:,Domus,",
+                    "Color:,Pink,",
+                    "Captain:,Dallas Fraser,",
+                    "League:,Monday & Wedneday,",
+                    "Player Name,Player Email,Gender (M/F)"
+                    "Laura Visentin,vise3090@mylaurier.ca,F",
+                    "Dallas Fraser,fras2560@mylaurier.ca,M",
+                    "Mitchell Ellul,ellu6790@mylaurier.ca,M",
+                    "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
+                    "Adam Shaver,shav3740@mylaurier.ca,M",
+                    "Taylor Takamatsu,taka9680@mylaurier.ca,F",
+                    "Jordan Cross,cros7940@mylaurier.ca,M",
+                    "Erin Niepage,niep3130@mylaurier.ca,F",
+                    "Alex Diakun,diak1670@mylaurier.ca,M",
+                    "Kevin Holmes,holm4430@mylaurier.ca,M",
+                    "Kevin McGaire,kevinmcgaire@gmail.com,M",
+                    "Kyle Morrison,morr1090@mylaurier.ca,M",
+                    "Ryan Lackey,lack8060@mylaurier.ca,M",
+                    "Rory Landy,land4610@mylaurier.ca,M",
+                    "Claudia Vanderholst,vand6580@mylaurier.ca,F",
+                    "Luke MacKenzie,mack7980@mylaurier.ca,M",
+                    "Jaron Wu,wuxx9824@mylaurier.ca,M",
+                    "Tea Galli,gall2590@mylaurier.ca,F",
+                    "Cara Hueston ,hues8510@mylaurier.ca,F",
+                    "Derek Schoenmakers,scho8430@mylaurier.ca,M",
+                    "Marni Shankman,shan3500@mylaurier.ca,F",
+                    "Christie MacLeod ,macl5230@mylaurier.ca,F"
+                    ]
+        importer = TeamList(lines, logger=logger)
+        self.addLeagues()
+        self.addSponsors()
+        # no point checking for errors that were tested above
+        importer.add_team()
+        self.assertEqual(importer.warnings, ['Team was created'],
+                         "Should be no warnings")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

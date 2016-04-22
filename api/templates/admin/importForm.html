@@ -55,6 +55,14 @@ function showModal(){
 
 function submitForm(){
   var form_data = new FormData($('#upload-file')[0]);
+  $('#file-div').show();
+  $('#file_modal').modal("show");
+  $('#warnings').empty();
+  $('#errors').empty(); 
+  $('#file_modalText').text('Choose File');
+  $('#modal-title').text('Import a {{type}}');
+  $('#warningsHeader').hide();
+  $('#errorsHeader').hide();  
   $.ajax({
       type: 'POST',
       url: '{{import_route}}',
@@ -63,40 +71,30 @@ function submitForm(){
       cache: false,
       processData: false,
       async: false,
-      success: function(data) {
+      success: function(warnings) {
           $('#file-div').hide();
-          data = $.parseJSON(data);
-          console.log(data);
           $('#file_modalText').text('--');
-          var element;
-          for (var i = 0 ;i < data.errors.length;i++){
-            $('#errorsHeader').show();
-            element = '<li class="list-group-item list-group-item-danger">'+data.errors[i]+'</li>'
-            $('#errors').append(element);
-          }
-          for (var i = 0 ;i < data.warnings.length;i++){
-            element = '<li class="list-group-item list-group-item-warning">'+data.warnings[i]+'</li>'
+          $('#modal-title').text('Successful');
+          for (var i = 0 ;i < warnings.length;i++){
+            element = '<li class="list-group-item list-group-item-warning">'+warnings[i]+'</li>'
             $('#warnings').append(element);
             $('#warningsHeader').show();
           }
-          if (data.success == true){
-            if (data.warnings.length == 0){
-              alert("Import was successful")  
-            }else{
-              alert("Import was successful but check the following warnings");
-            }
-            $('#modal-title').text('Successful');
-          }else{
-            $('#modal-title').text('Unsuccessful');
-            alert("Import was not successful, check check for the following");
-          }
       }, error: function(request, error){
-          alert("Error: check console");
-          console.log(request);
-          console.log(error) ;
+        showErrors(request.responseJSON, request.status);
+        console.log(request.responseJSON);
+        console.log(error);
       }
   });
 }
 
+function showErrors(response, status_code){
+  $('#file_modal').modal("show");
+  $('#errors').empty();
+  var element;
+  $('#modal-title').text( response.message + " - " + status_code);
+  element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+  $('#errors').append(element); 
+}
 </script>
 {% endblock %}
