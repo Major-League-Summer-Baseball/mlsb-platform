@@ -17,7 +17,7 @@
 		{% for player in players %}
 			<tr id="{{player.player_id}}">
 				<td>{{player.player_name}}</td>
-				<td><button type="button" class="btn btn-warning" onclick="deletePlayer({{player.player_id}},{{team_id}})">Delete Player</button></td>
+				<td><button type="button" class="btn btn-warning" onclick="deletePlayer({{player.player_id}},{{team_id}})">Remove Player</button></td>
 			</tr>
 		{% endfor %}
 	</tbody>
