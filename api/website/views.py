@@ -435,7 +435,8 @@ def rip_summary(f, year):
               "name": description,
               "date": post_date}
     f = os.path.join(POSTS, str(year), f)
-    with open (f, encoding='utf8') as f:
+    print(f)
+    with open (f) as f:
         # read the header in
         line = f.readline().strip()
         while not f.readline().strip().startswith("{% block content %}") and len(line) > 0:
@@ -475,7 +476,8 @@ def rip_summary(f, year):
 def post_json(f, year):
     result = []
     f = os.path.join(POSTS, str(year), f)
-    with open(f, encoding='utf8') as fn:
+    print(f)
+    with open(f) as fn:
         line = fn.readline().strip()
         # read the header
         while not line.startswith("{% block content %}") and len(line) > 0:
@@ -495,7 +497,8 @@ def post_json(f, year):
     
 def post_raw_html(f, year):
     f = os.path.join(POSTS, str(year), f)
-    with open(f, encoding='utf8') as fn:
+    with open(f) as fn:
+        print(f)
         line = fn.readline().strip()
         # read the header
         while not line.startswith("{% block content %}") and len(line) > 0:
