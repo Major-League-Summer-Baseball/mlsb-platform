@@ -1,21 +1,25 @@
 {% extends "website/new-base.html" %}
 {% block content %}
 <div class="row">
-	<div class="col-sm-3">
-		<h4>
+	<div class="col-xs-12 col-sm-6">
+		<h4 class="leaderTitle sleeman">
 		Sleeman Sluggers
 		</h4>
+		<ul class="listgroup leadersList">
 		{% for player in men %}
-			<p>{{player.name}} - {{player.hits}} </p>
+			<li class="list-group-item leaderPoint"><span class="badge leaderBadge">{{loop.index}}</span> {{player.name}} - {{player.hits}} </li>
 		{% endfor %}
+		</ul>
 	</div>	
-	<div class="col-sm-3">
-		<h4>
+	<div class="col-xs-12 col-sm-6" >
+		<h4 class="leaderTitle sapporo">
 		Sapporo Singles
 		</h4>
+		<ol class="listgroup leadersList">
 		{% for player in women %}
-			<p>{{player.name}} - {{player.hits}} </p>
+			<li class="list-group-item leaderPoint"><span class="badge leaderBadge">{{loop.index}}</span> {{player.name}} - {{player.hits}} </li>
 		{% endfor %}
+		</ol>
 	</div>
 </div>
 {% endblock %}

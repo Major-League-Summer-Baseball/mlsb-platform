@@ -25,7 +25,6 @@ import json
 #             POST PAGES ISSUES
 # -----------------------------------------------------------------------------
 '''
-
 @app.route(Routes['posts'] + "/<int:year>")
 def posts_json(year):
     return json.dumps(get_all_descriptions(year))
@@ -61,10 +60,15 @@ def checkout_post(year, date, file_name):
         return render_template("website/notFound.html",
                            route=Routes,
                            base=base_data(year),
-                           title="Posts",
+                           title="Posts not Found",
                            year=year,
                            games=get_upcoming_games(year))
 
+'''
+# -----------------------------------------------------------------------------
+#             POST PAGES ISSUES
+# -----------------------------------------------------------------------------
+'''
 
 @app.route("/")
 @app.route(Routes["homepage"])
@@ -72,6 +76,16 @@ def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
 
+@app.route("/about/<int:year>")
+def about(year):
+    return render_template("website/about.html",
+                           route=Routes,
+                           base=base_data(year),
+                           title="About",
+                           year=year,
+                           games=get_upcoming_games(year)
+                           )
+    
 @app.route(Routes["homepage"] + "/<int:year>")
 def index(year):
     games = get_upcoming_games(year) 
@@ -238,7 +252,8 @@ def events_page(year):
             return render_template("website/notFound.html",
                                    year=year,
                                    route=Routes,
-                                   base=base_data(year))
+                                   base=base_data(year),
+                                   title="Not Found")
 
 
 @app.route(Routes['fieldsrulespage'] + "/<int:year>")

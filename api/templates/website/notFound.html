@@ -1,4 +1,13 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-The request made was not found
+<p>
+	The content requested could not be found. Sorry!
+	<br/>
+	<img src="{{ url_for('static', filename="images/sorry.jpg") }}"  alt="" class="postImage" width="200", height="200"> 
+	<img src="{{ url_for('static', filename="images/sorry2.jpg") }}"  alt="" class="postImage" width="200", height="200"> 
+	<img src="{{ url_for('static', filename="images/sorry3.jpg") }}"  alt="" class="postImage" width="200", height="200"> 
+	</br>
+	If you need assistance send an email to <a href="mailto:scores@mlsb.ca?Subject=MLSB%20Site%20Issue" target="_top">scores@mlsb.ca</a>
+	
+</p>
 {% endblock %}
