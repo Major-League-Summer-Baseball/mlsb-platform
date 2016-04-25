@@ -11,6 +11,7 @@
     <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/font-awesome.min.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/animate.min.css") }}" rel="stylesheet">
+    <link rel="icon" href="http://example.com/favicon.png">
     <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/responsive.css") }}" rel="stylesheet">
     <!-- Odometr includes -->
@@ -19,8 +20,8 @@
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
-    <script src="js/html5shiv.js"></script>
-    <script src="js/respond.min.js"></script>
+    <script src="{{ url_for('static', filename="js/html5shiv.js") }}""></script>
+    <script src="{{ url_for('static', filename="js/respond.js") }}""></script>
     <![endif]-->       
     <link rel="shortcut icon" href="images/ico/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ url_for('static', filename="images/ico/apple-touch-icon-144-precomposed.png") }}">
@@ -30,7 +31,6 @@
 </head><!--/head-->
 
 <body class="homepage">
-
     <header id="header">
         <div class="top-bar primary">
             <div class="container">
@@ -82,7 +82,9 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{{route.homepage}}/{{year}}"><img src="{{ url_for('static', filename="banner.png")}}" style=" width=100%; max-width=1000px;"></a>
+                    <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
+                        <img src="{{ url_for('static', filename="banner.png")}}" class="mainBanner">
+                    </a>
                 </div>
 				
                 <div class="collapse navbar-collapse navbar-left">
