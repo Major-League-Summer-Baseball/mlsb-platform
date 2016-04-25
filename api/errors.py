@@ -20,6 +20,7 @@ PNOT = 400
 PAST = 400
 PNS = 401
 NTCSC = 401
+BRSC = 400
 class TeamDoesNotExist(Exception):
     status_code = TDNESC
     message = "Team does not exist"
@@ -214,7 +215,22 @@ class NotTeamCaptain(Exception):
         rv = dict(self.payload or ())
         rv['message'] = self.message
         return rv
-    
+
+class BadRequest(Exception):
+    status_code = BRSC
+    message = "Bad request"
+    def __init__(self, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = self.message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
 ERRORS = {
             'InvalidField': {
                 'message': InvalidField.message,
@@ -267,5 +283,9 @@ ERRORS = {
             'TeamAlreadyHasCaptain': {
                               'message': TeamAlreadyHasCaptain.message,
                               'status_code': TeamAlreadyHasCaptain.status_code
-                              }
+                              },
+            'BadRequest':{
+                          'message': BadRequest.message,
+                          'status_code': BadRequest.status_code
+                          }
           }

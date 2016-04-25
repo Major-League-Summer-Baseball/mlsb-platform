@@ -34,6 +34,7 @@ Routes['kikcaptain'] = "/api/kik/captain"
 Routes['kikupcominggames'] = "/api/kik/upcoming_games"
 Routes['kiktransaction'] = "/api/kik/transaction"
 Routes['kikcaptaingames'] = "/api/kik/captain/games"
+Routes['kikunsubscribe'] = "/api/kik/unsubscribe"
 
 # -----------------------------------------------------------------------------
 # documentation routes
@@ -70,6 +71,8 @@ Routes['dkikcaptain'] = "/documentation/kik/captain"
 Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
 Routes['dkiktransaction'] = "/documentation/kik/transaction"
 Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
+Routes['dkikunsubscribe'] = "/documentation/kik/unsubscribe"
+
 # -----------------------------------------------------------------------------
 # Website
 # -----------------------------------------------------------------------------

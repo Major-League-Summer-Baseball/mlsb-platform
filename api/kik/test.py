@@ -115,7 +115,7 @@ class testSubscribe(TestSetup):
         rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, 200, Routes['kiksubscribe'] +
                          " POST: valid request"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -131,7 +131,7 @@ class testSubscribe(TestSetup):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
-                         Routes['kikcaptain'] +
+                         Routes['kiksubscribe'] +
                          " POST: team does not exist"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -142,12 +142,12 @@ class testSubscribe(TestSetup):
                 "name": "fucker",
                 "team": 1
                 }
-        expect = {'details': 'fucker', 'message': PlayerNotOnTeam.message}
+        expect = True
         rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, PlayerNotOnTeam.status_code,
-                         Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, 200,
+                         Routes['kiksubscribe'] +
                          " POST: player not on team"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -162,7 +162,7 @@ class testSubscribe(TestSetup):
         rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
+        self.assertEqual(rv.status_code, 200, Routes['kiksubscribe'] +
                          " POST: already subscribed"
                          )
         self.assertEqual(expect, loads(rv.data),
@@ -171,26 +171,47 @@ class testSubscribe(TestSetup):
         # check to make sure not additional points were rewarded
         d = datetime.today().strftime("%Y-%m-%d")
         t = datetime.today().strftime("%H:%M")
-        expect = [{   'date': d,
-                        'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
+        expect = [  { 
+                        'date': d,
+                        'description': 'Dallas Fraser email:fras2560@mylaurier.ca awarded espy '
+                                       'points for subscribing: 2',
                         'espy_id': 1,
                         'points': 2.0,
                         'receipt': None,
                         'sponsor': None,
                         'team': 'Domus Green',
                         'time': t},
-                  {   'date': d,
-                    'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
-                    'espy_id': 2,
-                    'points': 0.0,
-                    'receipt': None,
-                    'sponsor': None,
-                    'team': 'Domus Green',
-                    'time': t}
+                    {   
+                        'date': d,
+                        'description': 'Dallas Fraser email:fras2560@mylaurier.ca SUBSCRIBED',
+                        'espy_id': 2,
+                        'points': 0.0,
+                        'receipt': None,
+                        'sponsor': None,
+                        'team': 'Domus Green',
+                        'time': t},
+                    {   
+                        'date': d,
+                        'description': 'fucker email:fucker@guest awarded espy points for '
+                                       'subscribing: 2',
+                        'espy_id': 3,
+                        'points': 2.0,
+                        'receipt': None,
+                        'sponsor': None,
+                        'team': 'Domus Green',
+                        'time': t},
+                    {   'date': d,
+                        'description': 'fucker email:fucker@guest SUBSCRIBED',
+                        'espy_id': 4,
+                        'points': 0.0,
+                        'receipt': None,
+                        'sponsor': None,
+                        'team': 'Domus Green',
+                        'time': t}
                   ]
         for index, espy in enumerate(espys):
             self.output(espy.json())
-            self.output(expect[index])
+            #self.output(expect[index])
             self.assertEqual(espy.json(), expect[index])
         # invalid credentials
         data = {
@@ -202,6 +223,57 @@ class testSubscribe(TestSetup):
         self.assertEqual(rv.status_code, 401, Routes['kiksubscribe'] +
                          " POST: invalid credentials"
                          )
+
+class testUnSubscribe(TestSetup):
+    def testMain(self):
+        self.addPlayersToTeam()
+        # valid request
+        data = {
+                'kik': "frase2560",
+                "name": "Dallas Fraser",
+                "team": 1
+                }
+        expect = True
+        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200, Routes['kiksubscribe'] +
+                         " POST: valid request"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kiksubscribe'] + " Post: subscribe")
+        # player does not exist
+        data = {
+                'kik': "DoesNotExist",
+                "team": 1
+                }
+        expect = {'details': 'Player is not subscribed', 'message': 'Player is not subscribed'}
+
+        rv = self.app.post(Routes['kikunsubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, PlayerNotSubscribed.status_code,
+                         Routes['kikunsubscribe'] +
+                         " POST: team does not exist"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikunsubscribe'] + " Post: team does not exist")
+        # unsubscribe
+        data = {
+                'kik': "frase2560",
+                "team": 1
+                }
+        expect = True
+        rv = self.app.post(Routes['kikunsubscribe'], data=data, headers=kik)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(rv.status_code, 200,
+                         Routes['kikunsubscribe'] +
+                         " POST: team does not exist"
+                         )
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['kikunsubscribe'] + " Post: team does not exist")
+        
 
 class testSubmitScores(TestSetup):
     def testMain(self):

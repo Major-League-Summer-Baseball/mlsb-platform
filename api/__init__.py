@@ -123,10 +123,13 @@ from api.kik.subscribe import SubscribeToTeamAPI
 from api.kik.submit_transaction import SubmitTransactionAPI
 from api.kik.get_captain_games import CaptainGamesAPI
 from api.kik.get_upcoming_games import UpcomingGamesAPI
+from api.kik.unsubscribe import UnSubscribeToTeamAPI
 api.add_resource(AuthenticateCaptainAPI, Routes['kikcaptain'], endpoint="kikcaptain")
 api.add_resource(SubscribeToTeamAPI, Routes['kiksubscribe'], endpoint="kiksubscribe")
 api.add_resource(SubmitScoresAPI, Routes['kiksubmitscore'], endpoint="kiksubmitscore")
 api.add_resource(SubmitTransactionAPI, Routes['kiktransaction'], endpoint="kiktransaction")
 api.add_resource(CaptainGamesAPI, Routes['kikcaptaingames'], endpoint="kikcaptaingames")
 api.add_resource(UpcomingGamesAPI, Routes['kikupcominggames'], endpoint="kikupcominggames")
+api.add_resource(UnSubscribeToTeamAPI, Routes['kikunsubscribe'], endpoint="kikunsubscribe")
+
 

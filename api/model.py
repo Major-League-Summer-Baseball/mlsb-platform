@@ -11,7 +11,8 @@ from datetime import date, datetime, time
 from api.variables import HITS, KIKPOINTS
 from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-                        NonUniqueEmail, PlayerNotOnTeam
+                        NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
+    BadRequest
 from api.validators import  rbi_validator, hit_validator, inning_validator,\
                             string_validator, date_validator, time_validator,\
                             field_validator, year_validator, gender_validator,\
@@ -22,7 +23,7 @@ roster = DB.Table('roster',
                 )
 
 SUBSCRIBED = "{} SUBSCRIBED"
-
+AWARD_POINTS = "{} awarded espy points for subscribing: {}"
 class Fun(DB.Model):
     '''
         A class used to store the amount of fun had by all
@@ -941,30 +942,65 @@ def subscribe(kik, name, team_id):
         TeamDoesNotExist
         PlayerNotOnTeam
     '''
+    # dont care if they are on the team
+    # check for some goof
+    player = Player.query.filter_by(kik=kik).filter_by(active=True).all()
+    if len(player) > 1:
+        if player[0].name != name:
+            raise BadRequest(payload={'details': "Kik user subscribing as two different people"})
     team = Team.query.get(team_id)
     if team is None:
-        # wrong team was given
-        raise TeamDoesNotExist(payload={'details':team_id})
-    found = False
-    player = None
-    for p in team.players:
-        if p.name == name:
-            found = True
-            player = p
-            break
-    if not found:
-        # player is not on the team
-        raise PlayerNotOnTeam(payload={'details':"{}".format(name, str(team))})
-    player.kik = kik
-    espy = Espys.query.filter_by(team_id=team_id).filter_by(description=SUBSCRIBED.format(str(player))).first()
-    points = KIKPOINTS
-    if espy is not None:
-        # player already subscribed to this team
-        # no points awarded
-        points = 0
-    espy = Espys(team_id, description = SUBSCRIBED.format(str(player)), points=points)
-    DB.session.add(espy)
+        raise TeamDoesNotExist(payload={'details': team_id})
+    player = Player.query.filter_by(name=name).filter_by(active=True).all()
+    if len(player) > 1:
+        # fuck i dont know
+        raise InvalidField("Two people with exact name, email the convenors")
+    elif player is None or len(player) == 0:
+        # player is not officially in our db 
+        # going to add them as a guest
+        player = Player(name, 
+                        name+"@guest", 
+                        gender="M", 
+                        password="default", 
+                        active=False)
+        DB.session.add(player)
+        DB.session.commit()
+    else:
+        player = player[0]
+    if player.kik is None:
+        # give them the two points
+        player.kik = kik
+        points_awarded = Espys(team_id,
+                               description = AWARD_POINTS.format(str(player), KIKPOINTS),
+                               points=KIKPOINTS)
+        DB.session.add(points_awarded)
+    elif player.kik != kik:
+        # the player is subscribing under a new kik name
+        player.kik = kik
+    subscribed = Espys.query.filter_by(team_id=team_id).filter_by(description=SUBSCRIBED.format(str(player))).first()
+    if subscribed is None:
+        # player is not subscribed
+        subscribed = Espys( team_id,
+                            description = SUBSCRIBED.format(str(player)),
+                            points=0)
+        DB.session.add(subscribed)
     DB.session.commit()
+    return True
+
+
+def unsubscribe(kik, team_id):
+    player = Player.query.filter_by(kik=kik).first()
+    if player is None:
+        raise PlayerNotSubscribed(payload={'details': "Player is not subscribed"})
+    team = Team.query.get(team_id)
+    if team is None:
+        raise TeamDoesNotExist(payload={"details": team_id})
+    subscribed = Espys.query.filter_by(team_id=team_id).filter_by(description=SUBSCRIBED.format(str(player))).first()
+    if subscribed is not None:
+        # delete the subscription entry
+        DB.session.delete(subscribed)
+        DB.session.commit()
+    # else dont care
     return True
 
 def find_team_subscribed(kik):
@@ -978,7 +1014,7 @@ def find_team_subscribed(kik):
     '''
     result = []
     t1 = time(0, 0)
-    t2 = time(0 , 0)
+    t2 = time(0, 0)
     d1 = date(date.today().year, 1, 1)
     d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t1)

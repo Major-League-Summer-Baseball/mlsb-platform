@@ -169,6 +169,13 @@ def subscribe_kik_doc():
                             errors=ERRORS
                             )
 
+@app.route(Routes['dkikunsubscribe'])
+def unsubscribe_kik_doc():
+    return render_template('documentation/kikUnsubscribe.html',
+                            route = Routes,
+                            errors=ERRORS
+                            )
+
 @app.route(Routes['dkikcaptain'])
 def authenticate_kik_doc():
     return render_template('documentation/kikAuthenticateCaptain.html',
