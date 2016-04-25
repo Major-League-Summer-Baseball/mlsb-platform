@@ -6,13 +6,13 @@
 '''
 from api import DB
 from sqlalchemy import func
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash   
 from datetime import date, datetime, time
 from api.variables import HITS, KIKPOINTS
 from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
                         NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
-    BadRequest
+                        BadRequestError
 from api.validators import  rbi_validator, hit_validator, inning_validator,\
                             string_validator, date_validator, time_validator,\
                             field_validator, year_validator, gender_validator,\
@@ -947,7 +947,7 @@ def subscribe(kik, name, team_id):
     player = Player.query.filter_by(kik=kik).filter_by(active=True).all()
     if len(player) > 1:
         if player[0].name != name:
-            raise BadRequest(payload={'details': "Kik user subscribing as two different people"})
+            raise BadRequestError(payload={'details': "Kik user subscribing as two different people"})
     team = Team.query.get(team_id)
     if team is None:
         raise TeamDoesNotExist(payload={'details': team_id})

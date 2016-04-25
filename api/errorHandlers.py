@@ -10,7 +10,7 @@ from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
                         PlayerDoesNotExist, GameDoesNotExist,\
                         LeagueDoesNotExist, SponsorDoesNotExist, PlayerNotOnTeam,\
                         EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
-                        TeamAlreadyHasCaptain, PlayerNotSubscribed, BadRequest
+                        TeamAlreadyHasCaptain, PlayerNotSubscribed, BadRequestError
 from flask import Response
 from json import dumps
 
@@ -92,8 +92,8 @@ def handle_player_not_subscribed(error):
                         mimetype="application/json")
     return  response
 
-@app.errorhandler(BadRequest)
-def handle_bad_request(error):
+@app.errorhandler(BadRequestError)
+def handle_bad_request_error(error):
     response = Response(dumps(error.to_dict()), status=error.status_code,
                         mimetype="application/json")
     return  response

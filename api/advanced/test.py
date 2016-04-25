@@ -416,7 +416,7 @@ class TestTeamRoster(TestSetup):
         #add player to team
         self.addPlayersToTeam()
         # missing data
-        rv = self.app.delete(Routes['team_roster']+"/2")
+        rv = self.app.delete(Routes['team_roster'] + "/2")
         message = 'Missing required parameter in the JSON body or the post body or the query string'
         expect = {   'message': {   'player_id': message}}
         self.output(loads(rv.data))

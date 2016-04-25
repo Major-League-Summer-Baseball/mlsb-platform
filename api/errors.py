@@ -216,7 +216,7 @@ class NotTeamCaptain(Exception):
         rv['message'] = self.message
         return rv
 
-class BadRequest(Exception):
+class BadRequestError(Exception):
     status_code = BRSC
     message = "Bad request"
     def __init__(self, status_code=None, payload=None):
@@ -284,8 +284,8 @@ ERRORS = {
                               'message': TeamAlreadyHasCaptain.message,
                               'status_code': TeamAlreadyHasCaptain.status_code
                               },
-            'BadRequest':{
-                          'message': BadRequest.message,
-                          'status_code': BadRequest.status_code
+            'BadRequestError':{
+                          'message': BadRequestError.message,
+                          'status_code': BadRequestError.status_code
                           }
           }
