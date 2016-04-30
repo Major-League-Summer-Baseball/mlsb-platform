@@ -25,7 +25,7 @@ class UpcomingGamesAPI(Resource):
             Parameters:
                 kik: the captain's kik user name (str)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: id: the captain's team id
         """
@@ -36,12 +36,12 @@ class UpcomingGamesAPI(Resource):
             raise PlayerNotSubscribed(payload={'details': kik})
         teams = []
         today = date.today()
-        this_week = today + timedelta(days=4)
+        next_two_weeks = today + timedelta(days=14)
         for team in player.teams:
             teams.append(team.id)
         games  = DB.session.query(Game).filter(or_(Game.away_team_id.in_(teams),
                                                   (Game.home_team_id.in_(teams))))
-        games = games.filter(Game.date.between(today,this_week ))
+        games = games.filter(Game.date.between(today, next_two_weeks))
         result = []
         for game in games:
             result.append(game.json())
