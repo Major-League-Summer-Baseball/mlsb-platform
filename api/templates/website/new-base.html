@@ -72,7 +72,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
-                        <img src="{{ url_for('static', filename="banner.png")}}" class="mainBanner">
+                        <img src="{{ url_for('static', filename="banner.png")}}">
                     </a>
                 </div>
 
@@ -91,11 +91,11 @@
 
     </header><!--/header-->
 
-    <section id="bottom">
+    <section>
         <div class="container">
             <div class="row">
                 <div class="col-xs-12 mainBlock">
-                    <h2 class="mainTitle">
+                    <h2 class="">
                         {{title}}
                     </h2>
                     {% block content %}{% endblock %}

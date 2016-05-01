@@ -59,6 +59,25 @@ body {
     font-size: 14px;
 }
 
+.navbar {
+    border-top: 0;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.navbar .container .navbar-brand {
+    padding: 6px 0px;
+}
+
+.navbar .container .navbar-brand img {
+    width: auto;
+    height: 100%;
+    margin-right:5px;
+}
+
+.navbar .container .navbar-nav {
+    font-size: 12px;
+}
+
 
 p.primary{
   color:#FFFFFF;
@@ -108,17 +127,6 @@ p.accent{
 .sapporo{
   color: #F4C92D;
 }
-
-.mainBanner {
-  width: 100%;
-  max-width: 60px;
-  height:100%;
-  max-height:150px;
-  float:left;
-  margin-right:5px;
-}
-
-
 
 hr {
   border-top: 1px solid #e5e5e5;
@@ -175,15 +183,6 @@ a:focus {
 
 .media>.pull-right{
   margin-left: 20px;
-}
-
-body > section {
-  padding: 70px 0;
-}
-
-.center {
-  text-align: center;
-  padding-bottom: 55px;
 }
 
 .scaleIn {
