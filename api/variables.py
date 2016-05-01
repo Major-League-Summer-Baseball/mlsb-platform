@@ -6,11 +6,11 @@ Purpose: Holds constant variables that used
 '''
 NOTFOUND = "notFound.png"
 SPONSORS = {0: "notFound.png",
-            1: "domus.jpg",
-            2: "sentry.jpeg", 
-            3: "nightschool.jpg", 
-            4: "mortys.jpg",
-            5: "sportszone.jpg"} # maps the sponsors to their pictures
+            1: "domus.png",
+            2: "sentry.png",
+            3: "nightschool.png",
+            4: "mortys.png",
+            5: "sportszone.png"} # maps the sponsors to their pictures
 TEAMS = {
          0: "noTeam.png",
          } # maps the teams to their picture

@@ -85,10 +85,10 @@ def about(year):
                            year=year,
                            games=get_upcoming_games(year)
                            )
-    
+
 @app.route(Routes["homepage"] + "/<int:year>")
 def index(year):
-    games = get_upcoming_games(year) 
+    games = get_upcoming_games(year)
     news = get_summaries(year)
     print(news)
     return render_template("website/index.html",
@@ -109,7 +109,7 @@ def sponsor_picture(name):
             name = "notFound"
         else:
             name = str(name)
-    name= name.lower().replace(" ", "_") + ".jpg"
+    name= name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors",  name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
@@ -131,7 +131,7 @@ def post_picture(name):
 def sponsors_page(year):
     return render_template("website/sponsors.html",
                            route=Routes,
-                           base=base_data(year), 
+                           base=base_data(year),
                            title="Sponsors",
                            year=year)
 
@@ -148,7 +148,7 @@ def sponsor_page(year, id):
         page = render_template("website/sponsor.html",
                            route=Routes,
                            base=base_data(year),
-                           sponsor=sponsor, 
+                           sponsor=sponsor,
                            title="Sponsor | " + sponsor['name'],
                            year=year)
     return page
@@ -323,7 +323,7 @@ def get_team(year, tid):
                   )
             players.append({
                 'id':p_[name]['id'],
-                'name': name, 
+                'name': name,
                 'ss': p_[name]['ss'],
                 's': p_[name]['s'],
                 'd': p_[name]['d'],
@@ -369,7 +369,7 @@ def get_games(year=None, summary=False):
             result = game.json()
             if game.date < datetime.today():
                 scores = game.summary()
-                result['score'] = (str(scores['home_score']) + '-' 
+                result['score'] = (str(scores['home_score']) + '-'
                                    + str(scores['away_score']))
             games[league.id]['games'].append(result)
     return games
@@ -378,7 +378,7 @@ def get_leagues(year):
     result = League.query.all()
     leagues = {}
     for league in result:
-        leagues[league.id] = {'name':league.name, 'teams':[]} 
+        leagues[league.id] = {'name':league.name, 'teams':[]}
         teams = team_stats(year, league.id)
         for team in teams:
             valid_form = {'name': teams[team]['name'],
@@ -467,7 +467,7 @@ def rip_summary(f, year):
                 image = line.split('filename="')[1]
                 image = image.split('"')[0]
                 image = image.split("/")[-1]
-                
+
                 if result['image'] is None:
                     result['image'] = image
             elif "<p" in line:
@@ -509,7 +509,7 @@ def post_json(f, year):
                 result.append(lines)
             lines = fn.readline().strip()
     return result
-    
+
 def post_raw_html(f, year):
     f = os.path.join(POSTS, str(year), f)
     with open(f) as fn:

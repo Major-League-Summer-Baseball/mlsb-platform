@@ -12,8 +12,7 @@
     <link href="{{ url_for('static', filename="css/animate.min.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/responsive.css") }}" rel="stylesheet">
-    <!-- Odometr includes -->
-    <link rel="stylesheet" href="{{ url_for('static', filename="css/odometer-theme-car.css") }}"/>
+    <link href="{{ url_for('static', filename="css/flickity.css") }}" rel="stylesheet">
     <!-- Datatables include -->
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
 
@@ -31,61 +30,50 @@
 
 <body class="homepage">
     <header id="header">
-        <div class="top-bar primary">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12 col-xs-12">
-                       <div class="social">
-                            <ul class="social-share">
-                              {% for sponsor in base.sponsors %}
-                                    <li>
-                                      <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}">
-                                        <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="" class="sponsor" style="">
-                                      </a>
-                                    </li>
-                              {% endfor %}
-                            </ul>
+       <div class="sponsor-banner js-flickity" data-flickity-options='{ "draggable": false, "wrapAround": true, "pageDots": false, "autoPlay": true}'>
+           {% for sponsor in base.sponsors %}
+            <div class="sponsor-cell">
+              <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}">
+                <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
+              </a>
+            </div>
+          {% endfor %}
+       </div>
+       <div class="games-container">
+           <div class="container">
+               <div class="games">
+                   {% for game in base.games %}
+                   <div class="game">
+                       <div class="game-date">
+                           {{game.date}}
                        </div>
-                    </div>
-                </div>
-            </div><!--/.container-->
-        </div><!--/.top-bar-->
-        <div class="container frame secondary" id="centered">
-            <ul class="slidee">
-                {% for game in base.games %}
-                <li class="game">
-                    <span class="game">
-                        <a href="{{route.homepage}}/{{year}}">
-                            {{game.date}}
-                            <hr class="game"/>
-                            <br/>
-                            <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" class="game" style="">
-                            {{game.away_team.team_name}}
-                            {{game.away_score}}
-                            <br/>
-                            <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" class="game" style="">
-                            {{game.home_team.team_name}}
-                            {{game.home_score}}
-                        </a>
-                    </span>
-                </li>
-                {% endfor %}
-            </ul>   
-        </div>
-        <nav class="navbar navbar-inverse accent" role="banner">
+                       <div class="team away-team">
+                           <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" style="">
+                           {{game.away_team.team_name}}:
+                           {{game.away_score}}
+                       </div>
+                       <div class="team home-team">
+                           <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" style="">
+                           {{game.home_team.team_name}}:
+                           {{game.home_score}}
+                       </div>
+                   </div>
+                   {% endfor %}
+               </div>
+           </div>
+       </div>
+        <nav class="navbar" role="banner">
             <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
-                        <img src="{{ url_for('static', filename="banner.png")}}" class="mainBanner">
-                    </a>
-                </div>
-				
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
+                    <img src="{{ url_for('static', filename="banner.png")}}">
+                </a>
+
                 <div class="collapse navbar-collapse navbar-left">
                     <ul class="nav navbar-nav">
                           <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
@@ -93,19 +81,19 @@
                           <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
                           <li><a href="{{route.leagueleaderpage}}/{{year}}">League Leaders</a></li>
                         <li><a href="{{route.statspage}}/{{year}}">Player Stats</a></li>
-                        <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>                        
+                        <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>
                     </ul>
                 </div>
             </div><!--/.container-->
         </nav><!--/nav-->
-		
+
     </header><!--/header-->
 
-    <section id="bottom">
+    <section>
         <div class="container">
             <div class="row">
                 <div class="col-xs-12 mainBlock">
-                    <h2 class="mainTitle">
+                    <h2 class="main-header">
                         {{title}}
                     </h2>
                     {% block content %}{% endblock %}
@@ -120,7 +108,7 @@
                         -->
                         </a><div id="awcc1459916225529" class="aw-widget-current"  data-locationkey="55073" data-unit="c" data-language="en-us" data-useip="false" data-uid="awcc1459916225529"></div><script type="text/javascript" src="http://oap.accuweather.com/launch.js"></script>
                     <!-- weather widget end -->
-                </div> 
+                </div>
                 <div class="col-sm-6 col-xs-0">
                     <table>
                         <tr>
@@ -128,7 +116,7 @@
                             <td><a class="btn btn-mini btn-link " href="https://www.facebook.com/mlsb2016/?fref=ts" target="_blank"><i class="fa fa-facebook"></i></a></td>
                             <td><a class="btn btn-mini btn-link" href="https://twitter.com/MLSB2015" target="_blank"><i class="fa fa-twitter"></i></a></td>
                         </tr>
-                    </table>                    
+                    </table>
                     <h4>Fun Meter: <div id="odometer" class="odometer">{{base.fun}}</div></h4>
                 </div>
             </div>
@@ -139,9 +127,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-4">
-                    &copy; MLSB 2016 ShapeBootstrap. All Rights Reserved.
+                    &copy; MLSB 2016. All Rights Reserved.
                 </div>
-                <div class="col-sm-8">
+                <!-- <div class="col-sm-8">
                     <ul class="pull-right">
                         <li><a class="btn btn-mini btn-link " href="{{route.about}}">About</a></li>
                         <li><a class="btn btn-mini btn-link " href="{{route.dindex}}">Documentation</a></li>
@@ -150,11 +138,12 @@
                         <li><a class="btn btn-mini btn-link " href="http://twitter.github.io/bootstrap/">Bootstrap</a></li>
                         <li><a class="btn btn-mini btn-link " href="http://flask.pocoo.org/">Flask</a></li>
                     </ul>
-                </div>
+                </div> -->
             </div>
         </div>
     </footer><!--/#footer-->
     <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/flickity.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
