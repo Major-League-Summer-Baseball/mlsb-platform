@@ -536,11 +536,12 @@ class testUpcomingGames(TestSetup):
         data = {
                 'kik': 'frase2560'
                 }
+        self.show_results = True
         d = date.today().strftime("%Y-%m-%d")
         d2 = (date.today() + timedelta(1)).strftime("%Y-%m-%d")
         expect = [   {   'away_team': 'Chainsaw Black',
                         'away_team_id': 2,
-                        'date': d,
+                        'date': '2016-05-01',
                         'field': '',
                         'game_id': 1,
                         'home_team': 'Domus Green',
@@ -550,11 +551,21 @@ class testUpcomingGames(TestSetup):
                         'time': '11:45'},
                     {   'away_team': 'Domus Green',
                         'away_team_id': 1,
-                        'date': d2,
+                        'date': '2016-05-02',
                         'field': '',
                         'game_id': 2,
                         'home_team': 'Chainsaw Black',
                         'home_team_id': 2,
+                        'league_id': 1,
+                        'status': '',
+                        'time': '11:45'},
+                    {   'away_team': 'Chainsaw Black',
+                        'away_team_id': 2,
+                        'date': '2016-05-06',
+                        'field': '',
+                        'game_id': 3,
+                        'home_team': 'Domus Green',
+                        'home_team_id': 1,
                         'league_id': 1,
                         'status': '',
                         'time': '11:45'}]
