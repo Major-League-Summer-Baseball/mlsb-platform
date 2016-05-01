@@ -504,10 +504,10 @@ a:hover, a:focus {
 }
 
 #footer {
-  padding-top: 30px;
-  padding-bottom: 30px;
-  color: #fff;
-  background: #2e2e2e;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: #808080;
+  font-size: 12px;
 }
 
 #footer a {
