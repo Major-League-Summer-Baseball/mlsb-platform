@@ -32,6 +32,7 @@ body {
 .games {
     white-space: nowrap;
     overflow-x: scroll;
+    margin: 0 -15px;
 }
 
 .games::-webkit-scrollbar {
@@ -76,6 +77,20 @@ body {
 
 .navbar .container .navbar-nav {
     font-size: 12px;
+}
+
+.navbar .navbar-toggle {
+    margin-right: -15px;
+}
+
+.navbar .icon-bar {
+    background-color: #84b0dc;
+}
+
+@media screen and (max-width: 992px) {
+    .navbar .container .navbar-nav>li>a {
+        padding: 15px 10px;
+    }
 }
 
 
