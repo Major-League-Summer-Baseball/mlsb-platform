@@ -387,7 +387,9 @@ class Team(DB.Model):
         '''
         result = []
         if self.sponsor_id is not None:
-            result.append(str( Sponsor.query.get(self.sponsor_id)))
+            sponsor = Sponsor.query.get(self.sponsor_id)
+            if sponsor is not None and sponsor.nickname is not None:
+                result.append(sponsor.nickname)
         if self.color is not None:
             result.append( self.color)
         return " ".join(result)
@@ -523,7 +525,8 @@ class Sponsor(DB.Model):
     link = DB.Column(DB.String(100))
     active = DB.Column(DB.Boolean)
     espys = DB.relationship('Espys', backref='sponsor', lazy='dynamic')
-    def __init__(self, name, link=None, description=None, active=True):
+    nickname = DB.Column(DB.String(100))
+    def __init__(self, name, link=None, description=None, active=True, nickname=None):
         if not string_validator(name):
             raise InvalidField(payload={'details':"Sponsor - name"})
         if not string_validator(link):
@@ -534,6 +537,10 @@ class Sponsor(DB.Model):
         self.description = description
         self.link = link
         self.active = active
+        if nickname is None:
+            self.nickname = name
+        else:
+            self.nickname = nickname
 
     def __repr__(self):
         '''
