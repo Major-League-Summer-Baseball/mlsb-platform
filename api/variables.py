@@ -19,7 +19,7 @@ HITS = ["s", "ss", "d", "hr"] # the hits that are available
 BATS = ['s', 'd', 'ss', 'hr', 'k', 'e','fc', 'fo','go'] # all the possible results from a bat
 GENDERS = ["f", "m"] # the genders currently supported
 EVENTS = {2016: {
-                  "Beerfest": "May 14th",
+                  "Beerfest": "May 13th",
                   "ESPYS_Awards": "July 27th",
                   "Jays_Game": "May 17th",
                   "Summerween": "June 11th",
