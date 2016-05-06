@@ -536,7 +536,6 @@ class TestPlayerTeamLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
                          " View: on no one")
 
-
 class TestLeagueLeaders(TestSetup):
     def testMain(self):
         
@@ -691,6 +690,85 @@ class TestImportTeam(TestSetup):
         importer.add_team()
         self.assertEqual(importer.warnings, ['Team was created'],
                          "Should be no warnings")
+
+from api.advanced.import_league import LeagueList
+class TestImportGames(TestSetup):
+    TEST = [
+                 "League:,Monday and Wednesday,,,",
+                 "Home Team,Away Team,Date,Time,Field",
+                 "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"]
+    TOO_SHORT = ["Home Team,Away Team,Date,Time,Field",]
+    TOO_FEW_COLUMNS = ["League:,Monday and Wednesday,,,",
+                            "Home Team,Away Team,Date,Time",
+                            "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"
+                            ]
+    MISSING_HOME_NAME = [
+                                "League:,Monday and Wednesday,,,",
+                                ",Away Team,Date,Time",
+                                "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"
+                            ]
+    def testParseHeader(self):
+        self.tl = LeagueList(TestImportGames.TEST)
+        l,h = self.tl.parse_header(TestImportGames.TEST[0:2])
+        self.assertEqual(l, 'Monday and Wednesday')
+        self.assertEqual(h, ["Home Team", "Away Team", "Date", "Time", "Field"])
+
+    def testCheckHeader(self):
+        # check valid header
+        self.tl = LeagueList(self.test)
+        valid = self.tl.check_header(self.test[0:2])
+        self.assertEqual(valid, True)
+        # check a header that is too short
+        self.tl = LeagueList(self.too_short)
+        valid = self.tl.check_header(self.too_short[0:2])
+        self.assertEqual(valid, False)
+        # check a header that has too few columns
+        self.tl = LeagueList(self.too_few_columns)
+        valid = self.tl.check_header(self.too_few_columns[0:2])
+        self.assertEqual(valid, False)
+        # check a header that is missing a column
+        self.tl = LeagueList(self.missing_home_name)
+        valid = self.tl.check_header(self.too_few_columns[0:2])
+        self.assertEqual(valid, False)
+
+    def testGetLeagueID(self):
+        self.addLeagues()
+        self.tl = LeagueListTestImportGames, TEST)
+        team = self.tl.get_league_id("Monday and Wednesday") 
+        self.assertEqual(team, 1)
+        self.tl = LeagueList(self.test)
+        team = self.tl.get_league_id("No League") 
+        self.assertEqual(team, None)
+        self.assertEqual(self.tl.errors,
+                         [NO_LEAGUE])
+
+    def testImportGame(self):
+        self.addTeams()
+        self.show_results = True
+        # add games to the league
+        self.valid_test = [
+                           "League:,Monday and Wednesday,,,",
+                           "Home Team,Away Team,Date,Time,Field",
+                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
+        self.tl = LeagueList(self.valid_test)
+        self.tl.league_id = 1
+        self.tl.set_columns_indices(self.valid_test[1].split(","))
+        self.tl.set_teams()
+        self.tl.import_game(self.valid_test[2])
+        self.assertEqual(self.tl.warnings, [])
+        self.assertEqual(self.tl.errors, [])
+        # not a team in the league
+        self.valid_test = [
+                           "League:,Monday and Wednesday,,,",
+                           "Home Team,Away Team,Date,Time,Field",
+                           "Domus Black,Chainsaw Black,2015-10-01,12:00, WP1"]
+        self.tl = LeagueList(self.valid_test)
+        self.tl.league_id = 1
+        self.tl.set_columns_indices(self.valid_test[1].split(","))
+        self.tl.set_teams()
+        self.tl.import_game(self.valid_test[2])
+        self.assertEqual(self.tl.warnings, [])
+        self.assertEqual(self.tl.errors, ["Domus Black is not a team in the league"])
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

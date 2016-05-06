@@ -310,7 +310,10 @@ def get_team(year, tid):
     team = None
     if result is not None:
         captain = "TBD"
+        if result.player_id is not None:
+            captain = str(Player.query.get(result.player_id))
         p_ = player_summary(team_id=tid)
+        stats = []
         players = []
         for name in p_:
             sp = (
@@ -321,7 +324,7 @@ def get_team(year, tid):
                       + p_[name]["hr"] * 4
                       ) / p_[name]['bats']
                   )
-            players.append({
+            stats.append({
                 'id':p_[name]['id'],
                 'name': name,
                 'ss': p_[name]['ss'],
@@ -331,11 +334,11 @@ def get_team(year, tid):
                 'bats': p_[name]['bats'],
                 'ba': "{0:.3f}".format(p_[name]['avg']),
                 'sp': "{0:.3f}".format(sp)})
+            players.append(name)
         team = {'name': str(result),
                 'league': str(League.query.get(result.league_id)),
                 'captain': str(captain),
                 'players': players}
-        print(team)
     return team
 
 def get_teams(year):
