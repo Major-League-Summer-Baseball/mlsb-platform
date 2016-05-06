@@ -117,6 +117,25 @@ def sponsor_picture(name):
     else:
         return send_from_directory(fp, filename=NOTFOUND)
 
+@app.route(Routes['teampicture'] + "/<int:team>")
+def team_picture(team):
+    if isinstance(team, int):
+        team = Team.query.get(team)
+        name = "notFound"
+        if team.sponsor_id is not None:
+            name = Sponsor.query.get(team.sponsor_id)
+            if name is None:
+                name = "notFound"
+            else:
+                name = str(name)
+    name= name.lower().replace(" ", "_") + ".png"
+    f = os.path.join(PICTURES, "sponsors",  name)
+    fp = os.path.join(PICTURES, "sponsors")
+    if os.path.isfile(f):
+        return send_from_directory(fp, filename=name)
+    else:
+        return send_from_directory(fp, filename=NOTFOUND)
+
 @app.route(Routes['postpicture'] + "/<name>")
 def post_picture(name):
     f = os.path.join(PICTURES, "posts", name)
