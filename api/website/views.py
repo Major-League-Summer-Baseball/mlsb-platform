@@ -310,11 +310,14 @@ def get_team(year, tid):
     team = None
     if result is not None:
         captain = "TBD"
+        players = []
+        for player in result.players:
+            if player.name not in players:
+                players.append(player.name)
         if result.player_id is not None:
             captain = str(Player.query.get(result.player_id))
         p_ = player_summary(team_id=tid)
         stats = []
-        players = []
         for name in p_:
             sp = (
                     (
