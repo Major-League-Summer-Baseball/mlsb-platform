@@ -4,6 +4,14 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto';
 }
 
+.full-wrap {
+    min-height: 100vh;
+    height: auto!important;
+    height: 100%;
+    margin: -90px auto 30px;
+    padding-top: 90px;
+}
+
 .sponsor-banner {
     padding: 10px 0;
     border-bottom: 1px solid #dcdcdc;
@@ -100,6 +108,97 @@ body {
     margin-top: 0;
 }
 
+.mainBlock {
+    margin-bottom: 20px;
+}
+
+.content-row .row {
+    margin-left: -30px;
+    margin-right: -30px;
+}
+
+.tab-content {
+    overflow-x: scroll;
+}
+
+.tab-content tbody {
+    font-size: 14px;
+}
+
+.bottom-row {
+    margin-top: 50px;
+}
+
+.fun-meter {
+    font-weight: 300;
+    color: #8FBCE6;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.fun-meter:hover {
+    animation-name: wiggle;
+    -webkit-animation-name: wiggle;
+    animation-duration: 2.5s;
+    -webkit-animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+}
+
+@keyframes wiggle {
+    0% {
+        transform: rotate(0deg);
+    }
+    33% {
+        transform: rotate(4deg);
+    }
+    66% {
+        transform: rotate(-4deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@-webkit-keyframes wiggle {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    33% {
+        -webkit-transform: rotate(4deg);
+    }
+    66% {
+        -webkit-transform: rotate(-4deg);
+    }
+    100% {
+        -webkit-transform: rotate(0deg);
+    }
+}
+
+.social {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.social-link {
+    display: inline-block;
+    padding: 15px;
+    opacity: 0.7;
+    -webkit-transition: opacity 0.3s ease-in;
+    -moz-transition: opacity 0.3s ease-in;
+    -ms-transition: opacity 0.3s ease-in;
+    -o-transition: opacity 0.3s ease-in;
+    transition: opacity 0.3s ease-in;
+}
+
+.social-link .social-icon {
+    height: 30px;
+    width: auto;
+}
+
+.social-link:hover {
+    opacity: 1.0;
+}
 
 p.primary{
   color:#FFFFFF;
@@ -126,9 +225,6 @@ p.accent{
   line-height: 36px;
   margin: 0 0 24px;
   text-align: center;
-}
-.mainBlock{
-  margin-bottom: 20px;
 }
 .leadersList li{
   margin: 0px 0px 24px;

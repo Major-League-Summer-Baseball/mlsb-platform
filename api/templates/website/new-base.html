@@ -26,99 +26,96 @@
 </head><!--/head-->
 
 <body class="homepage">
-    <header id="header">
-       <div class="sponsor-banner js-flickity" data-flickity-options='{ "draggable": false, "wrapAround": true, "pageDots": false, "autoPlay": true}'>
-           {% for sponsor in base.sponsors %}
-            <div class="sponsor-cell">
-              <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}">
-                <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
-              </a>
-            </div>
-          {% endfor %}
-       </div>
-       <div class="games-container">
-           <div class="container">
-               <div class="games">
-                   {% for game in base.games %}
-                   <div class="game">
-                       <div class="game-date">
-                           {{game.date}}
+    <div class="full-wrap">
+        <header id="header">
+           <div class="sponsor-banner js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false, "autoPlay": true}'>
+               {% for sponsor in base.sponsors %}
+                <div class="sponsor-cell">
+                  <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}">
+                    <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
+                  </a>
+                </div>
+              {% endfor %}
+           </div>
+           <div class="games-container">
+               <div class="container">
+                   <div class="games">
+                       {% for game in base.games %}
+                       <div class="game">
+                           <div class="game-date">
+                               {{game.date}}
+                           </div>
+                           <div class="team away-team">
+                               <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" style="">
+                               {{game.away_team.team_name}}:
+                               {{game.away_score}}
+                           </div>
+                           <div class="team home-team">
+                               <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" style="">
+                               {{game.home_team.team_name}}:
+                               {{game.home_score}}
+                           </div>
                        </div>
-                       <div class="team away-team">
-                           <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" style="">
-                           {{game.away_team.team_name}}:
-                           {{game.away_score}}
-                       </div>
-                       <div class="team home-team">
-                           <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" style="">
-                           {{game.home_team.team_name}}:
-                           {{game.home_score}}
-                       </div>
+                       {% endfor %}
                    </div>
-                   {% endfor %}
                </div>
            </div>
-       </div>
-        <nav class="navbar" role="banner">
+            <nav class="navbar" role="banner">
+                <div class="container">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
+                        <img src="{{ url_for('static', filename="banner.png")}}">
+                    </a>
+
+                    <div class="collapse navbar-collapse navbar-left">
+                        <ul class="nav navbar-nav">
+                              <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
+                              <li><a href="{{route.standingspage}}/{{year}}">Prism Power Rankings</a></li>
+                              <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
+                              <li><a href="{{route.leagueleaderpage}}/{{year}}">League Leaders</a></li>
+                            <li><a href="{{route.statspage}}/{{year}}">Player Stats</a></li>
+                            <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>
+                        </ul>
+                    </div>
+                </div><!--/.container-->
+            </nav><!--/nav-->
+
+        </header><!--/header-->
+
+        <section>
             <div class="container">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
-                    <img src="{{ url_for('static', filename="banner.png")}}">
-                </a>
-
-                <div class="collapse navbar-collapse navbar-left">
-                    <ul class="nav navbar-nav">
-                          <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
-                          <li><a href="{{route.standingspage}}/{{year}}">Prism Power Rankings</a></li>
-                          <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
-                          <li><a href="{{route.leagueleaderpage}}/{{year}}">League Leaders</a></li>
-                        <li><a href="{{route.statspage}}/{{year}}">Player Stats</a></li>
-                        <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>
-                    </ul>
+                <div class="row content-row">
+                    <div class="col-xs-12 mainBlock">
+                        <h2 class="main-header">
+                            {{title}}
+                        </h2>
+                        {% block content %}{% endblock %}
+                    </div>
                 </div>
-            </div><!--/.container-->
-        </nav><!--/nav-->
-
-    </header><!--/header-->
-
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 mainBlock">
-                    <h2 class="main-header">
-                        {{title}}
-                    </h2>
-                    {% block content %}{% endblock %}
+                <div class="row bottom-row">
+                    <div class="fun-meter">
+                        We've had {{base.fun}} fun so far!
+                    </div>
+                    <div class="social">
+                        <a href="http://kik.me/mlsbbot" target="_blank" class="social-link">
+                            <img class="social-icon" src="{{ url_for('static', filename="kik.png")}}"/>
+                        </a>
+                        <a href="https://www.facebook.com/MLSB-2016-1511418369154082/?fref=ts" target="_blank" class="social-link">
+                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                        </a>
+                        <a href="https://twitter.com/MLSB2015" target="_blank" class="social-link">
+                            <img class="social-icon" src="{{ url_for('static', filename="twitter.png")}}"/>
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6 col-xs-0">
-                    <!-- weather widget start -->
-                        <a href="http://www.accuweather.com/en/ca/waterloo/n2l/weather-forecast/55073" class="aw-widget-legal">
-                        <!--
-                        By accessing and/or using this code snippet, you agree to AccuWeather’s terms and conditions (in English) which can be found at http://www.accuweather.com/en/free-weather-widgets/terms and AccuWeather’s Privacy Statement (in English) which can be found at http://www.accuweather.com/en/privacy.
-                        -->
-                        </a><div id="awcc1459916225529" class="aw-widget-current"  data-locationkey="55073" data-unit="c" data-language="en-us" data-useip="false" data-uid="awcc1459916225529"></div><script type="text/javascript" src="http://oap.accuweather.com/launch.js"></script>
-                    <!-- weather widget end -->
-                </div>
-                <div class="col-sm-6 col-xs-0">
-                    <table>
-                        <tr>
-                            <td><h4>Follow us:</h4>
-                            <td><a class="btn btn-mini btn-link " href="https://www.facebook.com/mlsb2016/?fref=ts" target="_blank"><i class="fa fa-facebook"></i></a></td>
-                            <td><a class="btn btn-mini btn-link" href="https://twitter.com/MLSB2015" target="_blank"><i class="fa fa-twitter"></i></a></td>
-                        </tr>
-                    </table>
-                    <h4>Fun Meter: <div id="odometer" class="odometer">{{base.fun}}</div></h4>
-                </div>
-            </div>
-        </div>
-    </section><!--/#bottom-->
+        </section><!--/#bottom-->
+    </div>
 
     <footer id="footer" class="midnight-blue">
         <div class="container">
