@@ -58,7 +58,7 @@ sponsors = [Sponsor("Brick Brewery", link="https://www.facebook.com/brick.brewer
             Sponsor("Reds Whites and Brews",link="http://www.redswhitesandbrews.ca/", nickname="RWB"),
             Sponsor("SBESS",link="https://www.facebook.com/LazSoc/?fref=ts", active=False),
             Sponsor("Sentry",link="Shoeless Joe's - Waterloo", active=False),
-            Sponsor("Shoeless Joe's",link="https://www.facebook.com/ShoelessJoesWaterloo?fref=ts"),
+            Sponsor("Shoeless Joe's",link="https://www.facebook.com/ShoelessJoesWaterloo?fref=ts", nickname="Shoeless"),
             Sponsor("Sleeman",link="https://www.facebook.com/SleemanBeer?fref=ts"),
             Sponsor("Snapple Vodka",link="http://www.snapple.com/", active=False),
             Sponsor("SportZone",link="https://www.facebook.com/sportszonecanada?fref=ts"),

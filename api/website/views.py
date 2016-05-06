@@ -413,7 +413,7 @@ def base_data(year):
     base['sponsors'] = get_sponsors()
     fun_count = Fun.query.filter_by(year=year).first()
     if fun_count is None:
-        fun_count = 0
+        fun_count = {'year': year, 'count': 0}
     else:
         fun_count = fun_count
     base['fun'] = fun_count
