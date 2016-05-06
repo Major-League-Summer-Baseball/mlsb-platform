@@ -11,7 +11,7 @@ from api import DB
 from api.model import Player, Bat, Game, Team
 from datetime import datetime, date, time
 from sqlalchemy.sql import func
-from api.variables import UNASSIGNED
+from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('stat', type=str, required=True)
@@ -29,6 +29,10 @@ def get_leaders(hit, year=None):
         d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
+    unassigned_id = 0
+    unassigned = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
+    if unassigned is not None:
+        unassigned_id = unassigned.id
     bats = (DB.session.query(Bat.player_id,
                             hits,
                             Bat.team_id,
@@ -36,7 +40,7 @@ def get_leaders(hit, year=None):
                             Bat.team_id
                             ).join(Game)
                             .filter(Game.date.between(start, end))
-                            .filter(Bat.player_id != UNASSIGNED)
+                            .filter(Bat.player_id != unassigned_id)
                             .group_by(Bat.player_id)
                             .group_by(Bat.classification)
                             .group_by(Bat.team_id)).subquery("bats")

@@ -15,6 +15,7 @@ TEAMS = {
          0: "noTeam.png",
          } # maps the teams to their picture
 UNASSIGNED = 1 # the UNASSIGNED player id used for bats that are not assigned to a player
+UNASSIGNED_EMAIL = "unassignedBats@mlsb.ca"
 HITS = ["s", "ss", "d", "hr"] # the hits that are available
 BATS = ['s', 'd', 'ss', 'hr', 'k', 'e','fc', 'fo','go'] # all the possible results from a bat
 GENDERS = ["f", "m"] # the genders currently supported

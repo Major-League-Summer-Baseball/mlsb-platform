@@ -11,7 +11,7 @@ from api import DB
 from api.model import Player, Bat, Game
 from datetime import datetime, date, time
 from sqlalchemy.sql import func
-from api.variables import UNASSIGNED
+from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
@@ -40,7 +40,7 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                                    .join(Player.bats)
                                    .join(Game)
                                    .filter(Game.date.between(start, end))
-                                   .filter(Player.id != UNASSIGNED)
+                                   .filter(Player.email != UNASSIGNED_EMAIL)
                                    )
     if team_id is not None:
         players = players.filter(Bat.team_id == team_id)

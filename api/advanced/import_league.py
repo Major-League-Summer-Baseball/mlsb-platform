@@ -8,7 +8,7 @@
 from api.model import Sponsor, Team, Game, League
 from api import DB
 from api.validators import time_validator, string_validator, date_validator
-from api.errors import InvalidField
+from api.errors import InvalidField, LeagueDoesNotExist
 import logging
 # constants
 CREATED = "Created Team (no league was specified)"
@@ -80,7 +80,7 @@ class LeagueList():
             id = league.id
         else:
             # cant assume some league so return None
-            self.errors.append(NO_LEAGUE)
+            raise LeagueDoesNotExist(payload={"details": "League does not exist: {}".format(league)})
         return id
 
     def set_teams(self):
@@ -93,8 +93,12 @@ class LeagueList():
         '''
         self.teams = {}
         league = League.query.get(self.league_id)
+        if league is None:
+            raise LeagueDoesNotExist(payload={'details': league})
         for team in league.teams:
             self.teams[str(team)] = team.id
+            sponsor = str(Sponsor.query.get(team.sponsor_id))
+            self.teams[sponsor + " " + team.color]
 
     def set_columns_indices(self, headers):
         '''
@@ -137,32 +141,23 @@ class LeagueList():
         field = info[self.field_index].strip()
         date = info[self.date_index].strip()
         # check if variables meet certain conditions
-        if (not string_validator(away) or
-            not string_validator(home) or
-            not time_validator(time) or
-            not date_validator(date) or
-            not string_validator(field)):
-            g = away + " vs. " + home + " on " + date
-            self.errors.append(INVALID_FIELD.format(g))
-            self.logger.debug("Game had invalid fields")
-        else:
-            # else should be good to add game
-            away_team = self.teams.get(away, None)
-            home_team = self.teams.get(home, None)
-            if away_team is None:
-                self.errors.append(INVALID_TEAM.format(away))
-            if home_team is None:
-                self.errors.append(INVALID_TEAM.format(home))
-            if away_team is not None and home_team is not None:
-                # else should be good to add the game
-                game = Game(
-                            date,
-                            time,
-                            home_team,
-                            away_team,
-                            self.league_id,
-                            field=field)
-                DB.session.add(game)
+        # else should be good to add game
+        away_team = self.teams.get(away, None)
+        home_team = self.teams.get(home, None)
+        if away_team is None:
+            self.errors.append(INVALID_TEAM.format(away))
+        if home_team is None:
+            self.errors.append(INVALID_TEAM.format(home))
+        if away_team is not None and home_team is not None:
+            # else should be good to add the game
+            game = Game(
+                        date,
+                        time,
+                        home_team,
+                        away_team,
+                        self.league_id,
+                        field=field)
+            DB.session.add(game)
         return
 
     def check_header(self,header):
@@ -205,260 +200,3 @@ class LeagueList():
         league = first[1]
         headers = header[1].split(",")
         return league, headers
-
-# the test for this class are not the best might need to be fixed later
-import unittest
-from pprint import PrettyPrinter
-from api import app
-import tempfile
-class testSubTester(unittest.TestCase):
-    # this is just to test the subroutines
-    # was having trouble and need to run the test individual of else
-    # the one query stalls
-    def setUp(self):
-        self.show_results = False
-        self.pp = PrettyPrinter(indent=4)
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        app.config['TESTING'] = True
-        self.app = app.test_client()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-        DB.create_all()
-        self.test = [
-                     "League:,Monday and Wednesday,,,",
-                     "Home Team,Away Team,Date,Time,Field",
-                     "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"]
-        self.too_short = ["Home Team,Away Team,Date,Time,Field",]
-        self.too_few_columns = ["League:,Monday and Wednesday,,,",
-                                "Home Team,Away Team,Date,Time",
-                                "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"
-                                ]
-        self.missing_home_name = [
-                                    "League:,Monday and Wednesday,,,",
-                                    ",Away Team,Date,Time",
-                                    "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"
-                                ]
-
-    def tearDown(self):
-        print("Teardown")
-        DB.session.commit()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-
-    def testParseHeader(self):
-        self.tl = LeagueList(self.test)
-        l,h = self.tl.parse_header(self.test[0:2])
-        self.assertEqual(l, 'Monday and Wednesday')
-        self.assertEqual(h, ["Home Team", "Away Team", "Date", "Time", "Field"])
-
-    def testCheckHeader(self):
-        # check valid header
-        self.tl = LeagueList(self.test)
-        valid = self.tl.check_header(self.test[0:2])
-        self.assertEqual(valid, True)
-        # check a header that is too short
-        self.tl = LeagueList(self.too_short)
-        valid = self.tl.check_header(self.too_short[0:2])
-        self.assertEqual(valid, False)
-        # check a header that has too few columns
-        self.tl = LeagueList(self.too_few_columns)
-        valid = self.tl.check_header(self.too_few_columns[0:2])
-        self.assertEqual(valid, False)
-        # check a header that is missing a column
-        self.tl = LeagueList(self.missing_home_name)
-        valid = self.tl.check_header(self.too_few_columns[0:2])
-        self.assertEqual(valid, False)
-
-    def insertSponsors(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Chainsaw")
-                         ]
-        for s in range(0,len(self.sponsors)):
-            DB.session.add(self.sponsors[s])
-        DB.session.commit()
-
-    def insertTeams(self):
-        self.insertLeague()
-        self.insertSponsors()
-        # team one
-        self.teams = [Team(color="Green", league_id=1),
-                      Team(color="Black", league_id=1)
-                      ]
-        self.teams[0].sponsor_id = self.sponsors[0].id
-        self.teams[1].sponsor_id = self.sponsors[1].id
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
-        DB.session.commit()
-
-    def insertLeague(self):
-        self.league = League("Monday and Wednesday")
-        DB.session.add(self.league)
-        DB.session.commit()
-
-    def testGetLeagueID(self):
-        self.insertLeague()
-        self.tl = LeagueList(self.test)
-        team = self.tl.get_league_id("Monday and Wednesday") 
-        self.assertEqual(team, 1)
-        self.tl = LeagueList(self.test)
-        team = self.tl.get_league_id("No League") 
-        self.assertEqual(team, None)
-        self.assertEqual(self.tl.errors,
-                         [NO_LEAGUE])
-
-    def testImportGame(self):
-        self.insertTeams()
-        # add games to the league
-        self.valid_test = [
-                           "League:,Monday and Wednesday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.league_id = 1
-        self.tl.set_columns_indices(self.valid_test[1].split(","))
-        self.tl.set_teams()
-        self.tl.import_game(self.valid_test[2])
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [])
-        # not a team in the league
-        self.valid_test = [
-                           "League:,Monday and Wednesday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Black,Chainsaw Black,2015-10-01,12:00, WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.league_id = 1
-        self.tl.set_columns_indices(self.valid_test[1].split(","))
-        self.tl.set_teams()
-        self.tl.import_game(self.valid_test[2])
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, ["Domus Black is not a team in the league"])
-
-class testTeamImport(unittest.TestCase):
-    def setUp(self):
-        self.show_results = False
-        self.pp = PrettyPrinter(indent=4)
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        #app.config['TESTING'] = True
-        #self.app = app.test_client()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-        DB.create_all()
-        self.valid_test = [
-                         "League:,Monday and Wednesday,,,",
-                         "Home Team,Away Team,Date,Time,Field",
-                         "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"
-                         ]
-        self.bad_header = [
-                         "League:,Monday and Wednesday,,,",
-                         "BAD,HEADER,Date,Time,Field",
-                         "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"
-                         ]
-        self.bad_league = [
-                         "League:,Fuck you,,,",
-                         "Home Team,Away Team,Date,Time,Field",
-                         "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"
-                         ]
-        self.bad_game = [
-                         "League:,Monday and Wednesday,,,",
-                         "Home Team,Away Team,Date,Time,Field",
-                         "Domus Green,Chainsaw Black,2015-XX-01,12:00,WP1"
-                         ]
-        self.bad_team = [
-                         "League:,Monday and Wednesday,,,",
-                         "Home Team,Away Team,Date,Time,Field",
-                         "XX,Chainsaw Black,2015-10-01,12:00,WP1"
-                         ]
-
-    def tearDown(self):
-        DB.session.commit()
-        DB.engine.execute('''   
-                            DROP TABLE IF EXISTS roster;
-                            DROP TABLE IF EXISTS bat;
-                            DROP TABLE IF EXISTS game;
-                            DROP TABLE IF EXISTS team;
-                            DROP TABLE IF EXISTS player;
-                            DROP TABLE IF EXISTS sponsor;
-                            DROP TABLE IF EXISTS league;
-                            ''')
-
-    def insertSponsors(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Chainsaw")
-                         ]
-        for s in range(0,len(self.sponsors)):
-            DB.session.add(self.sponsors[s])
-        DB.session.commit()
-
-    def insertTeams(self):
-        self.insertLeague()
-        self.insertSponsors()
-        # team one
-        self.teams = [Team(color="Green", league_id=1),
-                      Team(color="Black", league_id=1)
-                      ]
-        self.teams[0].sponsor_id = self.sponsors[0].id
-        self.teams[1].sponsor_id = self.sponsors[1].id
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
-        DB.session.commit()
-
-    def insertLeague(self):
-        self.league = League("Monday and Wednesday")
-        DB.session.add(self.league)
-        DB.session.commit()
-
-    def testValidCases(self):
-        self.insertTeams()
-        # import  a set of good games
-        self.tl = LeagueList(self.valid_test)
-        self.tl.import_league()
-        self.assertEqual([], self.tl.warnings)
-        self.assertEqual([], self.tl.errors)
-
-    def testInvalidCases(self):
-        self.insertTeams()
-        # test bad header
-        self.tl = LeagueList(self.bad_header)
-        self.tl.import_league()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [INVALID_FILE])
-        # test bad league
-        self.tl = LeagueList(self.bad_league)
-        self.tl.import_league()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [NO_LEAGUE])
-        # test bad game
-        self.tl = LeagueList(self.bad_game)
-        self.tl.import_league()
-        self.assertEqual(self.tl.warnings, [])
-        expect = "Chainsaw Black vs. Domus Green on 2015-XX-01"
-        self.assertEqual(self.tl.errors, [INVALID_FIELD.format(expect)])
-        # test bad team in game
-        self.tl = LeagueList(self.bad_team)
-        self.tl.import_league()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [INVALID_TEAM.format("XX")])
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()

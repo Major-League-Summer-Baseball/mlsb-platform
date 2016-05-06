@@ -8,6 +8,7 @@ import unittest
 import logging
 from api.helper import loads
 from api.routes import Routes
+from api.model import League
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
@@ -715,39 +716,40 @@ class TestImportGames(TestSetup):
 
     def testCheckHeader(self):
         # check valid header
-        self.tl = LeagueList(self.test)
-        valid = self.tl.check_header(self.test[0:2])
+        self.tl = LeagueList(TestImportGames.TEST)
+        valid = self.tl.check_header(TestImportGames.TEST[0:2])
         self.assertEqual(valid, True)
         # check a header that is too short
-        self.tl = LeagueList(self.too_short)
-        valid = self.tl.check_header(self.too_short[0:2])
+        self.tl = LeagueList(TestImportGames.TOO_SHORT)
+        valid = self.tl.check_header(TestImportGames.TOO_SHORT[0:2])
         self.assertEqual(valid, False)
         # check a header that has too few columns
-        self.tl = LeagueList(self.too_few_columns)
-        valid = self.tl.check_header(self.too_few_columns[0:2])
+        self.tl = LeagueList(TestImportGames.TOO_FEW_COLUMNS)
+        valid = self.tl.check_header(TestImportGames.TOO_FEW_COLUMNS[0:2])
         self.assertEqual(valid, False)
         # check a header that is missing a column
-        self.tl = LeagueList(self.missing_home_name)
-        valid = self.tl.check_header(self.too_few_columns[0:2])
+        self.tl = LeagueList(TestImportGames.MISSING_HOME_NAME)
+        valid = self.tl.check_header(TestImportGames.TOO_FEW_COLUMNS[0:2])
         self.assertEqual(valid, False)
 
     def testGetLeagueID(self):
         self.addLeagues()
-        self.tl = LeagueListTestImportGames, TEST)
-        team = self.tl.get_league_id("Monday and Wednesday") 
+        self.tl = LeagueList(TestImportGames.TEST)
+        team = self.tl.get_league_id("Monday & Wedneday") 
         self.assertEqual(team, 1)
-        self.tl = LeagueList(self.test)
-        team = self.tl.get_league_id("No League") 
-        self.assertEqual(team, None)
-        self.assertEqual(self.tl.errors,
-                         [NO_LEAGUE])
+        self.tl = LeagueList(TestImportGames.TEST)
+        try:
+            team = self.tl.get_league_id("No League") 
+            self.assertEqual(True, False, "League does not exist error should be raised")
+        except:
+            pass
 
     def testImportGame(self):
-        self.addTeams()
+        self.addTeamWithLegaue()
         self.show_results = True
         # add games to the league
         self.valid_test = [
-                           "League:,Monday and Wednesday,,,",
+                           "League:,Monday & Wednesday,,,",
                            "Home Team,Away Team,Date,Time,Field",
                            "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
         self.tl = LeagueList(self.valid_test)
@@ -769,6 +771,61 @@ class TestImportGames(TestSetup):
         self.tl.import_game(self.valid_test[2])
         self.assertEqual(self.tl.warnings, [])
         self.assertEqual(self.tl.errors, ["Domus Black is not a team in the league"])
+
+    def testValidCases(self):
+        self.addTeamWithLegaue()
+        # import  a set of good games
+        self.valid_test = [
+                           "League:,Monday & Wedneday,,,",
+                           "Home Team,Away Team,Date,Time,Field",
+                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
+        self.tl = LeagueList(self.valid_test)
+        self.tl.import_league()
+        self.assertEqual([], self.tl.warnings)
+        self.assertEqual([], self.tl.errors)
+
+    def testInvalidCases(self):
+        self.addTeamWithLegaue()
+        # test bad header
+        self.bad_header = [
+                           "League:,Monday & Wedneday,,,",
+                           "Home Team,Away Team,Date,Time,sdjfkhskdj",
+                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]        
+        self.tl = LeagueList(self.bad_header)
+        self.tl.import_league()
+        # test bad league
+        self.bad_league = [
+                           "Leaguex:,Monday & Wedneday,,,",
+                           "Home Team,Away Team,Date,Time,Field",
+                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
+        self.tl = LeagueList(self.bad_league)
+        try:
+            self.tl.import_league()
+        except LeagueDoesNotExist:
+            pass
+        # test bad game
+        self.bad_game = [
+                           "League:,Monday & Wedneday,,,",
+                           "Home Team,Away Team,Date,Time,Field",
+                           "Domus Green,Chainsaw Black,2015-xx-01,12:00,WP1"]
+        
+        self.tl = LeagueList(self.bad_game)
+        try:
+            self.tl.import_league()
+            self.assertEqual(True, False, "should raise error")
+        except InvalidField:
+            pass
+        self.bad_team = [
+                           "League:,Monday & Wedneday,,,",
+                           "Home Team,Away Team,Date,Time,Field",
+                           "X Green,Chainsaw Black,2015-10-01,12:00,WP1"]
+        
+        # test bad team in game
+        self.tl = LeagueList(self.bad_team)
+        self.tl.import_league()
+        self.assertEqual(self.tl.warnings, [])
+        self.assertEqual(['X Green is not a team in the league'],
+                         self.tl.errors)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -95,6 +95,9 @@ class TeamList():
             raise InvalidField(payload={"details": "The header's still had an example"})
         sponsor_id = (DB.session.query(Sponsor).filter(Sponsor.name==sponsor)
                       .first())
+        if sponsor_id  is None:
+            sponsor_id = (DB.session.query(Sponsor).filter(Sponsor.nickname==sponsor)
+                      .first())
         if sponsor_id is None:
             # what kind of sponsor are you giving
             raise SponsorDoesNotExist(payload={'details': "The sponsor does not exist (check case)"})
@@ -106,14 +109,11 @@ class TeamList():
         # check to see if team was already created
         teams = (DB.session.query(Team)
                     .filter(Team.color==color)
-                    .filter(Team.sponsor_id==sponsor_id).all())
+                    .filter(Team.sponsor_id==sponsor_id)
+                    .filter(Team.year==date.today().year).all())
         team_found = None
-        i = 0
-        current_year = date.today().year
-        while i < len(teams) and team_found is None:
-            if teams[i].year == current_year:
-                team_found = teams[i]
-            i += 1
+        if len(teams) > 0:
+            team_found = teams[0]
         # was the team not found then should create it
         if team_found is None:
             self.warnings.append("Team was created")

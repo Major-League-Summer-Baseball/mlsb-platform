@@ -1,6 +1,7 @@
 from api import DB
 from api.model import Player, Team, Sponsor, Game, League, Bat, Espys, Fun
 from random import randint
+from api.variables import UNASSIGNED_EMAIL
 # delete old information
 DB.session.commit()
 DB.engine.execute('''   
@@ -86,6 +87,6 @@ sponsors = [Sponsor("Brick Brewery", link="https://www.facebook.com/brick.brewer
 for sponsor in sponsors:
     DB.session.add(sponsor)
 DB.session.commit()
-player = Player("UNASSIGNED", "UNASSGIEND@mlsb.ca",gender="F",  active=False)
+player = Player("UNASSIGNED", UNASSIGNED_EMAIL,gender="F",  active=False)
 DB.session.add(player)
 DB.session.commit()

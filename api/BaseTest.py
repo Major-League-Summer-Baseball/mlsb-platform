@@ -112,6 +112,32 @@ class TestSetup(unittest.TestCase):
             DB.session.add(self.players[player])
         DB.session.commit()
 
+    def addTeamWithLegaue(self):
+        self.addLeagues()
+        self.addPlayers()
+        self.addSponsors()
+        # team one
+        self.teams = [Team(
+                           color="Green",
+                           sponsor_id=self.sponsors[0].id,
+                           league_id=1
+                           
+                           ),
+                      Team(
+                           color="Black",
+                           sponsor_id=self.sponsors[1].id,
+                           league_id=1
+                           ),
+                      Team(
+                           color="Diamon",
+                           sponsor_id=self.sponsors[0].id,
+                           league_id=1
+                           )
+                      ]
+        for t in range(0, len(self.teams)):
+            DB.session.add(self.teams[t])
+        DB.session.commit()
+
     def addTeams(self):
         self.addPlayers()
         self.addSponsors()
