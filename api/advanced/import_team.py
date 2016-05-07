@@ -47,7 +47,7 @@ class TeamList():
         # should be good no errors were raised
         DB.session.commit()
         if self.captain is None:
-            self.warning.append("Captain was not assigned")
+            self.warnings.append("Captain was not assigned")
         else:
             # set the captain
             self.team.player_id = self.captain.id
