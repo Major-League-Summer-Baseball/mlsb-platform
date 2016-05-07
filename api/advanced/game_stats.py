@@ -79,6 +79,10 @@ def post(game_id=None, league_id=None, year=None, today=False):
                                    'inning': bat[0].inning,
                                    'rbi':  bat[0].rbi})
             g['home_score'] += bat[0].rbi
+        if g['away_bats'] == 0 :
+            g['away_score'] = "--"
+        if g['home_bats'] == 0:
+            g['home_score'] = "--"
         result.append(g)
     return result
 

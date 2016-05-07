@@ -12,7 +12,7 @@ from flask import render_template, url_for, send_from_directory, \
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
 from api.variables import UNASSIGNED, EVENTS, NOTFOUND
 from datetime import date, datetime, time
-from api.advanced.team_stats import team_stats
+from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
 from api.advanced.league_leaders import get_leaders
 from api import DB
@@ -90,7 +90,6 @@ def about(year):
 def index(year):
     games = get_upcoming_games(year)
     news = get_summaries(year)
-    print(news)
     return render_template("website/index.html",
                            route=Routes,
                            base=base_data(year),
@@ -140,7 +139,6 @@ def team_picture(team):
 def post_picture(name):
     f = os.path.join(PICTURES, "posts", name)
     fp = os.path.join(PICTURES,"posts" )
-    print(fp)
     if os.path.isfile(f):
         return send_from_directory(fp, filename=name)
     else:
@@ -204,12 +202,20 @@ def stats_page(year):
 @app.route(Routes['teampage'] + "/<int:year>/<int:team_id>")
 def team_page(year, team_id):
     team = get_team(year, team_id)
-    return render_template("website/team.html",
-                       route=Routes,
-                       base=base_data(year),
-                       team=team,
-                       title="Team - " + str(team['name']),
-                       year=year)
+    if team is not None:
+        return render_template("website/team.html",
+                           route=Routes,
+                           base=base_data(year),
+                           team=team,
+                           title="Team - " + str(team['name']),
+                           year=year)
+    else:
+        return render_template("website/notFound.html",
+                           route=Routes,
+                           base=base_data(year),
+                           team=team,
+                           title="Team not found",
+                           year=year)
 
 @app.route(Routes['playerpage']+ "/<int:year>/<int:player_id>")
 def player_page(year, player_id):
@@ -357,10 +363,15 @@ def get_team(year, tid):
                 'ba': "{0:.3f}".format(p_[name]['avg']),
                 'sp': "{0:.3f}".format(sp)})
             players.append(name)
+        record = single_team(tid)
         team = {'name': str(result),
                 'league': str(League.query.get(result.league_id)),
                 'captain': str(captain),
-                'players': players}
+                'players': players,
+                'record': record,
+                'wins': record[tid]['wins'],
+                'losses': record[tid]['losses'],
+                'ties': record[tid]['ties']}
     return team
 
 def get_teams(year):
@@ -407,6 +418,7 @@ def get_leagues(year):
         teams = team_stats(year, league.id)
         for team in teams:
             valid_form = {'name': teams[team]['name'],
+                          'id': team,
                           'espys': Team.query.get(team).espys_awarded(),
                           'games': teams[team]['games'],
                           'wins': teams[team]['wins'],
@@ -448,7 +460,6 @@ def get_all_descriptions(year):
     dire = os.path.join(POSTS, str(year))
     result = []
     for i in os.listdir(dire):
-        print(i)
         if i.endswith(".html"):
             fname = str(i)
             fname.replace(".html", "")
@@ -475,7 +486,6 @@ def rip_summary(f, year):
               "name": description,
               "date": post_date}
     f = os.path.join(POSTS, str(year), f)
-    print(f)
     with open (f) as f:
         # read the header in
         line = f.readline().strip()
@@ -516,7 +526,6 @@ def rip_summary(f, year):
 def post_json(f, year):
     result = []
     f = os.path.join(POSTS, str(year), f)
-    print(f)
     with open(f) as fn:
         line = fn.readline().strip()
         # read the header
@@ -538,7 +547,6 @@ def post_json(f, year):
 def post_raw_html(f, year):
     f = os.path.join(POSTS, str(year), f)
     with open(f) as fn:
-        print(f)
         line = fn.readline().strip()
         # read the header
         while not line.startswith("{% block content %}") and len(line) > 0:

@@ -55,7 +55,7 @@ def single_team(team_id):
             team[team_id]['wins'] += 1
         elif score < opp:
             team[team_id]['losses'] += 1
-        else:
+        elif scores['home_bats'] + scores['away_bats'] > 0:
             team[team_id]['ties'] += 1
         team[team_id]['runs_for'] += score
         team[team_id]['runs_against'] += opp
@@ -78,7 +78,6 @@ def team_stats(year, league_id):
     if league_id is not None:
         games = games.filter(Game.league_id==league_id)
         teams = teams.filter(Team.league_id==league_id)
-    
     result = {}
     for team in teams:
         # initialize each team
@@ -98,19 +97,20 @@ def team_stats(year, league_id):
         result[game.away_team_id]['runs_against'] += score['home_score']
         result[game.away_team_id]['hits_for'] += score['away_bats'] 
         result[game.away_team_id]['hits_allowed'] += score['home_bats']
-        result[game.away_team_id]['games'] += 1
         result[game.home_team_id]['runs_for'] += score['home_score'] 
         result[game.home_team_id]['runs_against'] += score['away_score']
         result[game.home_team_id]['hits_for'] += score['home_bats'] 
         result[game.home_team_id]['hits_allowed'] += score['away_bats']
-        result[game.home_team_id]['games'] += 1
+        if score['away_bats'] + score['home_bats'] > 0:
+            result[game.away_team_id]['games'] += 1
+            result[game.home_team_id]['games'] += 1
         if score['away_score'] > score['home_score']:
             result[game.away_team_id]['wins'] += 1
             result[game.home_team_id]['losses'] += 1
         elif score['away_score'] < score['home_score']:
             result[game.home_team_id]['wins'] += 1
             result[game.away_team_id]['losses'] += 1
-        else:
+        elif score['away_bats'] + score['home_bats'] > 0:
             result[game.home_team_id]['ties'] += 1
             result[game.away_team_id]['ties'] += 1
     return result

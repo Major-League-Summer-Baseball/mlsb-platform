@@ -31,7 +31,7 @@
            <div class="sponsor-banner js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false, "autoPlay": true}'>
                {% for sponsor in base.sponsors %}
                 <div class="sponsor-cell">
-                  <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}">
+                  <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}" target="_blank">
                     <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
                   </a>
                 </div>
@@ -48,12 +48,20 @@
                            <div class="team away-team">
                                <img src="{{route.sponsorspicture}}/{{game.away_team.sponsor_id}}"  alt="" style="">
                                {{game.away_team.team_name}}:
+                               {% if game.away_bats|length > 0 %}
                                {{game.away_score}}
+                               {% else %}
+                               -- 
+                               {% endif %}
                            </div>
                            <div class="team home-team">
                                <img src="{{route.sponsorspicture}}/{{game.home_team.sponsor_id}}"  alt="" style="">
                                {{game.home_team.team_name}}:
+                               {% if game.home_bats|length > 0 %}
                                {{game.home_score}}
+                               {% else %}
+                               -- 
+                               {% endif %}
                            </div>
                        </div>
                        {% endfor %}
@@ -69,7 +77,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
-                        <img src="{{ url_for('static', filename="banner.png")}}">
+                        <img src="{{ url_for('static', filename="MLSB-Word-Logo.png")}}">
                     </a>
 
                     <div class="collapse navbar-collapse navbar-left">
@@ -108,9 +116,11 @@
                         <a href="https://www.facebook.com/MLSB-2016-1511418369154082/?fref=ts" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
                         </a>
+                        <!--
                         <a href="https://twitter.com/MLSB2015" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="twitter.png")}}"/>
                         </a>
+                        -->
                     </div>
                 </div>
             </div>

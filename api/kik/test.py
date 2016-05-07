@@ -536,8 +536,6 @@ class testUpcomingGames(TestSetup):
         data = {
                 'kik': 'frase2560'
                 }
-        self.show_results = True
-        self.show_results = True
         d = date.today().strftime("%Y-%m-%d")
         d2 = (date.today() + timedelta(1)).strftime("%Y-%m-%d")
         d3 = (date.today() + timedelta(5)).strftime("%Y-%m-%d")

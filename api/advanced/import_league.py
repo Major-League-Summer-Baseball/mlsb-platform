@@ -98,7 +98,7 @@ class LeagueList():
         for team in league.teams:
             self.teams[str(team)] = team.id
             sponsor = str(Sponsor.query.get(team.sponsor_id))
-            self.teams[sponsor + " " + team.color]
+            self.teams[sponsor + " " + team.color] = team.id
 
     def set_columns_indices(self, headers):
         '''

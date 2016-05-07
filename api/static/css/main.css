@@ -125,6 +125,8 @@ body {
     font-size: 14px;
 }
 
+.tab-content::-webkit-scrollbar { display: none; visibility: hidden; };
+
 .bottom-row {
     margin-top: 50px;
 }

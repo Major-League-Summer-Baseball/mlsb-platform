@@ -12,7 +12,7 @@ from api.model import Player, Bat, Game, Team
 from api.authentication import requires_kik
 from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist,\
     PlayerNotSubscribed
-from api.variables import UNASSIGNED
+from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
 parser = reqparse.RequestParser()
 parser.add_argument('game_id', type=int, required=True)
 parser.add_argument('kik', type=str, required=True)
@@ -37,6 +37,10 @@ class SubmitScoresAPI(Resource):
                 mimetype: application/json
                 data: True
         """
+        unassigned_player = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
+        unassigned_id = UNASSIGNED
+        if unassigned_player is not None:
+            unassigned_id = unassigned_player.id
         args = parser.parse_args()
         game_id = args['game_id']
         game = Game.query.get(game_id)
@@ -57,9 +61,18 @@ class SubmitScoresAPI(Resource):
         else:
             # not a captain of a team
             raise NotTeamCaptain(payload={'details': kik})
+
+            
         homeruns = args['hr']
         ss = args['ss']
         score = args['score']
+        if score < 0:
+            # hmm that is so sad
+            DB.session.add(Bat(unassigned_id ,
+                               team.id,game.id,
+                               "pf",
+                               inning=1,
+                               rbi=0))
         if homeruns is not None:
             for player_id in homeruns:
                 # add the homeruns
@@ -87,7 +100,7 @@ class SubmitScoresAPI(Resource):
         if score < 0:
             raise InvalidField(payload={'details': "More hr than score"})
         while score > 0:
-            bat = Bat(UNASSIGNED,
+            bat = Bat(unassigned_id,
                       team.id,
                       game.id,
                       "s",
