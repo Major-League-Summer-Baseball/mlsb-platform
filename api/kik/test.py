@@ -13,7 +13,7 @@ from base64 import b64encode
 from datetime import date, datetime, timedelta
 from api.errors import  TeamDoesNotExist,NotTeamCaptain, TeamAlreadyHasCaptain,\
                         PlayerNotOnTeam, PlayerNotSubscribed,GameDoesNotExist,\
-                        InvalidField, SponsorDoesNotExist
+                        InvalidField, SponsorDoesNotExist, PlayerDoesNotExist
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }
@@ -273,7 +273,6 @@ class testUnSubscribe(TestSetup):
                          )
         self.assertEqual(expect, loads(rv.data),
                          Routes['kikunsubscribe'] + " Post: team does not exist")
-        
 
 class testSubmitScores(TestSetup):
     def testMain(self):
@@ -504,37 +503,22 @@ class testUpcomingGames(TestSetup):
         # non-subscribed player
         self.mockUpcomingGames()
         data = {
-                'kik': 'frase2560'
+                'name': 'DoesNotExist'
                 }
-        expect = {'details': 'frase2560',
-                  'message': PlayerNotSubscribed.message}
+        expect = {'details': 'DoesNotExist',
+                  'message': PlayerDoesNotExist.message}
         rv = self.app.post(Routes['kikupcominggames'], data=data, headers=kik)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(rv.status_code, PlayerNotSubscribed.status_code,
+        self.assertEqual(rv.status_code, PlayerDoesNotExist.status_code,
                          Routes['kikupcominggames'] +
-                         " POST: Unsubscribed player for upcoming games"
+                         " POST: Player DNE for upcoming games"
                          )
         self.assertEqual(expect, loads(rv.data),
                          Routes['kikupcominggames'] + " Post: Unsubscribed player for upcoming games")
-        # subscribe the player
-        data = {
-                'kik': "frase2560",
-                "name": "Dallas Fraser",
-                "team": 1
-                }
-        expect = True
-        rv = self.app.post(Routes['kiksubscribe'], data=data, headers=kik)
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(rv.status_code, 200, Routes['kikcaptain'] +
-                         " POST: valid request"
-                         )
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['kiksubscribe'] + " Post: subscribe")
         # subscribed player upcoming games
         data = {
-                'kik': 'frase2560'
+                'name': 'Dallas Fraser'
                 }
         d = date.today().strftime("%Y-%m-%d")
         d2 = (date.today() + timedelta(1)).strftime("%Y-%m-%d")

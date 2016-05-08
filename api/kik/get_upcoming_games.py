@@ -9,12 +9,12 @@ from flask import Response
 from json import dumps
 from api import DB
 from api.model import Player, Game
-from api.errors import PNS, PlayerNotSubscribed
+from api.errors import PNS, PlayerNotSubscribed, PlayerDoesNotExist
 from api.authentication import requires_kik
 from datetime import  timedelta, date
 from sqlalchemy import or_
 parser = reqparse.RequestParser()
-parser.add_argument('kik', type=str, required=True)
+parser.add_argument('name', type=str, required=True)
 
 class UpcomingGamesAPI(Resource):
     @requires_kik
@@ -23,22 +23,24 @@ class UpcomingGamesAPI(Resource):
             POST request for the upcoming games for the given player
             Route: Route['kikupcominggames']
             Parameters:
-                kik: the captain's kik user name (str)
+                name: the player's full name (str)
             Returns:
                 status: 200
                 mimetype: application/json
                 data: id: the captain's team id
         """
         args = parser.parse_args()
-        kik = args['kik']
-        player = DB.session.query(Player).filter(Player.kik==kik).first()
-        if player is None:
-            raise PlayerNotSubscribed(payload={'details': kik})
+        name = args['name']
+        players = DB.session.query(Player).filter(Player.name.like("%"+name+"%")).all()
+        print(players, name)
+        if players is None or len(players) == 0:
+            raise PlayerDoesNotExist(payload={'details': name})
         teams = []
         today = date.today()
         next_two_weeks = today + timedelta(days=14)
-        for team in player.teams:
-            teams.append(team.id)
+        for player in players:
+            for team in player.teams:
+                teams.append(team.id)
         games  = DB.session.query(Game).filter(or_(Game.away_team_id.in_(teams),
                                                   (Game.home_team_id.in_(teams))))
         games = games.filter(Game.date.between(today, next_two_weeks))
