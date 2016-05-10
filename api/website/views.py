@@ -362,7 +362,7 @@ def get_team(year, tid):
                 'bats': p_[name]['bats'],
                 'ba': "{0:.3f}".format(p_[name]['avg']),
                 'sp': "{0:.3f}".format(sp)})
-            players.append(name)
+#            players.append(name)
         record = single_team(tid)
         team = {'name': str(result),
                 'league': str(League.query.get(result.league_id)),
@@ -371,7 +371,8 @@ def get_team(year, tid):
                 'record': record,
                 'wins': record[tid]['wins'],
                 'losses': record[tid]['losses'],
-                'ties': record[tid]['ties']}
+                'ties': record[tid]['ties'],
+                'stats': stats}
     return team
 
 def get_teams(year):
