@@ -7,7 +7,11 @@
 		</h4>
 		<ul class="listgroup leadersList">
 		{% for player in men %}
-			<li class="list-group-item leaderPoint"><span class="badge leaderBadge">{{loop.index}}</span> {{player.name}} - {{player.hits}} </li>
+			<li class="list-group-item leaderPoint">
+				<span class="badge leaderBadge">{{loop.index}}</span>
+				{{player.name}} - {{player.hits}}
+				<img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+			</li>
 		{% endfor %}
 		</ul>
 	</div>	
@@ -17,7 +21,11 @@
 		</h4>
 		<ol class="listgroup leadersList">
 		{% for player in women %}
-			<li class="list-group-item leaderPoint"><span class="badge leaderBadge">{{loop.index}}</span> {{player.name}} - {{player.hits}} </li>
+			<li class="list-group-item leaderPoint">
+				<span class="badge leaderBadge">{{loop.index}}</span>
+			 	{{player.name}} - {{player.hits}}
+			 	<img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+			</li>
 		{% endfor %}
 		</ol>
 	</div>

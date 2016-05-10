@@ -59,6 +59,7 @@ def get_leaders(hit, year=None):
         result = {'name': player[0],
                   'id': player[1],
                   'hits': player[2],
+                  'team_id': player[3],
                   'team': str(Team.query.get(player[3]))
                   }
         leaders.append(result)

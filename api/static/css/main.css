@@ -234,8 +234,20 @@ p.accent{
   text-align: center;
 }
 
+.leaderImage {
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+    border: 1px solid #dcdcdc;
+    display: inline-block;
+    margin-right: 6px;
+}
+
 .leadersList>.leaderPoint >.leaderBadge{
   float: left;
+  vertical-align: middle;
+  margin-top: 10px;
+  margin-left: 5px;
 }
 
 
