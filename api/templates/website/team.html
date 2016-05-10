@@ -41,11 +41,12 @@
 {% endblock %}
 {% block script %}
 <script>
+$(document).ready(ready());
 function ready(){
-	var table = $('#teamTable').DataTable({
-		"order": [[1, "desc"]]
-	});
 	console.log("Done");
+		$('#teamTable').DataTable({
+		"order": [[6, "desc"]]
+	});
 }
 </script>
 {% endblock %}

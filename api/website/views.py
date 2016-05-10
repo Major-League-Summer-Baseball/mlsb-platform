@@ -219,10 +219,11 @@ def team_page(year, team_id):
 
 @app.route(Routes['playerpage']+ "/<int:year>/<int:player_id>")
 def player_page(year, player_id):
-    name = Player.query.get(player_id).name
-    years = (DB.session.query(Team.year, Team.id).join(Player)
-                .filter(Player.id==player_id)
-                .order_by(Team.year.desc()).all())
+    player = Player.query.get(player_id)
+    name = player.name
+    years = []
+    for team in player.teams:
+        years.append((team.year, team.id))
     stats = []
     for entry in years:
         player = player_summary(year=entry[0],
