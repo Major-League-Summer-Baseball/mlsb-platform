@@ -36,8 +36,8 @@
 						<td>{{game.date}}</td>
 						<td>{{game.time}}</td>
 						<td>{{game.score}}</td>
-						<td>{{game.away_team}}</td>
-						<td>{{game.home_team}}</td>
+						<td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
+						<td><a href="{{route.teampage}}/{{year}}/{{game.home_team_id}}">{{game.home_team}}</a></td>
 						<td>{{game.field}}</td>
 						<td>{{game.status}}</td>
 					</tr>
@@ -55,7 +55,7 @@ function ready(){
 	console.log("Done");
 	{% for id, league in games.items() %}
 		$('#{{id}}League').DataTable({
-		"order": [[2, "desc"]]
+		"order": [[0, "asc"]]
 	});
 	{% endfor %}
 }
