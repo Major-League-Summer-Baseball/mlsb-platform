@@ -82,7 +82,8 @@ sponsors = [Sponsor("Brick Brewery", link="https://www.facebook.com/brick.brewer
             Sponsor("Tilt", link="https://www.tilt.com/en-ca/tilts/new"),
             Sponsor("Menchies", link="https://www.facebook.com/pages/Menchies-Waterloo/240980822616062?fref=ts"),
             Sponsor("Pabst", link="http://pabstblueribbon.com/"),
-            Sponsor('Team LTD', link="https://www.teamltdshop.com/")
+            Sponsor('Team LTD', link="https://www.teamltdshop.com/"),
+            Sponsor('PRISM Resources', link="https://prismresources.ca/")
           ]
 for sponsor in sponsors:
     DB.session.add(sponsor)
