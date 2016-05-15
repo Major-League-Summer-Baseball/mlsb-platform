@@ -19,7 +19,7 @@ from api.errors import InvalidField
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
 from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
-from datetime import date
+from datetime import date, time, datetime
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
 # -----------------------------------------------------------------------------
@@ -129,6 +129,42 @@ def admin_game_template():
     response = make_response(result)
     response.headers["Content-Disposition"] = "attachment; filename=game_template.csv"
     return response
+
+
+@app.route(Routes['panel_captain_to_submit'] + "/<int:year>")
+def get_captains_games_not_submitted(year):
+    t1 = time(0, 0)
+    t2 = time(23 ,59)
+    d1 = date(year, 1, 1)
+    d2 = date.today()
+    start = datetime.combine(d1, t1)
+    end = datetime.combine(d2, t2)
+    games = DB.session.query(Game).filter(Game.date.between(start, end)).order_by(Game.date)
+    captains = []
+    for game in games:
+        away_bats = []
+        home_bats = []
+        for bat in game.bats:
+            if bat.team_id == game.away_team_id:
+                away_bats.append(bat)
+            elif bat.team_id == game.home_team_id:
+                home_bats.append(bat)
+            
+        if len(away_bats) == 0:
+            team = Team.query.get(game.away_team_id)
+            player = (Player.query.get(team.player_id))
+            captains.append(player.name + "-" + player.email + " on " + str(game.date))
+        if len(home_bats) == 0:
+            team = Team.query.get(game.home_team_id)
+            player = (Player.query.get(team.player_id))
+            captains.append(player.name + "-" + player.email + " on " + str(game.date))
+    print(captains  )
+    return render_template("admin/viewGamesNotSubmitted.html",
+                           route=Routes,
+                           title="Captains with games to submit",
+                           captains=captains,
+                           year=year)
+            
 
 @app.route(Routes['editroster'] + "/<int:year>" + "/<int:team_id>")
 def admin_edit_roster(year, team_id):

@@ -83,6 +83,16 @@
                       Games
                     </a>
                 </li>
+                <li>
+                    <a onclick="toggleChecks();">
+                      Things to Check
+                    </a>
+                </li>
+                <li class="indent-nav checkSidebar" style="display: none">
+                    <a href="{{route.panel_captain_to_submit}}/{{year}}">
+                      Captains to submit scores
+                    </a>
+                </li>
             </ul>
         </div><!-- /#sidebar-wrapper -->
         <!-- Page Content -->
@@ -127,6 +137,11 @@
       function toggleImports(){
         $(".importsSidebar").toggle();
       }
+
+      function toggleChecks(){
+        $(".checkSidebar").toggle();
+      }
+
 
       try{
         ready();

@@ -130,4 +130,6 @@ Routes["import_bat_list"] = "/admin/import/bat/list"
 Routes['team_template'] = "/admin/template/team"
 Routes['game_template'] = "/admin/template/game"
 Routes['bat_template'] = "/admin/template/bat"
+# views for checking statuses
+Routes['panel_captain_to_submit'] = "/admin/views/captains"
 # -----------------------------------------------------------------------------
