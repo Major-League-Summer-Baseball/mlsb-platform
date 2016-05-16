@@ -70,9 +70,20 @@ def checkout_post(year, date, file_name):
 # -----------------------------------------------------------------------------
 '''
 
+# redirect old urls
+@app.route("/index.php/schedule/")
+def reroute_schedule():
+    year = date.today.year()
+    return redirect(url_for("schedule", year=year))
+
+@app.route("/index.php/standings/")
+def reroute_standings():
+    year = date.today.year()
+    return redirect(url_for("standings", year=year))
+
+
 @app.route("/")
 @app.route(Routes["homepage"])
-@cache.cached(timeout=50)
 def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
@@ -88,6 +99,7 @@ def about(year):
                            )
 
 @app.route(Routes["homepage"] + "/<int:year>")
+@cache.cached(timeout=50)
 def index(year):
     games = get_upcoming_games(year)
     news = get_summaries(year)
@@ -102,6 +114,7 @@ def index(year):
 
 @app.route(Routes['sponsorspicture'] + "/<int:name>")
 @app.route(Routes['sponsorspicture'] + "/<name>")
+@cache.cached(timeout=1000)
 def sponsor_picture(name):
     if isinstance(name, int):
         name = Sponsor.query.get(name)
@@ -118,6 +131,7 @@ def sponsor_picture(name):
         return send_from_directory(fp, filename=NOTFOUND)
 
 @app.route(Routes['teampicture'] + "/<int:team>")
+@cache.cached(timeout=1000)
 def team_picture(team):
     if isinstance(team, int):
         team = Team.query.get(team)
