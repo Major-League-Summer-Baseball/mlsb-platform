@@ -13,8 +13,6 @@ from api.errors import ERRORS
 import logging
 import sys
 from flask.ext.cache import Cache
-import bmemcached
-
 
 local = False
 try:
