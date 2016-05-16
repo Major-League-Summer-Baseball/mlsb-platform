@@ -27,7 +27,7 @@ except:
     SECRET_KEY = os.environ['SECRET_KEY']
     # on a machine use a real cache
     cache = Cache(config={'CACHE_TYPE': 'memcached',
-                          'MEMCACHIER_SERVERS': os.environ['MEMCACHIER_SERVERS'],
+                          'MEMCACHIER_SERVERS': os.environ['MEMCACHIER_SERVERS'].split(" "),
                           'MEMCACHIER_PASSWORD': os.environ['MEMCACHIER_PASSWORD'],
                           'MEMCACHIER_USERNAME': os.environ['MEMCACHIER_USERNAME']})
 from os import getcwd
