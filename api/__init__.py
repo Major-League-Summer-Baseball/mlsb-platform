@@ -12,16 +12,24 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
 import logging
 import sys
+from flask.ext.cache import Cache
 
 local = False
 try:
     # running local
     local = True
     from api.credentials import URL, SECRET_KEY
+    # locally just use simple cache
+    cache = Cache(config={'CACHE_TYPE': 'simple'})
     print("Running Locally")
 except:
     URL = os.environ['DATABASE_URL']
     SECRET_KEY = os.environ['SECRET_KEY']
+    # on a machine use a real cache
+    cache = Cache(config={'CACHE_TYPE': 'memcached',
+                          'MEMCACHIER_SERVERS': os.environ['MEMCACHIER_SERVERS'].split(" "),
+                          'MEMCACHIER_PASSWORD': os.environ['MEMCACHIER_PASSWORD'],
+                          'MEMCACHIER_USERNAME': os.environ['MEMCACHIER_USERNAME']})
 from os import getcwd
 from os.path import join
 
@@ -30,6 +38,9 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 app.config['SECRET_KEY'] = SECRET_KEY
+# setup caching
+cache.init_app(app)
+
 DB = SQLAlchemy(app)
 if local:
     DB.create_all()

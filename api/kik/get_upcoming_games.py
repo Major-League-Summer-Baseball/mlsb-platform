@@ -32,7 +32,6 @@ class UpcomingGamesAPI(Resource):
         args = parser.parse_args()
         name = args['name']
         players = DB.session.query(Player).filter(Player.name.like("%"+name+"%")).all()
-        print(players, name)
         if players is None or len(players) == 0:
             raise PlayerDoesNotExist(payload={'details': name})
         teams = []
