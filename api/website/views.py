@@ -5,7 +5,7 @@
 @summary: Holds the the views for the website
 '''
 from sqlalchemy.sql.expression import and_
-from api import app, PICTURES, POSTS
+from api import app, PICTURES, POSTS, cache
 from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
                     redirect, request
@@ -72,6 +72,7 @@ def checkout_post(year, date, file_name):
 
 @app.route("/")
 @app.route(Routes["homepage"])
+@cache.cached(timeout=50)
 def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
@@ -306,6 +307,7 @@ def test(year):
 #                FUNCTIONS TO HELP with ROUTES
 # -----------------------------------------------------------------------------
 '''
+@cache.memoize(timeout=50)
 def get_sponsor(id):
     s = Sponsor.query.get(id)
     expect = None
@@ -314,6 +316,7 @@ def get_sponsor(id):
                   "id": s.id}
     return expect
 
+@cache.memoize(timeout=50)
 def get_espy(year):
     espy = []
     espys = func.sum(Espys.points).label("espys")
@@ -331,6 +334,7 @@ def get_espy(year):
                      'name': str(team[0])})
     return espy
 
+@cache.memoize(timeout=50)
 def get_team(year, tid):
     result = Team.query.get(tid)
     team = None
@@ -376,6 +380,7 @@ def get_team(year, tid):
                 'stats': stats}
     return team
 
+@cache.memoize(timeout=50)
 def get_teams(year):
     result = Team.query.filter_by(year=year).all()
     teams = []
@@ -384,6 +389,7 @@ def get_teams(year):
                      'name': str(team)})
     return teams
 
+@cache.memoize(timeout=50)
 def get_games(year=None, summary=False):
     games = {}
     leagues = League.query.all()
@@ -412,6 +418,7 @@ def get_games(year=None, summary=False):
             games[league.id]['games'].append(result)
     return games
 
+@cache.memoize(timeout=50)
 def get_leagues(year):
     result = League.query.all()
     leagues = {}
@@ -446,6 +453,7 @@ from api.advanced.game_stats import post as game_summary
 def get_upcoming_games(year):
     return game_summary(year=year, today=True)
 
+@cache.memoize(timeout=100)
 def base_data(year):
     base = {}
     base['games'] = get_upcoming_games(year)
@@ -563,3 +571,4 @@ def post_raw_html(f, year):
 '''
 # -----------------------------------------------------------------------------
 '''
+    

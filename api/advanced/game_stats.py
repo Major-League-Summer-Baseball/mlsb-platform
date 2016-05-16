@@ -66,14 +66,12 @@ def post(game_id=None, league_id=None, year=None, today=False):
         #away_bats = Bat.query.filter_by(team_id=aid).filter_by(game_id=game.id).all()
         #home_bats = Bat.query.filter_by(team_id=hid).filter_by(game_id=game.id).all()
         for bat in away_bats:
-            print(bat)
             g['away_bats'].append({'name': bat[1].name,
                                    'hit':  bat[0].classification,
                                    'inning': bat[0].inning,
                                    'rbi':  bat[0].rbi})
             g['away_score'] += bat[0].rbi
         for bat in home_bats:
-            print(bat)
             g['home_bats'].append({'name': bat[1].name,
                                    'hit':  bat[0].classification,
                                    'inning': bat[0].inning,
