@@ -37,7 +37,7 @@ class SubmitScoresAPI(Resource):
                 mimetype: application/json
                 data: True
         """
-        unassigned_player = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
+        unassigned_player = ga.e
         unassigned_id = UNASSIGNED
         if unassigned_player is not None:
             unassigned_id = unassigned_player.id
@@ -61,8 +61,6 @@ class SubmitScoresAPI(Resource):
         else:
             # not a captain of a team
             raise NotTeamCaptain(payload={'details': kik})
-
-            
         homeruns = args['hr']
         ss = args['ss']
         score = args['score']
@@ -70,7 +68,7 @@ class SubmitScoresAPI(Resource):
             # hmm that is so sad
             DB.session.add(Bat(unassigned_id ,
                                team.id,game.id,
-                               "pf",
+                               "fo",
                                inning=1,
                                rbi=0))
         if homeruns is not None:
