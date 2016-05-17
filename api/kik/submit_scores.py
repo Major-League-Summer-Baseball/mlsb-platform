@@ -37,7 +37,7 @@ class SubmitScoresAPI(Resource):
                 mimetype: application/json
                 data: True
         """
-        unassigned_player = ga.e
+        unassigned_player = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
         unassigned_id = UNASSIGNED
         if unassigned_player is not None:
             unassigned_id = unassigned_player.id
