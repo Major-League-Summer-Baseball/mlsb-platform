@@ -64,10 +64,11 @@ class SubmitScoresAPI(Resource):
         homeruns = args['hr']
         ss = args['ss']
         score = args['score']
-        if score < 0:
+        if score <= 0:
             # hmm that is so sad
             DB.session.add(Bat(unassigned_id ,
-                               team.id,game.id,
+                               team.id,
+                               game.id,
                                "fo",
                                inning=1,
                                rbi=0))
