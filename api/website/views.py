@@ -241,9 +241,12 @@ def player_page(year, player_id):
         years.append((team.year, team.id))
     stats = []
     for entry in years:
-        player = player_summary(year=entry[0],
+        player = {}
+        summary = player_summary(year=entry[0],
                                 team_id=entry[1],
-                                player_id=player_id)[name]
+                                player_id=player_id)
+        if name in summary:
+            player = summary[name]
         player['team'] = str(Team.query.get(entry[1]))
         player['team_id'] = entry[1]
         player['year'] = entry[0]
