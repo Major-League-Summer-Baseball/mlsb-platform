@@ -99,7 +99,7 @@ def about(year):
                            )
 
 @app.route(Routes["homepage"] + "/<int:year>")
-@cache.cached(timeout=50)
+@cache.cached(timeout=600)
 def index(year):
     games = get_upcoming_games(year)
     news = get_summaries(year)
@@ -114,7 +114,7 @@ def index(year):
 
 @app.route(Routes['sponsorspicture'] + "/<int:name>")
 @app.route(Routes['sponsorspicture'] + "/<name>")
-@cache.cached(timeout=1000)
+@cache.cached(timeout=600)
 def sponsor_picture(name):
     if isinstance(name, int):
         name = Sponsor.query.get(name)
@@ -131,7 +131,7 @@ def sponsor_picture(name):
         return send_from_directory(fp, filename=NOTFOUND)
 
 @app.route(Routes['teampicture'] + "/<int:team>")
-@cache.cached(timeout=1000)
+@cache.cached(timeout=600)
 def team_picture(team):
     if isinstance(team, int):
         team = Team.query.get(team)
@@ -324,7 +324,7 @@ def test(year):
 #                FUNCTIONS TO HELP with ROUTES
 # -----------------------------------------------------------------------------
 '''
-@cache.memoize(timeout=50)
+@cache.memoize(timeout=600)
 def get_sponsor(id):
     s = Sponsor.query.get(id)
     expect = None
@@ -333,7 +333,7 @@ def get_sponsor(id):
                   "id": s.id}
     return expect
 
-@cache.memoize(timeout=50)
+@cache.memoize(timeout=600)
 def get_espy(year):
     espy = []
     espys = func.sum(Espys.points).label("espys")
@@ -351,7 +351,7 @@ def get_espy(year):
                      'name': str(team[0])})
     return espy
 
-@cache.memoize(timeout=50)
+@cache.memoize(timeout=600)
 def get_team(year, tid):
     result = Team.query.get(tid)
     team = None
@@ -397,7 +397,7 @@ def get_team(year, tid):
                 'stats': stats}
     return team
 
-@cache.memoize(timeout=50)
+@cache.memoize(timeout=600)
 def get_teams(year):
     result = Team.query.filter_by(year=year).all()
     teams = []
@@ -406,7 +406,7 @@ def get_teams(year):
                      'name': str(team)})
     return teams
 
-@cache.memoize(timeout=50)
+@cache.memoize(timeout=600)
 def get_games(year=None, summary=False):
     games = {}
     leagues = League.query.all()
@@ -435,7 +435,7 @@ def get_games(year=None, summary=False):
             games[league.id]['games'].append(result)
     return games
 
-@cache.memoize(timeout=50)
+@cache.memoize(timeout=600)
 def get_leagues(year):
     result = League.query.all()
     leagues = {}
@@ -470,7 +470,7 @@ from api.advanced.game_stats import post as game_summary
 def get_upcoming_games(year):
     return game_summary(year=year, today=True)
 
-@cache.memoize(timeout=100)
+@cache.memoize(timeout=600)
 def base_data(year):
     base = {}
     base['games'] = get_upcoming_games(year)
