@@ -316,6 +316,61 @@ def test(year):
                            title="Test",
                            year=year)
 
+@app.route(Routes['findunsubscribed'] + "/<int:year>")
+def captain_find_unsubscribed(year):
+    return render_template("website/find_unsubscribed_players.html",
+                           route=Routes,
+                           base=base_data(year),
+                           title="Find Unsubscribed Players",
+                           year=year,
+                           teams=get_teams(year))
+
+@app.route(Routes['findunsubscribed'] + "/<int:year>" + "/<int:team>")
+def captain_find_unsubscribed_get(year, team):
+    team = Team.query.get(team)
+    if team is None:
+        return json.dumps("[]")
+    result = []
+    for player in team.players:
+        if player.kik is None:
+            result.append(player.json())
+    return json.dumps(result)
+
+@app.route(Routes['espysbreakdown'] + "/<int:year>")
+@cache.memoize(timeout=600)
+def get_espys_breakdown(year):
+    teams = DB.session.query(Team).filter(Team.year==year).all()
+    result = []
+    total = func.sum(Espys.points).label('espys')
+    t = time(0, 0)
+    d1 = date(year, 1, 1)
+    d2 = date(year, 12, 30)
+    start = datetime.combine(d1, t)
+    end = datetime.combine(d2, t)
+    tree = {'name': "ESPYS Breakdown"}
+    for team in teams:
+        element = {}
+        element['name'] = str(team)
+        children_list = []
+        espys = (DB.session.query(total, Sponsor.name, )
+                    .join(Sponsor)
+                    .filter(Espys.date.between(start, end))
+                    .filter(Espys.team_id==team.id)
+                    .group_by(Sponsor.name)).all()
+        for espy in espys:
+            point = {'name': 'Other'}
+            if espy[0] is not None:
+                point['name'] = espy[1]
+            point['size'] = espy[0]
+            children_list.append(point)
+        if len(children_list) == 0:
+            element['size'] = 0
+        else:
+            element['children'] = children_list
+        result.append(element)
+    tree['children'] = result
+    return json.dumps(tree)
+
 '''
 # -----------------------------------------------------------------------------
 
