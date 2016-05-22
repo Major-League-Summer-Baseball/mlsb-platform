@@ -353,13 +353,13 @@ def get_espys_breakdown(year):
         element['name'] = str(team)
         children_list = []
         espys = (DB.session.query(total, Sponsor.name, )
-                    .join(Sponsor)
+                    .outerjoin(Sponsor)
                     .filter(Espys.date.between(start, end))
                     .filter(Espys.team_id==team.id)
                     .group_by(Sponsor.name)).all()
         for espy in espys:
-            point = {'name': 'Other'}
-            if espy[0] is not None:
+            point = {'name': 'Awarded ESPYS'}
+            if espy[1] is not None:
                 point['name'] = espy[1]
             point['size'] = espy[0]
             children_list.append(point)
