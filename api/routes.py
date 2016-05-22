@@ -98,6 +98,9 @@ Routes['eventspage'] = "/website/event"
 # posts pages
 Routes['posts'] = "/website/posts"
 Routes['postpicture'] = "/website/post/pictures"
+# Captain help
+Routes['findunsubscribed'] = "/website/captains/unsubscribed"
+Routes['espysbreakdown'] = "/website/espysbreakdown"
 
 # -----------------------------------------------------------------------------
 # Admin
