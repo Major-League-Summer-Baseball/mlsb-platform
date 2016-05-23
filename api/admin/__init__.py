@@ -450,7 +450,6 @@ def admin_portal():
         session['error'] = 'INVALID CREDENTIALS'
         return redirect(url_for('admin_login'))
 
-
 @app.route(Routes['alogin'])
 def admin_login():
     post_url = Routes['aportal']
