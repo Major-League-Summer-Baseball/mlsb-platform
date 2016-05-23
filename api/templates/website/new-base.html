@@ -107,7 +107,11 @@
                 </div>
                 <div class="row bottom-row">
                     <div class="fun-meter">
-                        We've had {{base.fun.count}} fun so far!
+                        <h4 id="funMeter">
+                          Fun Meter {{year}}
+                        </h4>
+                        <svg id="fillgauge2" width="19%" height="200" onclick="updateGauge();"></svg>
+                        
                     </div>
                     <div class="social">
                         <a href="http://kik.me/mlsbbot" target="_blank" class="social-link">
@@ -152,8 +156,28 @@
     <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ url_for('static', filename="js/sly.js") }} "></script>
-    <script src="{{ url_for('static', filename="js/odometer.min.js") }} "></script>
+    <script src="{{url_for('static', filename="d3/liquidFillGauge.js" ) }}"></script>
+    <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
     <script>
+    var config1 = liquidFillGaugeDefaultSettings();
+    config1.circleColor = "#092C5C";
+    config1.textColor = "#FFF";
+    config1.waveTextColor = "#FFF";
+    config1.waveColor = "#8FBCE6";
+    config1.circleThickness = 0.2;
+    config1.textVertPosition = 0.2;
+    config1.waveAnimateTime = 1000;
+    config1.displayPercent = false;
+    config1.maxValue = 500;
+    var gauge2= loadLiquidFillGauge("fillgauge2", 28, config1);
+    var funs = [];
+    var funIndex = 0
+    function updateGauge(){
+        funIndex = (funIndex + 1) % funs.length;
+        console.log(funs);
+        gauge2.update(funs[funIndex].count)
+        $('#funMeter').text('Fun Meter ' + funs[funIndex].year);
+    }
         $(document).ready(function() {
                 // -------------------------------------------------------------
     //   Centered Navigation
@@ -182,6 +206,23 @@
                     prev: $wrap.find('.prev'),
                     next: $wrap.find('.next')
                 });
+
+                  $.ajax
+                    ({
+                      type: "POST",
+                      url: "{{route.vfun}}",
+                      contentType: "application/json",
+                      data: JSON.stringify({}),
+                      dataType: 'json',
+                      async: false,
+                        dataType: "json",
+                        success: function (result){
+                          funs = result
+                        }, error: function(request, error){
+                          funs = [{'count':{{base.fun.count}}, 'year': {{year}} }]
+                      } 
+                    });
+
         });
     </script>
     <!-- Google Analytics -->
