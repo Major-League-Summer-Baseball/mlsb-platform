@@ -454,11 +454,14 @@ def get_team(year, tid):
 
 @cache.memoize(timeout=600)
 def get_teams(year):
-    result = Team.query.filter_by(year=year).all()
+    result = (DB.session.query(Team.id, Team.color, Sponsor.nickname)
+              .join(Sponsor)
+              .filter(Team.year==year)
+              .order_by(Sponsor.nickname).all())
     teams = []
     for team in result:
-        teams.append({'id': team.id,
-                     'name': str(team)})
+        teams.append({'id': team[0],
+                     'name': team[2] + " " + team[1]})
     return teams
 
 @cache.memoize(timeout=600)

@@ -476,7 +476,7 @@ def logout():
     return
 
 def get_sponsors(active=True):
-    results = Sponsor.query.filter(Sponsor.active==active).order_by("id").all()
+    results = Sponsor.query.filter(Sponsor.active==active).order_by("name").all()
     sponsors = []
     for sponsor in results:
         sponsors.append(sponsor.json())
@@ -490,7 +490,7 @@ def get_leagues():
     return leagues
 
 def get_players(active=True):
-    results = Player.query.filter(Player.active==active).order_by("id").all()
+    results = Player.query.filter(Player.active==active).order_by("name").all()
     players = []
     for player in results:
         players.append(player.admin_json())
