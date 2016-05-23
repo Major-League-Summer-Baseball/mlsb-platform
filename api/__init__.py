@@ -32,7 +32,6 @@ except:
                           'MEMCACHIER_USERNAME': os.environ['MEMCACHIER_USERNAME']})
 from os import getcwd
 from os.path import join
-
 #create the application
 app = Flask(__name__)
 app.config.from_object(__name__)

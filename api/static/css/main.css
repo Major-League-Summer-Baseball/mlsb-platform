@@ -620,6 +620,10 @@ a:hover, a:focus {
   color: #8FBCE6;
 }
 
+.liquidFillGaugeText { 
+  font-family: Helvetica;
+  font-weight: bold;
+}
 
 /***********************
 ********* Footer ******
