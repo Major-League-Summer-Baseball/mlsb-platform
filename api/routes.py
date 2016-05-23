@@ -101,6 +101,7 @@ Routes['postpicture'] = "/website/post/pictures"
 # Captain help
 Routes['findunsubscribed'] = "/website/captains/unsubscribed"
 Routes['espysbreakdown'] = "/website/espysbreakdown"
+Routes['sponsorbreakdown'] = "/website/espysbreakdown"
 
 # -----------------------------------------------------------------------------
 # Admin

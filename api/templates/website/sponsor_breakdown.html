@@ -21,91 +21,11 @@
 	}
 </style>
 
-	<ul class="nav nav-pills" id="listing">
-		<li role="presentation" class=" active presentation"><a data-toggle="pill" href="#whole">Whole League</a></li>
-		{% for id, league in leagues.items() %}
-		<li role="presentation" class="presentation"><a data-toggle="pill" href="#league{{id}}">{{league.name}}</a></li>
-		{% endfor %}
-		
-	</ul>
-	<div class="tab-content">
-		<div id="whole" class="tab-pane fade in active">
-			<h4>Both Leagues</h4>
-			<table id="whole_league" width="100%" class="display">
-				<thead>
-					<tr>
-						<th>Team</th>
-						<th>Espys</th>
-						<th>GP</th>
-						<th>W</th>
-						<th>L</th>
-						<th>T</th>
-						<th>RF</th>
-						<th>RA</th>
-						<th>+/-</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for id, league in leagues.items() %}
-						{% for team in league.teams %}
-							<tr>
-								<td><a href="{{route.teampage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
-								<td>{{team.espys}}</td>
-								<td>{{team.games}}</td>
-								<td>{{team.wins}}</td>
-								<td>{{team.losses}}</td>
-								<td>{{team.ties}}</td>
-								<td>{{team.runs_for}}</td>
-								<td>{{team.runs_against}}</td>
-								<td>{{team.plus_minus}}</td>
-							</tr>
-						{% endfor %}
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-		{% for id, league in leagues.items() %}
-		<div id="league{{id}}" class="tab-pane fade in">
-			<h4>{{league.name}}</h4>
-			<table id="league_{{id}}" width="100%" class="display">
-				<thead>
-					<tr>
-						<th>Team</th>
-						<th>Espys</th>
-						<th>GP</th>
-						<th>W</th>
-						<th>L</th>
-						<th>T</th>
-						<th>RF</th>
-						<th>RA</th>
-						<th>+/-</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for team in league.teams %}
-						<tr>
-							<td><a href="{{route.teampage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
-							<td>{{team.espys}}</td>
-							<td>{{team.games}}</td>
-							<td>{{team.wins}}</td>
-							<td>{{team.losses}}</td>
-							<td>{{team.ties}}</td>
-							<td>{{team.runs_for}}</td>
-							<td>{{team.runs_against}}</td>
-							<td>{{team.plus_minus}}</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-		{% endfor %}
-	</div>
-
   	<div class="tab-content" id="graph">
   		<div class="span12">
 	    	<p>
 	    		<center>
-	      			ESPYS Breakdown (Click on the bars)
+	      			Sponsor Breakdown Breakdown (Click on the bars)
 	    		</center>
 	    	</p>
 	    	<center>
@@ -113,23 +33,17 @@
 	    	</center>
     	</div>
 	</div>
-
 {% endblock %}
 {% block script %}
 <script>
-$(document).ready(ready());
 function ready(){
 	console.log("Done");
-	{% for id, league in leagues.items()  %}
-		$('#league_{{id}}').DataTable({
-		"order": [[1, "desc"]]
+	$('#teams').DataTable({
+		"order": [[0, "asc"]]
 	});
-	{% endfor %}
-	$('#whole_league').DataTable({
-		"order": [[1, "desc"]]
-	})
 }
 </script>
+
 <script type="text/javascript" src="{{ url_for('static', filename="d3/d3.js") }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename="d3/d3.layout.js") }}"></script>
 <script type="text/javascript">
@@ -160,7 +74,7 @@ function ready(){
 	    .attr("class", "y axis")
 	  .append("svg:line")
 	    .attr("y1", "100%");
-	d3.json("{{route.espysbreakdown}}/{{year}}", function(root) {
+	d3.json("{{route.sponsorbreakdown}}/{{year}}/1", function(root) {
 		$("#img1").hide();
 		console.log(root)	
 		hierarchy.nodes(root);
