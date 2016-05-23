@@ -347,7 +347,7 @@ def sponsor_breakdown(year):
 
 @app.route(Routes['sponsorbreakdown'] + "/<int:year>" + "/<int:garbage>")
 def get_sponsor_breakdown(year, garbage):
-    sponsors = DB.session.query(Sponsor).filter(Team.year==year).all()
+    sponsors = DB.session.query(Sponsor).filter(Sponsor.active==True).all()
     tree = {'name': 'Sponsor Breakdown by ESPYS'}
     total = func.sum(Espys.points).label('espys')
     start = datetime(year, 1, 1)
