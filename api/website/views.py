@@ -114,7 +114,6 @@ def index(year):
 
 @app.route(Routes['sponsorspicture'] + "/<int:name>")
 @app.route(Routes['sponsorspicture'] + "/<name>")
-@cache.cached(timeout=600)
 def sponsor_picture(name):
     if isinstance(name, int):
         name = Sponsor.query.get(name)
@@ -131,7 +130,6 @@ def sponsor_picture(name):
         return send_from_directory(fp, filename=NOTFOUND)
 
 @app.route(Routes['teampicture'] + "/<int:team>")
-@cache.cached(timeout=600)
 def team_picture(team):
     if isinstance(team, int):
         team = Team.query.get(team)
@@ -566,7 +564,7 @@ def get_sponsors():
 
 from api.advanced.game_stats import post as game_summary
 def get_upcoming_games(year):
-    return game_summary(year=year, today=True)
+    return game_summary(year=year, today=True, increment=1)
 
 @cache.memoize(timeout=600)
 def base_data(year):

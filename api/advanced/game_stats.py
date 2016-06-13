@@ -15,7 +15,7 @@ parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('game_id', type=int)
 
-def post(game_id=None, league_id=None, year=None, today=False):
+def post(game_id=None, league_id=None, year=None, today=False, increment=None):
     result = []
     if game_id is not None:
         games = DB.session.query(Game).filter_by(id = game_id)
@@ -31,6 +31,9 @@ def post(game_id=None, league_id=None, year=None, today=False):
         if today:
             d1 = date.today() + timedelta(-2)
             d2 = date.today() + timedelta(2)
+        if increment is not None:
+            d1 = date.today() + timedelta(-increment)
+            d2 = date.today() + timedelta(increment)
         start = datetime.combine(d1, t1)
         end = datetime.combine(d2, t2)
         games = DB.session.query(Game).filter(Game.date.between(start, end)).order_by(Game.date)
