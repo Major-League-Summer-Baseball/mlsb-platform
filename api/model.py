@@ -1028,7 +1028,7 @@ def find_team_subscribed(kik):
     end = datetime.combine(d2, t2)
     player = Player.query.filter_by(kik=kik).one()
     if player is not None:
-        teams = DB.session.query(Espys).filter(Espys.data.between(start, end))
+        teams = DB.session.query(Espys).filter(Espys.date.between(start, end))
         teams = teams.filter_by(description=SUBSCRIBED.format(str(player))).order_by("date").all()
         for team in teams:
             result.append(team.team_id)
