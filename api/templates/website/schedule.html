@@ -24,8 +24,8 @@
 					<th>Date</th>
 					<th>Time</th>
 					<th>Score</th>
-					<th>Away Team</th>
 					<th>Home Team</th>
+					<th>Away Team</th>
 					<th>Field</th>
 					<th>Status</th>
 				</tr>
@@ -36,8 +36,8 @@
 						<td>{{game.date}}</td>
 						<td>{{game.time}}</td>
 						<td>{{game.score}}</td>
-						<td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
 						<td><a href="{{route.teampage}}/{{year}}/{{game.home_team_id}}">{{game.home_team}}</a></td>
+						<td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
 						<td>{{game.field}}</td>
 						<td>{{game.status}}</td>
 					</tr>
