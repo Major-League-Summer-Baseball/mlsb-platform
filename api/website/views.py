@@ -526,8 +526,8 @@ def get_games(year=None, summary=False):
             result = game.json()
             if game.date < datetime.today():
                 scores = game.summary()
-                result['score'] = (str(scores['away_score']) + '-'
-                                   + str(scores['home_score']))
+                result['score'] = ( str(scores['home_score']) + '-'
+                                   +  str(scores['away_score']))
             games[league.id]['games'].append(result)
     return games
 
