@@ -595,9 +595,12 @@ def get_all_descriptions(year):
 def get_summaries(year):
     dire = os.path.join(POSTS, str(year))
     result = []
-    for i in os.listdir(dire):
-        if i.endswith(".html"):
-            result.append(rip_summary(i, year))
+    try:
+        for i in os.listdir(dire):
+            if i.endswith(".html"):
+                result.append(rip_summary(i, year))
+    except OSError:
+        pass
     return result
 
 def rip_summary(f, year):
