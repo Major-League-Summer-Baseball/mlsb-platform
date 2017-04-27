@@ -32,7 +32,7 @@ except:
                           'MEMCACHIER_USERNAME': os.environ['MEMCACHIER_USERNAME']})
 from os import getcwd
 from os.path import join
-#create the application
+# create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
@@ -48,10 +48,12 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 api = Api(app, errors=ERRORS)
-api.decorators=[cors.crossdomain(origin='*',headers=['accept', 'Content-Type'])]
+api.decorators = [cors.crossdomain(origin='*',
+                                   headers=['accept',
+                                            'Content-Type'])]
 PICTURES = join(getcwd(), "api", "static", "pictures")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
-app.config['UPLOAD_FOLDER'] =  "./static"
+app.config['UPLOAD_FOLDER'] = "./static"
 
 from api.website import views
 from api import admin
@@ -59,15 +61,17 @@ from api import documentation
 from api import errorHandlers
 @app.after_request
 def add_cors(resp):
-    """ Ensure all responses have the CORS headers. 
+    """ Ensure all responses have the CORS headers.
         This ensures any failures are also accessible
-        by the client. 
+        by the client.
     """
-    resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin','*')
+    resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin',
+                                                                      '*')
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
     resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET'
-    resp.headers['Access-Control-Allow-Headers'] = request.headers.get( 
-        'Access-Control-Request-Headers', 'Authorization' )
+    t = 'Access-Control-Allow-Headers'
+    resp.headers[t] = request.headers.get('Access-Control-Request-Headers',
+                                          'Authorization' )
     # set low for debugging
     if app.debug:
         resp.headers['Access-Control-Max-Age'] = '1'
@@ -83,28 +87,50 @@ from api.basic.bat import BatAPI, BatListAPI
 from api.basic.epsys import EspyAPI, EspyListAPI
 from api.advanced.team_roster import TeamRosterAPI
 from api.routes import Routes
-api.add_resource(PlayerListAPI, Routes['player'], endpoint="players")
-api.add_resource(PlayerAPI, Routes['player'] + "/<int:player_id>", 
+api.add_resource(PlayerListAPI,
+                 Routes['player'],
+                 endpoint="players")
+api.add_resource(PlayerAPI,
+                 Routes['player'] + "/<int:player_id>",
                  endpoint="player")
-api.add_resource(SponsorListAPI, Routes['sponsor'], endpoint="sponsors")
-api.add_resource(SponsorAPI, Routes['sponsor'] + "/<int:sponsor_id>", 
+api.add_resource(SponsorListAPI,
+                 Routes['sponsor'],
+                 endpoint="sponsors")
+api.add_resource(SponsorAPI,
+                 Routes['sponsor'] + "/<int:sponsor_id>",
                  endpoint="sponsor")
-api.add_resource(LeagueListAPI, Routes['league'], endpoint="leagues")
-api.add_resource(LeagueAPI, Routes['league'] + "/<int:league_id>", 
+api.add_resource(LeagueListAPI,
+                 Routes['league'],
+                 endpoint="leagues")
+api.add_resource(LeagueAPI,
+                 Routes['league'] + "/<int:league_id>",
                  endpoint="league")
-api.add_resource(TeamListAPI, Routes['team'], endpoint="teams")
-api.add_resource(TeamAPI, Routes['team'] + "/<int:team_id>", 
+api.add_resource(TeamListAPI,
+                 Routes['team'],
+                 endpoint="teams")
+api.add_resource(TeamAPI,
+                 Routes['team'] + "/<int:team_id>",
                  endpoint="team")
-api.add_resource(GameListAPI, Routes['game'], endpoint="games")
-api.add_resource(GameAPI, Routes['game'] + "/<int:game_id>", 
+api.add_resource(GameListAPI,
+                 Routes['game'],
+                 endpoint="games")
+api.add_resource(GameAPI,
+                 Routes['game'] + "/<int:game_id>",
                  endpoint="game")
-api.add_resource(BatListAPI, Routes['bat'], endpoint="bats")
-api.add_resource(BatAPI, Routes['bat'] + "/<int:bat_id>", 
+api.add_resource(BatListAPI,
+                 Routes['bat'],
+                 endpoint="bats")
+api.add_resource(BatAPI,
+                 Routes['bat'] + "/<int:bat_id>",
                  endpoint="bat")
-api.add_resource(EspyListAPI, Routes['espy'], endpoint="Espys")
-api.add_resource(EspyAPI, Routes['espy'] + "/<int:espy_id>", 
+api.add_resource(EspyListAPI,
+                 Routes['espy'],
+                 endpoint="Espys")
+api.add_resource(EspyAPI,
+                 Routes['espy'] + "/<int:espy_id>",
                  endpoint="basic-espy")
-api.add_resource(TeamRosterAPI, Routes['team_roster']+ "/<int:team_id>",
+api.add_resource(TeamRosterAPI,
+                 Routes['team_roster'] + "/<int:team_id>",
                  endpoint="teamrosters")
 
 # add advanced routes
@@ -134,12 +160,24 @@ from api.kik.submit_transaction import SubmitTransactionAPI
 from api.kik.get_captain_games import CaptainGamesAPI
 from api.kik.get_upcoming_games import UpcomingGamesAPI
 from api.kik.unsubscribe import UnSubscribeToTeamAPI
-api.add_resource(AuthenticateCaptainAPI, Routes['kikcaptain'], endpoint="kikcaptain")
-api.add_resource(SubscribeToTeamAPI, Routes['kiksubscribe'], endpoint="kiksubscribe")
-api.add_resource(SubmitScoresAPI, Routes['kiksubmitscore'], endpoint="kiksubmitscore")
-api.add_resource(SubmitTransactionAPI, Routes['kiktransaction'], endpoint="kiktransaction")
-api.add_resource(CaptainGamesAPI, Routes['kikcaptaingames'], endpoint="kikcaptaingames")
-api.add_resource(UpcomingGamesAPI, Routes['kikupcominggames'], endpoint="kikupcominggames")
-api.add_resource(UnSubscribeToTeamAPI, Routes['kikunsubscribe'], endpoint="kikunsubscribe")
-
-
+api.add_resource(AuthenticateCaptainAPI,
+                 Routes['kikcaptain'],
+                 endpoint="kikcaptain")
+api.add_resource(SubscribeToTeamAPI,
+                 Routes['kiksubscribe'],
+                 endpoint="kiksubscribe")
+api.add_resource(SubmitScoresAPI,
+                 Routes['kiksubmitscore'],
+                 endpoint="kiksubmitscore")
+api.add_resource(SubmitTransactionAPI,
+                 Routes['kiktransaction'],
+                 endpoint="kiktransaction")
+api.add_resource(CaptainGamesAPI,
+                 Routes['kikcaptaingames'],
+                 endpoint="kikcaptaingames")
+api.add_resource(UpcomingGamesAPI,
+                 Routes['kikupcominggames'],
+                 endpoint="kikupcominggames")
+api.add_resource(UnSubscribeToTeamAPI,
+                 Routes['kikunsubscribe'],
+                 endpoint="kikunsubscribe")

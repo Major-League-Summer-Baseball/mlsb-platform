@@ -12,6 +12,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('email', type=str)
 parser.add_argument('player_name', type=str)
 
+
 class PlayerTeamLookupAPI(Resource):
     def post(self):
         """
@@ -21,7 +22,7 @@ class PlayerTeamLookupAPI(Resource):
                 email: the league id (str)
                 player_name: the player id (str)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: list of possible Teams
         """
@@ -30,10 +31,11 @@ class PlayerTeamLookupAPI(Resource):
         players = None
         if args['email']:
             # guaranteed to find player
-            players = Player.query.filter(Player.email==args['email']).all()
+            players = Player.query.filter(Player.email == args['email']).all()
         elif args['player_name']:
             # maybe overlap
-            players = Player.query.filter(Player.name.contains(args['player_name'])).all()
+            pn = args['player_name']
+            players = Player.query.filter(Player.name.contains(pn)).all()
         if players is not None:
             for player in players:
                 for team in player.teams:

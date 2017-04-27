@@ -5,8 +5,13 @@ Project: MLSB API
 Purpose: Holds data validators
 '''
 import unittest
+import time
+import datetime
+from pprint import PrettyPrinter
 from datetime import date
 from api.variables import BATS, FIELDS
+
+
 def string_validator(value):
     '''
     string_validator
@@ -14,22 +19,23 @@ def string_validator(value):
         Parameters:
             value: the passed parameter to validate (str)
         Returns:
-            True if valid 
+            True if valid
             False otherwise
     '''
     validated = False
-    #try to convert to int
+    # try to convert to int
     try:
         value = int(value)
     except:
         pass
     try:
-        #will be an int if successfully converted other it won't be
+        # will be an int if successfully converted other it won't be
         if not isinstance(value, int) and str(value) != "":
             validated = True
     except:
         pass
     return validated
+
 
 def year_validator(year):
     '''
@@ -46,6 +52,7 @@ def year_validator(year):
         validated = True
     return validated
 
+
 def int_validator(value):
     '''
     int_validator
@@ -53,7 +60,7 @@ def int_validator(value):
         Parameters:
             value: the passed parameter to validate (int)
         Returns:
-            True if valid 
+            True if valid
             False otherwise
     '''
     validated = False
@@ -64,6 +71,7 @@ def int_validator(value):
         pass
     return validated
 
+
 def float_validator(value):
     '''
     int_validator
@@ -71,7 +79,7 @@ def float_validator(value):
         Parameters:
             value: the passed parameter to validate (int)
         Returns:
-            True if valid 
+            True if valid
             False otherwise
     '''
     validated = False
@@ -90,7 +98,7 @@ def gender_validator(value):
         Parameters:
             value: the passed parameter to validate (str)
         Returns:
-            True if valid 
+            True if valid
             False otherwise
     '''
     validated = False
@@ -102,7 +110,6 @@ def gender_validator(value):
     return validated
 
 
-import datetime
 def date_validator(date):
     '''
     date_validator
@@ -118,11 +125,11 @@ def date_validator(date):
         datetime.datetime.strptime(date, '%Y-%m-%d')
         valid = True
     except ValueError:
-        #raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+        # raise ValueError("Incorrect data format, should be YYYY-MM-DD")
         pass
     return valid
 
-import time
+
 def time_validator(value):
     '''
     time_validator
@@ -156,6 +163,7 @@ def rbi_validator(rbi):
             valid = True
     return valid
 
+
 def hit_validator(hit, gender=None):
     '''
     hit_validator
@@ -175,6 +183,7 @@ def hit_validator(hit, gender=None):
                 valid = False
     return valid
 
+
 def inning_validator(inning):
     '''
     inning_validator
@@ -190,6 +199,7 @@ def inning_validator(inning):
         valid = True
     return valid
 
+
 def validated(x):
     '''
     validated
@@ -200,6 +210,7 @@ def validated(x):
             True
     '''
     return True
+
 
 def field_validator(field):
     '''
@@ -215,8 +226,11 @@ def field_validator(field):
     if field in FIELDS:
         valid = True
     return valid
+
+
 # the tests
-from pprint import PrettyPrinter
+
+
 class Test(unittest.TestCase):
 
     def setUp(self):
@@ -226,29 +240,29 @@ class Test(unittest.TestCase):
         pass
 
     def testGenderValidator(self):
-        #test with a non-number
+        # test with a non-number
         test = 1
         self.assertEqual(gender_validator(test), False,
                          'Gender Validator: 1 was a valid Gender')
-        #test empty string
+        # test empty string
         test = ""
         self.assertEqual(gender_validator(test), False,
                          'Gender Validator: "" was a valid Gender')
-        #test with non-valid gender
+        # test with non-valid gender
         test = "X"
         self.assertEqual(gender_validator(test), False,
                          'Gender Validator: X was a valid Gender')
-        #test fpr ca[senstivty
+        # test fpr ca[senstivty
         test = "f"
         self.assertEqual(gender_validator(test), True,
                          'Gender Validator: f was a invalid Gender')
-        #test fpr ca[senstivty
+        # test fpr ca[senstivty
         test = "M"
         self.assertEqual(gender_validator(test), True,
                          'Gender Validator: M was a invalid Gender')
 
     def testIntValidator(self):
-        #test with a string
+        # test with a string
         test = ""
         self.assertEqual(int_validator(test), False,
                          'Int Validator: "" was a valid int')
@@ -263,11 +277,11 @@ class Test(unittest.TestCase):
                          'Int Validator: 1 was a invalid int')
 
     def testStringValidator(self):
-        #test with a number
+        # test with a number
         test = 1
         self.assertEqual(string_validator(test), False,
                          'String Validator: 1 was a valid string')
-        #test with an empty string
+        # test with an empty string
         test = ""
         self.assertEqual(string_validator(test), False,
                          'String Validator: "" was a valid string')
@@ -294,7 +308,7 @@ class Test(unittest.TestCase):
                          "Time Validator: Valid Time")
 
     def testRbiValidator(self):
-        #test with a string
+        # test with a string
         test = ""
         self.assertEqual(rbi_validator(test), False,
                          'rbi Validator: "" was a valid rbi')
@@ -325,12 +339,11 @@ class Test(unittest.TestCase):
         self.assertEqual(hit_validator(test), True,
                          'Hit Validator: SS was a invalid Hit')
         test = "ss"
-        self.assertEqual(hit_validator(test,gender="m"), False,
+        self.assertEqual(hit_validator(test, gender="m"), False,
                          'Hit Validator: SS was a invalid Hit for a guy')
         test = "hr"
-        self.assertEqual(hit_validator(test,gender="m"), False,
+        self.assertEqual(hit_validator(test, gender="m"), False,
                          'Hit Validator: SS was a invalid Hit for a guy')
-        
 
     def testFieldValidator(self):
         test = 1
@@ -344,5 +357,5 @@ class Test(unittest.TestCase):
                          'Field Validator: WP1 was not a valid Field')
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

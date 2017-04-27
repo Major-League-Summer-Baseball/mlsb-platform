@@ -14,6 +14,7 @@ parser.add_argument('team', type=int, required=True)
 parser.add_argument('kik', type=str, required=True)
 parser.add_argument('name', type=str, required=True)
 
+
 class SubscribeToTeamAPI(Resource):
     @requires_kik
     def post(self):
@@ -25,7 +26,7 @@ class SubscribeToTeamAPI(Resource):
                 team: the id of the team the player is subscribing to (int)
                 name: the name of the player (str)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: True
         """

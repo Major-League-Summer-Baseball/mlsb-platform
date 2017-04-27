@@ -23,6 +23,7 @@ post_parser.add_argument('color', type=str, required=True)
 post_parser.add_argument('league_id', type=int, required=True)
 post_parser.add_argument('year', type=int, required=True)
 
+
 class TeamAPI(Resource):
     def get(self, team_id):
         """
@@ -30,9 +31,9 @@ class TeamAPI(Resource):
             Route: Routes['team']/<team_id:int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
-                    data:  
+                    data:
                         {
                            'team_id':  int,
                            'team_name': string,
@@ -44,15 +45,15 @@ class TeamAPI(Resource):
                            'captain': string
                         }
                 otherwise
-                    status: 404 
+                    status: 404
                     mimetype: application/json
-                    data:  
+                    data:
                         None
         """
         # expose a single team
-        entry  = Team.query.get(team_id)
+        entry = Team.query.get(team_id)
         if entry is None:
-            raise TeamDoesNotExist(payload={'details':team_id})
+            raise TeamDoesNotExist(payload={'details': team_id})
         response = Response(dumps(entry.json()), status=200,
                             mimetype="application/json")
         return response
@@ -64,17 +65,17 @@ class TeamAPI(Resource):
             Route: Routes['team']/<team_id:int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise
-                    status: 404 
+                    status: 404
                     mimetype: application/json
                     data: None
         """
         team = Team.query.get(team_id)
         if team is None:
-            raise TeamDoesNotExist(payload={'details':team_id})
+            raise TeamDoesNotExist(payload={'details': team_id})
         # delete a single team
         DB.session.delete(team)
         DB.session.commit()
@@ -97,7 +98,7 @@ class TeamAPI(Resource):
                 espys: the total espys points of the team (int)
             Returns:
                 if found and updated successfully
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise possible errors are
@@ -113,7 +114,7 @@ class TeamAPI(Resource):
         league_id = None
         year = None
         if team is None:
-            raise TeamDoesNotExist(payload={'details':team_id})
+            raise TeamDoesNotExist(payload={'details': team_id})
         if args['color']:
             color = args['color']
         if args['sponsor_id']:
@@ -133,9 +134,10 @@ class TeamAPI(Resource):
         return response
 
     def option(self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class TeamListAPI(Resource):
     def get(self):
@@ -144,9 +146,9 @@ class TeamListAPI(Resource):
             Route: Routes['team']
             Parameters :
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     teams: [  {
                                 'team_id':  int,
                                'team_name': string,
@@ -181,7 +183,7 @@ class TeamListAPI(Resource):
                 espys: the team espys points (int)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: the create team id (int)
                 possible errors
@@ -212,7 +214,7 @@ class TeamListAPI(Resource):
         result = t.id
         return Response(dumps(result), status=201, mimetype="application/json")
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

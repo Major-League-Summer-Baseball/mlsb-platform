@@ -15,13 +15,14 @@ parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('game_id', type=int)
 
+
 def post(game_id=None, league_id=None, year=None, today=False, increment=None):
     result = []
     if game_id is not None:
-        games = DB.session.query(Game).filter_by(id = game_id)
+        games = DB.session.query(Game).filter_by(id=game_id)
     else:
         t1 = time(0, 0)
-        t2 = time(23 ,59)
+        t2 = time(23, 59)
         if year is not None:
             d1 = date(year, 1, 1)
             d2 = date(year, 12, 30)
@@ -36,7 +37,9 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
             d2 = date.today() + timedelta(increment)
         start = datetime.combine(d1, t1)
         end = datetime.combine(d2, t2)
-        games = DB.session.query(Game).filter(Game.date.between(start, end)).order_by(Game.date)
+        games = (DB.session.query(Game)
+                 .filter(Game.date.between(start, end))
+                 .order_by(Game.date))
     if league_id is not None:
         games = games.filter_by(league_id=league_id)
     for game in games:
@@ -45,7 +48,7 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
         g = {
              'status': game.status,
              'game_id': game.id,
-             'home_score':0,
+             'home_score': 0,
              'away_score': 0,
              'home_bats': [],
              'away_bats': [],
@@ -56,18 +59,17 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
         g['home_team'] = Team.query.get(hid).json()
         g['away_team'] = Team.query.get(aid).json()
         away_bats = (DB.session.query(Bat,
-                                     Player)
-                                     .join(Player)
-                                     .filter(Bat.team_id==aid)
-                                     .filter(Bat.game_id==game.id)
+                                      Player)
+                     .join(Player)
+                     .filter(Bat.team_id == aid)
+                     .filter(Bat.game_id == game.id)
                      ).all()
         home_bats = (DB.session.query(Bat,
-                                     Player).join(Player)
-                                     .filter(Bat.team_id==hid)
-                                     .filter(Bat.game_id==game.id)
+                                      Player)
+                     .join(Player)
+                     .filter(Bat.team_id == hid)
+                     .filter(Bat.game_id == game.id)
                      ).all()
-        #away_bats = Bat.query.filter_by(team_id=aid).filter_by(game_id=game.id).all()
-        #home_bats = Bat.query.filter_by(team_id=hid).filter_by(game_id=game.id).all()
         for bat in away_bats:
             g['away_bats'].append({'name': bat[1].name,
                                    'hit':  bat[0].classification,
@@ -80,12 +82,13 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
                                    'inning': bat[0].inning,
                                    'rbi':  bat[0].rbi})
             g['home_score'] += bat[0].rbi
-        if g['away_bats'] == 0 :
+        if g['away_bats'] == 0:
             g['away_score'] = "--"
         if g['home_bats'] == 0:
             g['home_score'] = "--"
         result.append(g)
     return result
+
 
 class GameStatsAPI(Resource):
     def post(self):
@@ -97,7 +100,7 @@ class GameStatsAPI(Resource):
                 league_id: the team id (int)
                 game_id: the game id (int)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: list of Players
         """

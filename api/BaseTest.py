@@ -29,6 +29,7 @@ kik = {
     'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' + KIKPW, "utf-8")).decode("ascii")
 }
 
+
 class TestSetup(unittest.TestCase):
     def setUp(self):
         self.show_results = False

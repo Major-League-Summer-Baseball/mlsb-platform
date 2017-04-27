@@ -6,24 +6,27 @@
 '''
 from api import DB
 from sqlalchemy import func
-from werkzeug.security import generate_password_hash, check_password_hash   
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime, time
 from api.variables import HITS, KIKPOINTS
-from api.errors import  TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
+from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
                         InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
                         NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
                         BadRequestError
-from api.validators import  rbi_validator, hit_validator, inning_validator,\
-                            string_validator, date_validator, time_validator,\
-                            field_validator, year_validator, gender_validator,\
-    float_validator
+from api.validators import rbi_validator, hit_validator, inning_validator,\
+                           string_validator, date_validator, time_validator,\
+                           field_validator, year_validator, gender_validator,\
+                           float_validator
 roster = DB.Table('roster',
-                  DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
+                  DB.Column('player_id',
+                            DB.Integer,
+                            DB.ForeignKey('player.id')),
                   DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
-                )
-
+                  )
 SUBSCRIBED = "{} SUBSCRIBED"
 AWARD_POINTS = "{} awarded espy points for subscribing: {}"
+
+
 class Fun(DB.Model):
     '''
         A class used to store the amount of fun had by all
@@ -35,6 +38,7 @@ class Fun(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     year = DB.Column(DB.Integer)
     count = DB.Column(DB.Integer)
+
     def __init__(self, year=date.today().year, count=0):
         self.year = year
         self.count = count
@@ -49,6 +53,7 @@ class Fun(DB.Model):
 
     def json(self):
         return {'year': self.year, 'count': self.count}
+
 
 class Espys(DB.Model):
     '''
@@ -100,11 +105,11 @@ class Espys(DB.Model):
         self.sponsor_id = sponsor_id
         self.kik = None
         if date is not None and not date_validator(date):
-            raise InvalidField(payload={'details':"Game - date"})
+            raise InvalidField(payload={'details': "Game - date"})
         if time is not None and not time_validator(time):
-            raise InvalidField(payload={'details':"Game - time"})
+            raise InvalidField(payload={'details': "Game - time"})
         if date is not None and time is None:
-            self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
+            self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         else:
             self.date = datetime.today()
 
@@ -139,13 +144,13 @@ class Espys(DB.Model):
         if receipt is not None:
             self.receipt = receipt
         if date is not None and time is None:
-            self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
+            self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         if date is not None and time is not None:
             if date is not None and not date_validator(date):
-                raise InvalidField(payload={'details':"Game - date"})
+                raise InvalidField(payload={'details': "Game - date"})
             if time is not None and not time_validator(time):
-                raise InvalidField(payload={'details':"Game - time"})
-            self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
+                raise InvalidField(payload={'details': "Game - time"})
+            self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
 
     def json(self):
         '''
@@ -171,6 +176,7 @@ class Espys(DB.Model):
                 'time': time
                 }
 
+
 class Player(DB.Model):
     '''
     A class that stores a player's information
@@ -180,7 +186,8 @@ class Player(DB.Model):
         gender: the player's gender
         password: the password for the player
         team: the teams the player plays for
-        active: a boolean to say whether the player is active currently or not (retired or not)
+        active: a boolean to say whether the player is active
+                currently or not (retired or not)
         kik: the kik user name associated with the player
     '''
     id = DB.Column(DB.Integer, primary_key=True)
@@ -189,10 +196,10 @@ class Player(DB.Model):
     gender = DB.Column(DB.String(1))
     password = DB.Column(DB.String(120))
     bats = DB.relationship('Bat',
-                             backref='player', lazy='dynamic')
+                           backref='player', lazy='dynamic')
     team = DB.relationship('Team',
-                              backref='player',
-                              lazy='dynamic')
+                           backref='player',
+                           lazy='dynamic')
     active = DB.Column(DB.Boolean)
     kik = DB.Column(DB.String(120))
 
@@ -211,12 +218,12 @@ class Player(DB.Model):
             raise InvalidField(payload={"details": "Player - name"})
         # check if email is unique
         if not string_validator(email):
-            raise InvalidField(payload={'details':"Player - email"})
+            raise InvalidField(payload={'details': "Player - email"})
         player = Player.query.filter_by(email=email).first()
         if player is not None:
-            raise NonUniqueEmail(payload={'details':email})
+            raise NonUniqueEmail(payload={'details': email})
         if gender is not None and not gender_validator(gender):
-            raise InvalidField(payload={'details':"Player - gender"})
+            raise InvalidField(payload={'details': "Player - gender"})
         self.name = name
         self.email = email
         if gender is not None:
@@ -232,7 +239,7 @@ class Player(DB.Model):
                 password: the player's new password (str)
         '''
         self.password = generate_password_hash(password)
- 
+
     def check_password(self, password):
         '''
             check a player's password
@@ -243,7 +250,7 @@ class Player(DB.Model):
                 False otherwise
         '''
         return check_password_hash(self.password, password)
- 
+
     def __repr__(self):
         '''
             the string representation of the player
@@ -261,7 +268,7 @@ class Player(DB.Model):
             returns a jsonserializable object
         '''
         return {"player_id": self.id,
-                "player_name":self.name,
+                "player_name": self.name,
                 "gender": self.gender}
 
     def admin_json(self):
@@ -269,7 +276,7 @@ class Player(DB.Model):
             returns a jsonserializable object
         '''
         return {"player_id": self.id,
-                "player_name":self.name,
+                "player_name": self.name,
                 "gender": self.gender,
                 "email": self.email}
 
@@ -289,22 +296,22 @@ class Player(DB.Model):
                 InvalidField
                 NonUniqueEmail
         '''
-        if email is not None:   
+        if email is not None:
             # check if email is unique
             if not string_validator(email):
                 raise InvalidField(payload="Player - email")
             player = Player.query.filter_by(email=email).first()
             if player is not None:
-                raise NonUniqueEmail(payload={'details':email})
+                raise NonUniqueEmail(payload={'details': email})
             self.email = email
         if gender is not None and gender_validator(gender):
             self.gender = gender.lower()
         elif gender is not None:
-            raise InvalidField(payload={'details':"Player - gender"})
+            raise InvalidField(payload={'details': "Player - gender"})
         if name is not None and string_validator(name):
             self.name = name
         elif name is not None:
-            raise InvalidField(payload={'details':"Player - name"})
+            raise InvalidField(payload={'details': "Player - name"})
 
     def activate(self):
         '''
@@ -317,6 +324,7 @@ class Player(DB.Model):
         deactivate the player (retire them)
         '''
         self.active = False
+
 
 class Team(DB.Model):
     '''
@@ -336,19 +344,19 @@ class Team(DB.Model):
     color = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
     home_games = DB.relationship('Game',
-                                backref='home_team',
-                                lazy = 'dynamic',
-                                foreign_keys='[Game.home_team_id]')
+                                 backref='home_team',
+                                 lazy='dynamic',
+                                 foreign_keys='[Game.home_team_id]')
     away_games = DB.relationship('Game',
-                                backref='away_team',
-                                lazy = 'dynamic',
-                                foreign_keys='[Game.away_team_id]')
+                                 backref='away_team',
+                                 lazy='dynamic',
+                                 foreign_keys='[Game.away_team_id]')
     players = DB.relationship('Player',
                               secondary=roster,
                               backref=DB.backref('teams', lazy='dynamic'))
     bats = DB.relationship('Bat',
-                            backref='team',
-                            lazy = 'dynamic')
+                           backref='team',
+                           lazy='dynamic')
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     year = DB.Column(DB.Integer)
     player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
@@ -368,13 +376,13 @@ class Team(DB.Model):
             LeagueDoesNotExist
         '''
         if color is not None and not string_validator(color):
-            raise InvalidField(payload={'details':"Team - color"})
+            raise InvalidField(payload={'details': "Team - color"})
         if sponsor_id is not None and Sponsor.query.get(sponsor_id) is None:
-            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+            raise SponsorDoesNotExist(payload={'details': sponsor_id})
         if league_id is not None and League.query.get(league_id) is None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
+            raise LeagueDoesNotExist(payload={'details': league_id})
         if year is not None and not year_validator(year):
-            raise InvalidField(payload={'details':"Team - year"})
+            raise InvalidField(payload={'details': "Team - year"})
         self.color = color
         self.sponsor_id = sponsor_id
         self.league_id = league_id
@@ -391,7 +399,7 @@ class Team(DB.Model):
             if sponsor is not None and sponsor.nickname is not None:
                 result.append(sponsor.nickname)
         if self.color is not None:
-            result.append( self.color)
+            result.append(self.color)
         return " ".join(result)
 
     def espys_awarded(self):
@@ -436,19 +444,20 @@ class Team(DB.Model):
         if color is not None and string_validator(color):
             self.color = color
         elif color is not None:
-            raise InvalidField(payload={'details':"Team - color"})
-        if sponsor_id is not None and Sponsor.query.get(sponsor_id) is not None:
+            raise InvalidField(payload={'details': "Team - color"})
+        if (sponsor_id is not None and
+            Sponsor.query.get(sponsor_id) is not None):
             self.sponsor_id = sponsor_id
         elif sponsor_id is not None:
-            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+            raise SponsorDoesNotExist(payload={'details': sponsor_id})
         if league_id is not None and League.query.get(league_id) is not None:
             self.league_id = league_id
-        elif league_id  is not None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
+        elif league_id is not None:
+            raise LeagueDoesNotExist(payload={'details': league_id})
         if year is not None and year_validator(year):
             self.year = year
         elif year is not None:
-            raise InvalidField(payload={'details':"Team - year"})
+            raise InvalidField(payload={'details': "Team - year"})
 
     def insert_player(self, player_id, captain=False):
         '''
@@ -465,7 +474,7 @@ class Team(DB.Model):
         valid = False
         player = Player.query.get(player_id)
         if player is None:
-            raise PlayerDoesNotExist(payload={'details':player_id})
+            raise PlayerDoesNotExist(payload={'details': player_id})
         if captain:
             self.player_id = player_id
             if player not in self.players:
@@ -485,7 +494,7 @@ class Team(DB.Model):
         '''
         player = Player.query.get(player_id)
         if player not in self.players:
-            raise PlayerNotOnTeam(payload={'details':player_id})
+            raise PlayerNotOnTeam(payload={'details': player_id})
         self.players.remove(player)
 
     def check_captain(self, player_name, password):
@@ -504,6 +513,7 @@ class Team(DB.Model):
     def team_stats(self):
         pass
 
+
 class Sponsor(DB.Model):
     '''
     A class that stores information about a sponsor
@@ -513,26 +523,33 @@ class Sponsor(DB.Model):
         teams: the teams the sponsor is associated with
         description: a description of the sponsor
         link: a link to the sponsor's website or facebook
-        active: a boolean telling whether the sponsor is currently sponsoring a team
+        active: a boolean telling whether the sponsor
+                is currently sponsoring a team
         espys: all the espys transaction associated with the sponsor
     '''
     __tablename__ = 'sponsor'
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120), unique=True)
     teams = DB.relationship('Team', backref='sponsor',
-                                lazy='dynamic')
+                            lazy='dynamic')
     description = DB.Column(DB.String(200))
     link = DB.Column(DB.String(100))
     active = DB.Column(DB.Boolean)
     espys = DB.relationship('Espys', backref='sponsor', lazy='dynamic')
     nickname = DB.Column(DB.String(100))
-    def __init__(self, name, link=None, description=None, active=True, nickname=None):
+
+    def __init__(self,
+                 name,
+                 link=None,
+                 description=None,
+                 active=True,
+                 nickname=None):
         if not string_validator(name):
-            raise InvalidField(payload={'details':"Sponsor - name"})
+            raise InvalidField(payload={'details': "Sponsor - name"})
         if not string_validator(link):
-            raise InvalidField(payload={'details':"Sponsor - link"})
+            raise InvalidField(payload={'details': "Sponsor - link"})
         if not string_validator(description):
-            raise InvalidField(payload={'details':"Sponsor - description"})
+            raise InvalidField(payload={'details': "Sponsor - description"})
         self.name = name
         self.description = description
         self.link = link
@@ -566,15 +583,15 @@ class Sponsor(DB.Model):
         if name is not None and string_validator(name):
             self.name = name
         elif name is not None:
-            raise InvalidField(payload={'details':"Sponsor - name"})
+            raise InvalidField(payload={'details': "Sponsor - name"})
         if description is not None and string_validator(description):
             self.description = description
         elif description is not None:
-            raise InvalidField(payload={'details':"Sponsor - description"})
+            raise InvalidField(payload={'details': "Sponsor - description"})
         if link is not None and string_validator(link):
             self.link = link
         elif link is not None:
-            raise InvalidField(payload={'details':"Sponsor - link"})
+            raise InvalidField(payload={'details': "Sponsor - link"})
 
     def activate(self):
         '''
@@ -587,6 +604,7 @@ class Sponsor(DB.Model):
         deactivate a sponsor (they are no longer sponsoring)
         '''
         self.active = False
+
 
 class League(DB.Model):
     '''
@@ -601,13 +619,14 @@ class League(DB.Model):
     name = DB.Column(DB.String(120))
     games = DB.relationship('Game', backref='league', lazy='dynamic')
     teams = DB.relationship('Team', backref='league', lazy='dynamic')
+
     def __init__(self, name=None):
         '''
         Raises:
             InvalidField
         '''
         if not string_validator(name):
-            raise InvalidField(payload={'details':"League - name"})
+            raise InvalidField(payload={'details': "League - name"})
         self.name = name
 
     def __repr__(self):
@@ -624,8 +643,9 @@ class League(DB.Model):
             InvalidField
         '''
         if not string_validator(league):
-            raise InvalidField(payload={'details':"League - name"})
-        self.name= league
+            raise InvalidField(payload={'details': "League - name"})
+        self.name = league
+
 
 class Game(DB.Model):
     '''
@@ -668,19 +688,19 @@ class Game(DB.Model):
         '''
         # check for all the invalid parameters
         if not date_validator(date):
-            raise InvalidField(payload={'details':"Game - date"})
+            raise InvalidField(payload={'details': "Game - date"})
         if not time_validator(time):
-            raise InvalidField(payload={'details':"Game - time"})
-        self.date = datetime.strptime(date + "-" +time, '%Y-%m-%d-%H:%M')
+            raise InvalidField(payload={'details': "Game - time"})
+        self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         if (Team.query.get(home_team_id) is None):
-            raise TeamDoesNotExist(payload={'details':home_team_id})
+            raise TeamDoesNotExist(payload={'details': home_team_id})
         if Team.query.get(away_team_id) is None:
-            raise TeamDoesNotExist(payload={'details':away_team_id})
+            raise TeamDoesNotExist(payload={'details': away_team_id})
         if League.query.get(league_id) is None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
-        if ((status != "" and  not string_validator(status)) 
+            raise LeagueDoesNotExist(payload={'details': league_id})
+        if ((status != "" and not string_validator(status)) 
             or (field != "" and not field_validator(field))):
-            raise InvalidField(payload={'details':"Game - field/status"})
+            raise InvalidField(payload={'details': "Game - field/status"})
         # must be good now
         self.home_team_id = home_team_id
         self.away_team_id = away_team_id
@@ -713,7 +733,7 @@ class Game(DB.Model):
                 'league_id': self.league_id,
                 'date': self.date.strftime("%Y-%m-%d"),
                 'time': self.date.strftime("%H:%M"),
-                'status':self.status,
+                'status': self.status,
                 'field': self.field}
 
     def update(self,
@@ -736,35 +756,35 @@ class Game(DB.Model):
         if date is not None and date_validator(date):
             d = date
         elif date is not None:
-            raise InvalidField(payload={'details':"Game - date"})
+            raise InvalidField(payload={'details': "Game - date"})
         if time is not None and time_validator(time):
             t = time
         elif time is not None:
-            raise InvalidField(payload={'details':"Game - time"})
-        if (home_team_id is not None
-            and Team.query.get(home_team_id) is not None):
+            raise InvalidField(payload={'details': "Game - time"})
+        if (home_team_id is not None and
+            Team.query.get(home_team_id) is not None):
             self.home_team_id = home_team_id
         elif home_team_id is not None:
-            raise TeamDoesNotExist(payload={'details':home_team_id})
-        if (away_team_id is not None
-            and Team.query.get(away_team_id) is not None):
+            raise TeamDoesNotExist(payload={'details': home_team_id})
+        if (away_team_id is not None and
+             Team.query.get(away_team_id) is not None):
             self.away_team_id = away_team_id
         elif away_team_id is not None:
-            raise TeamDoesNotExist(payload={'details':away_team_id})
+            raise TeamDoesNotExist(payload={'details': away_team_id})
         if league_id is not None and League.query.get(league_id) is not None:
             self.league_id = league_id
         elif league_id is not None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
+            raise LeagueDoesNotExist(payload={'details': league_id})
         if status is not None and string_validator(status):
             self.status = status
         elif status is not None:
-            raise InvalidField(payload={'details':"Game - status"})
+            raise InvalidField(payload={'details': "Game - status"})
         if field is not None and field_validator(field):
             self.field = field
         elif field is not None:
-            raise InvalidField(payload={'details':"Game - field"})
+            raise InvalidField(payload={'details': "Game - field"})
         # worse case just overwrites it with same date or time
-        self.date = datetime.strptime(d + "-" +t, '%Y-%m-%d-%H:%M')
+        self.date = datetime.strptime(d + "-" + t, '%Y-%m-%d-%H:%M')
 
     def summary(self):
         '''
@@ -779,27 +799,27 @@ class Game(DB.Model):
         '''
         away_score = DB.session.query(
                                       func.sum(Bat.rbi)
-                                      .filter(Bat.game_id==self.id)
-                                      .filter(Bat.team_id==self.away_team_id)
+                                      .filter(Bat.game_id == self.id)
+                                      .filter(Bat.team_id == self.away_team_id)
                                       ).first()[0]
-        away_bats  = DB.session.query(
-                                      func.count(Bat.classification)
-                                      .filter(Bat.game_id==self.id)
-                                      .filter(Bat.team_id==self.away_team_id)
-                                      .filter(Bat.classification.in_(HITS))
-                                      ).first()[0]
+        away_bats = DB.session.query(
+                                     func.count(Bat.classification)
+                                     .filter(Bat.game_id == self.id)
+                                     .filter(Bat.team_id == self.away_team_id)
+                                     .filter(Bat.classification.in_(HITS))
+                                     ).first()[0]
         home_score = DB.session.query(
                                       func.sum(Bat.rbi)
-                                      .filter(Bat.game_id==self.id)
-                                      .filter(Bat.team_id==self.home_team_id)
+                                      .filter(Bat.game_id == self.id)
+                                      .filter(Bat.team_id == self.home_team_id)
                                       ).first()[0]
 
-        home_bats  = DB.session.query(
-                                      func.count(Bat.classification)
-                                      .filter(Bat.game_id==self.id)
-                                      .filter(Bat.team_id==self.home_team_id)
-                                      .filter(Bat.classification.in_(HITS))
-                                      ).first()[0]
+        home_bats = DB.session.query(
+                                     func.count(Bat.classification)
+                                     .filter(Bat.game_id == self.id)
+                                     .filter(Bat.team_id == self.home_team_id)
+                                     .filter(Bat.classification.in_(HITS))
+                                     ).first()[0]
         if away_score is None:
             away_score = 0
         if home_score is None:
@@ -814,6 +834,7 @@ class Game(DB.Model):
                 'home_score': home_score,
                 'home_bats': home_bats
                 }
+
 
 class Bat(DB.Model):
     '''
@@ -833,7 +854,7 @@ class Bat(DB.Model):
     player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
     rbi = DB.Column(DB.Integer)
     inning = DB.Column(DB.Integer)
-    classification =  DB.Column(DB.String(2))
+    classification = DB.Column(DB.String(2))
 
     def __init__(self,
                  player_id,
@@ -853,17 +874,17 @@ class Bat(DB.Model):
         classification = classification.lower().strip()
         player = Player.query.get(player_id)
         if player is None:
-            raise PlayerDoesNotExist(payload={'details':player_id})
+            raise PlayerDoesNotExist(payload={'details': player_id})
         if not hit_validator(classification, player.gender):
-            raise InvalidField(payload={'details':"Bat - hit"})
+            raise InvalidField(payload={'details': "Bat - hit"})
         if not rbi_validator(rbi):
-            raise InvalidField(payload={'details':"Bat - rbi"})
+            raise InvalidField(payload={'details': "Bat - rbi"})
         if not inning_validator(inning):
-            raise InvalidField(payload={'details':"Bat - inning"})
+            raise InvalidField(payload={'details': "Bat - inning"})
         if Team.query.get(team_id) is None:
-            raise TeamDoesNotExist(payload={'details':team_id})
+            raise TeamDoesNotExist(payload={'details': team_id})
         if Game.query.get(game_id) is None:
-            raise GameDoesNotExist(payload={'details':game_id})
+            raise GameDoesNotExist(payload={'details': game_id})
         # otherwise good and a valid object
         self.classification = classification
         self.rbi = rbi
@@ -875,10 +896,10 @@ class Bat(DB.Model):
     def __repr__(self):
         '''
             the string representation of the Bat
-        '''        
+        '''
         player = Player.query.get(self.player_id)
-        return (player.name  + "-" + self.classification + " in " 
-                + str(self.inning))
+        return (player.name + "-" + self.classification + " in " +
+                str(self.inning))
 
     def json(self):
         '''
@@ -886,12 +907,12 @@ class Bat(DB.Model):
         '''
         return{
                'bat_id': self.id,
-               'game_id':self.game_id,
+               'game_id': self.game_id,
                'team_id': self.team_id,
                'team': str(Team.query.get(self.team_id)),
                'rbi': self.rbi,
                'hit': self.classification,
-               'inning':self.inning,
+               'inning': self.inning,
                'player_id': self.player_id,
                'player': str(Player.query.get(self.player_id))
                }
@@ -914,27 +935,28 @@ class Bat(DB.Model):
         if team_id is not None and Team.query.get(team_id) is not None:
             self.team_id = team_id
         elif team_id is not None:
-            raise TeamDoesNotExist(payload={'details':team_id})
+            raise TeamDoesNotExist(payload={'details': team_id})
         if game_id is not None and Game.query.get(game_id) is not None:
             self.game_id = game_id
         elif game_id is not None:
-            raise GameDoesNotExist(payload={'details':game_id})
+            raise GameDoesNotExist(payload={'details': game_id})
         if player_id is not None and Player.query.get(player_id) is not None:
             self.player_id = player_id
         elif player_id is not None:
-            raise PlayerDoesNotExist(payload={'details':player_id})
+            raise PlayerDoesNotExist(payload={'details': player_id})
         if rbi is not None and rbi_validator(rbi):
             self.rbi = rbi
         elif rbi is not None:
-            raise InvalidField(payload={'details':"Bat - rbi"})
+            raise InvalidField(payload={'details': "Bat - rbi"})
         if hit is not None and hit_validator(hit):
             self.hit = hit
         elif hit is not None:
-            raise InvalidField(payload={'details':"Bat - hit"})
+            raise InvalidField(payload={'details': "Bat - hit"})
         if inning is not None and inning_validator(inning):
             self.inning = inning
         elif inning is not None:
-            raise InvalidField(payload={'details':"Bat - inning"})
+            raise InvalidField(payload={'details': "Bat - inning"})
+
 
 def subscribe(kik, name, team_id):
     '''
@@ -954,7 +976,8 @@ def subscribe(kik, name, team_id):
     player = Player.query.filter_by(kik=kik).filter_by(active=True).all()
     if len(player) > 1:
         if player[0].name != name:
-            raise BadRequestError(payload={'details': "Kik user subscribing as two different people"})
+            s = "Kik user subscribing as two different people"
+            raise BadRequestError(payload={'details': s})
     team = Team.query.get(team_id)
     if team is None:
         raise TeamDoesNotExist(payload={'details': team_id})
@@ -963,12 +986,12 @@ def subscribe(kik, name, team_id):
         # fuck i dont know
         raise InvalidField("Two people with exact name, email the convenors")
     elif player is None or len(player) == 0:
-        # player is not officially in our db 
+        # player is not officially in our db
         # going to add them as a guest
-        player = Player(name, 
-                        name+"@guest", 
-                        gender="M", 
-                        password="default", 
+        player = Player(name,
+                        name+"@guest",
+                        gender="M",
+                        password="default",
                         active=False)
         DB.session.add(player)
         DB.session.commit()
@@ -978,18 +1001,22 @@ def subscribe(kik, name, team_id):
         # give them the two points
         player.kik = kik
         points_awarded = Espys(team_id,
-                               description = AWARD_POINTS.format(str(player), KIKPOINTS),
+                               description=AWARD_POINTS.format(str(player),
+                                                               KIKPOINTS),
                                points=KIKPOINTS)
         DB.session.add(points_awarded)
     elif player.kik != kik:
         # the player is subscribing under a new kik name
         player.kik = kik
-    subscribed = Espys.query.filter_by(team_id=team_id).filter_by(description=SUBSCRIBED.format(str(player))).first()
+    subscribed = (Espys.query
+                  .filter_by(team_id=team_id)
+                  .filter_by(description=SUBSCRIBED.format(str(player)))
+                  ).first()
     if subscribed is None:
         # player is not subscribed
-        subscribed = Espys( team_id,
-                            description = SUBSCRIBED.format(str(player)),
-                            points=0)
+        subscribed = Espys(team_id,
+                           description=SUBSCRIBED.format(str(player)),
+                           points=0)
         DB.session.add(subscribed)
     DB.session.commit()
     return True
@@ -1002,13 +1029,17 @@ def unsubscribe(kik, team_id):
     team = Team.query.get(team_id)
     if team is None:
         raise TeamDoesNotExist(payload={"details": team_id})
-    subscribed = Espys.query.filter_by(team_id=team_id).filter_by(description=SUBSCRIBED.format(str(player))).first()
+    subscribed = (Espys.query
+                  .filter_by(team_id=team_id)
+                  .filter_by(description=SUBSCRIBED.format(str(player)))
+                  ).first()
     if subscribed is not None:
         # delete the subscription entry
         DB.session.delete(subscribed)
         DB.session.commit()
     # else dont care
     return True
+
 
 def find_team_subscribed(kik):
     '''
@@ -1029,11 +1060,13 @@ def find_team_subscribed(kik):
     player = Player.query.filter_by(kik=kik).one()
     if player is not None:
         teams = DB.session.query(Espys).filter(Espys.date.between(start, end))
-        teams = teams.filter_by(description=SUBSCRIBED.format(str(player))).order_by("date").all()
+        teams = (teams
+                 .filter_by(description=SUBSCRIBED.format(str(player)))
+                 .order_by("date")).all()
         for team in teams:
             result.append(team.team_id)
     return result
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

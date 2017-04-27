@@ -20,6 +20,7 @@ parser.add_argument('score', type=int, required=True)
 parser.add_argument('hr', type=int, action="append")
 parser.add_argument('ss', type=int, action="append")
 
+
 class SubmitScoresAPI(Resource):
     @requires_kik
     def post(self):
@@ -33,7 +34,7 @@ class SubmitScoresAPI(Resource):
                 hr: a list of player's name who hit homeruns(List of str)
                 ss: a list of player's name who hit sentry singles (List of str)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: True
         """
@@ -55,9 +56,9 @@ class SubmitScoresAPI(Resource):
         home_team = Team.query.get(game.home_team_id)
         team = None
         if away_team.player_id == captain.id:
-            team = away_team # captain of the squad
-        elif home_team.player_id  == captain.id:
-            team = home_team # captain of the away squad
+            team = away_team  # captain of the squad
+        elif home_team.player_id == captain.id:
+            team = home_team  # captain of the away squad
         else:
             # not a captain of a team
             raise NotTeamCaptain(payload={'details': kik})
@@ -66,7 +67,7 @@ class SubmitScoresAPI(Resource):
         score = args['score']
         if score <= 0:
             # hmm that is so sad
-            DB.session.add(Bat(unassigned_id ,
+            DB.session.add(Bat(unassigned_id,
                                team.id,
                                game.id,
                                "fo",
@@ -76,23 +77,22 @@ class SubmitScoresAPI(Resource):
             for player_id in homeruns:
                 # add the homeruns
                 DB.session.add(Bat(player_id,
-                                team.id,
-                                game.id,
-                                "hr",
-                                inning=1,
-                                rbi=1)
-                            )
+                                   team.id,
+                                   game.id,
+                                   "hr",
+                                   inning=1,
+                                   rbi=1))
                 score -= 1
         if ss is not None:
             for player_id in ss:
                 # add the special singles
                 try:
                     bat = Bat(player_id,
-                                team.id,
-                                game.id,
-                                "ss",
-                                inning=1,
-                                rbi=0)
+                              team.id,
+                              game.id,
+                              "ss",
+                              inning=1,
+                              rbi=0)
                     DB.session.add(bat)
                 except InvalidField:
                     pass
@@ -107,6 +107,6 @@ class SubmitScoresAPI(Resource):
                       rbi=1)
             DB.session.add(bat)
             score -= 1
-        DB.session.commit() # good to add the submission
+        DB.session.commit()  # good to add the submission
         return Response(dumps(True), status=200, mimetype="application/json")
 

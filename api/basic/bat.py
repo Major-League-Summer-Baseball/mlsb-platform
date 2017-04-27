@@ -26,6 +26,7 @@ post_parser.add_argument('hit', type=str, required=True)
 post_parser.add_argument('inning', type=int)
 post_parser.add_argument('team_id', type=str, required=True)
 
+
 class BatAPI(Resource):
     def get(self, bat_id):
         """
@@ -54,9 +55,9 @@ class BatAPI(Resource):
         """
         entry = Bat.query.get(bat_id)
         if entry is None:
-            raise BatDoesNotExist(payload={'details':bat_id})
+            raise BatDoesNotExist(payload={'details': bat_id})
         response = Response(dumps(entry.json()), status=200,
-                        mimetype="application/json")
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -73,11 +74,13 @@ class BatAPI(Resource):
         """
         bat = Bat.query.get(bat_id)
         if bat is None:
-            raise BatDoesNotExist(payload={'details':bat_id})
+            raise BatDoesNotExist(payload={'details': bat_id})
         # delete a single bat
         DB.session.delete(bat)
         DB.session.commit()
-        response = Response(dumps(None), status=200, mimetype="application/json")
+        response = Response(dumps(None),
+                            status=200,
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -104,16 +107,16 @@ class BatAPI(Resource):
         # update a single bat
         args = parser.parse_args()
         bat = Bat.query.get(bat_id)
-        player_id=None,
-        team_id=None,
-        game_id=None,
-        rbi=None,
-        hit=None,
-        inning=None
+        player_id = None
+        team_id = None
+        game_id = None
+        rbi = None
+        hit = None
+        inning = None
         if bat is None:
-            raise BatDoesNotExist(payload={'details':bat_id})
+            raise BatDoesNotExist(payload={'details': bat_id})
         if args['team_id']:
-            team_id= args['team_id']
+            team_id = args['team_id']
         if args['game_id']:
             game_id = args['game_id']
         if args['player_id']:
@@ -137,8 +140,9 @@ class BatAPI(Resource):
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \
-            { 'Access-Control-Allow-Origin': '*', \
-            'Access-Control-Allow-Methods': 'PUT,GET'}
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class BatListAPI(Resource):
     def get(self):
@@ -147,9 +151,9 @@ class BatListAPI(Resource):
             Route: Routes['bat']
             Parameters :
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     games: [  {
                                 'bat_id': int,
                                'game_id': int,
@@ -186,7 +190,7 @@ class BatListAPI(Resource):
                 team_id: the id of the team (int)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: the created bat id (int)
                 otherwise possible errors
@@ -201,7 +205,7 @@ class BatListAPI(Resource):
         team_id = None
         rbi = 0
         hit = None
-        inning = 1 # just assume some first inning
+        inning = 1  # just assume some first inning
         if args['game_id']:
             game_id = args['game_id']
         if args['player_id']:
@@ -227,6 +231,6 @@ class BatListAPI(Resource):
         return resp
 
     def option(self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

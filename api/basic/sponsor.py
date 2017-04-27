@@ -20,8 +20,9 @@ post_parser = reqparse.RequestParser()
 post_parser.add_argument('sponsor_name', type=str, required=True)
 post_parser.add_argument('link', type=str)
 post_parser.add_argument('description', type=str)
-HEADERS = [{'header':'sponsor_name', 'required':True, 
-            'validator':string_validator}]
+HEADERS = [{'header': 'sponsor_name', 'required': True,
+            'validator': string_validator}]
+
 
 class SponsorAPI(Resource):
     def get(self, sponsor_id):
@@ -42,12 +43,11 @@ class SponsorAPI(Resource):
                     status: 404
                     mimetype: application/json
                     data: None
-                
         """
         # expose a single Sponsor
-        entry  = Sponsor.query.get(sponsor_id)
+        entry = Sponsor.query.get(sponsor_id)
         if entry is None:
-            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+            raise SponsorDoesNotExist(payload={'details': sponsor_id})
         response = Response(dumps(entry.json()),
                             status=200, mimetype="application/json")
         return response
@@ -59,20 +59,19 @@ class SponsorAPI(Resource):
             Route: Routes['sponsor']/<sponsor_id:int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise
                     status: 404
                     mimetype: application/json
                     data: None
-                
         """
         # delete a single user
         sponsor = Sponsor.query.get(sponsor_id)
         if sponsor is None:
             # Sponsor is not in the table
-            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+            raise SponsorDoesNotExist(payload={'details': sponsor_id})
         DB.session.delete(sponsor)
         DB.session.commit()
         return Response(dumps(None), status=200, mimetype="application/json")
@@ -84,7 +83,6 @@ class SponsorAPI(Resource):
             Route: Routes['sponsor']/<sponsor_id:int>
             Parameters :
                 sponsor_name: The Sponsor's name (string)
-                
             Returns:
                 if found and successful
                     status: 200 
@@ -105,7 +103,7 @@ class SponsorAPI(Resource):
         description = None
         name = None
         if sponsor is None:
-            raise SponsorDoesNotExist(payload={'details':sponsor_id})
+            raise SponsorDoesNotExist(payload={'details': sponsor_id})
         args = parser.parse_args()
         if args['sponsor_name']:
             name = args['sponsor_name']
@@ -116,13 +114,14 @@ class SponsorAPI(Resource):
         sponsor.update(name=name, link=link, description=description)
         DB.session.commit()
         response = Response(dumps(None), status=200,
-                        mimetype="application/json")
+                            mimetype="application/json")
         return response
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class SponsorListAPI(Resource):
     def get(self):
@@ -132,9 +131,9 @@ class SponsorListAPI(Resource):
             Parameters :
 
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     Sponsors: [{sponsor_id:int,
                                 sponsor_name:string,
                                 description: string,
@@ -161,7 +160,7 @@ class SponsorListAPI(Resource):
                 description: a description of the sponsor (string)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     sponsor_id: the create sponsor_id
                 else
@@ -189,8 +188,8 @@ class SponsorListAPI(Resource):
         sponsor_id = sponsor.id
         return Response(dumps(sponsor_id), status=201,
                         mimetype="application/json")
- 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

@@ -16,12 +16,14 @@ parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('team_id', type=int)
 
+
 def post(team_id, year, league_id):
     if team_id is not None:
         team = single_team(team_id)
     else:
         team = team_stats(year, league_id)
     return team
+
 
 def single_team(team_id):
     games = (DB.session.query(Game)
@@ -37,7 +39,7 @@ def single_team(team_id):
                       'hits_for': 0,
                       'hits_allowed': 0,
                       'name': str(Team.query.get(team_id))}
-            }    
+            }
     for game in games:
         # loop through each game
         scores = game.summary()
@@ -64,6 +66,7 @@ def single_team(team_id):
         team[team_id]['games'] += 1
     return team
 
+
 def team_stats(year, league_id):
     t = time(0, 0)
     games = DB.session.query(Game)
@@ -73,11 +76,11 @@ def team_stats(year, league_id):
         d2 = date(year, 12, 30)
         start = datetime.combine(d1, t)
         end = datetime.combine(d2, t)
-        games = games.filter(Game.date.between(start,end))
-        teams = teams.filter(Team.year==year)
+        games = games.filter(Game.date.between(start, end))
+        teams = teams.filter(Team.year == year)
     if league_id is not None:
-        games = games.filter(Game.league_id==league_id)
-        teams = teams.filter(Team.league_id==league_id)
+        games = games.filter(Game.league_id == league_id)
+        teams = teams.filter(Team.league_id == league_id)
     result = {}
     for team in teams:
         # initialize each team
@@ -93,13 +96,13 @@ def team_stats(year, league_id):
     for game in games:
         # loop through each game (max ~400 for a season)
         score = game.summary()
-        result[game.away_team_id]['runs_for'] += score['away_score'] 
+        result[game.away_team_id]['runs_for'] += score['away_score']
         result[game.away_team_id]['runs_against'] += score['home_score']
-        result[game.away_team_id]['hits_for'] += score['away_bats'] 
+        result[game.away_team_id]['hits_for'] += score['away_bats']
         result[game.away_team_id]['hits_allowed'] += score['home_bats']
-        result[game.home_team_id]['runs_for'] += score['home_score'] 
+        result[game.home_team_id]['runs_for'] += score['home_score']
         result[game.home_team_id]['runs_against'] += score['away_score']
-        result[game.home_team_id]['hits_for'] += score['home_bats'] 
+        result[game.home_team_id]['hits_for'] += score['home_bats']
         result[game.home_team_id]['hits_allowed'] += score['away_bats']
         if score['away_bats'] + score['home_bats'] > 0:
             result[game.away_team_id]['games'] += 1
@@ -115,6 +118,7 @@ def team_stats(year, league_id):
             result[game.away_team_id]['ties'] += 1
     return result
 
+
 class TeamStatsAPI(Resource):
     def post(self):
         """
@@ -125,7 +129,7 @@ class TeamStatsAPI(Resource):
                 team_id: the team id (int)
                 league_id: the league id (int)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: list of Teams
         """
@@ -135,7 +139,6 @@ class TeamStatsAPI(Resource):
             tid = args['team_id']
             team = post(tid, None, None)
         else:
-            
             if args['year']:
                 year = args['year']
             else:
@@ -145,4 +148,6 @@ class TeamStatsAPI(Resource):
             else:
                 league_id = None
             team = post(None, year, league_id)
-        return Response(dumps(team), status=200, mimetype="application/json")
+        return Response(dumps(team),
+                        status=200,
+                        mimetype="application/json")

@@ -8,13 +8,14 @@ from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Player, Espys,Sponsor, find_team_subscribed
+from api.model import Player, Espys, Sponsor, find_team_subscribed
 from api.authentication import requires_kik
-from api.errors import SDNESC, PNS, PlayerNotSubscribed, SponsorDoesNotExist
+from api.errors import PlayerNotSubscribed, SponsorDoesNotExist
 parser = reqparse.RequestParser()
 parser.add_argument('kik', type=str, required=True)
 parser.add_argument('amount', type=int, required=True)
 parser.add_argument('sponsor', type=str, required=True)
+
 
 class SubmitTransactionAPI(Resource):
     @requires_kik
@@ -27,7 +28,7 @@ class SubmitTransactionAPI(Resource):
                 amount: the amount spent (str)
                 sponsor: the name of the sponsor (str)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: True
         """
@@ -48,7 +49,12 @@ class SubmitTransactionAPI(Resource):
             # kik user is not subscribed to any teams
             raise PlayerNotSubscribed(payload={'details': kik})
         # always give points to team first subscribed to (of current year)
-        espy = Espys(team_id=teams[0], sponsor_id=sponsor.id, points=amount, description="Kik transaction")
+        espy = Espys(team_id=teams[0],
+                     sponsor_id=sponsor.id,
+                     points=amount,
+                     description="Kik transaction")
         DB.session.add(espy)
         DB.session.commit()
-        return Response(dumps(espy.id), status=200, mimetype="application/json")
+        return Response(dumps(espy.id),
+                        status=200,
+                        mimetype="application/json")

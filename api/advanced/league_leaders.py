@@ -11,10 +11,11 @@ from api import DB
 from api.model import Player, Bat, Game, Team
 from datetime import datetime, date, time
 from sqlalchemy.sql import func
-from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
+from api.variables import UNASSIGNED_EMAIL
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('stat', type=str, required=True)
+
 
 def get_leaders(hit, year=None):
     leaders = []
@@ -34,26 +35,24 @@ def get_leaders(hit, year=None):
     if unassigned is not None:
         unassigned_id = unassigned.id
     bats = (DB.session.query(Bat.player_id,
-                            hits,
-                            Bat.team_id,
-                            Bat.classification,
-                            Bat.team_id
-                            ).join(Game)
-                            .filter(Game.date.between(start, end))
-                            .filter(Bat.player_id != unassigned_id)
-                            .group_by(Bat.player_id)
-                            .group_by(Bat.classification)
-                            .group_by(Bat.team_id)).subquery("bats")
+                             hits,
+                             Bat.team_id,
+                             Bat.classification,
+                             Bat.team_id)
+            .join(Game)
+            .filter(Game.date.between(start, end))
+            .filter(Bat.player_id != unassigned_id)
+            .group_by(Bat.player_id)
+            .group_by(Bat.classification)
+            .group_by(Bat.team_id)).subquery("bats")
     players = (DB.session.query(Player.name,
-                              Player.id,
-                              bats.c.total,
-                              bats.c.team_id,
-                              bats.c.classification
-                              )
-                              .join(bats)
-                              .filter(bats.c.classification == hit)
-                              .order_by(bats.c.total.desc()).limit(10)
-                              )
+                                Player.id,
+                                bats.c.total,
+                                bats.c.team_id,
+                                bats.c.classification)
+               .join(bats)
+               .filter(bats.c.classification == hit)
+               .order_by(bats.c.total.desc()).limit(10))
     players = players.all()
     for player in players:
         result = {'name': player[0],
@@ -65,6 +64,7 @@ def get_leaders(hit, year=None):
         leaders.append(result)
     return leaders
 
+
 class LeagueLeadersAPI(Resource):
     def post(self):
         """
@@ -74,7 +74,7 @@ class LeagueLeadersAPI(Resource):
                 year: the year  (int)
                 stat: the stat to order by (str)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: list of Players
         """
@@ -87,4 +87,6 @@ class LeagueLeadersAPI(Resource):
             stat = args['stat']
         players = get_leaders(stat,
                               year=year)
-        return Response(dumps(players), status=200, mimetype="application/json")
+        return Response(dumps(players),
+                        status=200,
+                        mimetype="application/json")

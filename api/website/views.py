@@ -25,9 +25,12 @@ import json
 #             POST PAGES ISSUES
 # -----------------------------------------------------------------------------
 '''
+
+
 @app.route(Routes['posts'] + "/<int:year>")
 def posts_json(year):
     return json.dumps(get_all_descriptions(year))
+
 
 @app.route(Routes['posts'] + "/<int:year>/<date>/<file_name>/plain")
 def checkout_post_raw_html(year, date, file_name):
@@ -37,6 +40,7 @@ def checkout_post_raw_html(year, date, file_name):
         result = post_raw_html(file_name, year)
     return result
 
+
 @app.route(Routes['posts'] + "/<int:year>/<date>/<file_name>/json")
 def checkout_post_json(year, date, file_name):
     file_name = date + "_" + file_name
@@ -45,24 +49,25 @@ def checkout_post_json(year, date, file_name):
         result = post_json(file_name, year)
     return json.dumps(result)
 
+
 @app.route(Routes['posts'] + "/<int:year>/<date>/<file_name>")
 def checkout_post(year, date, file_name):
     file_name = date + "_" + file_name
-    template = "/".join(["website","posts", str(year), file_name])
+    template = "/".join(["website", "posts", str(year), file_name])
     if template.endswith(".html"):
         return render_template(template,
-                           route=Routes,
-                           base=base_data(year),
-                           title="Posts",
-                           year=year,
-                           games=get_upcoming_games(year))
+                               route=Routes,
+                               base=base_data(year),
+                               title="Posts",
+                               year=year,
+                               games=get_upcoming_games(year))
     else:
         return render_template("website/notFound.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Posts not Found",
-                           year=year,
-                           games=get_upcoming_games(year))
+                               route=Routes,
+                               base=base_data(year),
+                               title="Posts not Found",
+                               year=year,
+                               games=get_upcoming_games(year))
 
 '''
 # -----------------------------------------------------------------------------
@@ -71,10 +76,13 @@ def checkout_post(year, date, file_name):
 '''
 
 # redirect old urls
+
+
 @app.route("/index.php/schedule/")
 def reroute_schedule():
     year = date.today.year()
     return redirect(url_for("schedule", year=year))
+
 
 @app.route("/index.php/standings/")
 def reroute_standings():
@@ -88,6 +96,7 @@ def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
 
+
 @app.route("/about/<int:year>")
 def about(year):
     return render_template("website/about.html",
@@ -98,8 +107,8 @@ def about(year):
                            games=get_upcoming_games(year)
                            )
 
+
 @app.route(Routes["homepage"] + "/<int:year>")
-@cache.cached(timeout=600)
 def index(year):
     games = get_upcoming_games(year)
     news = get_summaries(year)
@@ -121,13 +130,14 @@ def sponsor_picture(name):
             name = "notFound"
         else:
             name = str(name)
-    name= name.lower().replace(" ", "_") + ".png"
+    name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors",  name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
         return send_from_directory(fp, filename=name)
     else:
         return send_from_directory(fp, filename=NOTFOUND)
+
 
 @app.route(Routes['teampicture'] + "/<int:team>")
 def team_picture(team):
@@ -140,7 +150,7 @@ def team_picture(team):
                 name = "notFound"
             else:
                 name = str(name)
-    name= name.lower().replace(" ", "_") + ".png"
+    name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors",  name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
@@ -148,14 +158,16 @@ def team_picture(team):
     else:
         return send_from_directory(fp, filename=NOTFOUND)
 
+
 @app.route(Routes['postpicture'] + "/<name>")
 def post_picture(name):
     f = os.path.join(PICTURES, "posts", name)
-    fp = os.path.join(PICTURES,"posts" )
+    fp = os.path.join(PICTURES, "posts")
     if os.path.isfile(f):
         return send_from_directory(fp, filename=name)
     else:
         return send_from_directory(fp, filename=NOTFOUND)
+
 
 @app.route(Routes['sponsorspage'] + "/<int:year>")
 def sponsors_page(year):
@@ -165,25 +177,28 @@ def sponsors_page(year):
                            title="Sponsors",
                            year=year)
 
-@app.route(Routes['sponsorspage'] +"/<int:year>" +  "/<int:id>")
-def sponsor_page(year, id):
-    sponsor = get_sponsor(id)
+
+@app.route(Routes['sponsorspage'] + "/<int:year>" + "/<int:sponsor_id>")
+def sponsor_page(year, sponsor_id):
+    sponsor = get_sponsor(sponsor_id)
     if sponsor is None:
         page = render_template("website/notFound.html",
                                route=Routes,
                                base=base_data(year),
-                               title = "Not Found",
+                               title="Not Found",
                                year=year)
     else:
         page = render_template("website/sponsor.html",
-                           route=Routes,
-                           base=base_data(year),
-                           sponsor=sponsor,
-                           title="Sponsor | " + sponsor['name'],
-                           year=year)
+                               route=Routes,
+                               base=base_data(year),
+                               sponsor=sponsor,
+                               title="Sponsor | " + sponsor['name'],
+                               year=year)
     return page
 
+
 @app.route(Routes["schedulepage"] + "/<int:year>")
+@cache.cached(timeout=600)
 def schedule(year):
     return render_template("website/schedule.html",
                            route=Routes,
@@ -192,7 +207,9 @@ def schedule(year):
                            title="Schedule",
                            year=year)
 
+
 @app.route(Routes['standingspage'] + "/<int:year>")
+@cache.cached(timeout=600)
 def standings(year):
     return render_template("website/standings.html",
                            route=Routes,
@@ -201,7 +218,9 @@ def standings(year):
                            title="Standings",
                            year=year)
 
+
 @app.route(Routes['statspage'] + "/<int:year>")
+@cache.cached(timeout=600)
 def stats_page(year):
     players = player_summary(year)
     return render_template("website/stats.html",
@@ -212,25 +231,27 @@ def stats_page(year):
                            players=players
                            )
 
+
 @app.route(Routes['teampage'] + "/<int:year>/<int:team_id>")
 def team_page(year, team_id):
     team = get_team(year, team_id)
     if team is not None:
         return render_template("website/team.html",
-                           route=Routes,
-                           base=base_data(year),
-                           team=team,
-                           title="Team - " + str(team['name']),
-                           year=year)
+                               route=Routes,
+                               base=base_data(year),
+                               team=team,
+                               title="Team - " + str(team['name']),
+                               year=year)
     else:
         return render_template("website/notFound.html",
-                           route=Routes,
-                           base=base_data(year),
-                           team=team,
-                           title="Team not found",
-                           year=year)
+                               route=Routes,
+                               base=base_data(year),
+                               team=team,
+                               title="Team not found",
+                               year=year)
 
-@app.route(Routes['playerpage']+ "/<int:year>/<int:player_id>")
+
+@app.route(Routes['playerpage'] + "/<int:year>/<int:player_id>")
 def player_page(year, player_id):
     player = Player.query.get(player_id)
     name = player.name
@@ -241,8 +262,8 @@ def player_page(year, player_id):
     for entry in years:
         player = {}
         summary = player_summary(year=entry[0],
-                                team_id=entry[1],
-                                player_id=player_id)
+                                 team_id=entry[1],
+                                 player_id=player_id)
         if name in summary:
             player = summary[name]
         player['team'] = str(Team.query.get(entry[1]))
@@ -250,46 +271,49 @@ def player_page(year, player_id):
         player['year'] = entry[0]
         stats.append(player)
     return render_template("website/player.html",
-                       route=Routes,
-                       base=base_data(year),
-                       stats=stats,
-                       title="Player Stats",
-                       name=name,
-                       year=year)
+                           route=Routes,
+                           base=base_data(year),
+                           stats=stats,
+                           title="Player Stats",
+                           name=name,
+                           year=year)
+
 
 @app.route(Routes['leagueleaderpage'] + "/<int:year>")
 def leaders_page(year):
     women = get_leaders("ss", year=year)[:5]
     men = get_leaders("hr", year=year)[:5]
     return render_template("website/new-leaders.html",
-                       route=Routes,
-                       base=base_data(year),
-                       men=men,
-                       women=women,
-                       title="League Leaders",
-                       year=year)
+                           route=Routes,
+                           base=base_data(year),
+                           men=men,
+                           women=women,
+                           title="League Leaders",
+                           year=year)
 '''
 # -----------------------------------------------------------------------------
 #             STATIC PAGES
 # -----------------------------------------------------------------------------
 '''
 
+
 @app.route(Routes['eventspage'] + "/<int:year>" + "/json")
 def events_page_json(year):
         if year in EVENTS:
             return json.dumps(EVENTS[year])
         else:
-            return json.dumps({year:{}})
+            return json.dumps({year: {}})
+
 
 @app.route(Routes['eventspage'] + "/<int:year>")
 def events_page(year):
         if year in EVENTS:
             return render_template("website/events.html",
-                               dates = EVENTS[year],
-                               route=Routes,
-                               base=base_data(year),
-                               title="Events",
-                               year=year)
+                                   dates=EVENTS[year],
+                                   route=Routes,
+                                   base=base_data(year),
+                                   title="Events",
+                                   year=year)
         else:
             return render_template("website/notFound.html",
                                    year=year,
@@ -306,6 +330,7 @@ def rules_fields(year):
                            title="Fields & Rules",
                            year=year)
 
+
 @app.route("/test/<int:year>")
 def test(year):
     return render_template("website/test.html",
@@ -313,6 +338,7 @@ def test(year):
                            base=base_data(year),
                            title="Test",
                            year=year)
+
 
 @app.route(Routes['findunsubscribed'] + "/<int:year>")
 def captain_find_unsubscribed(year):
@@ -322,6 +348,7 @@ def captain_find_unsubscribed(year):
                            title="Find Unsubscribed Players",
                            year=year,
                            teams=get_teams(year))
+
 
 @app.route(Routes['findunsubscribed'] + "/<int:year>" + "/<int:team>")
 def captain_find_unsubscribed_get(year, team):
@@ -334,6 +361,7 @@ def captain_find_unsubscribed_get(year, team):
             result.append(player.json())
     return json.dumps(result)
 
+
 @app.route(Routes['sponsorbreakdown'] + "/<int:year>")
 def sponsor_breakdown(year):
     return render_template("website/sponsor_breakdown.html",
@@ -343,9 +371,10 @@ def sponsor_breakdown(year):
                            year=year,
                            teams=get_teams(year))
 
+
 @app.route(Routes['sponsorbreakdown'] + "/<int:year>" + "/<int:garbage>")
 def get_sponsor_breakdown(year, garbage):
-    sponsors = DB.session.query(Sponsor).filter(Sponsor.active==True).all()
+    sponsors = DB.session.query(Sponsor).filter(Sponsor.active == True).all()
     tree = {'name': 'Sponsor Breakdown by ESPYS'}
     total = func.sum(Espys.points).label('espys')
     start = datetime(year, 1, 1)
@@ -356,11 +385,11 @@ def get_sponsor_breakdown(year, garbage):
         element['name'] = str(sponsor)
         children_list = []
         espys = (DB.session.query(total, Team)
-                    .join(Sponsor)
-                    .join(Team, Espys.team_id==Team.id)
-                    .filter(Espys.date.between(start, end))
-                    .filter(Espys.sponsor_id==sponsor.id)
-                    .group_by(Team)).all()
+                 .join(Sponsor)
+                 .join(Team, Espys.team_id == Team.id)
+                 .filter(Espys.date.between(start, end))
+                 .filter(Espys.sponsor_id == sponsor.id)
+                 .group_by(Team)).all()
         for espy in espys:
             point = {}
             point['name'] = str(espy[1])
@@ -373,11 +402,12 @@ def get_sponsor_breakdown(year, garbage):
         result.append(element)
     tree['children'] = result
     return json.dumps(tree)
-    
+
+
 @app.route(Routes['espysbreakdown'] + "/<int:year>")
 @cache.memoize(timeout=600)
 def get_espys_breakdown(year):
-    teams = DB.session.query(Team).filter(Team.year==year).all()
+    teams = DB.session.query(Team).filter(Team.year == year).all()
     result = []
     total = func.sum(Espys.points).label('espys')
     t = time(0, 0)
@@ -391,10 +421,10 @@ def get_espys_breakdown(year):
         element['name'] = str(team)
         children_list = []
         espys = (DB.session.query(total, Sponsor.name, )
-                    .outerjoin(Sponsor)
-                    .filter(Espys.date.between(start, end))
-                    .filter(Espys.team_id==team.id)
-                    .group_by(Sponsor.name)).all()
+                 .outerjoin(Sponsor)
+                 .filter(Espys.date.between(start, end))
+                 .filter(Espys.team_id == team.id)
+                 .group_by(Sponsor.name)).all()
         for espy in espys:
             point = {'name': 'Awarded ESPYS'}
             if espy[1] is not None:
@@ -417,32 +447,34 @@ def get_espys_breakdown(year):
 #                FUNCTIONS TO HELP with ROUTES
 # -----------------------------------------------------------------------------
 '''
+
+
 @cache.memoize(timeout=600)
-def get_sponsor(id):
-    s = Sponsor.query.get(id)
+def get_sponsor(sponsor_id):
+    s = Sponsor.query.get(sponsor_id)
     expect = None
     if s is not None:
         expect = {"name": s.name,
                   "id": s.id}
     return expect
 
+
 @cache.memoize(timeout=600)
 def get_espy(year):
     espy = []
     espys = func.sum(Espys.points).label("espys")
     teams = (DB.session.query(Team,
-                              espys
-                               )
-                               .join(Team.espys)
-                               .filter(Team.year==year)
-                               .group_by(Team.id)
-                               .order_by(espys.desc()).all()
-                               )
+                              espys)
+             .join(Team.espys)
+             .filter(Team.year == year)
+             .group_by(Team.id)
+             .order_by(espys.desc()).all())
     for team in teams:
         espy.append({
                      'espys': team[1],
                      'name': str(team[0])})
     return espy
+
 
 @cache.memoize(timeout=600)
 def get_team(year, tid):
@@ -461,22 +493,22 @@ def get_team(year, tid):
         for name in p_:
             sp = (
                     (
-                      p_[name]["s"]
-                      + p_[name]["ss"]
-                      + p_[name]["d"] * 2
-                      + p_[name]["hr"] * 4
+                      p_[name]["s"] +
+                      p_[name]["ss"] +
+                      p_[name]["d"] * 2 +
+                      p_[name]["hr"] * 4
                       ) / p_[name]['bats']
                   )
             stats.append({
-                'id':p_[name]['id'],
-                'name': name,
-                'ss': p_[name]['ss'],
-                's': p_[name]['s'],
-                'd': p_[name]['d'],
-                'hr': p_[name]['hr'],
-                'bats': p_[name]['bats'],
-                'ba': "{0:.3f}".format(p_[name]['avg']),
-                'sp': "{0:.3f}".format(sp)})
+                          'id': p_[name]['id'],
+                          'name': name,
+                          'ss': p_[name]['ss'],
+                          's': p_[name]['s'],
+                          'd': p_[name]['d'],
+                          'hr': p_[name]['hr'],
+                          'bats': p_[name]['bats'],
+                          'ba': "{0:.3f}".format(p_[name]['avg']),
+                          'sp': "{0:.3f}".format(sp)})
 #            players.append(name)
         record = single_team(tid)
         team = {'name': str(result),
@@ -490,17 +522,19 @@ def get_team(year, tid):
                 'stats': stats}
     return team
 
+
 @cache.memoize(timeout=600)
 def get_teams(year):
     result = (DB.session.query(Team.id, Team.color, Sponsor.nickname)
               .join(Sponsor)
-              .filter(Team.year==year)
+              .filter(Team.year == year)
               .order_by(Sponsor.nickname).all())
     teams = []
     for team in result:
         teams.append({'id': team[0],
                      'name': team[2] + " " + team[1]})
     return teams
+
 
 @cache.memoize(timeout=600)
 def get_games(year=None, summary=False):
@@ -520,23 +554,26 @@ def get_games(year=None, summary=False):
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
     for league in leagues:
-        g = Game.query.filter(and_(Game.league_id==league.id,Game.date.between(start, end) )).order_by("date").all()
+        g = (Game.query.filter(and_(Game.league_id == league.id,
+                                    Game.date.between(start, end)))
+             ).order_by("date").all()
         games[league.id] = {'league_name': league.name, 'games': []}
         for game in g:
             result = game.json()
             if game.date < datetime.today():
                 scores = game.summary()
-                result['score'] = ( str(scores['home_score']) + '-'
-                                   +  str(scores['away_score']))
+                result['score'] = (str(scores['home_score']) + '-' +
+                                   str(scores['away_score']))
             games[league.id]['games'].append(result)
     return games
+
 
 @cache.memoize(timeout=600)
 def get_leagues(year):
     result = League.query.all()
     leagues = {}
     for league in result:
-        leagues[league.id] = {'name':league.name, 'teams':[]}
+        leagues[league.id] = {'name': league.name, 'teams': []}
         teams = team_stats(year, league.id)
         for team in teams:
             valid_form = {'name': teams[team]['name'],
@@ -548,23 +585,26 @@ def get_leagues(year):
                           'ties': teams[team]['ties'],
                           'runs_for': teams[team]['runs_for'],
                           'runs_against': teams[team]['runs_against'],
-                          'plus_minus': teams[team]['runs_for'] - teams[team]['runs_against']
-                   }
+                          'plus_minus': (teams[team]['runs_for'] -
+                                         teams[team]['runs_against'])}
             leagues[league.id]['teams'].append(valid_form)
     return leagues
 
+
 def get_sponsors():
     info = (DB.session.query(Sponsor)
-                .filter(Sponsor.active==True)
-                .order_by(Sponsor.name)).all()
+            .filter(Sponsor.active == True)
+            .order_by(Sponsor.name)).all()
     sponsors = []
     for i in range(0, len(info)):
         sponsors.append(info[i].json())
     return sponsors
 
+
 from api.advanced.game_stats import post as game_summary
 def get_upcoming_games(year):
     return game_summary(year=year, today=True, increment=1)
+
 
 @cache.memoize(timeout=600)
 def base_data(year):
@@ -579,6 +619,7 @@ def base_data(year):
     base['fun'] = fun_count
     return base
 
+
 def get_all_descriptions(year):
     dire = os.path.join(POSTS, str(year))
     result = []
@@ -589,8 +630,9 @@ def get_all_descriptions(year):
             post_date = fname.split("_")[0]
             description = "_".join(fname.split("_")[1:])
             result.append({"date": post_date,
-                           "description":description})
+                           "description": description})
     return result
+
 
 def get_summaries(year):
     dire = os.path.join(POSTS, str(year))
@@ -599,6 +641,7 @@ def get_summaries(year):
         if i.endswith(".html"):
             result.append(rip_summary(i, year))
     return result
+
 
 def rip_summary(f, year):
     post_date = f.split("_")[0]
@@ -609,10 +652,11 @@ def rip_summary(f, year):
               "name": description,
               "date": post_date}
     f = os.path.join(POSTS, str(year), f)
-    with open (f) as f:
+    with open(f) as f:
         # read the header in
         line = f.readline().strip()
-        while not f.readline().strip().startswith("{% block content %}") and len(line) > 0:
+        while (not f.readline().strip().startswith("{% block content %}") and
+               len(line) > 0):
             line = f.readline().strip()
         line = f.readline().strip()
         while not line.startswith("{% endblock %}") and len(line) > 0:
@@ -625,7 +669,6 @@ def rip_summary(f, year):
                 image = line.split('filename="')[1]
                 image = image.split('"')[0]
                 image = image.split("/")[-1]
-
                 if result['image'] is None:
                     result['image'] = image
             elif "<p" in line:
@@ -645,6 +688,7 @@ def rip_summary(f, year):
         else:
             result['summary'] = "No summary"
     return result
+
 
 def post_json(f, year):
     result = []
@@ -666,6 +710,7 @@ def post_json(f, year):
                 result.append(lines)
             lines = fn.readline().strip()
     return result
+
 
 def post_raw_html(f, year):
     f = os.path.join(POSTS, str(year), f)
