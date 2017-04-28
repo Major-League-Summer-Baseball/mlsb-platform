@@ -43,6 +43,10 @@ class Fun(DB.Model):
         self.year = year
         self.count = count
 
+    def update(self, count=None):
+        if count is not None:
+            self.count = count
+
     def increment(self, change):
         '''
         increasement the fun count

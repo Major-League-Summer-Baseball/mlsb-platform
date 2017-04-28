@@ -82,8 +82,15 @@ from api.basic.team import TeamAPI, TeamListAPI
 from api.basic.game import GameAPI, GameListAPI
 from api.basic.bat import BatAPI, BatListAPI
 from api.basic.epsys import EspyAPI, EspyListAPI
+from api.basic.fun import FunAPI, FunListAPI
 from api.advanced.team_roster import TeamRosterAPI
 from api.routes import Routes
+api.add_resource(FunListAPI,
+                 Routes['fun'],
+                 endpoint="funs")
+api.add_resource(FunAPI,
+                 Routes['fun'] + "/<int:year>",
+                 endpoint="fun")
 api.add_resource(PlayerListAPI,
                  Routes['player'],
                  endpoint="players")
