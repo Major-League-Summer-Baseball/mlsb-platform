@@ -19,6 +19,7 @@ EMAIL_NAME = "Player {} email was found but had different name"
 INVALID_FIELD = "{} had an invalid field"
 INVALID_TEAM = "{} is not a team in the league"
 
+
 class LeagueList():
     def __init__(self, lines, logger=None):
         self.success = False
@@ -27,7 +28,7 @@ class LeagueList():
         self.lines = lines
         if logger is None:
             logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
+                                format='%(asctime)s %(message)s')
             logger = logging.getLogger(__name__)
         self.logger = logger
 
@@ -36,7 +37,7 @@ class LeagueList():
         a method that imports a bunch of games for a league
         based on a csv template
         Parameters:
-            
+
         Updates:
             success: a boolean if the import was successful (boolean)
             errors: a list of possible error (list)
@@ -74,14 +75,15 @@ class LeagueList():
         Returns:
             id: the id of the team (int) None if no league is found
         '''
-        id = None
-        league= League.query.filter_by(name=league).first()
+        identification = None
+        league = League.query.filter_by(name=league).first()
         if league is not None:
-            id = league.id
+            identification = league.id
         else:
             # cant assume some league so return None
-            raise LeagueDoesNotExist(payload={"details": "League does not exist: {}".format(league)})
-        return id
+            s = "League does not exist: {}".format(league)
+            raise LeagueDoesNotExist(payload={"details": s})
+        return identification
 
     def set_teams(self):
         '''
@@ -128,13 +130,14 @@ class LeagueList():
         Returns:
         '''
         info = info.split(",")
-        if (len(info) < self.away_index or 
+        if (len(info) < self.away_index or
             len(info) < self.home_index or
             len(info) < self.time_index or
             len(info) < self.field_index or
             len(info) < self.date_index):
-            self.logger.debug("Game did not have the right number of fields")
-            return # probably just an empty line
+            s = "Game did not have the right number of fields"
+            self.logger.debug(s)
+            return  # probably just an empty line
         away = info[self.away_index].strip()
         home = info[self.home_index].strip()
         time = info[self.time_index].strip()
@@ -160,7 +163,7 @@ class LeagueList():
             DB.session.add(game)
         return
 
-    def check_header(self,header):
+    def check_header(self, header):
         '''
         a method that checks if the header is valid
         Parameters:
@@ -179,7 +182,7 @@ class LeagueList():
                 valid = False
             elif "away team" not in columns:
                 valid = False
-            elif "date" not in columns:  
+            elif "date" not in columns:
                 valid = False
             elif "time" not in columns:
                 valid = False

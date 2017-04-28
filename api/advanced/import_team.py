@@ -13,11 +13,12 @@ import logging
 
 # constants
 CREATED = "Created Team (no league was specified)"
-NO_SPONSOR = "Cannot find sponsor, please ensure spelt correctly or create sponsor"
+NO_SPONSOR = "No sponsor, please ensure spelt correctly or create sponsor"
 INVALID_FILE = "File was not given in right format (use template)"
 EXAMPLE_FOUND = "First entry contain the templates example, just skipped it"
 EMAIL_NAME = "Player {} email was found but had different name"
 INVALID_FIELD = "{} had an invalid field"
+
 
 class TeamList():
     def __init__(self, lines, logger=None):
@@ -27,7 +28,7 @@ class TeamList():
         self.lines = lines
         if logger is None:
             logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
+                                format='%(asctime)s %(message)s')
             logger = logging.getLogger(__name__)
         self.logger = logger
         self.team = None
@@ -71,7 +72,7 @@ class TeamList():
             elif self.clean_cell(columns[0]) == "color":
                 color = columns[1].strip()
             elif self.clean_cell(columns[0]) == "captain":
-                captain =  columns[1].strip()
+                captain = columns[1].strip()
             elif self.clean_cell(columns[0]) == "league":
                 league = columns[1].strip()
             else:
@@ -88,29 +89,34 @@ class TeamList():
         if league is None:
             raise InvalidField(payload={"details": "No league was given"})
         # check no examples were left and actually real info
-        if (league.lower().startswith("ex.")
-            or sponsor.lower().startswith("ex.")
-            or color.lower().startswith("ex.")
-            or captain.lower().startswith("ex.")):
-            raise InvalidField(payload={"details": "The header's still had an example"})
-        sponsor_id = (DB.session.query(Sponsor).filter(Sponsor.name==sponsor)
-                      .first())
-        if sponsor_id  is None:
-            sponsor_id = (DB.session.query(Sponsor).filter(Sponsor.nickname==sponsor)
+        if (league.lower().startswith("ex.")or
+            sponsor.lower().startswith("ex.") or
+            color.lower().startswith("ex.") or
+            captain.lower().startswith("ex.")):
+            t = "The header's still had an example"
+            raise InvalidField(payload={"details": t})
+        sponsor_id = (DB.session.query(Sponsor).filter(Sponsor.name == sponsor)
                       .first())
         if sponsor_id is None:
+            sponsor_id = (DB.session.query(Sponsor)
+                          .filter(Sponsor.nickname == sponsor)
+                          .first())
+        if sponsor_id is None:
             # what kind of sponsor are you giving
-            raise SponsorDoesNotExist(payload={'details': "The sponsor does not exist (check case)"})
+            t = "The sponsor does not exist (check case)"
+            raise SponsorDoesNotExist(payload={'details': t})
         sponsor_id = sponsor_id.id
-        league_id = (DB.session.query(League).filter(League.name==league)).first()
+        league_id = (DB.session.query(League)
+                     .filter(League.name == league)).first()
         if league_id is None:
-            raise LeagueDoesNotExist(payload={"details": "The league does not exist (check case)"})
+            t = "The league does not exist (check case)"
+            raise LeagueDoesNotExist(payload={"details": t})
         league_id = league_id.id
         # check to see if team was already created
         teams = (DB.session.query(Team)
-                    .filter(Team.color==color)
-                    .filter(Team.sponsor_id==sponsor_id)
-                    .filter(Team.year==date.today().year).all())
+                 .filter(Team.color == color)
+                 .filter(Team.sponsor_id == sponsor_id)
+                 .filter(Team.year == date.today().year).all())
         team_found = None
         if len(teams) > 0:
             team_found = teams[0]
@@ -121,14 +127,14 @@ class TeamList():
                               sponsor_id=sponsor_id,
                               league_id=league_id)
         else:
-            team_found.players = [] # remove all the players before
-        self.team = team_found # set the team
-        self.captain_name = captain # remember captains name
+            team_found.players = []  # remove all the players before
+        self.team = team_found  # set the team
+        self.captain_name = captain  # remember captains name
         return player_index
 
     def import_players(self, player_index):
-        while (player_index < len(self.lines)
-               and len(self.lines[player_index].split(",")) > 1):
+        while (player_index < len(self.lines) and
+               len(self.lines[player_index].split(",")) > 1):
             info = self.lines[player_index].split(",")
             self.logger.debug(info, len(info))
             if len(info) < 3:
@@ -136,12 +142,12 @@ class TeamList():
             name = info[self.name_index].strip()
             email = info[self.email_index].strip()
             gender = info[self.gender_index].strip()
-            if not name.lower().startswith("ex."): 
+            if not name.lower().startswith("ex."):
                 player = (DB.session.query(Player)
-                            .filter(Player.email==email)).first()
+                            .filter(Player.email == email)).first()
                 if player is None:
                     self.logger.debug(name + " " + email + " " + gender)
-                    player = Player(name, email,gender=gender)
+                    player = Player(name, email, gender=gender)
                     DB.session.add(player)
                     self.logger.debug("Player was created")
                 else:

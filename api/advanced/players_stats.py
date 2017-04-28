@@ -11,12 +11,13 @@ from api import DB
 from api.model import Player, Bat, Game
 from datetime import datetime, date, time
 from sqlalchemy.sql import func
-from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
+from api.variables import UNASSIGNED_EMAIL
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('player_id', type=int)
 parser.add_argument('team_id', type=int)
+
 
 def post(year=None, team_id=None, league_id=None, player_id=None):
     bats = func.count(Bat.classification).label('bats')
@@ -35,13 +36,11 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                                 Bat.classification,
                                 bats,
                                 Player.id,
-                                rbi
-                                   )
-                                   .join(Player.bats)
-                                   .join(Game)
-                                   .filter(Game.date.between(start, end))
-                                   .filter(Player.email != UNASSIGNED_EMAIL)
-                                   )
+                                rbi)
+               .join(Player.bats)
+               .join(Game)
+               .filter(Game.date.between(start, end))
+               .filter(Player.email != UNASSIGNED_EMAIL))
     if team_id is not None:
         players = players.filter(Bat.team_id == team_id)
     if league_id is not None:
@@ -70,21 +69,23 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
         result[player[0]]['rbi'] += player[4]
     for player in result:
         # calculate the bats and average
-        result[player]['bats'] =  (result[player]['s'] +
-                                   result[player]['ss'] +
-                                   result[player]['d'] +
-                                   result[player]['hr'] +
-                                   result[player]['k'] +
-                                   result[player]['fo'] +
-                                   result[player]['fc'] +
-                                   result[player]['e'] +
-                                   result[player]['go']
-                                   )
+        result[player]['bats'] = (result[player]['s'] +
+                                  result[player]['ss'] +
+                                  result[player]['d'] +
+                                  result[player]['hr'] +
+                                  result[player]['k'] +
+                                  result[player]['fo'] +
+                                  result[player]['fc'] +
+                                  result[player]['e'] +
+                                  result[player]['go']
+                                  )
         result[player]['avg'] = ((result[player]['s'] +
-                                   result[player]['ss'] +
-                                   result[player]['d'] +
-                                   result[player]['hr']) / result[player]['bats'])
+                                  result[player]['ss'] +
+                                  result[player]['d'] +
+                                  result[player]['hr']) /
+                                 result[player]['bats'])
     return result
+
 
 class PlayerStatsAPI(Resource):
     def post(self):
@@ -97,7 +98,7 @@ class PlayerStatsAPI(Resource):
                 league_id: the league id (int)
                 player_id: the player id (int)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: list of Players
         """
@@ -115,7 +116,9 @@ class PlayerStatsAPI(Resource):
         if args['team_id']:
             team_id = args['team_id']
         players = post(year=year,
-                      team_id=team_id,
-                      league_id=league_id,
-                      player_id=player_id)
-        return Response(dumps(players), status=200, mimetype="application/json")
+                       team_id=team_id,
+                       league_id=league_id,
+                       player_id=player_id)
+        return Response(dumps(players),
+                        status=200,
+                        mimetype="application/json")

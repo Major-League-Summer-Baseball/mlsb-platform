@@ -28,6 +28,7 @@ post_parser.add_argument('league_id', type=int, required=True)
 post_parser.add_argument('status', type=str)
 post_parser.add_argument('field', type=str)
 
+
 class GameAPI(Resource):
     def get(self, game_id):
         """
@@ -35,7 +36,7 @@ class GameAPI(Resource):
             Route: Routes['game']/<game_id: int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data:   {
                             home_team: string
@@ -44,7 +45,7 @@ class GameAPI(Resource):
                             away_team_id: int,
                             date: string,
                             time: string,
-                            league_id: int, 
+                            league_id: int,
                             game_id: int,
                             status: string,
                             field: string
@@ -57,9 +58,9 @@ class GameAPI(Resource):
         # expose a single game
         entry = Game.query.get(game_id)
         if entry is None:
-            raise GameDoesNotExist(payload={'details':game_id})
+            raise GameDoesNotExist(payload={'details': game_id})
         response = Response(dumps(entry.json()), status=200,
-                    mimetype="application/json")
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -69,7 +70,7 @@ class GameAPI(Resource):
             Route: Routes['game']/<game_id: int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise
@@ -79,7 +80,7 @@ class GameAPI(Resource):
         """
         game = Game.query.get(game_id)
         if game is None:
-            raise GameDoesNotExist(payload={'details':game_id})
+            raise GameDoesNotExist(payload={'details': game_id})
         DB.session.delete(game)
         DB.session.commit()
         response = Response(dumps(None), status=200,
@@ -101,11 +102,11 @@ class GameAPI(Resource):
                 field: the game's field (string)
             Returns:
                 if found and successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise possible errors
-                    status: 404, IFSC, TDNESC, LDNESC 
+                    status: 404, IFSC, TDNESC, LDNESC
                     mimetype: application/json
                     data: None
         """
@@ -119,7 +120,7 @@ class GameAPI(Resource):
         field = None
         status = None
         if game is None:
-            raise GameDoesNotExist(payload={'details':game_id})
+            raise GameDoesNotExist(payload={'details': game_id})
         if args['home_team_id']:
             home_team_id = args['home_team_id']
         if args['away_team_id']:
@@ -147,9 +148,10 @@ class GameAPI(Resource):
         return response
 
     def option(self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class GameListAPI(Resource):
     def get(self):
@@ -158,9 +160,9 @@ class GameListAPI(Resource):
             Route: Routes['game']
             Parameters :
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     games: [  {
                                 home_team: string
                                 home_team_id: int,
@@ -168,7 +170,7 @@ class GameListAPI(Resource):
                                 away_team_id: int,
                                 date: string,
                                 time: string,
-                                league_id: int, 
+                                league_id: int,
                                 game_id: int,
                                 status: string,
                                 field: string
@@ -199,7 +201,7 @@ class GameListAPI(Resource):
                 field: the field the game is being played on (string)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: the created game id (int)
         """
@@ -238,6 +240,6 @@ class GameListAPI(Resource):
         return Response(dumps(result), status=201, mimetype="application/json")
 
     def option(self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

@@ -16,6 +16,7 @@ parser.add_argument('league_name', type=str)
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('league_name', type=str, required=True)
 
+
 class LeagueAPI(Resource):
     def get(self, league_id):
         """
@@ -23,21 +24,20 @@ class LeagueAPI(Resource):
             Route: Route['league']/<league_id: int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: {league_id:int, league_name:string}
                 otherwise
                     status: 404
                     mimetype: application/json
                     data: None
-                
         """
         # expose a single League
-        entry  = League.query.get(league_id)
+        entry = League.query.get(league_id)
         if entry is None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
+            raise LeagueDoesNotExist(payload={'details': league_id})
         response = Response(dumps(entry.json()), status=200,
-                         mimetype="application/json")
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -47,7 +47,7 @@ class LeagueAPI(Resource):
             Route: Route['league']/<league_id: int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise
@@ -58,12 +58,12 @@ class LeagueAPI(Resource):
         # delete a single user
         league = League.query.get(league_id)
         if league is None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
+            raise LeagueDoesNotExist(payload={'details': league_id})
         DB.session.delete(league)
         DB.session.commit()
         response = Response(dumps(None), status=200,
-                        mimetype="application/json")
-        return response 
+                            mimetype="application/json")
+        return response
 
     @requires_admin
     def put(self, league_id):
@@ -74,7 +74,7 @@ class LeagueAPI(Resource):
                 league_name: The league's name (string)
             Returns:
                 if found and successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 if found but not successful
@@ -85,26 +85,26 @@ class LeagueAPI(Resource):
                     status: 404
                     mimetype: application/json
                     data: None
-                
         """
         # update a single user
         args = parser.parse_args()
         league = League.query.get(league_id)
         league_name = None
         if league is None:
-            raise LeagueDoesNotExist(payload={'details':league_id})
+            raise LeagueDoesNotExist(payload={'details': league_id})
         if args['league_name']:
             league_name = args['league_name']
         league.update(league_name)
         DB.session.commit()
         response = Response(dumps(None), status=200,
-                        mimetype="application/json")
+                            mimetype="application/json")
         return response
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class LeagueListAPI(Resource):
     def get(self):
@@ -114,9 +114,9 @@ class LeagueListAPI(Resource):
             Parameters :
                 league_name: The league's name (string)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     tournaments: [{league_id:int,
                                    league_name:string,
                                   },{...}
@@ -139,7 +139,7 @@ class LeagueListAPI(Resource):
                 tournament_name: The league's name (string)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: the created user league id (int)
                 if missing required parameter
@@ -147,7 +147,7 @@ class LeagueListAPI(Resource):
                     mimetype: application/json
                     data: the created user league id (int)
                 if invalid parameter
-                    status: IFSC 
+                    status: IFSC
                     mimetype: application/json
                     data: the created user league id (int)
         """
@@ -156,14 +156,14 @@ class LeagueListAPI(Resource):
         league_name = None
         if args['league_name']:
             league_name = args['league_name']
-        league= League(league_name)
+        league = League(league_name)
         DB.session.add(league)
         DB.session.commit()
         result = league.id
         return Response(dumps(result), status=201,
                         mimetype="application/json")
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

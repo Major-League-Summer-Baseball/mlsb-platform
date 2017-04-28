@@ -64,7 +64,7 @@ Routes['dvteam'] = "/documentation/views/team"
 Routes['dvfun'] = "/documentation/views/fun"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
-# kik documentation 
+# kik documentation
 Routes['dkiksubscribe'] = "/documentation/kik/subscribe"
 Routes['dkiksubmitscore'] = "/documentation/kik/submit_score"
 Routes['dkikcaptain'] = "/documentation/kik/captain"

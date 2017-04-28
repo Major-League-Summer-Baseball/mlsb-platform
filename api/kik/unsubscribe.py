@@ -13,6 +13,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('team', type=int, required=True)
 parser.add_argument('kik', type=str, required=True)
 
+
 class UnSubscribeToTeamAPI(Resource):
     @requires_kik
     def post(self):
@@ -23,7 +24,7 @@ class UnSubscribeToTeamAPI(Resource):
                 kik: the kik user name(str)
                 team: the id of the team the player is subscribing to (int)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: True
         """

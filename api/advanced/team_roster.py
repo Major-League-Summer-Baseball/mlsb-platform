@@ -21,7 +21,7 @@ class TeamRosterAPI(Resource):
             GET request for Team Roster List
             Route: Routes['team_roster']/<int:team_id>
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: [
                     'team_id': { 'color': '',
@@ -42,7 +42,6 @@ class TeamRosterAPI(Resource):
                 ]
         """
         team = Team.query.get(team_id)
-        
         if team is None:
             raise TeamDoesNotExist(payload={'details': team_id})
         result = team.json()
@@ -50,7 +49,7 @@ class TeamRosterAPI(Resource):
         for player in team.players:
             result['players'].append(player.json())
         response = Response(dumps(result),
-                        status=200, mimetype="application/json")
+                            status=200, mimetype="application/json")
         return response
 
     def delete(self, team_id):
@@ -88,9 +87,9 @@ class TeamRosterAPI(Resource):
                 player_id: a player's identifier (int)
                 captain: a 1 if a captain (int)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     success: tells if request was successful (boolean)
                     message: the status message (string)
                     failures: a list of parameters that failed (list of string)
@@ -110,6 +109,5 @@ class TeamRosterAPI(Resource):
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \
-            { 'Access-Control-Allow-Origin': '*', \
-            'Access-Control-Allow-Methods': 'PUT,GET'}
-
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

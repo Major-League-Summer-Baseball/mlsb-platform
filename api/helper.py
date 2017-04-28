@@ -6,12 +6,15 @@ Purpose: Some random helper functions
 '''
 import unittest
 from json import loads as loader
+
+
 def loads(data):
     try:
         data = loader(data)
     except:
         data = loader(data.decode('utf-8'))
     return data
+
 
 class Test(unittest.TestCase):
 
@@ -25,5 +28,5 @@ class Test(unittest.TestCase):
         pass
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testLoads']
+    # import sys;sys.argv = ['', 'Test.testLoads']
     unittest.main()

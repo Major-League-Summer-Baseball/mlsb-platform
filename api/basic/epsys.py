@@ -28,6 +28,8 @@ post_parser.add_argument('points', type=str, required=True)
 post_parser.add_argument('receipt', type=str)
 post_parser.add_argument('date', type=str)
 post_parser.add_argument('time', type=str)
+
+
 class EspyAPI(Resource):
     def get(self, espy_id):
         """
@@ -35,9 +37,9 @@ class EspyAPI(Resource):
             Route: Routes['team']/<espy_id:int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
-                    data:  
+                    data:
                         {
                            'date':  date,
                            'team': string,
@@ -47,17 +49,17 @@ class EspyAPI(Resource):
                            'receipt': string
                         }
                 otherwise
-                    status: 404 
+                    status: 404
                     mimetype: application/json
-                    data:  
+                    data:
                         None
         """
         # expose a single team
-        entry  = Espys.query.get(espy_id)
+        entry = Espys.query.get(espy_id)
         if entry is None:
-            raise EspysDoesNotExist(payload={'details':espy_id})
+            raise EspysDoesNotExist(payload={'details': espy_id})
         response = Response(dumps(entry.json()), status=200,
-                                mimetype="application/json")
+                            mimetype="application/json")
         return response
 
     @requires_admin
@@ -67,17 +69,17 @@ class EspyAPI(Resource):
             Route: Routes['espy']/<espy_id:int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise
-                    status: 404 
+                    status: 404
                     mimetype: application/json
                     data: None
         """
         espy = Espys.query.get(espy_id)
         if espy is None:
-            raise EspysDoesNotExist(payload={'details':espy_id})
+            raise EspysDoesNotExist(payload={'details': espy_id})
         # delete a single espy
         DB.session.delete(espy)
         DB.session.commit()
@@ -99,7 +101,7 @@ class EspyAPI(Resource):
                 receipt: the receipt number (string)
             Returns:
                 if found and updated successfully
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise possible errors are
@@ -118,7 +120,7 @@ class EspyAPI(Resource):
         date = None
         time = None
         if espy is None:
-            raise EspysDoesNotExist(payload={'details':espy_id})
+            raise EspysDoesNotExist(payload={'details': espy_id})
         if args['description']:
             description = args['description']
         if args['sponsor_id']:
@@ -146,9 +148,10 @@ class EspyAPI(Resource):
         return response
 
     def option(self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class EspyListAPI(Resource):
     def get(self):
@@ -157,9 +160,9 @@ class EspyListAPI(Resource):
             Route: Routes['espy']
             Parameters :
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     teams: {
                             {
                                'date':  date,
@@ -193,7 +196,7 @@ class EspyListAPI(Resource):
                 espys: the team espys points (int)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: the create team id (int)
                 possible errors
@@ -224,19 +227,18 @@ class EspyListAPI(Resource):
             date = args['date']
             time = args['time']
         espy = Espys(sponsor_id=sponsor_id,
-                    team_id=team_id,
-                    description=description,
-                    points=points,
-                    receipt=receipt,
-                    date=date,
-                    time=time
-                    )
+                     team_id=team_id,
+                     description=description,
+                     points=points,
+                     receipt=receipt,
+                     date=date,
+                     time=time)
         DB.session.add(espy)
         DB.session.commit()
         result = espy.id
         return Response(dumps(result), status=201, mimetype="application/json")
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}

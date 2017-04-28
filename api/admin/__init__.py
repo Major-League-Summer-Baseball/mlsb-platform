@@ -35,9 +35,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+
 @app.route(Routes['import_team_list'], methods=["POST"])
 def admin_import_team_list():
-    results = {'errors': [], 'success':False, 'warnings': []}
+    results = {'errors': [], 'success': False, 'warnings': []}
     if not logged_in():
         results['errors'].append("Permission denied")
         return dumps(results)
@@ -51,12 +52,14 @@ def admin_import_team_list():
         team.add_team()
         result = team.warnings
     else:
-        raise InvalidField(payload={'detail': "File format not accepted (csv)"})
+        s = "File format not accepted (csv)"
+        raise InvalidField(payload={'detail': s})
     return dumps(result)
+
 
 @app.route(Routes['import_game_list'], methods=["POST"])
 def admin_import_game_list():
-    results = {'errors': [], 'success':False, 'warnings': []}
+    results = {'errors': [], 'success': False, 'warnings': []}
     if not logged_in():
         results['errors'].append("Permission denied")
         return dumps(results)
@@ -78,6 +81,7 @@ def admin_import_game_list():
         results['success'] = False
     return dumps(results)
 
+
 @app.route(Routes['importteam'])
 def admin_import_team():
     if not logged_in():
@@ -89,6 +93,7 @@ def admin_import_team():
                            template=Routes['team_template'],
                            import_route=Routes['import_team_list'],
                            type="Team")
+
 
 @app.route(Routes['importgame'])
 def admin_import_game():
@@ -104,42 +109,47 @@ def admin_import_game():
                            import_route=Routes['import_game_list'],
                            type="Games")
 
+
 @app.route(Routes['team_template'])
 def admin_team_template():
     print(app.root_path)
     uploads = join(app.root_path, "static", "files", "team_template.csv")
     result = ""
-    with open (uploads, "r") as f:
+    with open(uploads, "r") as f:
         for line in f:
             result += line
     print(result)
     response = make_response(result)
-    response.headers["Content-Disposition"] = "attachment; filename=team_template.csv"
+    s = "attachment; filename=team_template.csv"
+    response.headers["Content-Disposition"] = s
     return response
+
 
 @app.route(Routes['game_template'])
 def admin_game_template():
     print(app.root_path)
     uploads = join(app.root_path, "static", "files", "game_template.csv")
     result = ""
-    with open (uploads, "r") as f:
+    with open(uploads, "r") as f:
         for line in f:
             result += line
     print(result)
     response = make_response(result)
-    response.headers["Content-Disposition"] = "attachment; filename=game_template.csv"
+    s = "attachment; filename=game_template.csv"
+    response.headers["Content-Disposition"] = s
     return response
 
 
 @app.route(Routes['panel_captain_to_submit'] + "/<int:year>")
 def get_captains_games_not_submitted(year):
     t1 = time(0, 0)
-    t2 = time(23 ,59)
+    t2 = time(23, 59)
     d1 = date(year, 1, 1)
     d2 = date.today()
     start = datetime.combine(d1, t1)
     end = datetime.combine(d2, t2)
-    games = DB.session.query(Game).filter(Game.date.between(start, end)).order_by(Game.date)
+    games = (DB.session.query(Game).filter(Game.date.between(start, end))
+             ).order_by(Game.date)
     captains = []
     for game in games:
         away_bats = []
@@ -149,22 +159,23 @@ def get_captains_games_not_submitted(year):
                 away_bats.append(bat)
             elif bat.team_id == game.home_team_id:
                 home_bats.append(bat)
-            
         if len(away_bats) == 0:
             team = Team.query.get(game.away_team_id)
             player = (Player.query.get(team.player_id))
-            captains.append(player.name + "-" + player.email + " on " + str(game.date))
+            captains.append(player.name + "-" + player.email +
+                            " on " + str(game.date))
         if len(home_bats) == 0:
             team = Team.query.get(game.home_team_id)
             player = (Player.query.get(team.player_id))
-            captains.append(player.name + "-" + player.email + " on " + str(game.date))
-    print(captains  )
+            captains.append(player.name + "-" + player.email +
+                            " on " + str(game.date))
+    print(captains)
     return render_template("admin/viewGamesNotSubmitted.html",
                            route=Routes,
                            title="Captains with games to submit",
                            captains=captains,
                            year=year)
-            
+
 
 @app.route(Routes['editroster'] + "/<int:year>" + "/<int:team_id>")
 def admin_edit_roster(year, team_id):
@@ -193,11 +204,11 @@ def admin_edit_roster(year, team_id):
                                non_roster=non_roster,
                                year=year)
 
+
 def quick_sort(array):
     less = []
     equal = []
     greater = []
-
     if len(array) > 1:
         pivot = array[0]
         for x in array:
@@ -208,10 +219,14 @@ def quick_sort(array):
             if x['player_name'] > pivot['player_name']:
                 greater.append(x)
         # Don't forget to return something!
-        return quick_sort(less)+equal+quick_sort(greater)  # Just use the + operator to join lists
+        # Just use the + operator to join lists
+        return quick_sort(less) + equal+quick_sort(greater)
     # Note that you want equal ^^^^^ not pivot
-    else:  # You need to hande the part at the end of the recursion - when you only have one element in your array, just return the array.
+    else:
+        # You need to hande the part at the end of the recursion
+        # when you only have one element in your array, just return the array.
         return array
+
 
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):
@@ -223,7 +238,8 @@ def admin_edit_league(year):
                            leagues=get_leagues(),
                            title="Edit Leagues")
 
-@app.route(Routes['editsponsor']+ "/<int:year>")
+
+@app.route(Routes['editsponsor'] + "/<int:year>")
 def admin_edit_sponsor(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -234,6 +250,7 @@ def admin_edit_sponsor(year):
                            not_active=get_sponsors(active=False),
                            title="Edit Leagues")
 
+
 @app.route(Routes['aindex'] + "/<int:year>")
 def admin_home(year):
     if not logged_in():
@@ -242,6 +259,7 @@ def admin_home(year):
                            year=year,
                            route=Routes,
                            title="Admin")
+
 
 @app.route(Routes['editplayer'] + "/<int:year>")
 def admin_edit_player(year):
@@ -254,6 +272,7 @@ def admin_edit_player(year):
                            players=players,
                            title="Edit Players")
 
+
 @app.route(Routes['nonactiveplayers'] + "/<int:year>")
 def admin_non_active_players(year):
     if not logged_in():
@@ -265,12 +284,13 @@ def admin_non_active_players(year):
                            players=players,
                            title="Activate Old Players")
 
+
 @app.route(Routes['editteam'] + "/<int:year>")
 def admin_edit_team(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    results = Team.query.filter(Team.year==year).all()
-    #results = Team.query.all()
+    results = Team.query.filter(Team.year == year).all()
+    # results = Team.query.all()
     teams = []
     for team in results:
         teams.append(team.json())
@@ -282,11 +302,12 @@ def admin_edit_team(year):
                            sponsors=get_sponsors(),
                            leagues=get_leagues())
 
+
 @app.route(Routes['editgame'] + "/<int:year>")
 def admin_edit_game(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    results = Team.query.filter(Team.year==year).all()
+    results = Team.query.filter(Team.year == year).all()
     leagues = get_leagues()
     teams = []
     for league in leagues:
@@ -311,6 +332,7 @@ def admin_edit_game(year):
                            leagues=get_leagues(),
                            games=games)
 
+
 @app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>")
 def admin_activate_player(year, player_id):
     if not logged_in():
@@ -328,7 +350,9 @@ def admin_activate_player(year, player_id):
                            route=Routes,
                            title="Activate/Deactivate Player")
 
-@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>", methods=["POST"])
+
+@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>",
+           methods=["POST"])
 def admin_activate_player_post(year, player_id):
     if not logged_in():
         return dumps(False)
@@ -342,6 +366,7 @@ def admin_activate_player_post(year, player_id):
         player.deactivate()
     DB.session.commit()
     return dumps(True)
+
 
 @app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>")
 def admin_activate_sponsor(year, sponsor_id):
@@ -360,7 +385,9 @@ def admin_activate_sponsor(year, sponsor_id):
                            route=Routes,
                            title="Activate/Deactivate Sponsor")
 
-@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>", methods=["POST"])
+
+@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>",
+           methods=["POST"])
 def admin_activate_sponsor_post(year, sponsor_id):
     if not logged_in():
         return dumps(False)
@@ -375,11 +402,12 @@ def admin_activate_sponsor_post(year, sponsor_id):
     DB.session.commit()
     return dumps(True)
 
+
 @app.route(Routes['editespys'] + "/<int:year>" + "/<int:team_id>")
 def admin_edit_espys(year, team_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    espys = Espys.query.filter(Espys.team_id==team_id).all()
+    espys = Espys.query.filter(Espys.team_id == team_id).all()
     result = []
     for espy in espys:
         result.append(espy.json())
@@ -390,6 +418,7 @@ def admin_edit_espys(year, team_id):
                            team_id=team_id,
                            title="Edit Espys",
                            sponsors=get_sponsors(True))
+
 
 @app.route(Routes['editbat'] + "/<int:year>" + "/<int:game_id>")
 def admin_edit_bat(year, game_id):
@@ -429,10 +458,12 @@ def admin_edit_bat(year, game_id):
                            players=get_players(),
                            BATS=BATS)
 
+
 @app.route(Routes['alogout'])
 def admin_logout():
     logout()
     return redirect(url_for('index'))
+
 
 @app.route(Routes['aportal'], methods=['POST'])
 def admin_portal():
@@ -450,6 +481,7 @@ def admin_portal():
         session['error'] = 'INVALID CREDENTIALS'
         return redirect(url_for('admin_login'))
 
+
 @app.route(Routes['alogin'])
 def admin_login():
     post_url = Routes['aportal']
@@ -463,23 +495,28 @@ def admin_login():
                            route=Routes,
                            post_url=post_url)
 
+
 def logged_in():
     logged = False
     if 'admin' in session and 'password' in session:
         logged = check_auth(session['admin'], session['password'])
     return logged
 
+
 def logout():
     session.pop('admin', None)
     session.pop('password', None)
     return
 
+
 def get_sponsors(active=True):
-    results = Sponsor.query.filter(Sponsor.active==active).order_by("name").all()
+    results = (Sponsor.query.filter(Sponsor.active == active).order_by("name")
+               ).all()
     sponsors = []
     for sponsor in results:
         sponsors.append(sponsor.json())
     return sponsors
+
 
 def get_leagues():
     results = League.query.all()
@@ -488,12 +525,15 @@ def get_leagues():
         leagues.append(league.json())
     return leagues
 
+
 def get_players(active=True):
-    results = Player.query.filter(Player.active==active).order_by("name").all()
+    results = (Player.query.filter(Player.active == active).order_by("name")
+               ).all()
     players = []
     for player in results:
         players.append(player.admin_json())
     return players
+
 
 def get_team_players(team_id):
     team = Team.query.get(team_id)

@@ -22,6 +22,7 @@ post_parser.add_argument('gender', type=str)
 post_parser.add_argument('email', type=str, required=True)
 post_parser.add_argument('password', type=str)
 
+
 class PlayerAPI(Resource):
     def get(self, player_id):
         """
@@ -29,18 +30,18 @@ class PlayerAPI(Resource):
             Route: Routes['player']/<player_id: int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: {player_id:int, player_name:string, gender: string}
                 otherwise
-                    status: 404 
+                    status: 404
                     mimetype: application/json
                     data: None
         """
         # expose a single user
-        entry  = Player.query.get(player_id)
+        entry = Player.query.get(player_id)
         if entry is None:
-            raise PlayerDoesNotExist(payload={'details':player_id})
+            raise PlayerDoesNotExist(payload={'details': player_id})
         response = Response(dumps(entry.json()),
                             status=200, mimetype="application/json")
         return response
@@ -52,17 +53,17 @@ class PlayerAPI(Resource):
             Route: Routes['player']/<player_id: int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 otherwise
-                    status: 404 
+                    status: 404
                     mimetype: application/json
                     data: None
         """
         player = Player.query.get(player_id)
         if player is None:
-            raise PlayerDoesNotExist(payload={'details':player_id})
+            raise PlayerDoesNotExist(payload={'details': player_id})
         # delete a single user
         DB.session.delete(player)
         DB.session.commit()
@@ -81,15 +82,15 @@ class PlayerAPI(Resource):
                 email: the players email (string)
             Returns:
                 if found and successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 if found but new email is duplicate
-                    status: NUESC 
+                    status: NUESC
                     mimetype: application/json
                     data: None
                 if found but invalid field
-                    status: IFSC 
+                    status: IFSC
                     mimetype: application/json
                     data: None
                 othwerwise
@@ -101,7 +102,7 @@ class PlayerAPI(Resource):
         player = DB.session.query(Player).get(player_id)
         args = parser.parse_args()
         if player is None:
-            raise PlayerDoesNotExist(payload={'details':player_id})
+            raise PlayerDoesNotExist(payload={'details': player_id})
         player_name = None
         gender = None
         email = None
@@ -119,10 +120,11 @@ class PlayerAPI(Resource):
                             mimetype="application/json")
         return response
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
 
 class PlayerListAPI(Resource):
     def get(self):
@@ -133,9 +135,9 @@ class PlayerListAPI(Resource):
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
-                data: 
+                data:
                     players: [{player_id:int,
                               player-name:string,
                               gender: string},{}
@@ -145,7 +147,9 @@ class PlayerListAPI(Resource):
         players = Player.query.all()
         for i in range(0, len(players)):
             players[i] = players[i].json()
-        resp = Response(dumps(players), status=200, mimetype="application/json")
+        resp = Response(dumps(players),
+                        status=200,
+                        mimetype="application/json")
         return resp
 
     @requires_admin
@@ -160,15 +164,15 @@ class PlayerListAPI(Resource):
                 password: the password of the player(string)
             Returns:
                 if successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: the created player id (int)
                 if email is duplicate
-                    status: NUESC 
+                    status: NUESC
                     mimetype: application/json
                     data: None
                 if invalid field
-                    status: IFSC 
+                    status: IFSC
                     mimetype: application/json
                     data: None
                 othwerwise
@@ -197,7 +201,7 @@ class PlayerListAPI(Resource):
         return Response(dumps(result), status=201,
                         mimetype="application/json")
 
-    def options (self):
-        return {'Allow' : 'PUT' }, 200, \
-                { 'Access-Control-Allow-Origin': '*', \
-                 'Access-Control-Allow-Methods' : 'PUT,GET' }
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
