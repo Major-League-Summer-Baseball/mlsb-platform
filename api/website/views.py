@@ -198,7 +198,7 @@ def sponsor_page(year, sponsor_id):
 
 
 @app.route(Routes["schedulepage"] + "/<int:year>")
-@cache.cached(timeout=600)
+@cache.cached(timeout=14400)
 def schedule(year):
     return render_template("website/schedule.html",
                            route=Routes,
@@ -209,7 +209,7 @@ def schedule(year):
 
 
 @app.route(Routes['standingspage'] + "/<int:year>")
-@cache.cached(timeout=600)
+@cache.cached(timeout=14400)
 def standings(year):
     return render_template("website/standings.html",
                            route=Routes,
