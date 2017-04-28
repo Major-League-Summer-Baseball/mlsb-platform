@@ -17,7 +17,6 @@ from api.validators import rbi_validator, hit_validator, inning_validator,\
                            string_validator, date_validator, time_validator,\
                            field_validator, year_validator, gender_validator,\
                            float_validator
-from future.backports.misc import count
 roster = DB.Table('roster',
                   DB.Column('player_id',
                             DB.Integer,
