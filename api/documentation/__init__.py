@@ -68,6 +68,13 @@ def sponsor_object_doc():
                            errors=ERRORS)
 
 
+@app.route(Routes['dofun'])
+def fun_object_doc():
+    return render_template('documentation/funObject.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+ 
 @app.route(Routes["doteamroster"])
 def teamroster_object_doc():
     return render_template('documentation/teamRosterObject.html',
@@ -78,6 +85,13 @@ def teamroster_object_doc():
 @app.route(Routes["dbteamroster"])
 def teamroster_route_doc():
     return render_template('documentation/teamRosterRoute.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes['dbfun'])
+def fun_route_doc():
+    return render_template('documentation/funRoute.html',
                            route=Routes,
                            errors=ERRORS)
 

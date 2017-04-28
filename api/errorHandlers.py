@@ -9,12 +9,19 @@ from api import app
 from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
                         PlayerDoesNotExist, GameDoesNotExist,\
                         LeagueDoesNotExist, SponsorDoesNotExist,\
-                        PlayerNotOnTeam,\
+                        PlayerNotOnTeam, FunDoesNotExist,\
                         EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
                         TeamAlreadyHasCaptain, PlayerNotSubscribed,\
                         BadRequestError
 from flask import Response
 from json import dumps
+
+
+@app.errorhandler(FunDoesNotExist)
+def handle_fund_not_exist(error):
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return response
 
 
 @app.errorhandler(PlayerNotOnTeam)

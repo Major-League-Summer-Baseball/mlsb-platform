@@ -13,6 +13,7 @@ GDNESC = 404
 SDNESC = 404
 BDNESC = 404
 EDNESC = 404
+FDNESC = 404
 NUESC = 400
 THCSC = 400
 MPSC = 400
@@ -21,6 +22,23 @@ PAST = 400
 PNS = 401
 NTCSC = 401
 BRSC = 400
+
+
+class FunDoesNotExist(Exception):
+    status_code = FDNESC
+    message = "Fun count does not exist"
+
+    def __init__(self, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = self.message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 
 class TeamDoesNotExist(Exception):
@@ -284,6 +302,10 @@ ERRORS = {
             'GameDoesNotExist': {
                 'message': GameDoesNotExist.message,
                 'status_code': GameDoesNotExist.status_code,
+            },
+            'FunDoesNotExist': {
+                'message': FunDoesNotExist.message,
+                'status_code': FunDoesNotExist.status_code,
             },
             'NonUniqueEmail': {
                 'message': NonUniqueEmail.message,

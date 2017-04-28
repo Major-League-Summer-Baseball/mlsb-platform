@@ -16,7 +16,7 @@ from api.routes import Routes
 from api import app, PICTURES
 from api import DB
 from api.errors import InvalidField
-from api.model import Team, Player, Sponsor, League, Game, Bat, Espys
+from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
 from api.variables import SPONSORS, BATS
 from api.authentication import check_auth
 from datetime import date, time, datetime
@@ -227,6 +227,16 @@ def quick_sort(array):
         # when you only have one element in your array, just return the array.
         return array
 
+
+@app.route(Routes['editfun'] + "/<int:year>")
+def admin_edit_fun(year):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/editFun.html",
+                           year=year,
+                           route=Routes,
+                           funs=get_funs(),
+                           title="Edit Fun")
 
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):
@@ -524,6 +534,11 @@ def get_leagues():
     for league in results:
         leagues.append(league.json())
     return leagues
+
+
+def get_funs():
+    results = Fun.query.all()
+    return [fun.json() for fun in results]
 
 
 def get_players(active=True):

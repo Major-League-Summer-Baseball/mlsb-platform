@@ -17,6 +17,7 @@ from api.validators import rbi_validator, hit_validator, inning_validator,\
                            string_validator, date_validator, time_validator,\
                            field_validator, year_validator, gender_validator,\
                            float_validator
+from future.backports.misc import count
 roster = DB.Table('roster',
                   DB.Column('player_id',
                             DB.Integer,
@@ -42,6 +43,10 @@ class Fun(DB.Model):
     def __init__(self, year=date.today().year, count=0):
         self.year = year
         self.count = count
+
+    def update(self, count=None):
+        if count is not None:
+            self.count = count
 
     def increment(self, change):
         '''

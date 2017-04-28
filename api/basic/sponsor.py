@@ -31,9 +31,9 @@ class SponsorAPI(Resource):
             Route: Routes['sponsor']/<sponsor_id:int>
             Returns:
                 if found
-                    status: 200 
+                    status: 200
                     mimetype: application/json
-                    data: 
+                    data:
                         {sponsor_id:int,
                         sponsor_name :string,
                         link: string,
@@ -85,7 +85,7 @@ class SponsorAPI(Resource):
                 sponsor_name: The Sponsor's name (string)
             Returns:
                 if found and successful
-                    status: 200 
+                    status: 200
                     mimetype: application/json
                     data: None
                 if found but not successful
