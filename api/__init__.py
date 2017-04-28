@@ -26,10 +26,8 @@ except:
     URL = os.environ['DATABASE_URL']
     SECRET_KEY = os.environ['SECRET_KEY']
     # on a machine use a real cache
-    cache = Cache(config={'CACHE_TYPE': 'memcached',
-                          'CACHE_MEMCACHED_SERVERS': os.environ['MEMCACHIER_SERVERS'].split(" "),
-                          'CACHE_MEMCACHED_PASSWORD': os.environ['MEMCACHIER_PASSWORD'],
-                          'CACHE_MEMCACHED_USERNAME': os.environ['MEMCACHIER_USERNAME']})
+    cache = Cache(config={'CACHE_TYPE': 'redis',
+                          'CACHE_REDIS_URL': os.environ['REDIS_URL']})
 from os import getcwd
 from os.path import join
 # create the application
@@ -39,7 +37,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = URL
 app.config['SECRET_KEY'] = SECRET_KEY
 # setup caching
 cache.init_app(app)
-
 DB = SQLAlchemy(app)
 if local:
     DB.create_all()
