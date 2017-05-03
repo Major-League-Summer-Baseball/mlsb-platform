@@ -1,6 +1,6 @@
 '''
 @author: Dallas Fraser
-@author: 2016-04-12
+@author: 2017-05-03
 @organization: MLSB API
 @summary: The bot API for a captain submitting scores
 '''
