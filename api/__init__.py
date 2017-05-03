@@ -17,10 +17,10 @@ from flask.ext.cache import Cache
 local = False
 try:
     # running local
-    local = True
     from api.credentials import URL, SECRET_KEY
     # locally just use simple cache
     cache = Cache(config={'CACHE_TYPE': 'simple'})
+    local = True
     print("Running Locally")
 except:
     URL = os.environ['DATABASE_URL']
