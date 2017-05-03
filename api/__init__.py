@@ -200,6 +200,6 @@ api.add_resource(BotSubmitScoresAPI,
 api.add_resource(BotCaptainGamesAPI,
                  Routes['botcaptaingames'],
                  endpoint="botcaptaingames")
-api.add_resource(BOtUpcomingGamesAPI,
+api.add_resource(BotUpcomingGamesAPI,
                  Routes['botupcominggames'],
                  endpoint="botupcominggames")
