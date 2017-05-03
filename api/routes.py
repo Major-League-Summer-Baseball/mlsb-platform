@@ -72,6 +72,7 @@ Routes['dvgame'] = "/documentation/views/game"
 Routes['dvplayer'] = "/documentation/views/player"
 Routes['dvteam'] = "/documentation/views/team"
 Routes['dvfun'] = "/documentation/views/fun"
+Routes['dvplayerLookup'] = "/documentation/view/player_lookup"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 # kik documentation
