@@ -185,3 +185,21 @@ api.add_resource(UpcomingGamesAPI,
 api.add_resource(UnSubscribeToTeamAPI,
                  Routes['kikunsubscribe'],
                  endpoint="kikunsubscribe")
+
+# add bot routes
+from api.bot.submit_scores import SubmitScoresAPI as BotSubmitScoresAPI
+from api.bot.authenticate_captain import AuthenticateCaptainAPI as BotAuthenticateCaptainAPI
+from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
+from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
+api.add_resource(BotAuthenticateCaptainAPI,
+                 Routes['botcaptain'],
+                 endpoint="botcaptain")
+api.add_resource(BotSubmitScoresAPI,
+                 Routes['botsubmitscore'],
+                 endpoint="botsubmitscore")
+api.add_resource(BotCaptainGamesAPI,
+                 Routes['botcaptaingames'],
+                 endpoint="botcaptaingames")
+api.add_resource(BOtUpcomingGamesAPI,
+                 Routes['botupcominggames'],
+                 endpoint="botupcominggames")

@@ -37,6 +37,13 @@ Routes['kiktransaction'] = "/api/kik/transaction"
 Routes['kikcaptaingames'] = "/api/kik/captain/games"
 Routes['kikunsubscribe'] = "/api/kik/unsubscribe"
 
+# Bot APIS
+Routes['botsubmitscore'] = "/api/bot/submit_score"
+Routes['botcaptain'] = "/api/bot/captain"
+Routes['botupcominggames'] = "/api/bot/upcoming_games"
+Routes['botcaptaingames'] = "/api/bot/captain/games"
+
+
 # -----------------------------------------------------------------------------
 # documentation routes
 # -----------------------------------------------------------------------------
@@ -75,6 +82,14 @@ Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
 Routes['dkiktransaction'] = "/documentation/kik/transaction"
 Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
 Routes['dkikunsubscribe'] = "/documentation/kik/unsubscribe"
+# bot documentation
+Routes['dbotsubscribe'] = "/documentation/bot/subscribe"
+Routes['dbotsubmitscore'] = "/documentation/bot/submit_score"
+Routes['dbotcaptain'] = "/documentation/bot/captain"
+Routes['dbotupcominggames'] = "/documentation/bot/upcoming_games"
+Routes['dbottransaction'] = "/documentation/bot/transaction"
+Routes['dbotcaptaingames'] = "/documentation/bot/captain/games"
+Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
 
 # -----------------------------------------------------------------------------
 # Website

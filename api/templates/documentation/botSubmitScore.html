@@ -1,0 +1,90 @@
+{% extends "documentation/documentation_base.html" %}
+{% block content %}
+<h1>bot - Captain submit scores</h1>
+<p>Submit scores for a games that has been played. To see games that needs scores see <a href="{{route.dbotcaptaingames}}">captain games</a></p>
+<h4>POST</h4>
+<code>{{route.botsubmitscore}}</code>
+<p style="color:#808080">
+	Permission: bot
+</p>
+<strong>Parameter</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Field</th>
+				<th class="col-md-3">Type</th>
+				<th class="col-md-3">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">game_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The game's id</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">player_id</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The player's id</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">score</td>
+				<td class="col-md-3">int</td>
+				<td class="col-md-3">The number of runs scored by team</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">hr</td>
+				<td class="col-md-3">list of int</td>
+				<td class="col-md-3">The player's id who hit homeruns</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">ss</td>
+				<td class="col-md-3">list of int</td>
+				<td class="col-md-3">The player's id who hit special singles</td>
+			</tr>
+			
+		</tbody>
+	</table>
+
+<strong>Responses</strong>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="col-md-3">Status Code</th>
+				<th class="col-md-3">Response Object</th>
+				<th class="col-md-3">Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="col-md-3">200</td>
+				<td class="col-md-3">True</td>
+				<td class="col-md-3">Successful</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.InvalidField.message}}</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">{{errors.PlayerNotSubscribed.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.PlayerNotSubscribed.message}}</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">{{errors.NotTeamCaptain.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.NotTeamCaptain.message}}</td>
+			</tr>
+			<tr>
+				<td class="col-md-3">{{errors.GameDoesNotExist.status_code}}</td>
+				<td class="col-md-3">--</td>
+				<td class="col-md-3">{{errors.GameDoesNotExist.message}}</td>
+			</tr>
+			
+			
+			
+		</tbody>
+	</table>
+
+{% endblock %}
