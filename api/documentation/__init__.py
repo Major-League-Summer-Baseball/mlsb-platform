@@ -166,6 +166,13 @@ def fun_meter_view_doc():
                            errors=ERRORS)
 
 
+@app.route(Routes['dvplayerLookup'])
+def player_lookup_view_doc():
+    return render_template('documentation/playerLookupView.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
 @app.route(Routes['dvplayerteamLookup'])
 def player_team_lookup_view_doc():
     return render_template('documentation/playerTeamLookupView.html',
