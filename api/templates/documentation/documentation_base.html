@@ -159,6 +159,31 @@
                     </a>
                 </li>
                 <li>
+                    <a onclick="toggleBot();">
+                      Bot APIs
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotupcominggames}}">
+                      Players' upcoming games
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotcaptain}}">
+                      Authenticate Captain
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotcaptaingames}}">
+                      Captains' available games
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotsubmitscore}}">
+                      Captain Submit Score
+                    </a>
+                </li>
+                <li>
                     <a onclick="toggleKik();">
                       Kik APIs
                     </a>
@@ -244,6 +269,10 @@
 
       function toggleKik(){
         $(".kikSidebar").toggle();
+      }
+
+      function toggleBot(){
+        $(".botSidebar").toggle();
       }
     </script>
   </body>
