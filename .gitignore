@@ -60,3 +60,5 @@ target/
 .DS_Store
 
 .vagrant
+/.project
+/.pydevproject
