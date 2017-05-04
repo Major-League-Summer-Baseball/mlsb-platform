@@ -11,7 +11,7 @@ from api.model import Player
 parser = reqparse.RequestParser()
 parser.add_argument('email', type=str)
 parser.add_argument('player_name', type=str)
-
+parser.add_argument("active", type=int)
 
 class PlayerLookupAPI(Resource):
     def post(self):
@@ -29,13 +29,28 @@ class PlayerLookupAPI(Resource):
         data = []
         args = parser.parse_args()
         players = None
+        active = False
+        if args['active'] and args['active'] == 1:
+            active = True
         if args['email']:
             # guaranteed to find player
-            players = Player.query.filter(Player.email == args['email']).all()
+            if not active:
+                players = (Player.query
+                           .filter(Player.email == args['email']).all())
+            else:
+                players = (Player.query
+                           .filter(Player.email == args['email'])
+                           .filter(Player.active == active).all())
         elif args['player_name']:
             # maybe overlap
             pn = args['player_name']
-            players = Player.query.filter(Player.name.contains(pn)).all()
+            if not active:
+                players = (Player.query
+                           .filter(Player.name.contains(pn)).all())
+            else:
+                players = (Player.query
+                           .filter(Player.email == args['email'])
+                           .filter(Player.active == active).all())
         if players is not None:
             for player in players:
                 data.append(player.json())

@@ -10,6 +10,7 @@ from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
+from api.model import Player
 from base64 import b64encode
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
                     SponsorDoesNotExist, LeagueDoesNotExist
@@ -385,6 +386,26 @@ class testPlayerLookup(TestSetup):
         # not a player
         expect = []
         rv = self.app.post(Routes['vplayerLookup'], data={'player_name': 'XX'})
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vteam'] + " Post: View of Team")
+        # not an active player
+        Player.query.get(1).active = False
+        expect = []
+        params = {"player_name": "Dallas", "active": 1}
+        rv = self.app.post(Routes['vplayerLookup'], data=params)
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vteam'] + " Post: View of Team")
+        # not an active player but dont care
+        Player.query.get(1).active = False
+        expect = [{'gender': 'm',
+                   'player_id': 1,
+                   'player_name': 'Dallas Fraser'}]
+        params = {"player_name": "Dallas", "active": 0}
+        rv = self.app.post(Routes['vplayerLookup'], data=params)
         self.output(loads(rv.data), )
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
