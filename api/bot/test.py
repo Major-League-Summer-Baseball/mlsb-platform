@@ -8,15 +8,14 @@ import unittest
 from api.helper import loads
 from api import DB
 from api.routes import Routes
-from api.model import Player, Espys
+from api.model import Player
 from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from api.BaseTest import TestSetup
 from api.errors import TeamDoesNotExist, NotTeamCaptain,\
-                       TeamAlreadyHasCaptain,\
                        PlayerNotSubscribed, GameDoesNotExist,\
-                       InvalidField, SponsorDoesNotExist, PlayerDoesNotExist
+                       InvalidField,  PlayerDoesNotExist
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -73,23 +72,6 @@ class testAuthenticateCaptain(TestSetup):
         self.assertEqual(expect, loads(rv.data),
                          Routes['botcaptain'] +
                          " Post: name of captain does not match")
-        # if someone else tries to say captain with same name but different
-        # bot name than one previously stated
-        data = {
-                'player_id': 2,
-                "team": 1
-                }
-        expect = {'details': 'frase2560',
-                  'message': TeamAlreadyHasCaptain.message}
-        rv = self.app.post(Routes['botcaptain'], data=data, headers=headers)
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(rv.status_code, TeamAlreadyHasCaptain.status_code,
-                         Routes['botcaptain'] +
-                         " POST: sketchy shit"
-                         )
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['botcaptain'] + " Post: sketchy shit")
         # invalid credentials
         data = {
                 'player_id': 3,
@@ -106,13 +88,13 @@ class testSubmitScores(TestSetup):
         self.mockScoreSubmission()
         # invalid captain
         data = {
-                "player_id": 1,
+                "player_id": -1,
                 'game_id': 1,
                 'score': 1,
                 'hr': [1, 2],
                 'ss': []
                 }
-        expect = {'details': 'frase2560',
+        expect = {'details': -1,
                   'message': PlayerNotSubscribed.message}
         rv = self.app.post(Routes['botsubmitscore'],
                            data=data,
@@ -127,7 +109,6 @@ class testSubmitScores(TestSetup):
                          Routes['botsubmitscore'] +
                          " POST: invalid bot user name")
         player = Player.query.get(1)
-        player.bot = "frase2560"  # add the bot name to the captain
         DB.session.commit()
         # invalid game
         data = {
@@ -266,9 +247,9 @@ class testUpcomingGames(TestSetup):
         # non-subscribed player
         self.mockUpcomingGames()
         data = {
-                'player_id': 'DoesNotExist'
+                'player_id': -1
                 }
-        expect = {'details': 'DoesNotExist',
+        expect = {'details': -1,
                   'message': PlayerDoesNotExist.message}
         rv = self.app.post(Routes['botupcominggames'],
                            data=data,

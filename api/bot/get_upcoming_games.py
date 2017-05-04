@@ -32,15 +32,14 @@ class UpcomingGamesAPI(Resource):
         """
         args = parser.parse_args()
         player_id = args['player_id']
-        players = Player.query.get(player_id)
-        if players is None or len(players) == 0:
+        player = Player.query.get(player_id)
+        if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
         teams = []
         today = date.today()
         next_two_weeks = today + timedelta(days=14)
-        for player in players:
-            for team in player.teams:
-                teams.append(team.id)
+        for team in player.teams:
+            teams.append(team.id)
         games = DB.session.query(Game).filter(or_(Game.away_team_id.in_(teams),
                                               (Game.home_team_id.in_(teams))))
         games = games.filter(Game.date.between(today, next_two_weeks))

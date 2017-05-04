@@ -37,7 +37,7 @@ class AuthenticateCaptainAPI(Resource):
         if team is None:
             raise TeamDoesNotExist(payload={'details': team_id})
         team_captain = Player.query.get(team.player_id)
-        if team_captain.player_id != player_id:
+        if team_captain.id != player_id:
             # the names do not match
             raise NotTeamCaptain(payload={'details': team_captain.name})
         # captain is authenticated

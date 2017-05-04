@@ -46,7 +46,7 @@ class SubmitScoresAPI(Resource):
         game_id = args['game_id']
         game = Game.query.get(game_id)
         player_id = args['player_id']
-        captain = Player.query.get(player_id).first()
+        captain = Player.query.get(player_id)
         if captain is None:
             raise PlayerNotSubscribed(payload={'details': player_id})
         if game is None:
