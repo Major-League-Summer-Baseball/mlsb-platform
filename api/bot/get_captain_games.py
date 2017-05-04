@@ -42,6 +42,7 @@ class CaptainGamesAPI(Resource):
         if team.player_id is None:
             raise InvalidField(payload={"details":
                                         "Team's captain has not been set"})
+        print(player_id, team.player_id)
         if player_id != team.player_id:
             # something fishy is going on
             raise NotTeamCaptain(payload={'details': player_id})
