@@ -565,8 +565,24 @@ class TestPlayerTeamLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
                          " View: on Dallas Fraser")
         params = {"player_name": "NotFuckingReal"}
-        rv = self.app.post(Routes['vfun'], data=params)
+        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
         expect = []
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
+                         " View: on no one")
+        params = {"player_id": 1}
+        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        expect = [{'captain': {'gender': 'm',
+                               'player_id': 1,
+                               'player_name': 'Dallas Fraser'},
+                   'color': 'Green',
+                   'espys': 0,
+                   'league_id': None,
+                   'sponsor_id': 1,
+                   'team_id': 1,
+                   'team_name': 'Domus Green',
+                   'year': date.today().year}]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
