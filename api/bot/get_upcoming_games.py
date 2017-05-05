@@ -36,7 +36,7 @@ class UpcomingGamesAPI(Resource):
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
         teams = []
-        today = date.today()
+        today = date.today() + timedelta(days=-1)
         next_two_weeks = today + timedelta(days=14)
         for team in player.teams:
             teams.append(team.id)
