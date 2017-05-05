@@ -98,6 +98,7 @@ Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
 # static pages
 Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
+Routes['logo'] = "/logo"
 # sponsors pages
 Routes['sponsorspage'] = "/website/sponsor"
 Routes['sponsorspicture'] = "/website/sponsor/picture"

@@ -69,6 +69,7 @@ def checkout_post(year, date, file_name):
                                year=year,
                                games=get_upcoming_games(year))
 
+
 '''
 # -----------------------------------------------------------------------------
 #             POST PAGES ISSUES
@@ -138,6 +139,11 @@ def sponsor_picture(name):
     else:
         return send_from_directory(fp, filename=NOTFOUND)
 
+
+@app.route(Routes["logo"])
+def mlsb_logo():
+    fp = os.path.dirname(PICTURES)
+    return send_from_directory(fp, filename="banner.png")
 
 @app.route(Routes['teampicture'] + "/<int:team>")
 def team_picture(team):
