@@ -49,7 +49,7 @@ class PlayerLookupAPI(Resource):
                            .filter(Player.name.contains(pn)).all())
             else:
                 players = (Player.query
-                           .filter(Player.email == args['email'])
+                           .filter(Player.name.contains(pn))
                            .filter(Player.active == active).all())
         if players is not None:
             for player in players:

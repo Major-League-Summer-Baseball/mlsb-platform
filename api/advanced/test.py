@@ -386,6 +386,16 @@ class testPlayerLookup(TestSetup):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['vteam'] + " Post: View of Team")
+        # only want active players
+        expect = [{'gender': 'm',
+                   'player_id': 1,
+                   'player_name': 'Dallas Fraser'}]
+        params = {"player_name": "Dallas", "active": 1}
+        rv = self.app.post(Routes['vplayerLookup'], data=params)
+        self.output(loads(rv.data), )
+        self.output(expect)
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['vteam'] + " Post: View of Team")
         # not a player
         expect = []
         rv = self.app.post(Routes['vplayerLookup'], data={'player_name': 'XX'})
