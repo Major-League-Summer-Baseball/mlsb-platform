@@ -134,6 +134,11 @@
                     </a>
                 </li>
                 <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvplayerLookup}}">
+                      Lookup Player
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
                     <a href="{{route.dbteamroster}}">
                       Team Roster View
                     </a>
@@ -151,6 +156,31 @@
                 <li class="indent-nav viewsSidebar" style="display: none">
                     <a href="{{route.dvleagueleaders}}">
                       League Leaders
+                    </a>
+                </li>
+                <li>
+                    <a onclick="toggleBot();">
+                      Bot APIs
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotupcominggames}}">
+                      Players' upcoming games
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotcaptain}}">
+                      Authenticate Captain
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotcaptaingames}}">
+                      Captains' available games
+                    </a>
+                </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotsubmitscore}}">
+                      Captain Submit Score
                     </a>
                 </li>
                 <li>
@@ -239,6 +269,10 @@
 
       function toggleKik(){
         $(".kikSidebar").toggle();
+      }
+
+      function toggleBot(){
+        $(".botSidebar").toggle();
       }
     </script>
   </body>

@@ -166,6 +166,13 @@ def fun_meter_view_doc():
                            errors=ERRORS)
 
 
+@app.route(Routes['dvplayerLookup'])
+def player_lookup_view_doc():
+    return render_template('documentation/playerLookupView.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
 @app.route(Routes['dvplayerteamLookup'])
 def player_team_lookup_view_doc():
     return render_template('documentation/playerTeamLookupView.html',
@@ -229,5 +236,37 @@ def upcoming_games_kik_doc():
 @app.route(Routes['dkikcaptaingames'])
 def captain_games_kik_doc():
     return render_template('documentation/kikCaptainGames.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+# -----------------------------------------------------------------------------
+# Bot documentation
+# -----------------------------------------------------------------------------
+
+
+@app.route(Routes['dbotcaptain'])
+def authenticate_bot_doc():
+    return render_template('documentation/botAuthenticateCaptain.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes['dbotsubmitscore'])
+def submit_score_bot_doc():
+    return render_template('documentation/botSubmitScore.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes['dbotupcominggames'])
+def upcoming_games_bot_doc():
+    return render_template('documentation/botUpcomingGames.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes['dbotcaptaingames'])
+def captain_games_bot_doc():
+    return render_template('documentation/botCaptainGames.html',
                            route=Routes,
                            errors=ERRORS)
