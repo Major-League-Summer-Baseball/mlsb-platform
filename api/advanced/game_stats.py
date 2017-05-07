@@ -74,13 +74,15 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
             g['away_bats'].append({'name': bat[1].name,
                                    'hit':  bat[0].classification,
                                    'inning': bat[0].inning,
-                                   'rbi':  bat[0].rbi})
+                                   'rbi':  bat[0].rbi,
+                                   'bat_id': bat[0].id})
             g['away_score'] += bat[0].rbi
         for bat in home_bats:
             g['home_bats'].append({'name': bat[1].name,
                                    'hit':  bat[0].classification,
                                    'inning': bat[0].inning,
-                                   'rbi':  bat[0].rbi})
+                                   'rbi':  bat[0].rbi,
+                                   'bat_id': bat[0].id})
             g['home_score'] += bat[0].rbi
         if g['away_bats'] == 0:
             g['away_score'] = "--"

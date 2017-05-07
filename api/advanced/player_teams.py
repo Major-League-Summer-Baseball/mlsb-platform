@@ -11,6 +11,7 @@ from api.model import Player
 parser = reqparse.RequestParser()
 parser.add_argument('email', type=str)
 parser.add_argument('player_name', type=str)
+parser.add_argument("player_id", type=int)
 
 
 class PlayerTeamLookupAPI(Resource):
@@ -21,6 +22,7 @@ class PlayerTeamLookupAPI(Resource):
             Parameters:
                 email: the league id (str)
                 player_name: the player id (str)
+                player_id: the player id (int)
             Returns:
                 status: 200
                 mimetype: application/json
@@ -29,7 +31,10 @@ class PlayerTeamLookupAPI(Resource):
         data = []
         args = parser.parse_args()
         players = None
-        if args['email']:
+        if args['player_id']:
+            # guaranteed to get a player
+            players = [Player.query.get(args['player_id'])]
+        elif args['email']:
             # guaranteed to find player
             players = Player.query.filter(Player.email == args['email']).all()
         elif args['player_name']:
