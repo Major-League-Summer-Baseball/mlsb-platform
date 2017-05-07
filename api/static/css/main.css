@@ -40,6 +40,12 @@ body {
     border-radius: 50%;
 }
 
+.main-header img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
 .games-container {
     border-bottom: 1px solid #dcdcdc;
     background-color: rgba(36, 44, 132, 0.61);
