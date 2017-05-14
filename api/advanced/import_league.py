@@ -10,6 +10,7 @@ from api import DB
 from api.validators import time_validator, string_validator, date_validator
 from api.errors import InvalidField, LeagueDoesNotExist
 import logging
+import datetime
 # constants
 CREATED = "Created Team (no league was specified)"
 NO_LEAGUE = "Cannot find league, please ensure spelt correctly or create the league"
@@ -21,7 +22,7 @@ INVALID_TEAM = "{} is not a team in the league"
 
 
 class LeagueList():
-    def __init__(self, lines, logger=None):
+    def __init__(self, lines, year=datetime.datetime.now().year, logger=None):
         self.success = False
         self.errors = []
         self.warnings = []
@@ -31,6 +32,7 @@ class LeagueList():
                                 format='%(asctime)s %(message)s')
             logger = logging.getLogger(__name__)
         self.logger = logger
+        self.year = year
 
     def import_league(self):
         '''
@@ -98,9 +100,10 @@ class LeagueList():
         if league is None:
             raise LeagueDoesNotExist(payload={'details': league})
         for team in league.teams:
-            self.teams[str(team)] = team.id
-            sponsor = str(Sponsor.query.get(team.sponsor_id))
-            self.teams[sponsor + " " + team.color] = team.id
+            if team.year == self.year:
+                self.teams[str(team)] = team.id
+                sponsor = str(Sponsor.query.get(team.sponsor_id))
+                self.teams[sponsor + " " + team.color] = team.id
 
     def set_columns_indices(self, headers):
         '''
