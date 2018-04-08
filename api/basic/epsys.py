@@ -127,7 +127,7 @@ class EspyAPI(Resource):
         points = None
         receipt = None
         receipt_image = None
-        approved = False
+        approved = None
         date = None
         time = None
         if espy is None:
@@ -145,7 +145,7 @@ class EspyAPI(Resource):
         if args['receipt']:
             receipt = args['receipt']
         if args['receipt_image']:
-            receipt = args['receipt_image']
+            receipt_image = args['receipt_image']
         if args['approved']:
             approved = args['approved']
         if args['date'] and args['time']:
@@ -159,7 +159,8 @@ class EspyAPI(Resource):
                     date=date,
                     time=time,
                     player_id=player_id,
-                    receipt_image=receipt_image
+                    receipt_image=receipt_image,
+                    approved = approved
                     )
         DB.session.commit()
         response = Response(dumps(None), status=200,
@@ -245,7 +246,9 @@ class EspyListAPI(Resource):
         if args['points']:
             points = args['points']
         if args['receipt']:
-            points = args['receipt']
+            receipt = args['receipt']
+        if args['receipt_image']:
+            receipt_image = args['receipt_image']
         if args['date'] and args['time']:
             date = args['date']
             time = args['time']

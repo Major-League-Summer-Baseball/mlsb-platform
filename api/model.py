@@ -182,6 +182,8 @@ class Espys(DB.Model):
             if time is not None and not time_validator(time):
                 raise InvalidField(payload={'details': "Espys - time"})
             self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
+        if approved is not None:
+            self.approved = approved
 
     def approve(self):
         '''
@@ -211,7 +213,7 @@ class Espys(DB.Model):
         time = None
         if self.date is not None:
             date = self.date.strftime("%Y-%m-%d")
-            time = self.date.strftime("%H:%M")
+            time = self.date.strftime("%H:%M")  
         return {
                 'espy_id': self.id,
                 'team': str(Team.query.get(self.team_id)),
