@@ -160,7 +160,7 @@ class EspyAPI(Resource):
                     time=time,
                     player_id=player_id,
                     receipt_image=receipt_image,
-                    approved = approved
+                    approved=approved
                     )
         DB.session.commit()
         response = Response(dumps(None), status=200,
