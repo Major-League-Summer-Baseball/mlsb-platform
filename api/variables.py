@@ -41,6 +41,16 @@ EVENTS = {2016: {
                   "Hitting_for_the_Cycle": "July 16th",
                   "Beerwell_Classic": "?",
                   "Tournaments": "May 19th, June 9th, July 14th, July 21st"
+              },
+          2018: {
+                  "Beerlympics": "June 9th",
+                  "Jays_Game": "May 22nd",
+                  "Summerween": "June 23rd",
+                  "Mystery_Bus": "March 24th",
+                  "Rafting": "July 6-8th",
+                  "Grand_Bender": "July 28th",
+                  "Tournaments": "June 1st, June 8th, June 29th, July 20th",
+                  "Chainsaw_Idol": "July 13th"
               }
           }  # all the events baby
 # the fields we play at
