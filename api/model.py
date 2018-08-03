@@ -71,15 +71,12 @@ class Espys(DB.Model):
             receipt: any information regarding the receipt (receipt number)
     '''
     id = DB.Column(DB.Integer, primary_key=True)
-    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
     team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
     description = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
     points = DB.Column(DB.Float)
     date = DB.Column(DB.DateTime)
     receipt = DB.Column(DB.String(30))
-    receipt_image = DB.Column(DB.LargeBinary)
-    approved = DB.Column(DB.Boolean)
 
     def __init__(self,
                  team_id,
@@ -88,66 +85,49 @@ class Espys(DB.Model):
                  points=0.0,
                  receipt=None,
                  time=None,
-                 date=None,
-                 player_id=None,
-                 receipt_image=None,
-                 approved=False):
+                 date=None):
         '''
             Raises:
-                PlayerDoesNotExist
                 SponsorDoesNotExist
                 TeamDoesNotExist
         '''
         if not float_validator(points):
-            raise InvalidField(payload={"details": "Espys - points"})
+            raise InvalidField(payload={"details": "Game - points"})
         self.points = float(points)
         self.date = datetime.now()
-        player = None
-        if player_id is not None:
-            player = Player.query.get(player_id)
-        if player_id is not None and player is None:
-            raise PlayerDoesNotExist(payload={"details": player_id})
         sponsor = None
         if sponsor_id is not None:
             sponsor = Sponsor.query.get(sponsor_id)
+        self.receipt = receipt
         if sponsor_id is not None and sponsor is None:
             raise SponsorDoesNotExist(payload={"details": sponsor_id})
         team = Team.query.get(team_id)
         if team is None:
             raise TeamDoesNotExist(payload={"details": team_id})
-        self.receipt = receipt # Receipt Details
         self.description = description
         self.team_id = team_id
         self.sponsor_id = sponsor_id
-        self.player_id = player_id
         self.kik = None
         if date is not None and not date_validator(date):
-            raise InvalidField(payload={'details': "Espys - date"})
+            raise InvalidField(payload={'details': "Game - date"})
         if time is not None and not time_validator(time):
-            raise InvalidField(payload={'details': "Espys - time"})
+            raise InvalidField(payload={'details': "Game - time"})
         if date is not None and time is None:
             self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         else:
             self.date = datetime.today()
-        if receipt_image is not None:
-            self.receipt_image = receipt_image
-        self.approved = approved
 
     def update(self,
-                team_id=None,
-                sponsor_id=None,
-                description=None,
-                points=None,
-                receipt=None,
-                date=None,
-                time=None,
-                player_id=None,
-                receipt_image=None,
-                approved=None):
+               team_id=None,
+               sponsor_id=None,
+               description=None,
+               points=None,
+               receipt=None,
+               date=None,
+               time=None):
         '''
             used to update an existing espy transaction
             Raises:
-                PlayerDoesNotExist
                 TeamDoesNotExist
                 SponsorDoesNotExist
         '''
@@ -165,37 +145,16 @@ class Espys(DB.Model):
                 self.sponsor_id = sponsor_id
             else:
                 raise SponsorDoesNotExist(payload={"details": sponsor_id})
-        if player_id is not None:
-            if Player.query.get(player_id) is not None:
-                self.player_id = player_id
-            else:
-                raise PlayerDoesNotExist(payload={"details": player_id})
         if receipt is not None:
             self.receipt = receipt
-        if receipt_image is not None:
-            self.receipt_image = receipt_image
         if date is not None and time is None:
             self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         if date is not None and time is not None:
             if date is not None and not date_validator(date):
-                raise InvalidField(payload={'details': "Espys - date"})
+                raise InvalidField(payload={'details': "Game - date"})
             if time is not None and not time_validator(time):
-                raise InvalidField(payload={'details': "Espys - time"})
+                raise InvalidField(payload={'details': "Game - time"})
             self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
-        if approved is not None:
-            self.approved = approved
-
-    def approve(self):
-        '''
-        approve the espy
-        '''
-        self.approved = True
-
-    def disapprove(self):
-        '''
-        disapprove the espy (deny the request)
-        '''
-        self.approved = False
 
     def json(self):
         '''
@@ -205,15 +164,11 @@ class Espys(DB.Model):
             sponsor = str(Sponsor.query.get(self.sponsor_id))
         else:
             sponsor = None
-        if self.player_id is not None:
-            player = str(Player.query.get(self.player_id))
-        else:
-            player = None
         date = None
         time = None
         if self.date is not None:
             date = self.date.strftime("%Y-%m-%d")
-            time = self.date.strftime("%H:%M")  
+            time = self.date.strftime("%H:%M")
         return {
                 'espy_id': self.id,
                 'team': str(Team.query.get(self.team_id)),
@@ -221,11 +176,8 @@ class Espys(DB.Model):
                 'description': self.description,
                 'points': self.points,
                 'receipt': self.receipt,
-                'receipt_image': self.receipt_image,
                 'date': date,
-                'time': time,
-                'player': player,
-                'approved': self.approved
+                'time': time
                 }
 
 

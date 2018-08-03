@@ -50,16 +50,6 @@ def check_captain(player, password):
     session['captain'] = player.id
     return True
 
-def check_player(player_id):
-    '''
-    check a if a player_id exists
-    '''
-    player = Player.query.get(player_id)
-    if player is None:
-        return authenticate()
-    session['player_id'] = player.id
-    return True
-
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -98,18 +88,7 @@ def requires_captain(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not auth or not check_captain(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
-
-
-# TESTING THIS FUNCTION
-def requires_player(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_player(auth.username):
+        if not auth or not check_captain(auth.name, auth.password):
             return authenticate()
         return f(*args, **kwargs)
     return decorated

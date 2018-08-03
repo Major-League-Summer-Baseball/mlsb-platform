@@ -3,12 +3,12 @@
 	<ul class="nav nav-pills" id="listing">
 		<li role="presentation" class="presentation active"><a data-toggle="pill" href="#mb">Mystery Bus</a></li>
 		<li role="presentation" class="presentation"><a data-toggle="pill" href="#bjg" >Blue Jays Game</a></li>
-		<li role="presentation" class="presentation"><a data-toggle="pill" href="#blym">Beerlympics</a></li>
+		<li role="presentation" class="presentation"><a data-toggle="pill" href="#bf">Beerfest</a></li>
 		<li role="presentation" class="presentation"><a data-toggle="pill" href="#rf">Rafting</a></li>
-		<li role="presentation" class="presentation"><a data-toggle="pill" href="#gb">Grand Bender</a></li>
-		<li role="presentation" class="presentation"><a data-toggle="pill" href="#ci">Chainsaw Idol</a></li>
+		<li role="presentation" class="presentation"><a data-toggle="pill" href="#bc">Beerwell Classic</a></li>
+		<li role="presentation" class="presentation"><a data-toggle="pill" href="#hftc">Hitting for the Cycle</a></li>
 		<li role="presentation" class="presentation"><a data-toggle="pill" href="#sw">Summerween</a></li>
-		<!--<li role="presentation" class="presentation"><a data-toggle="pill" href="#ea">ESPY Awards</a></li>-->
+		<li role="presentation" class="presentation"><a data-toggle="pill" href="#ea">ESPY Awards</a></li>
 		
 
 	</ul>
@@ -22,41 +22,39 @@
 		</div>
 		<div id="bjg" class="tab-pane fade in">
 			<p>
-			What better way to get ready for the MLSB season than to drive down buses full of party animals like yourselves to T.O. to watch the boys of summer? <a href="https://www.mlsbpayments.com/product-page/jaysouting">CLICK HERE</a> to get your ticket!
+			What better way to get ready for the MLSB season than to drive down buses full of party animals like yourselves to T.O. to watch the boys of summer? <a href="">CLICK HERE</a> to get your ticket!
 			</p>
 			<img class="eventImage" src="{{ url_for('static', filename="images/events/bluejays.jpg") }}">
 			<p>We’ll have a few drinks and watch some baseball, it’s the closest you’ll ever get to playing in the big leagues.</p>
 			<h4> Date: {{dates.Jays_Game}} </h4>
 		</div>
-		<div id="blym" class="tab-pane fade in">
+		<div id="bf" class="tab-pane fade in">
 			<p>
-				Stay Tuned for Beerlympics!
+			Ever seen the movie? Well this is even better. Teams dressed up as various countries competing under the hot sun coupled with several awesome drinking games makes for a day that you will never forget.
 			</p>
-			<!-- Update image -->
 			<img class="eventImage" src="{{ url_for('static', filename="images/events/beerfest.jpg") }}">
-			<!--
-			<p>Actually, you probably won’t be able to remember much at all. Teams that do well will bring home points for the year end ESPYs.</p>-->
-			<h4> Date: {{dates.Beerlympics}} </h4>
+			<p>Actually, you probably won’t be able to remember much at all. Teams that do well will bring home points for the year end ESPYs.</p>
+			<h4> Date: {{dates.Beerfest}} </h4>
 		</div>
-		<div id="gb" class="tab-pane fade in">
+		<div id="bc" class="tab-pane fade in">
 			<p>
-				Stay Tuned for Grand Bender!
+				MLSB hosts their annual All Star tournament, and what could be better than playing it in a baseball field in the middle of nowhere!  Those not participating in the All Star Game are in for a treat, as they get the entertainment of watching the All-Stars get clumsy on the field.
 			</p>
-			<!-- Update Image -->
 			<img class="eventImage" src="{{ url_for('static', filename="images/events/beerwell.jpg") }}">
 			<p>
 				Bring your tents because we will be camping out for the night!
 			</p>
-			<h4> Date: {{dates.Grand_Bender}}</h4>
+			<h4> Date: {{dates.Beerwell_Classic}}</h4>
 		</div>
-		<div id="ci" class="tab-pane fade in">
+		<div id="hftc" class="tab-pane fade in">
 			<p>
-				Stay Tuned for Chainsaw Idol!
+				HFTC is MLSB’s infamous pub crawl. For most MLSBers, this will be your only realistic chance to actually hit the cycle (by way of bar shots of course). Make your way from bar to bar in a state that is likely to keep you out of commission for the better part of the next day.
 			</p>
-			<!--<img class="eventImage" src="{{ url_for('static', filename="images/events/hftc.jpg") }}">-->
+			<img class="eventImage" src="{{ url_for('static', filename="images/events/hftc.jpg") }}">
 			<p>
+				Sleeve monsters are a must.
 			</p>
-			<h4> Date: {{dates.Chainsaw_Idol}}</h4>
+			<h4> Date: {{dates.Hitting_for_the_Cycle}}</h4>
 		</div>
 		<div id="rf" class="tab-pane fade in">
 			<p>

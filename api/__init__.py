@@ -81,8 +81,7 @@ from api.basic.league import LeagueAPI, LeagueListAPI
 from api.basic.team import TeamAPI, TeamListAPI
 from api.basic.game import GameAPI, GameListAPI
 from api.basic.bat import BatAPI, BatListAPI
-from api.basic.epsys import EspyAPI, EspyListAPI, EspyListPendingAPI
-from api.basic.admin import AdminAPI
+from api.basic.epsys import EspyAPI, EspyListAPI
 from api.basic.fun import FunAPI, FunListAPI
 from api.advanced.team_roster import TeamRosterAPI
 from api.routes import Routes
@@ -131,15 +130,9 @@ api.add_resource(BatAPI,
 api.add_resource(EspyListAPI,
                  Routes['espy'],
                  endpoint="Espys")
-api.add_resource(EspyListPendingAPI,
-                 Routes['espy_pending'],
-                 endpoint="EspysPending")
 api.add_resource(EspyAPI,
                  Routes['espy'] + "/<int:espy_id>",
                  endpoint="basic-espy")
-api.add_resource(AdminAPI,
-                 Routes['admin_validate'],
-                 endpoint="admin")
 api.add_resource(TeamRosterAPI,
                  Routes['team_roster'] + "/<int:team_id>",
                  endpoint="teamrosters")
