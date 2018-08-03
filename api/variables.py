@@ -48,9 +48,9 @@ EVENTS = {2016: {
                   "Summerween": "June 23rd",
                   "Mystery_Bus": "March 24th",
                   "Rafting": "July 6-8th",
-                  "Grand Bender": "July 28th",
+                  "Grand_Bender": "July 28th",
                   "Tournaments": "June 1st, June 8th, June 29th, July 20th",
-                  "Chainsaw Idol": "July 13th"
+                  "Chainsaw_Idol": "July 13th"
               }
           }  # all the events baby
 # the fields we play at

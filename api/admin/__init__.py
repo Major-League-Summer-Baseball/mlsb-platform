@@ -77,7 +77,7 @@ def admin_import_game_list():
         if len(results['errors']) > 0:
             results['success'] = False
     else:
-        results['errors'] = "File should be a CSV"
+        results['errors'] = "File should ba CSV"
         results['success'] = False
     return dumps(results)
 
