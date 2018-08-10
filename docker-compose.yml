@@ -1,0 +1,51 @@
+version: "3"
+services:
+    mlsb:
+        environment:
+            - ADMIN=$ADMIN
+            - PASSWORD=$PASSWORD
+            - KIK=$KIK
+            - KIKPW=$KIKPW
+            - DATABASE_URL=$DATABASE_URL
+            - SECRET_KEY=$SECRET_KEY
+            - REDIS_URL=$REDIS_URL
+        restart: always
+        build: .
+        ports:
+            - "5000:5000"
+        volumes:
+            - .:/app
+        depends_on:
+            - postgres
+            - redis
+        command: >
+            gunicorn -b 0.0.0.0:5000
+                --access-logfile -
+                --reload
+                "runserver:app"
+
+    postgres:
+        restart: always
+        image: postgres:10
+        environment:
+            - POSTGRES_USER=$ADMIN
+            - POSTGRES_PASSWORD=$PASSWORD
+            - POSTGRES_DB="mlsb"
+        volumes:
+            - "postgres:/data"
+        ports:
+            - "5433:5433"
+
+    redis:
+        image: "redis:alpine"
+        command: redis-server --requirepass devpassword
+        volumes:
+            - 'redis:/data'
+        ports:
+            - "6379:6379"
+
+
+
+volumes:
+    redis:
+    postgres:
