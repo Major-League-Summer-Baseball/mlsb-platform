@@ -1,0 +1,37 @@
+version: '2.1'
+services:
+    postgres:
+        restart: always
+        image: postgres:10
+        environment:
+            - POSTGRES_USER=$ADMIN
+            - POSTGRES_PASSWORD=$PASSWORD
+            - POSTGRES_DB="mlsb"
+        volumes:
+            - "postgres:/data"
+        ports:
+            - "5433:5433"
+
+    redis:
+        image: "redis:alpine"
+        command: redis-server --requirepass devpassword
+        volumes:
+            - 'redis:/data'
+        ports:
+            - "6379:6379"
+
+    mlsb:
+        restart: always
+        build: .
+        ports:
+            - "5000:5000"
+        volumes:
+            - .:/app
+        depends_on:
+            - postgres
+            - redis
+        entrypoint: ["python", "runserver.py", "runserver"]
+
+volumes:
+    redis:
+    postgres:
