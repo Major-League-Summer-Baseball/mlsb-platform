@@ -1,4 +1,4 @@
-version: '2.1'
+version: "3"
 services:
     postgres:
         restart: always
@@ -38,7 +38,11 @@ services:
         depends_on:
             - postgres
             - redis
-        entrypoint: ["python", "runserver.py", "runserver"]
+        command: >
+            gunicorn -b 0.0.0.0:5000
+                --access-logfile -
+                --reload
+                "runserver:app"
 
 volumes:
     redis:
