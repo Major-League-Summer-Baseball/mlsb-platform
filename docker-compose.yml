@@ -1,25 +1,5 @@
 version: "3"
 services:
-    postgres:
-        restart: always
-        image: postgres:10
-        environment:
-            - POSTGRES_USER=$ADMIN
-            - POSTGRES_PASSWORD=$PASSWORD
-            - POSTGRES_DB="mlsb"
-        volumes:
-            - "postgres:/data"
-        ports:
-            - "5433:5433"
-
-    redis:
-        image: "redis:alpine"
-        command: redis-server --requirepass devpassword
-        volumes:
-            - 'redis:/data'
-        ports:
-            - "6379:6379"
-
     mlsb:
         environment:
             - ADMIN=$ADMIN
@@ -43,6 +23,28 @@ services:
                 --access-logfile -
                 --reload
                 "runserver:app"
+
+    postgres:
+        restart: always
+        image: postgres:10
+        environment:
+            - POSTGRES_USER=$ADMIN
+            - POSTGRES_PASSWORD=$PASSWORD
+            - POSTGRES_DB="mlsb"
+        volumes:
+            - "postgres:/data"
+        ports:
+            - "5433:5433"
+
+    redis:
+        image: "redis:alpine"
+        command: redis-server --requirepass devpassword
+        volumes:
+            - 'redis:/data'
+        ports:
+            - "6379:6379"
+
+
 
 volumes:
     redis:
