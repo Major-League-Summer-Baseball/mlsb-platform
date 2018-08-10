@@ -16,8 +16,8 @@ fi
 
 
 if [[ -z "${DATABASE_URL}" ]]; then
-  DATABASE_URL="postgresql://user:secret@localhost:5433/mlsb"
-  echo "DATABASE_URL environment variable not set default=postgresql://user:secret@localhost:5433/mlsb"
+  DATABASE_URL="postgresql://$ADMIN:$PASSWORD@postgres:5432/mlsb"
+  echo "DATABASE_URL environment variable not set default=postgresql://$ADMIN:$PASSWORD@postgres:5432/mlsb"
   export DATABASE_URL
 fi
   
@@ -41,7 +41,7 @@ fi
 
 if [[ -z "${REDIS_URL}" ]]; then
   REDIS_URL="secret"
-  echo "REDIS_URL environment variable not set default=redis://localhost:6379/1"
+  echo "REDIS_URL environment variable not set default=redis://redis:6379/1"
   export REDIS_URL
 fi
 
@@ -49,7 +49,7 @@ docker-compose build
 echo "Done building"
 docker-compose up -d
 echo "App is up and runnning"
-docker-compose exec mlsb python initDB.py
+winpty docker-compose exec mlsb python initDB.py
 echo "Database tables created"
 
 

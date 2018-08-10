@@ -12,14 +12,14 @@ services:
         restart: always
         build: .
         ports:
-            - "5000:5000"
+            - 8080:8080
         volumes:
             - .:/app
         depends_on:
             - postgres
             - redis
         command: >
-            gunicorn -b 0.0.0.0:5000
+            gunicorn -b 0.0.0.0:8080
                 --access-logfile -
                 --reload
                 "runserver:app"
@@ -30,11 +30,14 @@ services:
         environment:
             - POSTGRES_USER=$ADMIN
             - POSTGRES_PASSWORD=$PASSWORD
-            - POSTGRES_DB="mlsb"
+            - POSTGRES_DB=mlsb
         volumes:
             - "postgres:/data"
         ports:
-            - "5433:5433"
+            - 5433:5432
+        expose:
+            - 5433
+            - 5432
 
     redis:
         image: "redis:alpine"
@@ -42,7 +45,10 @@ services:
         volumes:
             - 'redis:/data'
         ports:
-            - "6379:6379"
+            - 6380:6379
+        expose:
+            - 6380
+            - 6379
 
 
 
