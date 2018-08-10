@@ -21,6 +21,14 @@ services:
             - "6379:6379"
 
     mlsb:
+        environment:
+            - ADMIN=$ADMIN
+            - PASSWORD=$PASSWORD
+            - KIK=$KIK
+            - KIKPW=$KIKPW
+            - DATABASE_URL=$DATABASE_URL
+            - SECRET_KEY=$SECRET_KEY
+            - REDIS_URL=$REDIS_URL
         restart: always
         build: .
         ports:
