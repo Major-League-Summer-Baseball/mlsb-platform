@@ -12,7 +12,7 @@ RUN mkdir /mlsb
 
 WORKDIR /mlsb
 
-COPY . /mlsb-bot
+COPY . /mlsb
 
 RUN pip install --no-cache-dir -r requirements.txt
 
