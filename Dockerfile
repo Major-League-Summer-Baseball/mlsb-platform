@@ -2,9 +2,15 @@ FROM python:3.6
 
 Label maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
 
-RUN mkdir /mlsb-bot
+RUN apt-get update && apt-get install -y \
+        libmemcached11 \
+        libmemcachedutil2 \
+        libmemcached-dev \
+        libz-dev
 
-WORKDIR /mlsb-bot
+RUN mkdir /mlsb
+
+WORKDIR /mlsb
 
 COPY . /mlsb-bot
 
