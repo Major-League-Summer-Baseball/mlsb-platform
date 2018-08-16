@@ -14,17 +14,14 @@ import logging
 import sys
 from flask.ext.cache import Cache
 
+URL = os.environ['DATABASE_URL']
+SECRET_KEY = os.environ['SECRET_KEY']
 local = False
-try:
-    # running local
-    from api.credentials import URL, SECRET_KEY
-    # locally just use simple cache
+if "REDIS_URL" not in os.environ:
     cache = Cache(config={'CACHE_TYPE': 'simple'})
     local = True
-    print("Running Locally")
-except:
-    URL = os.environ['DATABASE_URL']
-    SECRET_KEY = os.environ['SECRET_KEY']
+    print("Using a simple cache")
+else:
     # on a machine use a real cache
     cache = Cache(config={'CACHE_TYPE': 'redis',
                           'CACHE_REDIS_URL': os.environ['REDIS_URL']})

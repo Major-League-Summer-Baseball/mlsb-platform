@@ -11,16 +11,14 @@ from pprint import PrettyPrinter
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
 from datetime import datetime, timedelta
 import os
-try:
-    # running local
-    local = True
-    from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
-except:
-    ADMIN = os.environ['ADMIN']
-    PASSWORD = os.environ['PASSWORD']
-    KIK = os.environ['KIK']
-    KIKPW = os.environ['KIKPW']
 from base64 import b64encode
+
+# environment variables
+ADMIN = os.environ['ADMIN']
+PASSWORD = os.environ['PASSWORD']
+KIK = os.environ['KIK']
+KIKPW = os.environ['KIKPW']
+
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
 }

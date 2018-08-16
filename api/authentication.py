@@ -8,19 +8,12 @@ from functools import wraps
 from flask import request, Response
 from flask import session
 import os
-try:
-    # running local
-    local = True
-    from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
-except:
-    ADMIN = os.environ['ADMIN']
-    PASSWORD = os.environ['PASSWORD']
-    KIK = os.environ['KIK']
-    KIKPW = os.environ['KIKPW']
-
-
 from api.model import Team, Player
 
+ADMIN = os.environ['ADMIN']
+PASSWORD = os.environ['PASSWORD']
+KIK = os.environ['KIK']
+KIKPW = os.environ['KIKPW']
 
 def check_auth(username, password):
     """This function is called to check if a username /
