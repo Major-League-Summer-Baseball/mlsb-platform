@@ -41,7 +41,7 @@ if [[ -z "${SECRET_KEY}" ]]; then
 fi
 
 if [[ -z "${REDIS_URL}" ]]; then
-  REDIS_URL="secret"
+  REDIS_URL="redis://redis:6379/1"
   echo "REDIS_URL environment variable not set (default=$REDIS_URL)"
   export REDIS_URL
 fi
