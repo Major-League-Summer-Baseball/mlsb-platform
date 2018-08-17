@@ -582,9 +582,10 @@ def get_leagues(year):
         leagues[league.id] = {'name': league.name, 'teams': []}
         teams = team_stats(year, league.id)
         for team in teams:
+            espys = "{0:.2f}".format(Team.query.get(team).espys_awarded())
             valid_form = {'name': teams[team]['name'],
                           'id': team,
-                          'espys': Team.query.get(team).espys_awarded(),
+                          'espys': espys,
                           'games': teams[team]['games'],
                           'wins': teams[team]['wins'],
                           'losses': teams[team]['losses'],
