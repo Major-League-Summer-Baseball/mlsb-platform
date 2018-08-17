@@ -54,4 +54,4 @@ echo "App is up and runnning"
 # sleep to ensure the database is up and running before calling init
 sleep 5s
 winpty docker-compose exec mlsb python initDB.py
-echo "Database tables created"
+echo "Finished initializing database"

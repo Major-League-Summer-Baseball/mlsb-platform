@@ -57,6 +57,8 @@ DB.engine.execute('''
                      DROP TABLE IF EXISTS league;
                 ''')
 DB.create_all()
+print("Created tables")
+print("Adding mock data ...")
 
 # add the unassigned bats player
 DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
@@ -65,14 +67,12 @@ DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
 # add the fun counts
 funs = requests.get("http://www.mlsb.ca/api/fun").json()
 for fun in funs:
-    print(fun)
     DB.session.add(Fun(year=fun['year'], count=fun['count']))
 
 # add all the sponsors
 _sponsors = requests.get('http://www.mlsb.ca/api/sponsors').json()
 sponsors = []
 for sponsor in _sponsors:
-    print(sponsor)
     temp = Sponsor(sponsor['sponsor_name'],
                    link=sponsor['link'],
                    description=sponsor['description'])
@@ -146,7 +146,6 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 week_ago = today - datetime.timedelta(days=7)
 next_week = today + datetime.timedelta(days=3)
-
 last_week_string = week_ago.strftime( "%Y-%m-%d")
 next_week_string = next_week.strftime( "%Y-%m-%d")
 games = [Game(last_week_string,
@@ -219,3 +218,5 @@ for game in games:
                      game.home_team_id,
                      team_player_lookup[game.home_team_id])
 DB.session.commit()
+
+print("Finished adding mock data")
