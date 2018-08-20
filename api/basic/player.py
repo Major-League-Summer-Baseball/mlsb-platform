@@ -16,11 +16,13 @@ parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
 parser.add_argument('email', type=str)
 parser.add_argument('password', type=str)
+parser.add_argument('active', type=int)
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('player_name', type=str, required=True)
 post_parser.add_argument('gender', type=str)
 post_parser.add_argument('email', type=str, required=True)
 post_parser.add_argument('password', type=str)
+post_parser.add_argument("active", type=int)
 
 
 class PlayerAPI(Resource):
@@ -80,6 +82,7 @@ class PlayerAPI(Resource):
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
                 email: the players email (string)
+                active: 1 if true and 0 otherwise
             Returns:
                 if found and successful
                     status: 200
@@ -106,15 +109,19 @@ class PlayerAPI(Resource):
         player_name = None
         gender = None
         email = None
+        active = True
         if args['player_name']:
             player_name = args['player_name']
         if args['gender']:
             gender = args['gender']
         if args['email']:
             email = args['email']
+        if args['active']:
+            active = args['active'] == 1 if True else False 
         player.update(name=player_name,
                       gender=gender,
-                      email=email)
+                      email=email,
+                      active=active)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -162,6 +169,7 @@ class PlayerListAPI(Resource):
                 gender: a one letter character representing gender (string)
                 email: the email of the player (string)
                 password: the password of the player(string)
+                active: 1 if true and 0 otherwise
             Returns:
                 if successful
                     status: 200
@@ -186,6 +194,7 @@ class PlayerListAPI(Resource):
         player_name = None
         email = None
         password = "default"
+        active = True
         if args['player_name']:
             player_name = args['player_name']
         if args['gender']:
@@ -194,7 +203,9 @@ class PlayerListAPI(Resource):
             email = args['email']
         if args['password']:
             password = args['password']
-        player = Player(player_name, email, gender, password)
+        if args['active']:
+            active = args['active'] == 1 if True else False 
+        player = Player(player_name, email, gender, password, active=active)
         DB.session.add(player)
         DB.session.commit()
         result = player.id

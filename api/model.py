@@ -273,7 +273,8 @@ class Player(DB.Model):
         '''
         return {"player_id": self.id,
                 "player_name": self.name,
-                "gender": self.gender}
+                "gender": self.gender,
+                "active": self.active}
 
     def admin_json(self):
         '''
@@ -282,7 +283,8 @@ class Player(DB.Model):
         return {"player_id": self.id,
                 "player_name": self.name,
                 "gender": self.gender,
-                "email": self.email}
+                "email": self.email,
+                "active": self.active}
 
     def update(self,
                name=None,
