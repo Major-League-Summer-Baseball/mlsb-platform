@@ -4,52 +4,52 @@
 <h4>POST</h4>
 <code>{{route.vfun}}</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">year</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Year</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">year</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Year</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Success 200</strong>
-	returns a list of Fun Objects {'year': int, 'count': int}
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">year</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The year the fun occurred</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">count</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The count of the total fun for that year</td>
-			</tr>
-		</tbody>
-	</table>
-	<h5>Example</h5>
-	<code>
-		[  
+    returns a list of Fun Objects {'year': int, 'count': int}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">year</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The year the fun occurred</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">count</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The count of the total fun for that year</td>
+            </tr>
+        </tbody>
+    </table>
+    <h5>Example</h5>
+    <code>
+        [  
         {'count': 89, 'year': 2002},
         {'count': 100, 'year': 2003},
         {'count': 177, 'year': 2004},

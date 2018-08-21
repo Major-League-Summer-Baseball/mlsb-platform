@@ -5,310 +5,310 @@
 <h4>GET</h4>
 <code>{{route.bat}}/:id</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameters</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Bats-ID</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Bats-ID</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">200</td>
-				<td class="colo-md-3"><a href="{{route.dobat}}">Bat Object</a></td>
-				<td class="colo-md-3">Successful</td>
-			</tr>			
-			<tr>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">200</td>
+                <td class="colo-md-3"><a href="{{route.dobat}}">Bat Object</a></td>
+                <td class="colo-md-3">Successful</td>
+            </tr>            
+            <tr>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 
 <h4>DELETE</h4>
 <code>{{route.bat}}/:id</code>
 <p style="color:#808080">
-	Permission: admin
+    Permission: admin
 </p>
 <strong>Parameters</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Bats-ID</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Bats-ID</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">200</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">Succesfull</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">200</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">Succesfull</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 
 <h4>PUT</h4>
 <code>{{route.bat}}/:id</code>
 <p style="color:#808080">
-	Permission: admin
+    Permission: admin
 </p>
 <strong>Parameters</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">game_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Games-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">player_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Players-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">rbi</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The number of runs batted in</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">team_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">inning</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The inning the hit occurred</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">hit</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The type of hit it was</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">game_id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Games-ID</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">player_id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Players-ID</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">rbi</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The number of runs batted in</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">team_id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Teams-ID</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">inning</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The inning the hit occurred</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">hit</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The type of hit it was</td>
+            </tr>
+        </tbody>
+    </table>
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">200</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">Successful</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.InvalidField.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.InvalidField.message}}</td>
-			</tr>			<tr>
-				<td class="colo-md-3">{{errors.PlayerDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.PlayerDoesNotExist.message}}</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.GameDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.GameDoesNotExist.message}}</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">200</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.InvalidField.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.InvalidField.message}}</td>
+            </tr>            <tr>
+                <td class="colo-md-3">{{errors.PlayerDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.PlayerDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.GameDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.GameDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 <h4>POST</h4>
 <code>{{route.bat}}</code>
 <p style="color:#808080">
-	Permission: admin
+    Permission: admin
 </p>
 <strong>Parameters</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">game_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Games-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">player_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Players-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">rbi</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The number of runs batted in</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">team_id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">inning</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The inning the hit occurred</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">hit</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The type of hit it was</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">game_id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Games-ID</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">player_id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Players-ID</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">rbi</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The number of runs batted in</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">team_id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Teams-ID</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">inning</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The inning the hit occurred</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">hit</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The type of hit it was</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">201</td>
-				<td class="colo-md-3">int: bat_id (created bat id)</td>
-				<td class="colo-md-3">Successful</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">400</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">Missing required parameter</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.InvalidField.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.InvalidField.message}}</td>
-			</tr>			<tr>
-				<td class="colo-md-3">{{errors.PlayerDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.PlayerDoesNotExist.message}}</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.GameDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.GameDoesNotExist.message}}</td>
-			</tr>
-			<tr>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">201</td>
+                <td class="colo-md-3">int: bat_id (created bat id)</td>
+                <td class="colo-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">400</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">Missing required parameter</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.InvalidField.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.InvalidField.message}}</td>
+            </tr>            <tr>
+                <td class="colo-md-3">{{errors.PlayerDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.PlayerDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.GameDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.GameDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.status_code}}</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">{{errors.BatDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 
 <h4>GET</h4>
 <code>{{route.bat}}</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameters</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">--</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">200</td>
-				<td class="colo-md-3">List of <a href="{{route.dobat}}">Bats</a></td>
-				<td class="colo-md-3">Success</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">200</td>
+                <td class="colo-md-3">List of <a href="{{route.dobat}}">Bats</a></td>
+                <td class="colo-md-3">Success</td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}
