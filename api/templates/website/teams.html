@@ -1,25 +1,25 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-	<table id="teams" width="100%" class="display">
-		<thead>
-			<th>Name
-		</thead>
-		<tbody>
-			{% for team in teams %}
-				<tr>
-					<td><a href="{{route.teamspage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+    <table id="teams" width="100%" class="display">
+        <thead>
+            <th>Name
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                <tr>
+                    <td><a href="{{route.teamspage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 {% block script %}
 <script>
 function ready(){
-	console.log("Done");
-	$('#teams').DataTable({
-		"order": [[0, "asc"]]
-	});
+    console.log("Done");
+    $('#teams').DataTable({
+        "order": [[0, "asc"]]
+    });
 }
 </script>
 {% endblock %}

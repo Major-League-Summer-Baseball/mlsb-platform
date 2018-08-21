@@ -2,15 +2,15 @@
 {% block content %}
 
 <select id="teamId">
-	{% for team in teams %}
-		<option value="{{team.id}}">
-			{{team.name}}
-		</option>
-	{% endfor %}
+    {% for team in teams %}
+        <option value="{{team.id}}">
+            {{team.name}}
+        </option>
+    {% endfor %}
 </select>
 
 <button type="button" class="btn btn-info" onclick="findPlayers();" >
-	Unsubscribed Players
+    Unsubscribed Players
 </button>
 <ul class="listgroup leaderList" id="playerList">
 </ul>
@@ -20,37 +20,37 @@
 {% block script %}
 <script>
 function ready(){
-	console.log("Done");
-	$('#teams').DataTable({
-		"order": [[0, "asc"]]
-	});
+    console.log("Done");
+    $('#teams').DataTable({
+        "order": [[0, "asc"]]
+    });
 }
 
 function findPlayers(){
-	$('#playerList').empty();
-	var teamId = $('#teamId').val();
-	var element;
-	var url = "{{route.findunsubscribed}}/{{year}}/" + teamId; 
-	$.ajax
-	({
-	  type: "GET",
-	  url: url,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
+    $('#playerList').empty();
+    var teamId = $('#teamId').val();
+    var element;
+    var url = "{{route.findunsubscribed}}/{{year}}/" + teamId; 
+    $.ajax
+    ({
+      type: "GET",
+      url: url,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
       dataType: "json",
-	  success: function (players){
-	  	console.log(players);
-	  	for (var i=0; i<players.length; i++){
-	  		element = '<li class="list-group-item leaderPoint">' + players[i].player_name + '</li>'
-	  		$('#playerList').append(element);
-	  	}
-	  }, error: function(request, error){
-        alert("There was a problem. Contact scores@mlsb.ca");
-        console.log(request);
-        console.log(error);
+      success: function (players){
+          console.log(players);
+          for (var i=0; i<players.length; i++){
+              element = '<li class="list-group-item leaderPoint">' + players[i].player_name + '</li>'
+              $('#playerList').append(element);
+          }
+      }, error: function(request, error){
+          alert("There was a problem. Contact scores@mlsb.ca");
+          console.log(request);
+          console.log(error);
     } 
-	});
+    });
 }
 </script>
 {% endblock %}

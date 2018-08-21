@@ -1,63 +1,63 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-	<ul class="nav nav-pills" id="listing">
-		{% for id, league in games.items() %}
-			{% if loop.index == 1 %}
-				<li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
-			{% else %}
-				<li role="presentation" class="presentation"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
-			{% endif %}
-		{% endfor %}
-		
-	</ul>
-	<div class="tab-content">
-	{% for id, league in games.items() %}
-			{% if loop.index == 1 %}
-				<div id="{{id}}" class="tab-pane fade in active">
-			{% else %}
-				<div id="{{id}}" class="tab-pane fade in">
-			{% endif %}
-		<h4>{{league.name}}
-		<table id="{{id}}League" width="100%" class="display">
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Time</th>
-					<th>Score</th>
-					<th>Home Team</th>
-					<th>Away Team</th>
-					<th>Field</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for game in league.games %}
-					<tr>
-						<td>{{game.date}}</td>
-						<td>{{game.time}}</td>
-						<td>{{game.score}}</td>
-						<td><a href="{{route.teampage}}/{{year}}/{{game.home_team_id}}">{{game.home_team}}</a></td>
-						<td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
-						<td>{{game.field}}</td>
-						<td>{{game.status}}</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		</div>
-	{% endfor %}
-	</div>
+    <ul class="nav nav-pills" id="listing">
+        {% for id, league in games.items() %}
+            {% if loop.index == 1 %}
+                <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
+            {% else %}
+                <li role="presentation" class="presentation"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
+            {% endif %}
+        {% endfor %}
+        
+    </ul>
+    <div class="tab-content">
+    {% for id, league in games.items() %}
+            {% if loop.index == 1 %}
+                <div id="{{id}}" class="tab-pane fade in active">
+            {% else %}
+                <div id="{{id}}" class="tab-pane fade in">
+            {% endif %}
+        <h4>{{league.name}}
+        <table id="{{id}}League" width="100%" class="display">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Score</th>
+                    <th>Home Team</th>
+                    <th>Away Team</th>
+                    <th>Field</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in league.games %}
+                    <tr>
+                        <td>{{game.date}}</td>
+                        <td>{{game.time}}</td>
+                        <td>{{game.score}}</td>
+                        <td><a href="{{route.teampage}}/{{year}}/{{game.home_team_id}}">{{game.home_team}}</a></td>
+                        <td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
+                        <td>{{game.field}}</td>
+                        <td>{{game.status}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endfor %}
+    </div>
 {% endblock %}
 {% block script %}
 <script>
 $(document).ready(ready());
 function ready(){
-	console.log("Done");
-	{% for id, league in games.items() %}
-		$('#{{id}}League').DataTable({
-		"order": [[0, "asc"]]
-	});
-	{% endfor %}
+    console.log("Done");
+    {% for id, league in games.items() %}
+        $('#{{id}}League').DataTable({
+            "order": [[0, "asc"]]
+        });
+    {% endfor %}
 }
 </script>
 {% endblock %}
