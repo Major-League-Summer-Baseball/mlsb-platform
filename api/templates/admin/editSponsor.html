@@ -1,85 +1,85 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
 <ul class="nav nav-pills">
-		<li role="presentation" class="active"><a data-toggle="pill" href="#act">Active Sponsors</a></li>
-		<li role="presentation" class=""><a data-toggle="pill" href="#nact">Non-Active Sponsors</a></li>
-	</ul>
-	<div class="tab-content">
-		<div id="act" class="tab-pane fade in active">
-			<table id="myTable" class="table table-bordered table-striped">
-				<thead>
-					<th>ID</td>
-					<th>Name</th>
-					<th>Link</th>
-					<th>Description</th>
-					<th>
-						<button type="button" class="btn btn-warning" onclick="putSponsors();" id="updateButton" disabled>
-							Update Sponsors
-						</button>
-					</th>
-				</thead>
-				<tbody id="sponsorTable" >
-					{% for entry in sponsors %}
-						<tr class="sponsorEntry" id="{{entry.sponsor_id}}">
-							<td>
-								<a href="{{route.adeactivatesponsor}}/{{year}}/{{entry.sponsor_id}}">{{entry.sponsor_id}}</a>
-							</td>
-							<td>
-								<input class="input" value="{{entry.sponsor_name}}" id='{{entry.sponsor_id}}_sponsor_name' onchange="change({{entry.sponsor_id}}, 'sponsor_name');">
-							</td>
-							<td>
-								<input class="input" value="{{entry.link}}" id='{{entry.sponsor_id}}_link' onchange="change({{entry.sponsor_id}}, 'link');">
-							</td>
-							<td>
-								<input class="input" value="{{entry.description}}" id='{{entry.sponsor_id}}_description' onchange="change({{entry.sponsor_id}}, 'description');">
-							</td>
-							
-							<td>
-								<button type="button" class="btn btn-danger" onclick="deleteSponsor({{entry.sponsor_id}});">
-									Delete
-								</button>
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-				<tfoot>
-					<tr>
-						<td>
-							<button  type="button" class="btn btn-info" onclick="postSponsor()">
-								Add Sponsor
-							</button>
-						</td>
-						<td>
-							<input  type="text" class="newSponsor" value="" id="newName" placeholder="Sponsor">
-						</td>
-						<td>
-							<input type="text" class="newSponsor" value="" id="newLink" placeholder="Link">
-						</td>
-						<td>
-							<input type="text" class="newSponsor" value="" id="newDescription" placeholder="Description">
-						</td>
-						<td></td>
-					</tr>
-				</tfoot>
-			</table>
-		</div>
-		<div id="nact" class="tab-pane fade in">
-			<table id="myTable" class="table table-bordered table-striped">
-				<thead>
-					<th>Name</th>
-				</thead>
-				<tbody id="sponsorNackTable" >
-					{% for entry in not_active %}
-						<tr class="sponsorEntry" id="{{entry.sponsor_id}}">
-							<td>
-								<a href="{{route.adeactivatesponsor}}/{{year}}/{{entry.sponsor_id}}">{{entry.sponsor_name}}</a>
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-	</div>
+        <li role="presentation" class="active"><a data-toggle="pill" href="#act">Active Sponsors</a></li>
+        <li role="presentation" class=""><a data-toggle="pill" href="#nact">Non-Active Sponsors</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="act" class="tab-pane fade in active">
+            <table id="myTable" class="table table-bordered table-striped">
+                <thead>
+                    <th>ID</td>
+                    <th>Name</th>
+                    <th>Link</th>
+                    <th>Description</th>
+                    <th>
+                        <button type="button" class="btn btn-warning" onclick="putSponsors();" id="updateButton" disabled>
+                            Update Sponsors
+                        </button>
+                    </th>
+                </thead>
+                <tbody id="sponsorTable" >
+                    {% for entry in sponsors %}
+                        <tr class="sponsorEntry" id="{{entry.sponsor_id}}">
+                            <td>
+                                <a href="{{route.adeactivatesponsor}}/{{year}}/{{entry.sponsor_id}}">{{entry.sponsor_id}}</a>
+                            </td>
+                            <td>
+                                <input class="input" value="{{entry.sponsor_name}}" id='{{entry.sponsor_id}}_sponsor_name' onchange="change({{entry.sponsor_id}}, 'sponsor_name');">
+                            </td>
+                            <td>
+                                <input class="input" value="{{entry.link}}" id='{{entry.sponsor_id}}_link' onchange="change({{entry.sponsor_id}}, 'link');">
+                            </td>
+                            <td>
+                                <input class="input" value="{{entry.description}}" id='{{entry.sponsor_id}}_description' onchange="change({{entry.sponsor_id}}, 'description');">
+                            </td>
+                            
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="deleteSponsor({{entry.sponsor_id}});">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>
+                            <button  type="button" class="btn btn-info" onclick="postSponsor()">
+                                Add Sponsor
+                            </button>
+                        </td>
+                        <td>
+                            <input  type="text" class="newSponsor" value="" id="newName" placeholder="Sponsor">
+                        </td>
+                        <td>
+                            <input type="text" class="newSponsor" value="" id="newLink" placeholder="Link">
+                        </td>
+                        <td>
+                            <input type="text" class="newSponsor" value="" id="newDescription" placeholder="Description">
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div id="nact" class="tab-pane fade in">
+            <table id="myTable" class="table table-bordered table-striped">
+                <thead>
+                    <th>Name</th>
+                </thead>
+                <tbody id="sponsorNackTable" >
+                    {% for entry in not_active %}
+                        <tr class="sponsorEntry" id="{{entry.sponsor_id}}">
+                            <td>
+                                <a href="{{route.adeactivatesponsor}}/{{year}}/{{entry.sponsor_id}}">{{entry.sponsor_name}}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 <!-- the error modal -->
 <div class="modal fade" id="file_modal">
   <div class="modal-dialog">
@@ -105,120 +105,120 @@
 var updates = {};
 
 function postSponsor(){
-	console.log("Fucker");
-	var sponsor_name, link, description;
-	sponsor_name = $("#newName").val();
-	link = $("#newLink").val();
-	description = $("#newDescription").val();
-	var data = { 
-				"sponsor_name":sponsor_name,
-				"link": link,
-				"description": description
-				 };
-	console.log(data);
-	$.ajax
-	({
-	  type: "POST",
-	  url: "{{route.sponsor}}",
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
-	  data: JSON.stringify(data),
+    console.log("Fucker");
+    var sponsor_name, link, description;
+    sponsor_name = $("#newName").val();
+    link = $("#newLink").val();
+    description = $("#newDescription").val();
+    var data = { 
+                "sponsor_name":sponsor_name,
+                "link": link,
+                "description": description
+                 };
+    console.log(data);
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.sponsor}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      username: '{{admin}}',
+      password: '{{password}}',
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (sponsor_id){
-  		alert('Sponsor was added successfully');
-  		var i1, i2, i3, i4;
-  		i1 = '<input class="input" value="' + sponsor_name + '" id="' + sponsor_id + '_sponsor_name" onclick="change('+ sponsor_id+', \'sponsor_name\')">';
-  		i2 = '<input class="input" value="' + link + '" id="' + sponsor_id + '_link" onclick="change('+ sponsor_id+', \'link\')">';
-  		i3 = '<input class="input" value="' + description + '" id="' + sponsor_id + '_description" onclick="change('+ sponsor_id+', \'description\')">';
-  		i4 = '	<button type="button" class="btn btn-danger" onclick="deleteSponsor('+sponsor_id+');">Delete</button>'
-  		
-  		$("#sponsorTable").append('<tr id="'+sponsor_id+'""><td>' + sponsor_id + '</td><td>' + i1 + '</td><td>' + i2 + '</td><td>' + i3 + '</td><td>'+ i4 + '</td></tr>');
-		$("#newName").val('');
-		$("#newLink").val('');
-		$("#newDescription").val('');
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request);
-        console.log(error);
-    } 
-	});
+      success: function (sponsor_id){
+          alert('Sponsor was added successfully');
+          var i1, i2, i3, i4;
+          i1 = '<input class="input" value="' + sponsor_name + '" id="' + sponsor_id + '_sponsor_name" onclick="change('+ sponsor_id+', \'sponsor_name\')">';
+          i2 = '<input class="input" value="' + link + '" id="' + sponsor_id + '_link" onclick="change('+ sponsor_id+', \'link\')">';
+          i3 = '<input class="input" value="' + description + '" id="' + sponsor_id + '_description" onclick="change('+ sponsor_id+', \'description\')">';
+          i4 = '    <button type="button" class="btn btn-danger" onclick="deleteSponsor('+sponsor_id+');">Delete</button>'
+          
+          $("#sponsorTable").append('<tr id="'+sponsor_id+'""><td>' + sponsor_id + '</td><td>' + i1 + '</td><td>' + i2 + '</td><td>' + i3 + '</td><td>'+ i4 + '</td></tr>');
+          $("#newName").val('');
+          $("#newLink").val('');
+          $("#newDescription").val('');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request);
+          console.log(error);
+      }
+    });
 }
 
 function change(id, cat){
-	if (!(id  in updates)){
-		updates[id] = {}
-	}
-	updates[id][cat] = $('#' + id + '_' + cat).val();
-	$('#updateButton').attr('disabled', false);
-	console.log(updates);
+    if (!(id  in updates)){
+        updates[id] = {}
+    }
+    updates[id][cat] = $('#' + id + '_' + cat).val();
+    $('#updateButton').attr('disabled', false);
+    console.log(updates);
 }
 
 function deleteSponsor(id){
-	console.log("Fucker");
-	var data = { "id": id};
-	$.ajax
-	({
-	  type: "DELETE",
-	  url: "{{route.sponsor}}/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
-	  data: JSON.stringify(data),
+    console.log("Fucker");
+    var data = { "id": id};
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.sponsor}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      username: '{{admin}}',
+      password: '{{password}}',
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	alert('Sponsor was removed successfully');
-	  	$('#'+id).remove();
-	    console.log(results	)
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('Sponsor was removed successfully');
+          $('#'+id).remove();
+          console.log(results    )
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request.text);
+          console.log(error);
+      }
+    });
 }
 
 function putSponsors(){
-	for (var id in updates){
-		putSponsor(id, updates[id]);
-	}
+    for (var id in updates){
+        putSponsor(id, updates[id]);
+    }
 }
 function putSponsor(id, attributes){
-	console.log("Fucker", attributes);
-	console.log(id);
-	$.ajax
-	({
-	  type: "PUT",
-	  url: "{{route.sponsor}}/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  username: '{{admin}}',
-	  password: '{{password}}',
-	  data: JSON.stringify(attributes),
+    console.log("Fucker", attributes);
+    console.log(id);
+    $.ajax
+    ({
+      type: "PUT",
+      url: "{{route.sponsor}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      username: '{{admin}}',
+      password: '{{password}}',
+      data: JSON.stringify(attributes),
       dataType: "json",
-	  success: function (results){
-	  	alert('sponsor was updated successfully');
-	    console.log(results)
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('sponsor was updated successfully');
+          console.log(results)
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request.text);
+          console.log(error);
+      }
+    });
 }
 
 function showErrors(response, status_code){
-	$('#file_modal').modal("show");
-	$('#errors').empty();
-	var element;
-	$('#modal-title').text( response.message + " - " + status_code);
-	element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
-	$('#errors').append(element);	
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element);    
 
 }
 

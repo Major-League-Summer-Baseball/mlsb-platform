@@ -1,106 +1,106 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
 <table id="myTable" class="table table-bordered table-striped">
-	<thead>
-		<th>ID</td>
-		<th>color</th>
-		<th>Sponsor</th>
-		<th>League</th>
-		<th>Year</th>
-		<th>ESPYS</th>
-		<th>
-			<button type="button" class="btn btn-warning" onclick="putTeams();" id="updateButton" disabled>
-				Update Teams
-			</button></th>
-		<th>
-			--
-		</th>
+    <thead>
+        <th>ID</td>
+        <th>color</th>
+        <th>Sponsor</th>
+        <th>League</th>
+        <th>Year</th>
+        <th>ESPYS</th>
+        <th>
+            <button type="button" class="btn btn-warning" onclick="putTeams();" id="updateButton" disabled>
+                Update Teams
+            </button></th>
+        <th>
+            --
+        </th>
 
-	</thead>
-	<tbody id="teamTable" >
-		{% for entry in teams %}
-			<tr class="teamEntry" id="{{entry.team_id}}">
-				<td>
-					{{entry.team_id}}
-				</td>
-				<td>
-					<input class="input" value="{{entry.color}}" id='{{entry.team_id}}_color' onchange="change({{entry.team_id}}, 'color');">
-				</td>
-				<td>
-					<select class="selectpicker" value="" id="{{entry.team_id}}_sponsor_id" onclick="change({{entry.team_id}}, 'sponsor_id');">
-						{% for sponsor in sponsors %}
-							{% if entry.sponsor_id == sponsor.sponsor_id %}
-								<option value="{{sponsor.sponsor_id}}" selected="selected">{{sponsor.sponsor_name}}</option>
-							{% else %}
-								<option value="{{sponsor.sponsor_id}}" >{{sponsor.sponsor_name}}</option>
-							{% endif %}
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<select class="selectpicker" value="" id="{{entry.team_id}}_league_id" onclick="change({{entry.team_id}}, 'league_id');">
-						{% for league in leagues %}
-							{% if entry.league_id == league.league_id %}
-								<option value="{{league.league_id}}" selected="selected">{{league.league_name}}</option>
-							{% else %}
-								<option value="{{league.league_id}}" >{{league.league_name}}</option>
-							{% endif %}
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<input class="input" value="{{entry.year}}" id='{{entry.team_id}}_year' onchange="change({{entry.team_id}}, 'year');">
-				</td>
-				<td>
-					<a type="button" class="btn btn-info" href="{{route.editespys}}/{{year}}/{{entry.team_id}}">
-						Edit Espys
-					</a>
-				</td>
-				<td>
-					<a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/{{entry.team_id}}">
-						Edit Team Roster
-					</a>
-				</td>
-				<td>
-					<button type="button" class="btn btn-danger" onclick="deleteTeam({{entry.team_id}});">
-						Delete
-					</button>
-				</td>
-			</tr>
-		{% endfor %}
-	</tbody>
-	<tfoot>
-		<tr>
-			<td>
-				<button  type="button" class="btn btn-info" onclick="postTeam()">
-					Add Team
-				</button>
-			</td>
-			<td>
-				<input  class="newTeam" value="" id="newColor" placeholder="Color">
-			</td>
-			<td>
-				<select class="newTeam" value="" id="newSponsorId">
-						{% for sponsor in sponsors %}
-							<option value="{{sponsor.sponsor_id}}" >{{sponsor.sponsor_name}}</option>
-						{% endfor %}
-				</select>
-			</td>
-			<td>
-				<select class="newTeam" value="" id="newLeagueId">
-						{% for league in leagues %}
-							<option value="{{league.league_id}}" >{{league.league_name}}</option>
-						{% endfor %}
-				</select>
-			</td>
-			<td>
-				<input  class="newTeam" value="" id="newYear" placeholder="Year">
-			</td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-	</tfoot>
+    </thead>
+    <tbody id="teamTable" >
+        {% for entry in teams %}
+            <tr class="teamEntry" id="{{entry.team_id}}">
+                <td>
+                    {{entry.team_id}}
+                </td>
+                <td>
+                    <input class="input" value="{{entry.color}}" id='{{entry.team_id}}_color' onchange="change({{entry.team_id}}, 'color');">
+                </td>
+                <td>
+                    <select class="selectpicker" value="" id="{{entry.team_id}}_sponsor_id" onclick="change({{entry.team_id}}, 'sponsor_id');">
+                        {% for sponsor in sponsors %}
+                            {% if entry.sponsor_id == sponsor.sponsor_id %}
+                                <option value="{{sponsor.sponsor_id}}" selected="selected">{{sponsor.sponsor_name}}</option>
+                            {% else %}
+                                <option value="{{sponsor.sponsor_id}}" >{{sponsor.sponsor_name}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select class="selectpicker" value="" id="{{entry.team_id}}_league_id" onclick="change({{entry.team_id}}, 'league_id');">
+                        {% for league in leagues %}
+                            {% if entry.league_id == league.league_id %}
+                                <option value="{{league.league_id}}" selected="selected">{{league.league_name}}</option>
+                            {% else %}
+                                <option value="{{league.league_id}}" >{{league.league_name}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input class="input" value="{{entry.year}}" id='{{entry.team_id}}_year' onchange="change({{entry.team_id}}, 'year');">
+                </td>
+                <td>
+                    <a type="button" class="btn btn-info" href="{{route.editespys}}/{{year}}/{{entry.team_id}}">
+                        Edit Espys
+                    </a>
+                </td>
+                <td>
+                    <a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/{{entry.team_id}}">
+                        Edit Team Roster
+                    </a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="deleteTeam({{entry.team_id}});">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+                <button  type="button" class="btn btn-info" onclick="postTeam()">
+                    Add Team
+                </button>
+            </td>
+            <td>
+                <input  class="newTeam" value="" id="newColor" placeholder="Color">
+            </td>
+            <td>
+                <select class="newTeam" value="" id="newSponsorId">
+                        {% for sponsor in sponsors %}
+                            <option value="{{sponsor.sponsor_id}}" >{{sponsor.sponsor_name}}</option>
+                        {% endfor %}
+                </select>
+            </td>
+            <td>
+                <select class="newTeam" value="" id="newLeagueId">
+                        {% for league in leagues %}
+                            <option value="{{league.league_id}}" >{{league.league_name}}</option>
+                        {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input  class="newTeam" value="" id="newYear" placeholder="Year">
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tfoot>
 <table>
 <!-- the error modal -->
 <div class="modal fade" id="file_modal">
@@ -127,149 +127,149 @@
 var updates = {};
 
 function makeSponsors(sponsor, id){
-	var select = '<select class="selectpicker" value="" id="'+id+'_sponsor_id" onclick="change('+id+', \'sponsor_id\');">';
-	$("#newSponsorId > option").each(function(){
-		console.log(this.text, this.value)
-		if (this.value != sponsor){
-			select += '<option value="' + this.value+'">'+this.text+'</option>';
-		}else{
-			select += '<option value="' + this.value+'" selected="selected">'+this.text+'</option>';
-		}
-	});
-	select += '</select>'
-	return select
+    var select = '<select class="selectpicker" value="" id="'+id+'_sponsor_id" onclick="change('+id+', \'sponsor_id\');">';
+    $("#newSponsorId > option").each(function(){
+        console.log(this.text, this.value)
+        if (this.value != sponsor){
+            select += '<option value="' + this.value+'">'+this.text+'</option>';
+        }else{
+            select += '<option value="' + this.value+'" selected="selected">'+this.text+'</option>';
+        }
+    });
+    select += '</select>'
+    return select
 }
 
 function makeLeagues(league, id){
-	var select = '<select class="selectpicker" value="" id="'+id+'_league_id" onclick="change('+id+', \'league_id\');">';
-	$("#newLeagueId > option").each(function(){
-		console.log(this.text, this.value)
-		select += '<option value="' + this.value+'">'+this.text+'</option>';
-	});
-	select += '</select>'
-	return select
+    var select = '<select class="selectpicker" value="" id="'+id+'_league_id" onclick="change('+id+', \'league_id\');">';
+    $("#newLeagueId > option").each(function(){
+        console.log(this.text, this.value)
+        select += '<option value="' + this.value+'">'+this.text+'</option>';
+    });
+    select += '</select>'
+    return select
 }
 
 function postTeam(){
-	console.log("Fucker");
-	var color, sponsor_id, league_id, year, espys;
-	color = $('#newColor').val();
-	sponsor_id = $('#newSponsorId').val();
-	league_id = $('#newLeagueId').val();
-	year = $('#newYear').val();
+    console.log("Fucker");
+    var color, sponsor_id, league_id, year, espys;
+    color = $('#newColor').val();
+    sponsor_id = $('#newSponsorId').val();
+    league_id = $('#newLeagueId').val();
+    year = $('#newYear').val();
 
-	var data = { 
-				"color":color,
-				"sponsor_id":sponsor_id,
-				"league_id":league_id,
-				"year": year,
-				};
-	$.ajax
-	({
-	  type: "POST",
-	  url: "{{route.team}}",
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    var data = { 
+                "color":color,
+                "sponsor_id":sponsor_id,
+                "league_id":league_id,
+                "year": year,
+                };
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.team}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (team_id){
-  		alert('Team was added successfully');
-  		var i1,i2, i3, i4, i5,i6, i7, result;
-  		i1 = '<input class="input" value="' + color + '" id="' + team_id + 'color" onclick="change('+ team_id+', \'color\')">';
-  		i2 = makeSponsors(sponsor_id, team_id);
-  		i3 = makeLeagues(league_id, team_id);
-  		i4 = '<input class="input" value="' + year + '" id="' + team_id + 'color" onclick="change('+ team_id+', \'year\')">';
-    	i5 = '<a type="button" class="btn btn-info" href="{{route.editespys}}/{{year}}/'+ team_id +'">Edit Espys</a>';
-  		i6 = '<a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/'+ team_id +'">Edit Team Roster</a>';
-  		i7 = '<button type="button" class="btn btn-danger" onclick="deleteTeam('+team_id+');">Delete</button>'
-  		result = '<tr class="teamEntry" id="'+team_id+'"><td>'+team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 +'</td><td>'+ i6 + '</td><td>' + i7+'</td></tr>';
-  		$("#teamTable").append(result);
-		$('#newColor').val('');
-		$('#newSponsorId').val('');
-		$('#newLeagueId').val('');
-		$('#newYear').val('');
-		$('#newEspys').val('');
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request);
-        console.log(error);
-    } 
-	});
+      success: function (team_id){
+          alert('Team was added successfully');
+          var i1,i2, i3, i4, i5,i6, i7, result;
+          i1 = '<input class="input" value="' + color + '" id="' + team_id + 'color" onclick="change('+ team_id+', \'color\')">';
+          i2 = makeSponsors(sponsor_id, team_id);
+          i3 = makeLeagues(league_id, team_id);
+          i4 = '<input class="input" value="' + year + '" id="' + team_id + 'color" onclick="change('+ team_id+', \'year\')">';
+          i5 = '<a type="button" class="btn btn-info" href="{{route.editespys}}/{{year}}/'+ team_id +'">Edit Espys</a>';
+          i6 = '<a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/'+ team_id +'">Edit Team Roster</a>';
+          i7 = '<button type="button" class="btn btn-danger" onclick="deleteTeam('+team_id+');">Delete</button>'
+          result = '<tr class="teamEntry" id="'+team_id+'"><td>'+team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 +'</td><td>'+ i6 + '</td><td>' + i7+'</td></tr>';
+          $("#teamTable").append(result);
+          $('#newColor').val('');
+          $('#newSponsorId').val('');
+          $('#newLeagueId').val('');
+          $('#newYear').val('');
+          $('#newEspys').val('');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request);
+          console.log(error);
+      }
+    });
 }
 
 function change(id, cat){
-	if (!(id  in updates)){
-		updates[id] = {}
-	}
-	if (cat == "year" || cat == "espys"){
-		updates[id][cat] = parseInt($('#' + id + '_' + cat).val());
-	}else{
-		updates[id][cat] = $('#' + id + '_' + cat).val();
-	}
-	$('#updateButton').attr('disabled', false);
-	console.log(updates);
+    if (!(id  in updates)){
+        updates[id] = {}
+    }
+    if (cat == "year" || cat == "espys"){
+        updates[id][cat] = parseInt($('#' + id + '_' + cat).val());
+    }else{
+        updates[id][cat] = $('#' + id + '_' + cat).val();
+    }
+    $('#updateButton').attr('disabled', false);
+    console.log(updates);
 }
 
 function deleteTeam(id){
-	console.log("Fucker");
-	var data = { "id": id};
-	$.ajax
-	({
-	  type: "DELETE",
-	  url: "{{route.team}}/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    console.log("Fucker");
+    var data = { "id": id};
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.team}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	alert('Team was removed successfully');
-	  	$('#'+id).remove();
-	    console.log(results	)
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('Team was removed successfully');
+          $('#'+id).remove();
+          console.log(results    )
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request.text);
+          console.log(error);
+      }
+    });
 }
 
 function putTeams(){
-	for (var id in updates){
-		putTeam(id, updates[id]);
-	}
+    for (var id in updates){
+        putTeam(id, updates[id]);
+    }
 }
 function putTeam(id, attributes){
-	console.log("Fucker", attributes);
-	console.log(id);
-	$.ajax
-	({
-	  type: "PUT",
-	  url: "{{route.team}}/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(attributes),
+    console.log("Fucker", attributes);
+    console.log(id);
+    $.ajax
+    ({
+      type: "PUT",
+      url: "{{route.team}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(attributes),
       dataType: "json",
-	  success: function (results){
-	  	alert('team was updated successfully');
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request);
-        console.log(request.text);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('team was updated successfully');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request);
+          console.log(request.text);
+          console.log(error);
+      }
+    });
 }
 
 function showErrors(response, status_code){
-	$('#file_modal').modal("show");
-	$('#errors').empty();
-	var element;
-	$('#modal-title').text( response.message + " - " + status_code);
-	element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
-	$('#errors').append(element);	
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element);    
 }
 
 </script>

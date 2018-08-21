@@ -4,70 +4,70 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
 <br>
 <br>
 <table id="myTable" class="table table-bordered table-striped">
-	<thead>
-		<th>ID</td>
-		<th>Name</th>
-		<th>Email</th>
-		<th>Gender</th>
-		<th>
-			<button type="button" class="btn btn-warning" onclick="putPlayers();" id="updateButton" disabled>
-				Update Players
-			</button>
-		</th>
-	</thead>
-	<tbody id="playerTable" >
-		{% for entry in players %}
-			<tr class="playerEntry" id="{{entry.player_id}}">
-				<td>
-					<a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}">{{entry.player_id}}</a>
-				</td>
-				<td>
-					<input class="input" value="{{entry.player_name}}" id='{{entry.player_id}}_player_name' onchange="change({{entry.player_id}}, 'player_name');">
-				</td>
-				<td>
-					<input class="input" value="{{entry.email}}" id='{{entry.player_id}}_email' onchange="change({{entry.player_id}},'email');">
-				</td>
-				<td>
-					<select class="selectpicker" value="" id="{{entry.player_id}}_gender" onclick="change({{entry.player_id}}, 'gender');">
-						{% if entry.gender == "m" %}
-							<option value="m" selected="selected">Male</option>
-							<option value="f">Female</option>
-						{% else %}
-							<option value="m" >Male</option>
-							<option value="f" selected="selected">Female</option>
-						{% endif %}
-					</select>
-				</td>
-				<td>
-					<button type="button" class="btn btn-danger" onclick="deletePlayer({{entry.player_id}});">
-						Delete
-					</button>
-				</td>
-			</tr>
-		{% endfor %}
-	</tbody>
-	<tfoot>
-		<tr>
-			<td>
-				<button  type="button" class="btn btn-info" onclick="postPlayer()">
-					Add Player
-				</button>
-			</td>
-			<td>
-				<input  class="newPlayer" value="" id="newName">
-			</td>
-			<td>
-				<input  class="newPlayer" value="" id="newEmail">
-			</td>
-			<td>
-				<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info">
-				    <option value="m">Male</option>
-				    <option value="f">Female</option>
-				</select>
-			</td>
-			<td></td>
-		</tr>
-	</tfoot>
+    <thead>
+        <th>ID</td>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Gender</th>
+        <th>
+            <button type="button" class="btn btn-warning" onclick="putPlayers();" id="updateButton" disabled>
+                Update Players
+            </button>
+        </th>
+    </thead>
+    <tbody id="playerTable" >
+        {% for entry in players %}
+            <tr class="playerEntry" id="{{entry.player_id}}">
+                <td>
+                    <a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}">{{entry.player_id}}</a>
+                </td>
+                <td>
+                    <input class="input" value="{{entry.player_name}}" id='{{entry.player_id}}_player_name' onchange="change({{entry.player_id}}, 'player_name');">
+                </td>
+                <td>
+                    <input class="input" value="{{entry.email}}" id='{{entry.player_id}}_email' onchange="change({{entry.player_id}},'email');">
+                </td>
+                <td>
+                    <select class="selectpicker" value="" id="{{entry.player_id}}_gender" onclick="change({{entry.player_id}}, 'gender');">
+                        {% if entry.gender == "m" %}
+                            <option value="m" selected="selected">Male</option>
+                            <option value="f">Female</option>
+                        {% else %}
+                            <option value="m" >Male</option>
+                            <option value="f" selected="selected">Female</option>
+                        {% endif %}
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="deletePlayer({{entry.player_id}});">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+                <button  type="button" class="btn btn-info" onclick="postPlayer()">
+                    Add Player
+                </button>
+            </td>
+            <td>
+                <input  class="newPlayer" value="" id="newName">
+            </td>
+            <td>
+                <input  class="newPlayer" value="" id="newEmail">
+            </td>
+            <td>
+                <select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info">
+                    <option value="m">Male</option>
+                    <option value="f">Female</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
 <table>
 <!-- the error modal -->
 <div class="modal fade" id="file_modal">
@@ -95,133 +95,133 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
 var updates = {};
 
 function postPlayer(){
-	console.log("Fucker");
-	var email, player_name, gender;
-	email = $('#newEmail').val();
-	player_name = $("#newName").val();
-	gender = $('#newGender').val();
-	var data = { "email":email, "player_name":player_name, "gender":gender };
-	$.ajax
-	({
-	  type: "POST",
-	  url: "{{route.player}}",
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    console.log("Fucker");
+    var email, player_name, gender;
+    email = $('#newEmail').val();
+    player_name = $("#newName").val();
+    gender = $('#newGender').val();
+    var data = { "email":email, "player_name":player_name, "gender":gender };
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.player}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (player_id){
-  		alert('Player was added successfully');
-  		var i1,i2, i3, iv4;
-  		i1 = '<input class="input" value="' + player_name + '" id="' + player_id + '_player_name" onclick="change('+ player_id+', \'player_name\')">';
-  		i2 = '<input class="input" value="' + email + '" id="' + player_id + '_email" onclick="change('+ player_id+', \'email\')">';
-  		if (gender == "m"){
-  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>';
-  		}else{
-  			i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>';
-  		}
-  		i4 = '	<button type="button" class="btn btn-danger" onclick="deletePlayer('+player_id+');">Delete</button>'
-  		
-  		$("#playerTable").append('<tr><td>'+player_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td></tr>');
-  		$('#newEmail').val('');
-		$("#newName").val('');
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request);
-        console.log(error);
-    } 
-	});
+      success: function (player_id){
+          alert('Player was added successfully');
+          var i1,i2, i3, iv4;
+          i1 = '<input class="input" value="' + player_name + '" id="' + player_id + '_player_name" onclick="change('+ player_id+', \'player_name\')">';
+          i2 = '<input class="input" value="' + email + '" id="' + player_id + '_email" onclick="change('+ player_id+', \'email\')">';
+          if (gender == "m"){
+              i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>';
+          }else{
+              i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>';
+          }
+          i4 = '    <button type="button" class="btn btn-danger" onclick="deletePlayer('+player_id+');">Delete</button>'
+          
+          $("#playerTable").append('<tr><td>'+player_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td></tr>');
+          $('#newEmail').val('');
+          $("#newName").val('');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request);
+          console.log(error);
+      }
+    });
 }
 
 function change(id, cat){
-	if (!(id  in updates)){
-		updates[id] = {}
-	}
-	updates[id][cat] = $('#' + id + '_' + cat).val();
-	$('#updateButton').attr('disabled', false);
-	console.log(updates);
+    if (!(id  in updates)){
+        updates[id] = {}
+    }
+    updates[id][cat] = $('#' + id + '_' + cat).val();
+    $('#updateButton').attr('disabled', false);
+    console.log(updates);
 }
 
 function deletePlayer(id){
-	console.log("Fucker");
-	var email, player_name, gender;
-	email = $('#newEmail').val();
-	player_name = $("#newName").val();
-	gender = $('#newGender').val();
-	var data = { "id": id};
-	$.ajax
-	({
-	  type: "DELETE",
-	  url: "{{route.player}}/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    console.log("Fucker");
+    var email, player_name, gender;
+    email = $('#newEmail').val();
+    player_name = $("#newName").val();
+    gender = $('#newGender').val();
+    var data = { "id": id};
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.player}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	alert('Player was removed successfully');
-	  	$('#'+id).remove();
-	    console.log(results	)
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('Player was removed successfully');
+          $('#'+id).remove();
+          console.log(results    )
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request.text);
+          console.log(error);
+      }
+    });
 }
 
 function putPlayers(){
-	for (var id in updates){
-		putPlayer(id, updates[id]);
-	}
+    for (var id in updates){
+        putPlayer(id, updates[id]);
+    }
 }
 function putPlayer(id, attributes){
-	console.log("Fucker", attributes);
-	console.log(id);
-	$.ajax
-	({
-	  type: "PUT",
-	  url: "{{route.player}}/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(attributes),
+    console.log("Fucker", attributes);
+    console.log(id);
+    $.ajax
+    ({
+      type: "PUT",
+      url: "{{route.player}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(attributes),
       dataType: "json",
-	  success: function (results){
-	  	alert('Player was updated successfully');
-	    console.log(results)
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('Player was updated successfully');
+          console.log(results)
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request.text);
+          console.log(error);
+      }
+    });
 }
 
 function searchPlayer(){
-	var search = $('#searchValue').val();
-	var player;
-	console.log(search)
-	$("#myTable tr").each(function(){
-			player = $('#'+this.id+"_player_name").val();
-			if (player != null){
-				console.log(player, this.id, player.indexOf(search));
-				if (player.indexOf(search) > -1){
-					$("#"+this.id).show();
-				}else{
-					$("#"+this.id).hide();
-				}
-			}
-	});
+    var search = $('#searchValue').val();
+    var player;
+    console.log(search)
+    $("#myTable tr").each(function(){
+            player = $('#'+this.id+"_player_name").val();
+            if (player != null){
+                console.log(player, this.id, player.indexOf(search));
+                if (player.indexOf(search) > -1){
+                    $("#"+this.id).show();
+                }else{
+                    $("#"+this.id).hide();
+                }
+            }
+    });
 }
 
 function showErrors(response, status_code){
-	$('#file_modal').modal("show");
-	$('#errors').empty();
-	var element;
-	$('#modal-title').text( response.message + " - " + status_code);
-	element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
-	$('#errors').append(element);	
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element);    
 }
 
 </script>

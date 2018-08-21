@@ -42,61 +42,60 @@
 {% block script %}
 <script>
 function showModal(){
-	console.log("Show Modal");
-  $('#file-div').show();
-	$('#file_modal').modal("show");
-  $('#warnings').empty();
-  $('#errors').empty(); 
-  $('#file_modalText').text('Choose File');
-  $('#modal-title').text('Import a {{type}}');
-  $('#warningsHeader').hide();
-  $('#errorsHeader').hide();
+    console.log("Show Modal");
+    $('#file-div').show();
+    $('#file_modal').modal("show");
+    $('#warnings').empty();
+    $('#errors').empty(); 
+    $('#file_modalText').text('Choose File');
+    $('#modal-title').text('Import a {{type}}');
+    $('#warningsHeader').hide();
+    $('#errorsHeader').hide();
 }
 
 function submitForm(){
-  var form_data = new FormData($('#upload-file')[0]);
-  $('#file-div').show();
-  $('#file_modal').modal("show");
-  $('#warnings').empty();
-  $('#errors').empty(); 
-  $('#file_modalText').text('Choose File');
-  $('#modal-title').text('Import a {{type}}');
-  $('#warningsHeader').hide();
-  $('#errorsHeader').hide();  
-  $.ajax({
-      type: 'POST',
-      url: '{{import_route}}',
-      data: form_data,
-      contentType: false,
-      cache: false,
-      processData: false,
-      async: false,
-      success: function(warnings) {
-          console.log(warnings);
-          $('#file-div').hide();
-          $('#file_modalText').text('--');
-          $('#modal-title').text('Successful');
-
-          for (var i = 0 ;i < warnings.length;i++){
-            element = '<li class="list-group-item list-group-item-warning">'+warnings[i]+'</li>'
-            $('#warnings').append(element);
-            $('#warningsHeader').show();
-          }
-      }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.responseJSON);
-        console.log(error);
-      }
-  });
+    var form_data = new FormData($('#upload-file')[0]);
+    $('#file-div').show();
+    $('#file_modal').modal("show");
+    $('#warnings').empty();
+    $('#errors').empty(); 
+    $('#file_modalText').text('Choose File');
+    $('#modal-title').text('Import a {{type}}');
+    $('#warningsHeader').hide();
+    $('#errorsHeader').hide();  
+    $.ajax({
+        type: 'POST',
+        url: '{{import_route}}',
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        async: false,
+        success: function(warnings) {
+            console.log(warnings);
+            $('#file-div').hide();
+            $('#file_modalText').text('--');
+            $('#modal-title').text('Successful');
+            for (var i = 0 ;i < warnings.length;i++){
+                element = '<li class="list-group-item list-group-item-warning">'+warnings[i]+'</li>'
+                $('#warnings').append(element);
+                $('#warningsHeader').show();
+            }
+        }, error: function(request, error){
+            showErrors(request.responseJSON, request.status);
+            console.log(request.responseJSON);
+            console.log(error);
+        }
+    });
 }
 
 function showErrors(response, status_code){
-  $('#file_modal').modal("show");
-  $('#errors').empty();
-  var element;
-  $('#modal-title').text( response.message + " - " + status_code);
-  element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
-  $('#errors').append(element); 
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element); 
 }
 </script>
 {% endblock %}
