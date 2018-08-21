@@ -4,247 +4,247 @@
 
 <h4>Away Team</h4>
 <table id="awayBats" class="table table-bordered table-striped">
-	<thead>
-		<tr>
-			<th>ID</th>
-			<th>Player</th>
-			<th>RBIs</th>
-			<th>Inning</th>
-			<th>Hit</th>
-			<th>Non-Roster Player</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for bat in away_bats %}
-			<tr id="{{bat.bat_id}}">
-				<td>{{bat.bat_id}}</td>
-				<td>
-					{% for player in players %}
-						{% if player.player_id == bat.player_id %}
-							{{player.player_name}}
-						{% endif %}
-					{% endfor %}
-					<!--
-						<select id="{{bat.bat_id}}_player_id" onchange="change({{bat.bat_id}}, 'player_id');">
-							<option value="default">Select a player from the team</option>
-							{% for player in away_players %}
-								{% if player.player_id == bat.player_id %}
-									<option value="{{player.player_id}}" selected="selected">{{player.player_name}}</option>
-								{% else %}
-									<option value="{{player.player_id}}">{{player.player_name}}</option>
-								{% endif %}
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Player</th>
+            <th>RBIs</th>
+            <th>Inning</th>
+            <th>Hit</th>
+            <th>Non-Roster Player</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bat in away_bats %}
+            <tr id="{{bat.bat_id}}">
+                <td>{{bat.bat_id}}</td>
+                <td>
+                    {% for player in players %}
+                        {% if player.player_id == bat.player_id %}
+                            {{player.player_name}}
+                        {% endif %}
+                    {% endfor %}
+                    <!--
+                        <select id="{{bat.bat_id}}_player_id" onchange="change({{bat.bat_id}}, 'player_id');">
+                            <option value="default">Select a player from the team</option>
+                            {% for player in away_players %}
+                                {% if player.player_id == bat.player_id %}
+                                    <option value="{{player.player_id}}" selected="selected">{{player.player_name}}</option>
+                                {% else %}
+                                    <option value="{{player.player_id}}">{{player.player_name}}</option>
+                                {% endif %}
 
-							{% endfor %}
-						</select>
-					-->
-				</td>
-				<td>
-					{{bat.rbi}}
-					<!--
-						<input id="{{bat.bat_id}}_rbi" value="{{bat.rbi}}" onchange="change({{bat.bat_id}}, 'rbi');">
-					-->
-				</td>
-				<td>
-					{{bat.inning}}
-					<!--
-						<input id="{{bat.bat_id}}_inning" value="{{bat.inning}}" onchange="change({{bat.bat_id}}, 'inning');">
-					-->
-				</td>
-				<td>
-					{{bat.hit}}
-					<!--
-					<select id="{{bat.bat_id}}_hit" onchange="change({{bat.bat_id}},'hit');">
-						<option value="default">Select a hit</option>
-						{% for hit in BATS %}
-							{% if hit == bat.hit %}
-								<option selected="selected" value="{{hit}}">{{hit}}</option>
-							{% else %}
-								<option value="{{hit}}">{{hit}}</option>
-							{% endif %}
-						{% endfor %}
-					</select>
-					-->
-				</td>
-				<td>
-					<!--
-						<select id="{{bat.bat_id}}_outside_player_id" onchange="change({{bat.bat_id}},'player_id');">
-							<option value="default">Select a player from another team</option>
-							{% for player in players %}
-								{% if player.player_id == bat.player_id %}
-									<option value="{{player.player_id}}" selected="selected">{{player.player_name}}</option>
-								{% else %}
-									<option value="{{player.player_id}}">{{player.player_name}}</option>
-								{% endif %}
-							{% endfor %}
-						</select>
-					-->
-					<button class="btn btn-danger" onclick="deleteBat({{bat.bat_id}});">Delete bat</button>
-				</td>
-			</tr>
-		{% endfor %}
-	</tbody>
-	<tfoot>
-		<tr id="new_bat">
-				<td>
-					<button  type="button" class="btn btn-info" onclick="postBat('away',{{away_team_id}});">
-						Add Bat
-					</button>
-				</td>
-				<td>
-					<select id="away_new_player_id">
-						<option selected="selected" value="default">Select a player from the team</option>
-						{% for player in away_players %}
-								<option value="{{player.player_id}}">{{player.player_name}}</option>
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<input id="away_new_rbi" value="" placeholder="RBIs">
-				</td>
-				<td>
-					<input id="away_new_inning" value="" placeholder="Inning">
-				</td>
-				<td>
-					<select id="away_new_hit">
-						<option value="default">Select a hit</option>
-						{% for hit in BATS %}
-							<option value="{{hit}}">{{hit}}</option>
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<select data-placeholder="Choose a player" name="standard" class="chosen-select" id="away_outside_new_player_id">
-						<option value="default" selected="selected">Select a player from another team</option>
-						{% for player in players %}
-							<option value="{{player.player_id}}">{{player.player_name}}</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tr>
-	</tfoot>
+                            {% endfor %}
+                        </select>
+                    -->
+                </td>
+                <td>
+                    {{bat.rbi}}
+                    <!--
+                        <input id="{{bat.bat_id}}_rbi" value="{{bat.rbi}}" onchange="change({{bat.bat_id}}, 'rbi');">
+                    -->
+                </td>
+                <td>
+                    {{bat.inning}}
+                    <!--
+                        <input id="{{bat.bat_id}}_inning" value="{{bat.inning}}" onchange="change({{bat.bat_id}}, 'inning');">
+                    -->
+                </td>
+                <td>
+                    {{bat.hit}}
+                    <!--
+                    <select id="{{bat.bat_id}}_hit" onchange="change({{bat.bat_id}},'hit');">
+                        <option value="default">Select a hit</option>
+                        {% for hit in BATS %}
+                            {% if hit == bat.hit %}
+                                <option selected="selected" value="{{hit}}">{{hit}}</option>
+                            {% else %}
+                                <option value="{{hit}}">{{hit}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    -->
+                </td>
+                <td>
+                    <!--
+                        <select id="{{bat.bat_id}}_outside_player_id" onchange="change({{bat.bat_id}},'player_id');">
+                            <option value="default">Select a player from another team</option>
+                            {% for player in players %}
+                                {% if player.player_id == bat.player_id %}
+                                    <option value="{{player.player_id}}" selected="selected">{{player.player_name}}</option>
+                                {% else %}
+                                    <option value="{{player.player_id}}">{{player.player_name}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    -->
+                    <button class="btn btn-danger" onclick="deleteBat({{bat.bat_id}});">Delete bat</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr id="new_bat">
+                <td>
+                    <button  type="button" class="btn btn-info" onclick="postBat('away',{{away_team_id}});">
+                        Add Bat
+                    </button>
+                </td>
+                <td>
+                    <select id="away_new_player_id">
+                        <option selected="selected" value="default">Select a player from the team</option>
+                        {% for player in away_players %}
+                                <option value="{{player.player_id}}">{{player.player_name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input id="away_new_rbi" value="" placeholder="RBIs">
+                </td>
+                <td>
+                    <input id="away_new_inning" value="" placeholder="Inning">
+                </td>
+                <td>
+                    <select id="away_new_hit">
+                        <option value="default">Select a hit</option>
+                        {% for hit in BATS %}
+                            <option value="{{hit}}">{{hit}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select data-placeholder="Choose a player" name="standard" class="chosen-select" id="away_outside_new_player_id">
+                        <option value="default" selected="selected">Select a player from another team</option>
+                        {% for player in players %}
+                            <option value="{{player.player_id}}">{{player.player_name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+    </tfoot>
 </table>
 
 <h4>Home Team</h4>
 <table id="homeBats" class="table table-bordered table-striped" >
-	<thead>
-		<tr>
-			<th>ID</th>
-			<th>Player</th>
-			<th>RBIs</th>
-			<th>Inning</th>
-			<th>Hit</th>
-			<th>Non-Roster Player</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for bat in home_bats %}
-			<tr id="{{bat.bat_id}}">
-				<td>{{bat.bat_id}}</td>
-				<td>
-					{% for player in players %}
-						{% if player.player_id == bat.player_id %}
-							{{player.player_name}}
-						{% endif %}
-					{% endfor %}
-					<!--
-						<select id="{{bat.bat_id}}_player_id" onchange="change({{bat.bat_id}}, 'player_id');">
-							<option value="default">Select a player from the team</option>
-							{% for player in home_players %}
-								{% if player.player_id == bat.player_id %}
-									<option selected="selected">{{player.player_name}}</option>
-								{% else %}
-									<option>{{player.player_name}}</option>
-								{% endif %}
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Player</th>
+            <th>RBIs</th>
+            <th>Inning</th>
+            <th>Hit</th>
+            <th>Non-Roster Player</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bat in home_bats %}
+            <tr id="{{bat.bat_id}}">
+                <td>{{bat.bat_id}}</td>
+                <td>
+                    {% for player in players %}
+                        {% if player.player_id == bat.player_id %}
+                            {{player.player_name}}
+                        {% endif %}
+                    {% endfor %}
+                    <!--
+                        <select id="{{bat.bat_id}}_player_id" onchange="change({{bat.bat_id}}, 'player_id');">
+                            <option value="default">Select a player from the team</option>
+                            {% for player in home_players %}
+                                {% if player.player_id == bat.player_id %}
+                                    <option selected="selected">{{player.player_name}}</option>
+                                {% else %}
+                                    <option>{{player.player_name}}</option>
+                                {% endif %}
 
-							{% endfor %}
-						</select>
-					-->
-					
-				</td>
-				<td>
-					{{bat.rbi}}
-					<!--
-						<input id="{{bat.bat_id}}_rbi" value="{{bat.rbi}}" onchange="change({{bat.bat_id}}, 'rbi');">
-					-->
-				</td>
-				<td>
-					{{bat.inning}}
-					<!--
-						<input id="{{bat.bat_id}}_inning" value="{{bat.inning}}" onchange="change({{bat.bat_id}}, 'inning');">
-					-->
-				</td>
-				<td>
-					{{bat.hit}}
-					<!--
-						<select id="{{bat.bat_id}}_hit" onchange="change({{bat.bat_id}}, 'hit');">
-							<option value="default">Select a hit</option>
-							{% for hit in BATS %}
-								{% if hit == bat.hit %}
-									<option selected="selected">{{hit}}</option>
-								{% else %}
-									<option>{{hit}}</option>
-								{% endif %}
-							{% endfor %}
-						</select>
-					-->
-				</td>
-				<td>
-					<!--
-						<select id="{{bat.bat_id}}_outside_player_id" onchange="change({{bat.bat_id}}, 'player_id');">
-							<option value="default">Select a player from another team</option>
-							{% for player in players %}
-								{% if player.player_id == bat.player_id %}
-									<option selected="selected">{{player.player_name}}</option>
-								{% else %}
-									<option>{{player.player_name}}</option>
-								{% endif %}
-							{% endfor %}
-						</select>
-					-->
-					<button class="btn btn-danger" onclick="deleteBat({{bat.bat_id}});">Delete bat</button>
-				</td>
-			</tr>
-		{% endfor %}
-	</tbody>
-	<tfoot>
-		<tr id="new_bat">
-				<td>
-					<button  type="button" class="btn btn-info" onclick="postBat('home',{{home_team_id}});">
-						Add Bat
-					</button>
-				</td>
-				<td>
-					<select id="home_new_player_id">
-						<option selected="selected" value="default">Select a player from the team</option>
-						{% for player in home_players %}
-								<option value="{{player.player_id}}">{{player.player_name}}</option>
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<input id="home_new_rbi" value="" placeholder="RBIs">
-				</td>
-				<td>
-					<input id="home_new_inning" value="" placeholder="Inning">
-				</td>
-				<td>
-					<select id="home_new_hit">
-						<option value="default">Select a hit</option>
-						{% for hit in BATS %}
-							<option value="{{hit}}">{{hit}}</option>
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<select data-placeholder="Choose a player" name="standard" class="chosen-select" id="home_outside_new_player_id">
-						<option value="default">Select a player from another team</option>
-						{% for player in players %}
-							<option value="{{player.player_id}}">{{player.player_name}}</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tr>
-	</tfoot>
+                            {% endfor %}
+                        </select>
+                    -->
+                    
+                </td>
+                <td>
+                    {{bat.rbi}}
+                    <!--
+                        <input id="{{bat.bat_id}}_rbi" value="{{bat.rbi}}" onchange="change({{bat.bat_id}}, 'rbi');">
+                    -->
+                </td>
+                <td>
+                    {{bat.inning}}
+                    <!--
+                        <input id="{{bat.bat_id}}_inning" value="{{bat.inning}}" onchange="change({{bat.bat_id}}, 'inning');">
+                    -->
+                </td>
+                <td>
+                    {{bat.hit}}
+                    <!--
+                        <select id="{{bat.bat_id}}_hit" onchange="change({{bat.bat_id}}, 'hit');">
+                            <option value="default">Select a hit</option>
+                            {% for hit in BATS %}
+                                {% if hit == bat.hit %}
+                                    <option selected="selected">{{hit}}</option>
+                                {% else %}
+                                    <option>{{hit}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    -->
+                </td>
+                <td>
+                    <!--
+                        <select id="{{bat.bat_id}}_outside_player_id" onchange="change({{bat.bat_id}}, 'player_id');">
+                            <option value="default">Select a player from another team</option>
+                            {% for player in players %}
+                                {% if player.player_id == bat.player_id %}
+                                    <option selected="selected">{{player.player_name}}</option>
+                                {% else %}
+                                    <option>{{player.player_name}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    -->
+                    <button class="btn btn-danger" onclick="deleteBat({{bat.bat_id}});">Delete bat</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr id="new_bat">
+                <td>
+                    <button  type="button" class="btn btn-info" onclick="postBat('home',{{home_team_id}});">
+                        Add Bat
+                    </button>
+                </td>
+                <td>
+                    <select id="home_new_player_id">
+                        <option selected="selected" value="default">Select a player from the team</option>
+                        {% for player in home_players %}
+                                <option value="{{player.player_id}}">{{player.player_name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input id="home_new_rbi" value="" placeholder="RBIs">
+                </td>
+                <td>
+                    <input id="home_new_inning" value="" placeholder="Inning">
+                </td>
+                <td>
+                    <select id="home_new_hit">
+                        <option value="default">Select a hit</option>
+                        {% for hit in BATS %}
+                            <option value="{{hit}}">{{hit}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select data-placeholder="Choose a player" name="standard" class="chosen-select" id="home_outside_new_player_id">
+                        <option value="default">Select a player from another team</option>
+                        {% for player in players %}
+                            <option value="{{player.player_id}}">{{player.player_name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+    </tfoot>
 </table>
 
 <!-- the error modal -->
@@ -271,167 +271,166 @@
 {% block script %}
 <script>
 function ready(){
-	$(function(){
-		$("#home_outside_new_player_id").chosen({});
-		$("#away_outside_new_player_id").chosen({});
-			
-	})
+    $(function(){
+        $("#home_outside_new_player_id").chosen({});
+        $("#away_outside_new_player_id").chosen({});
+    })
 }
 
 function makeTeamSelect(id, team, player_id){
-	var select = '<select id="' + id+'_player_id" onchange="change('+id+', \'player_id\');">';
-	select += '<option value="default">Select a player from the team</option>';
-	$("#" + team + "_new_player_id > option" ).each(function(){
-		if (this.value == player_id){
-			select += '<option selected="selected" value="'+ this.value+'">'+this.text +'</option>';
-		}else if (this.value != "default"){
-			select += '<option value="'+ this.value+'">'+this.text +'</option>';
-		}
-	});
-	select += "</select>"
-	return select;
+    var select = '<select id="' + id+'_player_id" onchange="change('+id+', \'player_id\');">';
+    select += '<option value="default">Select a player from the team</option>';
+    $("#" + team + "_new_player_id > option" ).each(function(){
+        if (this.value == player_id){
+            select += '<option selected="selected" value="'+ this.value+'">'+this.text +'</option>';
+        }else if (this.value != "default"){
+            select += '<option value="'+ this.value+'">'+this.text +'</option>';
+        }
+    });
+    select += "</select>"
+    return select;
 }
 
 function makePlayerSelect(id, player_id){
-	var select = '<select id="' + id+'_outside_player_id" onchange="change('+id+', \'player_id\');">';
-	select += '<option value="default">Select a player from another team</option>';
-	$("#home_outside_new_player_id > option").each(function(){
-		if (this.value == player_id){
-				select += '<option selected="selected" value="'+ this.value+'">'+this.text +'</option>';
-		}else if (this.value != "default"){
-			select += '<option value="'+ this.value+'">'+this.text +'</option>';
-		}
-	});
-	select += "</select>"
-	return select;
+    var select = '<select id="' + id+'_outside_player_id" onchange="change('+id+', \'player_id\');">';
+    select += '<option value="default">Select a player from another team</option>';
+    $("#home_outside_new_player_id > option").each(function(){
+        if (this.value == player_id){
+                select += '<option selected="selected" value="'+ this.value+'">'+this.text +'</option>';
+        }else if (this.value != "default"){
+            select += '<option value="'+ this.value+'">'+this.text +'</option>';
+        }
+    });
+    select += "</select>"
+    return select;
 }
 
 function makeHitSelect(id, hit){
-	var select = '<select id="' + id+'_hit" onchange="change('+id+', \'hit\');">';
-	select += '<option value="default">Select a hit</option>';
-	$("#home_new_hit > option").each(function(){
-		if (this.value == hit){
-			select += '<option selected="selected" value="'+ this.value+'">'+this.text +'</option>';
-		}else if (this.value != "default"){
-			select += '<option value="'+ this.value+'">'+this.text +'</option>';
-		}
-	});
-	select += "</select>"
-	return select;
+    var select = '<select id="' + id+'_hit" onchange="change('+id+', \'hit\');">';
+    select += '<option value="default">Select a hit</option>';
+    $("#home_new_hit > option").each(function(){
+        if (this.value == hit){
+            select += '<option selected="selected" value="'+ this.value+'">'+this.text +'</option>';
+        }else if (this.value != "default"){
+            select += '<option value="'+ this.value+'">'+this.text +'</option>';
+        }
+    });
+    select += "</select>"
+    return select;
 }
 
 function postBat(team, team_id){
-	var player_id, player_name, rbi, inning, hit, data;
-	if ($('#'+team+"_new_player_id").val() == "default" && $('#'+team+"_outside_new_player_id").val() == "default"){
-		alert("Need to select one who the batter was");
-		return;
-	}else if ($('#'+team+"_new_player_id").val() != "default" && $('#'+team+"_outside_new_player_id").val() != "default"){
-		alert("Have two different players selected");
-		return;
-	}else if ($('#'+team+"_new_player_id").val() != "default"){
-		player_id = $('#'+team+"_new_player_id").val();
-		player_name = $('#'+team+"_new_player_id option:selected").text();
-	}else{
-		player_id = $('#'+team+"_outside_new_player_id").val();
-		player_name = $('#'+team+"_outside_new_player_id option:selected").text();
-	}
-	rbi = $('#'+team+'_new_rbi').val();
-	if( rbi == ""){
-		rbi = 0;
-	}
-	inning = $('#'+team+'_new_inning').val();
-	if( inning == ""){
-		inning = 0;
-	}
-	hit = $('#'+team+"_new_hit").val();
-	if (hit == "default"){
-		alert("Need to select a hit classification");
-		return;
-	}
-	data ={
-			'game_id':{{game_id}},
-			'player_id': player_id,
-			'team_id': team_id,
-			'rbi': rbi,
-			'inning': inning,
-			'hit': hit
-			}
-	console.log(data);
-	$.ajax
-	({
-	  type: "POST",
-	  url: "{{route.bat}}",
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    var player_id, player_name, rbi, inning, hit, data;
+    if ($('#'+team+"_new_player_id").val() == "default" && $('#'+team+"_outside_new_player_id").val() == "default"){
+        alert("Need to select one who the batter was");
+        return;
+    }else if ($('#'+team+"_new_player_id").val() != "default" && $('#'+team+"_outside_new_player_id").val() != "default"){
+        alert("Have two different players selected");
+        return;
+    }else if ($('#'+team+"_new_player_id").val() != "default"){
+        player_id = $('#'+team+"_new_player_id").val();
+        player_name = $('#'+team+"_new_player_id option:selected").text();
+    }else{
+        player_id = $('#'+team+"_outside_new_player_id").val();
+        player_name = $('#'+team+"_outside_new_player_id option:selected").text();
+    }
+    rbi = $('#'+team+'_new_rbi').val();
+    if( rbi == ""){
+        rbi = 0;
+    }
+    inning = $('#'+team+'_new_inning').val();
+    if( inning == ""){
+        inning = 0;
+    }
+    hit = $('#'+team+"_new_hit").val();
+    if (hit == "default"){
+        alert("Need to select a hit classification");
+        return;
+    }
+    data ={
+            'game_id':{{game_id}},
+            'player_id': player_id,
+            'team_id': team_id,
+            'rbi': rbi,
+            'inning': inning,
+            'hit': hit
+            }
+    console.log(data);
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.bat}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (bat_id){
-  		alert('Bat was added successfully');
-  		var i1, i2, i3, i4, i5, i6, i7, i8, i9, result;
-  		i2 = makeTeamSelect(bat_id, team, player_id);
-		i3 = '<input class="input" value="'+ rbi +'" id="'+bat_id+'_rbi" onchange="change('+bat_id+', \'rbi\');">';
-  		i4 = '<input class="input" value="'+ inning +'" id="'+bat_id+'_inning" onchange="change('+bat_id+', \'inning\');">';
-  		i5 = makeHitSelect(bat_id, hit);
-  		/*i6 = makePlayerSelect(bat_id, player_id);*/
-  		i6 = '<button class="btn btn-danger" onclick="deleteBat('+bat_id+');">Delete Bat </button>'
-  		result = '<tr id="'+bat_id+'"><td>' + bat_id + '</td><td>'+player_name+'</td><td>' + rbi + '</td><td>'+inning+ '</td><td>'+hit+ '</td><td>'+i6+ '</td></tr>'
-  		console.log(result)
-  		$("#"+team+"Bats").append(result);
-	    console.log()
-	    $('#'+team+"_new_player_id").val("default");
-	    $('#'+team+"_outside_new_player_id").val("default");
-	    $('#'+team+"_new_rbi").val("");
-	    $('#'+team+"_new_inning").val("");
-	    $('#'+team+"_new_hit").val("default");
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request);
-        console.log(error);
-    } 
-	});
+      success: function (bat_id){
+          alert('Bat was added successfully');
+          var i1, i2, i3, i4, i5, i6, i7, i8, i9, result;
+          i2 = makeTeamSelect(bat_id, team, player_id);
+          i3 = '<input class="input" value="'+ rbi +'" id="'+bat_id+'_rbi" onchange="change('+bat_id+', \'rbi\');">';
+          i4 = '<input class="input" value="'+ inning +'" id="'+bat_id+'_inning" onchange="change('+bat_id+', \'inning\');">';
+          i5 = makeHitSelect(bat_id, hit);
+          /*i6 = makePlayerSelect(bat_id, player_id);*/
+          i6 = '<button class="btn btn-danger" onclick="deleteBat('+bat_id+');">Delete Bat </button>'
+          result = '<tr id="'+bat_id+'"><td>' + bat_id + '</td><td>'+player_name+'</td><td>' + rbi + '</td><td>'+inning+ '</td><td>'+hit+ '</td><td>'+i6+ '</td></tr>'
+          console.log(result)
+          $("#"+team+"Bats").append(result);
+          console.log()
+          $('#'+team+"_new_player_id").val("default");
+          $('#'+team+"_outside_new_player_id").val("default");
+          $('#'+team+"_new_rbi").val("");
+          $('#'+team+"_new_inning").val("");
+          $('#'+team+"_new_hit").val("default");
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request);
+          console.log(error);
+      } 
+    });
 }
 
 function deleteBat(bat_id){
-	var data = { "id": bat_id};
-	$('#errors').empty(); 
-	$.ajax
-	({
-	  type: "DELETE",
-	  url: "{{route.bat}}/"+bat_id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    var data = { "id": bat_id};
+    $('#errors').empty(); 
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.bat}}/"+bat_id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	alert('Bat was removed successfully');
-	  	$('#'+bat_id).remove();
-	    console.log(results)
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request);
-        console.log(error);
-    } 
-	});
+      success: function (results){
+          alert('Bat was removed successfully');
+          $('#'+bat_id).remove();
+          console.log(results)
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.log(request);
+          console.log(error);
+      } 
+    });
 }
 
 function showErrors(response, status_code){
-	$('#file_modal').modal("show");
-	$('#errors').empty();
-	var element;
-	if (status_code == 400){
-		$('#modal-title').text("Bad Request - 400");
-		for (var key in response.message){
-			element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
-			$('#errors').append(element);	
-		}
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    if (status_code == 400){
+        $('#modal-title').text("Bad Request - 400");
+        for (var key in response.message){
+            element = '<li class="list-group-item list-group-item-danger">'+key+': ' + response.message[key]+'</li>';
+            $('#errors').append(element);    
+        }
 
-	}else if (status_code == 432){
-		$('#modal-title').text("Invalid Field - 432");
-		element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
-		$('#errors').append(element);			
-	}
+    }else if (status_code == 432){
+        $('#modal-title').text("Invalid Field - 432");
+        element = '<li class="list-group-item list-group-item-danger">'+response.message+'</li>';
+        $('#errors').append(element);            
+    }
 }
 
 </script>
