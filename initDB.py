@@ -11,6 +11,182 @@ import requests
 import os
 import datetime
 import random
+import argparse
+
+def mock_teams_games(league, sponsor_lookup):
+    """
+    mock_team_games
+        Mocks up some data for the league by add some players to a team,
+        then a few games to the league and a few scores for some games
+        Parameters:
+            league: the league object
+            sponsor_lookup: a dictionary lookup for a id to its given sponsor
+        Returns:
+            None
+    """
+    # add some players
+    team_one_players = [Player("Captain1", "captain1@mlsb.ca", gender="M"),
+                        Player("MalePlayer1", "mp1@mlsb.ca", gender="M"),
+                        Player("FemalePlayer1", "fp1@mlsb.ca", gender="F")]
+    team_two_players = [Player("Captain2", "captain2@mlsb.ca", gender="F"),
+                        Player("MalePlayer2", "mp2@mlsb.ca", gender="M"),
+                        Player("FemalePlayer2", "fp2@mlsb.ca", gender="F")]
+    team_three_players = [Player("Captain3", "captain3@mlsb.ca", gender="M"),
+                        Player("MalePlayer3", "mp3@mlsb.ca", gender="M"),
+                        Player("FemalePlayer3", "fp3@mlsb.ca", gender="F")]
+    team_four_players = [Player("Captain4", "captain4@mlsb.ca", gender="F"),
+                        Player("MalePlayer4", "mp4@mlsb.ca", gender="M"),
+                        Player("FemalePlayer4", "fp4@mlsb.ca", gender="F")]
+    team_players = [ team_one_players,
+                     team_two_players,
+                     team_three_players,
+                     team_four_players]
+    for team in team_players:
+        for player in team:
+            DB.session.add(player)
+    DB.session.commit()
+    
+    # add four teams with some players
+    teams = [Team(color="Black",
+                  sponsor_id=random_value_lookup(sponsor_lookup).id,
+                  league_id=league.id),
+             Team(color="Blue",
+                  sponsor_id=random_value_lookup(sponsor_lookup).id,
+                  league_id=league.id),
+             Team(color="Red",
+                  sponsor_id=random_value_lookup(sponsor_lookup).id,
+                  league_id=league.id),
+             Team(color="Green",
+                  sponsor_id=random_value_lookup(sponsor_lookup).id,
+                  league_id=league.id)]
+    for i in range(0, len(teams)):
+        team = teams[i]
+        DB.session.add(team)
+        # add the players to the team
+        for player in team_players[i]:
+            team.insert_player(player.id, "captain" in player.name.lower())
+    DB.session.commit()
+    
+    # add some random espsy to each team and create a lookup for team id to players
+    team_player_lookup = {}
+    random_prices = [9.99, 4.75, 100, 15.50, 12.99]
+    for i in range(0, len(teams)):
+        team_player_lookup[team.id] = team_players[i]
+        team = teams[i]
+        for __ in range(0, 4):
+            points = random_value_list(random_prices)
+            DB.session.add(Espys(team.id,
+                                 sponsor_id=random_value_lookup(sponsor_lookup).id,
+                                 description="Purchase",
+                                 points=points))
+    DB.session.commit()
+    
+    # add some games between the teams
+    today = datetime.date.today()
+    week_ago = today - datetime.timedelta(days=7)
+    next_week = today + datetime.timedelta(days=3)
+    last_week_string = week_ago.strftime( "%Y-%m-%d")
+    next_week_string = next_week.strftime( "%Y-%m-%d")
+    games = [Game(last_week_string,
+                  "10:00",
+                  teams[0].id,
+                  teams[1].id,
+                  league.id,
+                  status="Completed",
+                  field="WP1"),
+             Game(last_week_string,
+                  "10:00",
+                  teams[2].id,
+                  teams[3].id,
+                  league.id,
+                  status="Completed",
+                  field="WP2"),
+             Game(last_week_string,
+                  "11:00",
+                  teams[0].id,
+                  teams[2].id,
+                  league.id,
+                  status="Completed",
+                  field="WP1"),
+             Game(last_week_string,
+                  "11:00",
+                  teams[1].id,
+                  teams[3].id,
+                  league.id,
+                  status="Completed",
+                  field="WP2"),
+             Game(next_week_string,
+                  "10:00",
+                  teams[0].id,
+                  teams[3].id,
+                  league.id,
+                  status="To Be Played",
+                  field="WP1"),
+             Game(next_week_string,
+                  "10:00",
+                  teams[2].id,
+                  teams[1].id,
+                  league.id,
+                  status="To Be Played",
+                  field="WP2"),
+             Game(next_week_string,
+                  "11:00",
+                  teams[1].id,
+                  teams[0].id,
+                  league.id,
+                  status="To Be Played",
+                  field="WP1"),
+             Game(next_week_string,
+                  "11:00",
+                  teams[3].id,
+                  teams[2].id,
+                  league.id,
+                  status="To Be Played",
+                  field="WP2")
+                  ]
+    for game in games:
+        DB.session.add(game)
+    DB.session.commit()
+    
+    # now add a random score to the game
+    for game in games:
+        add_random_score(game.id,
+                         game.away_team_id,
+                         team_player_lookup[game.away_team_id])
+        add_random_score(game.id,
+                         game.home_team_id,
+                         team_player_lookup[game.home_team_id])
+    DB.session.commit()
+
+def mock_league():
+    """Returns a mock league that was added to local DB"""
+    # add a demo league
+    league = League(name="Demo League")
+    DB.session.add(league)
+    DB.session.commit()
+    return league
+
+def create_fresh_tables():
+    """Creates fresh tables and deletes any previous information"""
+    # delete old information
+    DB.session.commit()
+    DB.engine.execute('''
+                         DROP TABLE IF EXISTS fun;
+                         DROP TABLE IF EXISTS roster;
+                         DROP TABLE IF EXISTS bat;
+                         DROP TABLE IF EXISTS espys;
+                         DROP TABLE IF EXISTS game;
+                         DROP TABLE IF EXISTS team;
+                         DROP TABLE IF EXISTS player;
+                         DROP TABLE IF EXISTS sponsor;
+                         DROP TABLE IF EXISTS league;
+                    ''')
+    DB.create_all()
+
+def random_value_lookup(lookup):
+    """Returns a object for a random key in the lookup"""
+    __, value = random.choice(list(lookup.items()))
+    return value
 
 def random_value_list(l):
     """Returns a random value for the given list l"""
@@ -37,186 +213,264 @@ def add_random_score(game_id, team_id, players):
         DB.session.add(Bat(batter.id, team_id, game_id, bat, rbi=rbis))
     DB.session.commit()
 
-        
-if "FLASK_ENV" not in os.environ or os.environ.get("FLASK_ENV") != "docker":
-    print("No FLASK_ENV set or not running on docker")
-    print("Just exiting")
-    exit
+def pull_fun_count(url):
+    """
+    pull_fun_count
+        Adds all the fun objects from website into the local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            None"""
+    # add the fun counts
+    funs = requests.get(url + "/api/fun").json()
+    for fun in funs:
+        DB.session.add(Fun(year=fun['year'], count=fun['count']))
+    DB.session.commit()
 
-# delete old information
-DB.session.commit()
-DB.engine.execute('''
-                     DROP TABLE IF EXISTS fun;
-                     DROP TABLE IF EXISTS roster;
-                     DROP TABLE IF EXISTS bat;
-                     DROP TABLE IF EXISTS espys;
-                     DROP TABLE IF EXISTS game;
-                     DROP TABLE IF EXISTS team;
-                     DROP TABLE IF EXISTS player;
-                     DROP TABLE IF EXISTS sponsor;
-                     DROP TABLE IF EXISTS league;
-                ''')
-DB.create_all()
-print("Created tables")
-print("Adding mock data ...")
+def pull_sponsors(url):
+    """
+    pull_sponsors
+        Returns a lookup of sponsors that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website sponsor id to local sponsor object
+                e.g. sponsor_lookup = {1: Sponsor(), etc..}
+    """
+    # add all the sponsors
+    _sponsors = requests.get(url + '/api/sponsors').json()
+    sponsors_lookup = {}
+    for sponsor in _sponsors:
+        temp = Sponsor(sponsor['sponsor_name'],
+                       link=sponsor['link'],
+                       description=sponsor['description'])
+        sponsors_lookup[sponsor['sponsor_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return sponsors_lookup
 
-# add the unassigned bats player
-DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
+def pull_leagues(url):
+    """
+    pull_leagues
+        Returns a lookup of leagues that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website league id to local league object
+                e.g. league_lookup = {1: League(), etc..}
+    """
+    _leagues = requests.get(url + "/api/leagues").json()
+    leagues_lookup = {}
+    for league in _leagues:
+        temp  = League(name=league['name'])
+        leagues_lookup[league['league_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return leagues_lookup
+
+def pull_players(url):
+    """
+    pull_players
+        Returns a lookup of players that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website sponsor id to local player object
+                e.g. player_lookup = {1: Player(), etc..}
+    """
+    _players = requests.get(url + "/api/players").json()
+    players_lookup = {}
+    for player in _players:
+        if (player['player_name'].lower() != "unassigned"):
+            temp = Player(player['player_name'],
+                          player['player_name'] + "@mlsb.ca",
+                          gender=player['gender'],
+                          active=player['active']
+                          )
+            players_lookup[player['player_id']] = temp
+            DB.session.add(temp)
+    DB.session.commit()
+    return players_lookup
+
+def is_player_captain(player, team):
+    """Returns whether the given player is the captain of the team"""
+    captain = False
+    if (team['captain'] != None
+        and 'player_id' in team['captain']
+        and (player['player_id'] == team['captain']['player_id'])):
+        captain = True
+    return captain
+
+def pull_teams(url, player_lookup, sponsor_lookup, league_lookup):
+    """
+    pull_teams
+        Returns a lookup of teams that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website team id to local team object
+                e.g. team_lookup = {1: Team(), etc..}
+    """
+    _teams = requests.get(url + "/api/teams").json()
+    team_lookups = {}
+    for team in _teams:
+        temp = Team(color=team['color'],
+                    sponsor_id=sponsor_lookup[team['sponsor_id']].id,
+                    league_id=league_lookup[team['league_id']].id,
+                    year=team['year'],
+                    )
+        # need to add the players from the roster to the team
+        players = requests.get(url + "/api/teamroster/" + team['team_id']).json()
+        for player in players:
+            temp.insert_player(player_lookup[player['player_id']].id,
+                               is_player_captain(player, team))
+        team_lookups[team['team_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return team_lookups
+
+def pull_games(url, team_lookup, league_lookup):
+    """
+    pull_games
+        Returns a lookup of games that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website game id to local game object
+                e.g. game_lookup = {1: Game(), etc..}
+    """
+    _games = requests.get(url + "/api/games").json()
+    game_lookup = {}
+    for game in _games:
+        temp = Game(game['date'],
+                    game['time'],
+                    team_lookup[game['home_team_id']].id,
+                    team_lookup[game['away_team_id']].id,
+                    league_lookup[game['league_id']].id,
+                    status=game['status'],
+                    field=game['field'])
+        game_lookup[game['game_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return game_lookup
+
+def pull_bats(url, team_lookup, player_lookup, game_lookup):
+    """
+    pull_bats
+        Returns a lookup of bats that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website bat id to local bat object
+                e.g. bat_lookup = {1: Bat(), etc..}
+    """
+    # TODO
+    # need to update the get apis requests or add other routes
+    # that can handle large requests
+    pass
+
+def pull_espys(url, team_lookup, sponsor_lookup):
+    """
+    pull_espys
+        Returns a lookup of bats that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website bat id to local bat object
+                e.g. bat_lookup = {1: Bat(), etc..}
+    """
+    # TODO
+    # need to update the get apis requests or add other routes
+    # that can handle large requests
+    pass
+
+def init_database(mock, copy_locally, url):
+    """
+    init_database
+        Initialize the database either by mocking data or copying main
+        website locally
+        Parameters:
+            mock: whether to mock some data for the current year
+            copy_locally: whether to copy the main website locally
+            url" the main website main url (https://www.mlsb.ca)
+        Returns:
+            None
+    """
+    create_fresh_tables()
+    DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
+    pull_fun_count(url)
+    sponsor_lookup = pull_sponsors(url)
+    if (mock):
+        print("Adding mock data ...")
+        # add the unassigned bats player
+        league = mock_league()
+        mock_teams_games(league, sponsor_lookup)
+    else:
+        if(copy_locally):
+            print("Pulling a local copy of the given website")
+            player_lookup = pull_players(url)
+            league_lookup = pull_leagues(url)
+            team_lookup = pull_teams(url,
+                                     player_lookup,
+                                     sponsor_lookup,
+                                     league_lookup)
+            game_lookup = pull_games(url, team_lookup, league_lookup)
+            pull_bats(url, team_lookup, player_lookup, game_lookup)
+    return
 
 
-# add the fun counts
-funs = requests.get("http://www.mlsb.ca/api/fun").json()
-for fun in funs:
-    DB.session.add(Fun(year=fun['year'], count=fun['count']))
+if __name__ == "__main__":
+    descp = """
+            Initialize the database for MLSB platform
+            One can mock some data or can pull the main platform data
+            to create a local copy
+            Author: Dallas Fraser (dallas.fraser.waterloo@gmail.com)
+            """
+    if ("FLASK_ENV" not in os.environ
+        or os.environ.get("FLASK_ENV").lower() != "docker"):
+        print("No FLASK_ENV set or not running on docker")
+        print("Just exiting")
+        exit
 
-# add all the sponsors
-_sponsors = requests.get('http://www.mlsb.ca/api/sponsors').json()
-sponsors = []
-for sponsor in _sponsors:
-    temp = Sponsor(sponsor['sponsor_name'],
-                   link=sponsor['link'],
-                   description=sponsor['description'])
-    sponsors.append(temp)
-    DB.session.add(temp)
-
-# add a demo league
-league = League(name="Demo League")
-DB.session.add(league)
-DB.session.commit()
-
-# add some players
-team_one_players = [Player("Captain1", "captain1@mlsb.ca", gender="M"),
-                    Player("MalePlayer1", "mp1@mlsb.ca", gender="M"),
-                    Player("FemalePlayer1", "fp1@mlsb.ca", gender="F")]
-team_two_players = [Player("Captain2", "captain2@mlsb.ca", gender="F"),
-                    Player("MalePlayer2", "mp2@mlsb.ca", gender="M"),
-                    Player("FemalePlayer2", "fp2@mlsb.ca", gender="F")]
-team_three_players = [Player("Captain3", "captain3@mlsb.ca", gender="M"),
-                    Player("MalePlayer3", "mp3@mlsb.ca", gender="M"),
-                    Player("FemalePlayer3", "fp3@mlsb.ca", gender="F")]
-team_four_players = [Player("Captain4", "captain4@mlsb.ca", gender="F"),
-                    Player("MalePlayer4", "mp4@mlsb.ca", gender="M"),
-                    Player("FemalePlayer4", "fp4@mlsb.ca", gender="F")]
-team_players = [ team_one_players,
-                 team_two_players,
-                 team_three_players,
-                 team_four_players]
-for team in team_players:
-    for player in team:
-        DB.session.add(player)
-DB.session.commit()
-
-# add four teams with some players
-teams = [Team(color="Black",
-              sponsor_id=random_value_list(sponsors).id,
-              league_id=league.id),
-         Team(color="Blue",
-              sponsor_id=random_value_list(sponsors).id,
-              league_id=league.id),
-         Team(color="Red",
-              sponsor_id=random_value_list(sponsors).id,
-              league_id=league.id),
-         Team(color="Green",
-              sponsor_id=random_value_list(sponsors).id,
-              league_id=league.id)]
-for i in range(0, len(teams)):
-    team = teams[i]
-    DB.session.add(team)
-    # add the players to the team
-    for player in team_players[i]:
-        team.insert_player(player.id, "captain" in player.name.lower())
-DB.session.commit()
-
-# add some random espsy to each team and create a lookup for team id to players
-team_player_lookup = {}
-random_prices = [9.99, 4.75, 100, 15.50, 12.99]
-for i in range(0, len(teams)):
-    team_player_lookup[team.id] = team_players[i]
-    team = teams[i]
-    for j in range(0, 4):
-        points = random_value_list(random_prices)
-        DB.session.add(Espys(team.id,
-                             sponsor_id=random_value_list(sponsors).id,
-                             description="Purchase",
-                             points=points))
-DB.session.commit()
-
-# add some games between the teams
-now = datetime.datetime.now()
-today = datetime.date.today()
-week_ago = today - datetime.timedelta(days=7)
-next_week = today + datetime.timedelta(days=3)
-last_week_string = week_ago.strftime( "%Y-%m-%d")
-next_week_string = next_week.strftime( "%Y-%m-%d")
-games = [Game(last_week_string,
-              "10:00",
-              teams[0].id,
-              teams[1].id,
-              league.id,
-              status="Completed",
-              field="WP1"),
-         Game(last_week_string,
-              "10:00",
-              teams[2].id,
-              teams[3].id,
-              league.id,
-              status="Completed",
-              field="WP2"),
-         Game(last_week_string,
-              "11:00",
-              teams[0].id,
-              teams[2].id,
-              league.id,
-              status="Completed",
-              field="WP1"),
-         Game(last_week_string,
-              "11:00",
-              teams[1].id,
-              teams[3].id,
-              league.id,
-              status="Completed",
-              field="WP2"),
-         Game(next_week_string,
-              "10:00",
-              teams[0].id,
-              teams[3].id,
-              league.id,
-              status="To Be Played",
-              field="WP1"),
-         Game(next_week_string,
-              "10:00",
-              teams[2].id,
-              teams[1].id,
-              league.id,
-              status="To Be Played",
-              field="WP2"),
-         Game(next_week_string,
-              "11:00",
-              teams[1].id,
-              teams[0].id,
-              league.id,
-              status="To Be Played",
-              field="WP1"),
-         Game(next_week_string,
-              "11:00",
-              teams[3].id,
-              teams[2].id,
-              league.id,
-              status="To Be Played",
-              field="WP2")
-              ]
-for game in games:
-    DB.session.add(game)
-DB.session.commit()
-
-# now add a random score to the game
-for game in games:
-    add_random_score(game.id,
-                     game.away_team_id,
-                     team_player_lookup[game.away_team_id])
-    add_random_score(game.id,
-                     game.home_team_id,
-                     team_player_lookup[game.home_team_id])
-DB.session.commit()
-
-print("Finished adding mock data")
+    if ("FLASK_ENV" not in os.environ
+        or os.environ.get("FLASK_ENV").lower() == "production"):
+        print("Running on Production")
+        exit
+    parser = argparse.ArgumentParser(description=descp)
+    parser.add_argument("-url",
+                        dest="url",
+                        action="store",
+                        help="The main platform URL",
+                        default="http:www.mlsb.ca"
+                        )
+    parser.add_argument("-mock",
+                        dest="mock",
+                        action="store_true",
+                        help="Set if one wants to mock some data",
+                        default=False
+                        )
+    parser.add_argument("-localCopy",
+                        dest="localCopy",
+                        action="store_true",
+                        help="Set if one wants to pull all data from url",
+                        default=False
+                        )
+    args = parser.parse_args()
+    print(args)
+    init_database(args.mock, args.localCopy, args.url)
+    
+    
