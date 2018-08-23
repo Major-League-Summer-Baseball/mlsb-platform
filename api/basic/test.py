@@ -39,21 +39,20 @@ class TestFun(TestSetup):
                          " POST: POST request with invalid parameters")
 
         # insert a fun object
-        self.addFun(100, year=2010)
+        fun = self.addFun(100, year=2010)
 
         # test a get with funs
         rv = self.app.get(Routes['fun'])
-        expected_result = {'year': 2010, 'count': 100}
         self.output(loads(rv.data))
-        self.output(expected_result)
-        self.assertEqual(expected_result, loads(rv.data[-1]), Routes['fun'] +
-                         " GET Failed to return list of funs")
+        self.output(fun)
+        self.assertFunModelEqual(fun, loads(rv.data)[-1],
+                                 error_message=(Routes['fun'] + " GET Failed to return list of funs"))
         self.assertEqual(200, rv.status_code, Routes['fun'] +
                          " GET Failed to return list of funs")
 
     def testFunAPIGet(self):
         # insert a fun object
-        self.addFun(100, year=2010)
+        fun = self.addFun(100, year=2010)
 
         # invalid year
         rv = self.app.get(Routes['fun'] + "/999")
@@ -66,19 +65,16 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: Invalid Fun")
 
         # valid year
-        rv = self.app.get(Routes['fun'] + "/2010")
-        expect = {'year': 2014,
-                  'count': 50}
+        rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
         self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['fun'] + " Get: valid Fun")
+        self.output(fun)
+        self.assertFunModelEqual(fun, loads(rv.data)[-1], error_message=(Routes['fun'] + " Get: valid Fun"))
         self.assertEqual(200, rv.status_code,
                          Routes['fun'] + " Get: valid Fun")
 
     def testFunAPIDelete(self):
         # insert a fun object
-        self.addFun(100, year=2010)
+        fun = self.addFun(100, year=2010)
 
         # invalid year
         rv = self.app.delete(Routes['fun'] + "/999", headers=headers)
@@ -91,7 +87,7 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: Invalid Fun")
 
         # delete a valid year 
-        rv = self.app.delete(Routes['fun'] + "/2010", headers=headers)
+        rv = self.app.delete(Routes['fun'] + "/" + fun['year'], headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -101,7 +97,7 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: valid Fun")
 
         # now try to get it
-        rv = self.app.get(Routes['fun'] + "/2010")
+        rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
         expect = {'details': 2010, "message": FunDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
@@ -112,10 +108,10 @@ class TestFun(TestSetup):
 
     def testFunAPIPut(self):
         # insert a fun object
-        self.addFun(100, year=2010)
-
+        fun = self.addFun(100, year=2010)
+        updated_count = 50
         # invalid year
-        params = {'count': 50}
+        params = {'count': updated_count}
         rv = self.app.put(Routes['fun'] + "/999",
                              data=params, headers=headers)
         expect = {'details': 999, "message": FunDoesNotExist.message}
@@ -127,7 +123,7 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Put: Invalid Fun")
 
         # valid year
-        rv = self.app.put(Routes['fun'] + "/2010",
+        rv = self.app.put(Routes['fun'] + "/" + str(fun['year']),
                           data=params, headers=headers)
         expect = None
         self.output(loads(rv.data))
@@ -138,13 +134,12 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Put: valid Fun")
 
         # now try to get it
-        rv = self.app.get(Routes['fun'] + "/2010")
-        expect = {'year': 2010,
-                  'count': 50}
+        rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
+        fun['count'] = updated_count
         self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['fun'] + " Get: valid Fun")
+        self.output(fun)
+        self.assertFunModelEqual(fun, loads(rv.data),
+                                 error_message=(Routes['fun'] + " Get: valid Fun"))
         self.assertEqual(200, rv.status_code,
                          Routes['fun'] + " Get: valid Fun")
 
