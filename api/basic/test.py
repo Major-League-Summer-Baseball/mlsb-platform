@@ -14,10 +14,9 @@ from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist,\
     PlayerDoesNotExist, NonUniqueEmail, LeagueDoesNotExist, GameDoesNotExist,\
     BatDoesNotExist, FunDoesNotExist
-from api.credentials import ADMIN, PASSWORD
 from datetime import date
 from base64 import b64encode
-from api.BaseTest import TestSetup
+from api.BaseTest import TestSetup, ADMIN, PASSWORD
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -26,10 +25,6 @@ headers = {
 
 class TestFun(TestSetup):
     def testFunListAPI(self):
-        # test an empty get
-        rv = self.app.get(Routes['fun'])
-        empty = loads(rv.data)
-        self.assertEqual(empty, [], "fun get: did not return empty list")
         # missing parameters
         params = {}
         rv = self.app.post(Routes['fun'], data=params, headers=headers)
@@ -42,41 +37,24 @@ class TestFun(TestSetup):
                          )
         self.assertEqual(rv.status_code, 400, Routes['fun'] +
                          " POST: POST request with invalid parameters")
-        # proper insertion
-        params = {'year': 2014, "count": 50}
-        rv = self.app.post(Routes['fun'], data=params, headers=headers)
-        result = 2014
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['fun'] +
-                         " POST: POST request with valid parameters")
-        self.assertEqual(rv.status_code, 201,
-                         Routes['fun'] +
-                         " POST: POST request with valid parameters")
+
+        # insert a fun object
+        self.addFun(100, year=2010)
+
         # test a get with funs
         rv = self.app.get(Routes['fun'])
-        result = [{'year': 2014,
-                   'count': 50}
-                  ]
+        expected_result = {'year': 2010, 'count': 100}
         self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(result, loads(rv.data), Routes['fun'] +
+        self.output(expected_result)
+        self.assertEqual(expected_result, loads(rv.data[-1]), Routes['fun'] +
                          " GET Failed to return list of funs")
         self.assertEqual(200, rv.status_code, Routes['fun'] +
                          " GET Failed to return list of funs")
 
     def testFunAPIGet(self):
-        # proper insertion with post
-        params = {'year': 2014, "count": 50}
-        rv = self.app.post(Routes['fun'], data=params, headers=headers)
-        result = 2014
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['fun'] +
-                         " POST: POST request with valid parameters")
-        self.assertEqual(rv.status_code, 201,
-                         Routes['fun'] +
-                         " POST: POST request with valid parameters")
+        # insert a fun object
+        self.addFun(100, year=2010)
+
         # invalid year
         rv = self.app.get(Routes['fun'] + "/999")
         expect = {'details': 999, "message": FunDoesNotExist.message}
@@ -86,8 +64,9 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: Invalid Fun")
         self.assertEqual(FunDoesNotExist.status_code, rv.status_code,
                          Routes['fun'] + " Get: Invalid Fun")
+
         # valid year
-        rv = self.app.get(Routes['fun'] + "/2014")
+        rv = self.app.get(Routes['fun'] + "/2010")
         expect = {'year': 2014,
                   'count': 50}
         self.output(loads(rv.data))
@@ -98,17 +77,9 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: valid Fun")
 
     def testFunAPIDelete(self):
-        # proper insertion with post
-        params = {'year': 2014, "count": 50}
-        rv = self.app.post(Routes['fun'], data=params, headers=headers)
-        result = 2014
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['fun'] +
-                         " POST: POST request with valid parameters")
-        self.assertEqual(rv.status_code, 201,
-                         Routes['fun'] +
-                         " POST: POST request with valid parameters")
+        # insert a fun object
+        self.addFun(100, year=2010)
+
         # invalid year
         rv = self.app.delete(Routes['fun'] + "/999", headers=headers)
         expect = {'details': 999, "message": FunDoesNotExist.message}
@@ -118,8 +89,9 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: Invalid Fun")
         self.assertEqual(FunDoesNotExist.status_code, rv.status_code,
                          Routes['fun'] + " Get: Invalid Fun")
-        # valid year
-        rv = self.app.delete(Routes['fun'] + "/2014", headers=headers)
+
+        # delete a valid year 
+        rv = self.app.delete(Routes['fun'] + "/2010", headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -127,9 +99,10 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: valid Fun")
         self.assertEqual(200, rv.status_code,
                          Routes['fun'] + " Get: valid Fun")
+
         # now try to get it
-        rv = self.app.get(Routes['fun'] + "/2014")
-        expect = {'details': 2014, "message": FunDoesNotExist.message}
+        rv = self.app.get(Routes['fun'] + "/2010")
+        expect = {'details': 2010, "message": FunDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -138,19 +111,11 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Get: Invalid Fun")
 
     def testFunAPIPut(self):
-        # proper insertion with post
-        params = {'year': 2014, "count": 50}
-        rv = self.app.post(Routes['fun'], data=params, headers=headers)
-        result = 2014
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['fun'] +
-                         " POST: POST request with valid parameters")
-        self.assertEqual(rv.status_code, 201,
-                         Routes['fun'] +
-                         " POST: POST request with valid parameters")
+        # insert a fun object
+        self.addFun(100, year=2010)
+
         # invalid year
-        params = {'count': 100}
+        params = {'count': 50}
         rv = self.app.put(Routes['fun'] + "/999",
                              data=params, headers=headers)
         expect = {'details': 999, "message": FunDoesNotExist.message}
@@ -160,8 +125,9 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Put: Invalid Fun")
         self.assertEqual(FunDoesNotExist.status_code, rv.status_code,
                          Routes['fun'] + " Put: Invalid Fun")
+
         # valid year
-        rv = self.app.put(Routes['fun'] + "/2014",
+        rv = self.app.put(Routes['fun'] + "/2010",
                           data=params, headers=headers)
         expect = None
         self.output(loads(rv.data))
@@ -170,10 +136,11 @@ class TestFun(TestSetup):
                          Routes['fun'] + " Put: valid Fun")
         self.assertEqual(200, rv.status_code,
                          Routes['fun'] + " Put: valid Fun")
+
         # now try to get it
-        rv = self.app.get(Routes['fun'] + "/2014")
-        expect = {'year': 2014,
-                  'count': 100}
+        rv = self.app.get(Routes['fun'] + "/2010")
+        expect = {'year': 2010,
+                  'count': 50}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),

@@ -4,14 +4,16 @@ Created on Apr 12, 2016
 @author: Dallas
 '''
 from api import app
-import unittest
-import tempfile
 from api import DB
 from pprint import PrettyPrinter
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
 from datetime import datetime, timedelta
-import os
 from base64 import b64encode
+from datetime import date
+import unittest
+import tempfile
+import os
+
 
 # environment variables
 ADMIN = os.environ['ADMIN']
@@ -37,581 +39,82 @@ class TestSetup(unittest.TestCase):
         self.t = "11:37"
         app.config['TESTING'] = True
         self.app = app.test_client()
-        DB.engine.execute('''   
-                                DROP TABLE IF EXISTS fun;
-                                DROP TABLE IF EXISTS roster;
-                                DROP TABLE IF EXISTS bat;
-                                DROP TABLE IF EXISTS espys;
-                                DROP TABLE IF EXISTS game;
-                                DROP TABLE IF EXISTS team;
-                                DROP TABLE IF EXISTS player;
-                                DROP TABLE IF EXISTS sponsor;
-                                DROP TABLE IF EXISTS league;
-                        ''')
-        DB.create_all()
+        self.toDelete = []
+        if (not self.tables_created()):
+            DB.engine.execute('''   
+                                  DROP TABLE IF EXISTS fun;
+                                  DROP TABLE IF EXISTS roster;
+                                  DROP TABLE IF EXISTS bat;
+                                  DROP TABLE IF EXISTS espys;
+                                  DROP TABLE IF EXISTS game;
+                                  DROP TABLE IF EXISTS team;
+                                  DROP TABLE IF EXISTS player;
+                                  DROP TABLE IF EXISTS sponsor;
+                                  DROP TABLE IF EXISTS league;
+                          ''')
+            DB.create_all()
 
     def tearDown(self):
-        DB.session.commit()
-        DB.engine.execute('''   
-                                DROP TABLE IF EXISTS fun;
-                                DROP TABLE IF EXISTS roster;
-                                DROP TABLE IF EXISTS bat;
-                                DROP TABLE IF EXISTS espys;
-                                DROP TABLE IF EXISTS game;
-                                DROP TABLE IF EXISTS team;
-                                DROP TABLE IF EXISTS player;
-                                DROP TABLE IF EXISTS sponsor;
-                                DROP TABLE IF EXISTS league;
-                        ''')
+        for item in reversed(self.toDelete):
+            try:
+                DB.session.delete(item)
+                DB.session.commit()
+            except:
+                pass
+
+    def tables_created(self):
+        # TODO figure out how to check if tables are created
+        return True
 
     def output(self, data):
         if self.show_results:
             self.pp.pprint(data)
 
-    def addFun(self):
-        FUNS = {
-               2002:89,
-               2003: 100,
-               2004: 177,
-               2005:186,
-               2006:176,
-               2007: 254,
-               2008: 290,
-               2009: 342,
-               2010: 304,
-               2011: 377,
-               2012: 377,
-               2013: 461,
-               2014: 349,
-               2015: 501
-               }
-        for year, count in FUNS.items():
-            DB.session.add(Fun(year=year, count=count))
+    def addFun(self, count, year=date.today().year):
+        fun = Fun(year=year, count=count)
+        self.toDelete.append(fun)
+        DB.session.add(fun)
         DB.session.commit()
+        return fun
 
-    def addSponsors(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Chainsaw")
-                         ]
-        for s in range(0,len(self.sponsors)):
-            DB.session.add(self.sponsors[s])
+    def addSponsor(self, sponsor_name, link=None, description=None, active=True, nickname=None):
+        sponsor = Sponsor(sponsor_name, link=link, description=description, active=active, nickname=nickname)
+        self.toDelete.append(sponsor)
+        DB.sesion.add(sponsor)
         DB.session.commit()
+        return sponsor
 
-    def addPlayers(self):
-        self.players = [Player("Dallas Fraser",
-                   "fras2560@mylaurier.ca",
-                   gender="m"),
-                   Player("My Dream Girl",
-                   "dream@mylaurier.ca",
-                   gender="f"),
-                   Player("Barry Bonds",
-                          "bonds@hallOfFame.ca",
-                          gender="M")]
-        for player in range(0, len(self.players)):
-            DB.session.add(self.players[player])
+    def addLeague(self, league_name):
+        league = League(name=league_name)
+        self.toDelete.append(league)
+        DB.sesion.add(sponsor)
         DB.session.commit()
+        return league
 
-    def addTeamWithLegaue(self):
-        self.addLeagues()
-        self.addPlayers()
-        self.addSponsors()
-        # team one
-        self.teams = [Team(
-                           color="Green",
-                           sponsor_id=self.sponsors[0].id,
-                           league_id=1
-                           
-                           ),
-                      Team(
-                           color="Black",
-                           sponsor_id=self.sponsors[1].id,
-                           league_id=1
-                           ),
-                      Team(
-                           color="Diamon",
-                           sponsor_id=self.sponsors[0].id,
-                           league_id=1
-                           )
-                      ]
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
+    def addTeam(color, sponsor=None, league=None, year=date.today().year):
+        team = Team(color=color, sponsor_id=sponsor.id, league_id=league.id, year=year)
+        self.toDelete.append(team)
+        DB.session.add(team)
         DB.session.commit()
+        return team
 
-    def addTeams(self):
-        self.addPlayers()
-        self.addSponsors()
-        # team one
-        self.teams = [Team(
-                           color="Green",
-                           sponsor_id=self.sponsors[0].id
-                           ),
-                      Team(
-                           color="Black",
-                           sponsor_id=self.sponsors[1].id
-                           ),
-                      Team(
-                           color="Diamon",
-                           sponsor_id=self.sponsors[0].id
-                           )
-                      ]
-        for t in range(0, len(self.teams)):
-            DB.session.add(self.teams[t])
+    def addGame(date, time, home_team, away_team, league, status="", field=""):
+        game = Game(date, time, home_team.id, away_team.id, league.id, status=status, field=field)
+        self.toDelete(game)
+        DB.session.add(game)
         DB.session.commit()
+        return game
 
-    def addLeagues(self):
-        self.leagues = [League("Monday & Wedneday"), League("Tuesday & Thursday")]
-        for t in range(0, len(self.leagues)):
-            DB.session.add(self.leagues[t])
+    def addBat(player, team, game, classification, inning=1, rbi=0):
+        bat = Bat(player.id, team.id, game.id, classification, inning=inning, rbi=rbi)
+        self.toDelete.append(bat)
+        DB.session.add(bat)
         DB.session.commit()
+        return bat
 
-    def addGames(self):
-        self.addTeams()
-        self.addLeagues()
-        self.games = [Game(
-                           self.d,
-                           self.t,
-                           self.teams[0].id,
-                           self.teams[1].id,
-                           self.leagues[0].id
-                           ),
-                      Game(
-                           self.d,
-                           self.t,
-                           self.teams[0].id,
-                           self.teams[1].id,
-                           self.leagues[1].id
-                           )
-                      ]
-        DB.session.add(self.games[0])
-        DB.session.add(self.games[1])
+    def addEspys(team, sponsor, description=None, points=0.0, receipt=None, time=None, date=None):
+        espy = Espys(team.id, sponsor_id=sponsor.id, description=description, points=points, receipt=receipt, time=time, date=date)
+        self.toDelete.append(espy)
+        DB.session.add(espy)
         DB.session.commit()
-
-    def addBunchGames(self):
-        self.addTeams()
-        self.addLeagues()
-        self.teams.append(Team("Blue"))
-        DB.session.add(self.teams[-1])
-        self.games = [Game(
-                           self.d,
-                           self.t,
-                           self.teams[0].id,
-                           self.teams[1].id,
-                           self.leagues[0].id),
-                      Game(
-                           self.d,
-                           self.t,
-                           self.teams[0].id,
-                           self.teams[1].id,
-                           self.leagues[1].id),
-                      Game(
-                           self.d,
-                           self.t,
-                           self.teams[1].id,
-                           self.teams[2].id,
-                           self.leagues[1].id)
-                      ]
-        DB.session.add(self.games[0])
-        DB.session.add(self.games[1])
-        DB.session.add(self.games[2])
-        DB.session.commit()
-
-    def addBunchBats(self):
-        self.addBunchGames()
-        self.bats = [Bat(self.players[0].id,
-                       self.teams[0].id,
-                       self.games[0].id,
-                       "S",
-                       5,
-                       
-                       rbi=1),
-                     Bat(self.players[1].id,
-                         self.teams[0].id,
-                         self.games[1].id,
-                         "K",
-                         5),
-                    Bat(self.players[1].id,
-                         self.teams[1].id,
-                         self.games[2].id,
-                         "K",
-                         5),
-                     ]
-        for i in range(0, len(self.bats)):
-            DB.session.add(self.bats[i])
-        DB.session.commit()
-
-    def addBats(self):
-        self.addGames()
-        self.bats = [Bat(self.players[0].id,
-                       self.teams[0].id,
-                       self.games[0].id,
-                       "S",
-                       5,
-                       
-                       rbi=1),
-                     Bat(self.players[1].id,
-                         self.teams[0].id,
-                         self.games[1].id,
-                         "K",
-                         5)
-                     ]
-        for i in range(0, len(self.bats)):
-            DB.session.add(self.bats[i])
-        DB.session.commit()
-
-    def addCaptainToTeam(self):
-        self.addTeams()
-        team = Team.query.get(1)
-        team.insert_player(1, captain=True)
-        DB.session.commit()
-
-    def addPlayersToTeam(self):
-        self.addTeams()
-        team = Team.query.get(1)
-        team.insert_player(1, captain=True)
-        team.insert_player(1, captain=False)
-        DB.session.commit()
-
-    def mockScoreSubmission(self):
-        self.addLeagues()
-        self.addPlayersToTeam()
-        team = Team.query.get(1)
-        team.insert_player(2)
-        self.game = Game(self.d,
-                         self.t,
-                         self.teams[0].id,
-                         self.teams[1].id,
-                         self.leagues[0].id)
-        DB.session.add(self.game)
-        DB.session.commit()
-
-    def mockUpcomingGames(self):
-        self.addLeagues()
-        self.addPlayersToTeam()
-        t = "11:45"
-        today = datetime.today()
-        previous_game = (today+timedelta(-1)).strftime("%Y-%m-%d")
-        game_one_day = today.strftime("%Y-%m-%d")
-        game_two_day = (today+timedelta(1)).strftime("%Y-%m-%d")
-        game_five_day = (today+timedelta(5)).strftime("%Y-%m-%d")
-        # few upcoming games, one in the past, and one the player is not on
-        games = [
-                 Game(game_one_day, t, self.teams[0].id, self.teams[1].id, self.leagues[0].id),
-                 Game(game_two_day, t, self.teams[1].id, self.teams[0].id, self.leagues[0].id),
-                 Game(game_five_day, t, self.teams[0].id, self.teams[1].id, self.leagues[0].id),
-                 Game(previous_game, t, self.teams[0].id, self.teams[1].id, self.leagues[0].id),
-                 Game(game_one_day, t, self.teams[1].id, self.teams[2].id, self.leagues[0].id),
-                 ]
-        for game in games:
-            DB.session.add(game)
-        DB.session.commit()
-
-    def addSeason(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Sentry"),
-                         Sponsor("Nightschool"),
-                         Sponsor("Brick")]
-        for s in self.sponsors:
-            DB.session.add(s)
-        DB.session.add(League("Monday & Wednesday"))
-        DB.session.add(League("Tuesday & Thursday"))
-        self.teams = [Team("Green",
-                           sponsor_id=1, 
-                           league_id=1),
-                      Team("Sky Blue",
-                           sponsor_id=2, 
-                           league_id=1),
-                      Team("Navy",
-                           sponsor_id=3, 
-                           league_id=2),
-                      Team('Blue',
-                           sponsor_id=4,
-                           league_id=2)]
-        for t in self.teams:
-            DB.session.add(t)
-        self.games = [Game(
-                           self.d,
-                           self.t,
-                           1,
-                           2,
-                           1),
-                     Game(
-                          self.d,
-                          self.t,
-                          2,
-                          1,
-                          1),
-                     Game(
-                          self.d,
-                          self.t,
-                          2,
-                          1,
-                          1),
-                    Game(
-                         self.d,
-                         self.t,
-                         3,
-                         4,
-                         2),
-                     Game(
-                          self.d,
-                          self.t,
-                          4,
-                          3,
-                          2),
-                     Game(
-                          self.d,
-                          self.t,
-                          4,
-                          3,
-                          2),
-                      ]
-        for g in self.games:
-            DB.session.add(g)
-        self.addPlayers()
-        self.bats = [Bat(   1, 
-                            1, 
-                            1, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   2, 
-                            2, 
-                            1, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   1, 
-                            1, 
-                            2, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            2, 
-                            2, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   1, 
-                            1, 
-                            3, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            2, 
-                            3, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   1, 
-                            3, 
-                            4, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   2, 
-                            4, 
-                            4, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   1, 
-                            3, 
-                            5, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            4, 
-                            5, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   1, 
-                            3, 
-                            6, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            4, 
-                            6, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     ]
-        for b in self.bats:
-            DB.session.add(b)
-        DB.session.commit()
-
-    def mockLeaders(self):
-        self.sponsors = [Sponsor("Domus"),
-                         Sponsor("Sentry"),
-                         Sponsor("Nightschool"),
-                         Sponsor("Brick")]
-        for s in self.sponsors:
-            DB.session.add(s)
-        DB.session.add(League("Monday & Wednesday"))
-        DB.session.add(League("Tuesday & Thursday"))
-        self.teams = [Team("Green",
-                           sponsor_id=1, 
-                           league_id=1),
-                      Team("Sky Blue",
-                           sponsor_id=2, 
-                           league_id=1),
-                      Team("Navy",
-                           sponsor_id=3, 
-                           league_id=2),
-                      Team('Blue',
-                           sponsor_id=4,
-                           league_id=2)]
-        for t in self.teams:
-            DB.session.add(t)
-        self.games = [Game(
-                           "2014-8-23",
-                           self.t,
-                           1,
-                           2,
-                           1),
-                     Game(
-                          "2015-8-23",
-                          self.t,
-                          2,
-                          1,
-                          1),
-                     Game(
-                          "2016-8-23",
-                          self.t,
-                          2,
-                          1,
-                          1),
-                    Game(
-                         self.d,
-                         self.t,
-                         3,
-                         4,
-                         2),
-                     Game(
-                          self.d,
-                          self.t,
-                          4,
-                          3,
-                          2),
-                     Game(
-                          self.d,
-                          self.t,
-                          4,
-                          3,
-                          2),
-                      ]
-        for g in self.games:
-            DB.session.add(g)
-        self.players = [Player("UNASSIGNED",
-                               "doNotUse",
-                               gender="f"),
-                        Player("Dallas Fraser", 
-                               "fras2560@mylaurier.ca", 
-                               gender="m"), 
-                        Player("My Dream Girl", 
-                               "dream@mylaurier.ca", 
-                               gender="f"), 
-                        Player("Barry Bonds", 
-                               "bonds@hallOfFame.ca", 
-                               gender="M")]
-        for player in range(0, len(self.players)):
-            DB.session.add(self.players[player])
-        DB.session.commit()
-        self.bats = [Bat(   2, 
-                            1, 
-                            1, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   3, 
-                            2, 
-                            1, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            1, 
-                            2, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   3, 
-                            2, 
-                            2, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   2, 
-                            1, 
-                            3, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   3, 
-                            2, 
-                            3, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            3, 
-                            4, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   3, 
-                            4, 
-                            4, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   2, 
-                            3, 
-                            5, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   3, 
-                            4, 
-                            5, 
-                            "HR", 
-                            1, 
-                            rbi=2),
-                     Bat(   2, 
-                            3, 
-                            6, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     Bat(   3, 
-                            4, 
-                            6, 
-                            "HR", 
-                            1, 
-                            rbi=1),
-                     ]
-        for b in self.bats:
-            DB.session.add(b)
-        DB.session.commit()
-
-    def addEspys(self):
-        self.addTeams()
-        espys = [Espys( 1, 
-                        sponsor_id=None, 
-                        description="Kik transaction", 
-                        points=1, 
-                        receipt=None),
-                 Espys( 2, 
-                        sponsor_id=1, 
-                        description="Purchase", 
-                        points=2, 
-                        receipt="12019209129"),
-                 ]
-        for espy in espys:
-            DB.session.add(espy)
-        DB.session.commit()
+        return espy
