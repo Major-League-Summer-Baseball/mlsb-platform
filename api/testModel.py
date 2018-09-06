@@ -6,7 +6,7 @@
 '''
 import unittest
 from api.model import Player, Team, Bat, Sponsor, League, Game
-from api.errors import InvalidField, PlayerDoesNotExist,TeamDoesNotExist,\
+from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
                         LeagueDoesNotExist, SponsorDoesNotExist, NonUniqueEmail,\
                         GameDoesNotExist
 from pprint import PrettyPrinter
@@ -81,12 +81,12 @@ class BaseModel(unittest.TestCase):
     def insertGame(self):
         self.insertTeams()
         self.insertPlayer()
-        DB.session.add(Game(self.d, 
-                            self.t, 
-                            1, 
-                            2, 
-                            1, 
-                            status="Championships", 
+        DB.session.add(Game(self.d,
+                            self.t,
+                            1,
+                            2,
+                            1,
+                            status="Championships",
                             field="WP1"))
 
 
@@ -217,10 +217,10 @@ class testLeague(BaseModel):
             pass
 
     def testLeagueUpdate(self):
-        l = League("Monday & Wednesday")
-        l.update("Tuesday & Thursday")
+        league = League("Monday & Wednesday")
+        league.update("Tuesday & Thursday")
         try:
-            l.update(1)
+            league.update(1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
@@ -274,40 +274,40 @@ class testTeam(BaseModel):
         self.insertLeague()
         self.insertSponsor()
         # good Teams
-        l = Team(color="Black",
-                 sponsor_id=1,
-                 league_id=1)
-        l.update(color="Green",
-                 sponsor_id=1,
-                 league_id=1,
-                 year=2014)
+        team = Team(color="Black",
+                    sponsor_id=1,
+                    league_id=1)
+        team.update(color="Green",
+                    sponsor_id=1,
+                    league_id=1,
+                    year=2014)
         # now for bad teams
         try:
-            l.update(color="Black",
-                     sponsor_id=99999,
-                     league_id=1)
+            team.update(color="Black",
+                        sponsor_id=99999,
+                        league_id=1)
             self.assertEqual(False, True, "Should raise no sponsor")
         except SponsorDoesNotExist:
             pass
         try:
-            l.update(color="Black",
-                     sponsor_id=1,
-                     league_id=99999)
+            team.update(color="Black",
+                        sponsor_id=1,
+                        league_id=99999)
             self.assertEqual(False, True, "Should raise no league")
         except LeagueDoesNotExist:
             pass
         try:
-            l.update(color=1,
-                     sponsor_id=1,
-                     league_id=1)
+            team.update(color=1,
+                        sponsor_id=1,
+                        league_id=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            l.update(color="Black",
-                     sponsor_id=1,
-                     league_id=1,
-                     year=1)
+            team.update(color="Black",
+                        sponsor_id=1,
+                        league_id=1,
+                        year=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
@@ -419,8 +419,8 @@ class testGame(BaseModel):
         try:
             g.update(self.d,
                      self.t,
-                     999, 
-                     2, 
+                     999,
+                     2,
                      1)
             self.assertEqual(True, False, "should raise no team")
         except TeamDoesNotExist:
@@ -520,12 +520,12 @@ class testBat(BaseModel):
     def testBatUpdate(self):
         self.insertGame()
         # good bat
-        b =  Bat(1,
-                 1,
-                 1,
-                 "s",
-                 inning=1,
-                 rbi=1)
+        b = Bat(1,
+                1,
+                1,
+                "s",
+                inning=1,
+                rbi=1)
         # now for the bad stuff
         try:
             b.update(player_id=1,
@@ -587,6 +587,7 @@ class testBat(BaseModel):
             self.assertEqual(True, False, "should raise no league")
         except GameDoesNotExist:
             pass
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

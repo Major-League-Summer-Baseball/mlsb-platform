@@ -22,14 +22,16 @@ headers = {
                                                   PASSWORD, "utf-8")
                                             ).decode("ascii")
 }
+MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
+                     'or the post body or the query string')
+
 
 class TestFun(TestSetup):
     def testFunListAPI(self):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['fun'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
-        result = {'message': {'year': message}}
+        result = {'message': {'year': MISSING_PARAMETER}}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['fun'] +
@@ -39,20 +41,21 @@ class TestFun(TestSetup):
                          " POST: POST request with invalid parameters")
 
         # insert a fun object
-        fun = self.addFun(100, year=2010)
+        fun = self.add_fun(100, year=1900)
 
         # test a get with funs
         rv = self.app.get(Routes['fun'])
         self.output(loads(rv.data))
         self.output(fun)
+        message = " GET Failed to return list of funs"
         self.assertFunModelEqual(fun, loads(rv.data)[-1],
-                                 error_message=(Routes['fun'] + " GET Failed to return list of funs"))
+                                 error_message=(Routes['fun'] + message))
         self.assertEqual(200, rv.status_code, Routes['fun'] +
                          " GET Failed to return list of funs")
 
     def testFunAPIGet(self):
         # insert a fun object
-        fun = self.addFun(100, year=2010)
+        fun = self.add_fun(100, year=1900)
 
         # invalid year
         rv = self.app.get(Routes['fun'] + "/999")
@@ -68,13 +71,15 @@ class TestFun(TestSetup):
         rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
         self.output(loads(rv.data))
         self.output(fun)
-        self.assertFunModelEqual(fun, loads(rv.data)[-1], error_message=(Routes['fun'] + " Get: valid Fun"))
+        self.assertFunModelEqual(fun, loads(rv.data),
+                                 error_message=(Routes['fun'] +
+                                                " Get: valid Fun"))
         self.assertEqual(200, rv.status_code,
                          Routes['fun'] + " Get: valid Fun")
 
     def testFunAPIDelete(self):
         # insert a fun object
-        fun = self.addFun(100, year=2010)
+        fun = self.add_fun(100, year=1900)
 
         # invalid year
         rv = self.app.delete(Routes['fun'] + "/999", headers=headers)
@@ -86,8 +91,9 @@ class TestFun(TestSetup):
         self.assertEqual(FunDoesNotExist.status_code, rv.status_code,
                          Routes['fun'] + " Get: Invalid Fun")
 
-        # delete a valid year 
-        rv = self.app.delete(Routes['fun'] + "/" + fun['year'], headers=headers)
+        # delete a valid year
+        rv = self.app.delete(Routes['fun'] + "/" + str(fun['year']),
+                             headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -98,7 +104,7 @@ class TestFun(TestSetup):
 
         # now try to get it
         rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
-        expect = {'details': 2010, "message": FunDoesNotExist.message}
+        expect = {'details': 1900, "message": FunDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
@@ -108,12 +114,12 @@ class TestFun(TestSetup):
 
     def testFunAPIPut(self):
         # insert a fun object
-        fun = self.addFun(100, year=2010)
+        fun = self.add_fun(100, year=1900)
         updated_count = 50
         # invalid year
         params = {'count': updated_count}
         rv = self.app.put(Routes['fun'] + "/999",
-                             data=params, headers=headers)
+                          data=params, headers=headers)
         expect = {'details': 999, "message": FunDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
@@ -139,23 +145,21 @@ class TestFun(TestSetup):
         self.output(loads(rv.data))
         self.output(fun)
         self.assertFunModelEqual(fun, loads(rv.data),
-                                 error_message=(Routes['fun'] + " Get: valid Fun"))
+                                 error_message=(Routes['fun'] +
+                                                " Get: valid Fun"))
         self.assertEqual(200, rv.status_code,
                          Routes['fun'] + " Get: valid Fun")
 
 
 class TestSponsor(TestSetup):
     def testSponsorListAPI(self):
-        # test an empty get
-        rv = self.app.get(Routes['sponsor'])
-        empty = loads(rv.data)
-        self.assertEqual([], empty, "/sponsors GET: did not return empty list")
+        # insert a sponsor
+        sponsor = self.add_sponsor("XXTEST")
+
         # missing parameters
         params = {}
         rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
-        result = {'message': {'sponsor_name': message}
-                  }
+        result = {'message': {'sponsor_name': MISSING_PARAMETER}}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['sponsor'] +
@@ -163,6 +167,7 @@ class TestSponsor(TestSetup):
                          )
         self.assertEqual(rv.status_code, 400, Routes['sponsor'] +
                          " POST: POST request with invalid parameters")
+
         # testing with improper name parameters
         params = {'sponsor_name': 1}
         rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
@@ -174,71 +179,64 @@ class TestSponsor(TestSetup):
         self.assertEqual(rv.status_code, InvalidField.status_code,
                          Routes['sponsor'] +
                          " POST: POST request with invalid parameters")
-        # proper insertion with post
-        params = {'sponsor_name': "Domus"}
-        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
-        result = 1
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with valid data"
-                         )
-        self.assertEqual(rv.status_code, 201, Routes['player'] +
-                         " POST: POST request with valid data"
-                         )
+
         # test a get with sponsors
         rv = self.app.get(Routes['sponsor'])
-        result = [{'sponsor_id': 1,
-                   'sponsor_name': 'Domus',
-                   'link': None,
-                   'description': None}
-                  ]
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(result, loads(rv.data), Routes['sponsor'] +
-                         " GET Failed to return list of tournaments")
+        self.output(loads(rv.data)[-1])
+        self.output(sponsor)
+        self.assertSponsorModelEqual(sponsor, loads(rv.data)[-1],
+                                     Routes['sponsor'] +
+                                     " GET Failed to " +
+                                     "return list of tournaments")
         self.assertEqual(200, rv.status_code, Routes['sponsor'] +
                          " GET Failed to return list of tournaments")
 
     def testSponsorAPIGet(self):
-        # proper insertion with post
-        self.addSponsors()
+        # insert a sponsor
+        sponsor = self.add_sponsor("XXTEST")
+
         # invalid sponsor
-        rv = self.app.get(Routes['sponsor'] + "/999")
-        expect = {'details': 999, 'message': SponsorDoesNotExist.message}
+        rv = self.app.get(Routes['sponsor'] + "/100000")
+        expect = {'details': 100000, 'message': SponsorDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['sponsor'] + " Get: Invalid Sponsor")
         self.assertEqual(SponsorDoesNotExist.status_code, rv.status_code,
                          Routes['sponsor'] + " Get: Invalid Sponsor")
+
         # valid sponsor
-        rv = self.app.get(Routes['sponsor'] + "/1")
-        expect = {'sponsor_id': 1,
-                  'sponsor_name': 'Domus',
-                  'link': None,
-                  'description': None}
+        rv = self.app.get(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']))
+        expect = {'sponsor_id': sponsor['sponsor_id'],
+                  'sponsor_name': sponsor['sponsor_name'],
+                  'link': sponsor['link'],
+                  'description': sponsor['description'],
+                  'active': sponsor['active']}
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " Get: Valid Sponsor")
+        self.assertSponsorModelEqual(sponsor, loads(rv.data),
+                                     Routes['sponsor'] + " Get: Valid Sponsor")
         self.assertEqual(200, rv.status_code,
                          Routes['sponsor'] + " Get: valid Sponsor")
 
     def testSponsorAPIDelete(self):
-        # proper insertion with post
-        self.addSponsors()
+        # insert a sponsor
+        sponsor = self.add_sponsor("XXTEST")
+
         # delete of invalid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/999", headers=headers)
-        result = {'details': 999, 'message': SponsorDoesNotExist.message}
+        rv = self.app.delete(Routes['sponsor'] + "/100000", headers=headers)
+        result = {'details': 100000, 'message': SponsorDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result,
                          Routes['sponsor'] + " DELETE Invalid Sponsor id ")
         self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
                          Routes['sponsor'] + " DELETE Invalid Sponsor id ")
+
         # delete valid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/1", headers=headers)
+        rv = self.app.delete(Routes['sponsor'] + "/" +
+                             str(sponsor['sponsor_id']),
+                             headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -248,22 +246,25 @@ class TestSponsor(TestSetup):
                          Routes['sponsor'] + " DELETE valid Sponsor id ")
 
     def testSponsorAPIPut(self):
-        # proper insertion with post
-        self.addSponsors()
+        # insert a sponsor
+        sponsor = self.add_sponsor("XXTEST")
+        sponsor_updated_name = "YYTEST"
+
         # invalid sponsor id
         params = {'sponsor_name': 'New League'}
-        rv = self.app.put(Routes['sponsor'] + '/999',
+        rv = self.app.put(Routes['sponsor'] + '/10000',
                           data=params, headers=headers)
-        expect = {'details': 999, 'message': SponsorDoesNotExist.message}
+        expect = {'details': 10000, 'message': SponsorDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
                          Routes['sponsor'] + " PUT: given invalid sponsor ID")
         self.assertEqual(SponsorDoesNotExist.status_code, rv.status_code,
                          Routes['sponsor'] + " PUT: given invalid sponsor ID")
+
         # invalid parameters
         params = {'sponsor_name': 1}
-        rv = self.app.put(Routes['sponsor'] + '/1',
+        rv = self.app.put(Routes['sponsor'] + '/' + str(sponsor['sponsor_id']),
                           data=params, headers=headers)
         expect = {'details': 'Sponsor - name', 'message': InvalidField.message}
         self.output(loads(rv.data))
@@ -272,18 +273,30 @@ class TestSponsor(TestSetup):
                          Routes['sponsor'] + " PUT: given invalid parameters")
         self.assertEqual(InvalidField.status_code, rv.status_code,
                          Routes['sponsor'] + " PUT: given invalid parameters")
+
         # successful update
-        params = {'sponsor_name': 'New League'}
-        rv = self.app.put(Routes['sponsor'] + '/1',
+        params = {'sponsor_name': sponsor_updated_name}
+        sponsor['sponsor_name'] = sponsor_updated_name
+        rv = self.app.put(Routes['sponsor'] + '/' + str(sponsor['sponsor_id']),
                           data=params,
                           headers=headers)
-        expect = None
+        result = None
         self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
+        self.output(sponsor)
+        self.assertEqual(result, loads(rv.data),
                          Routes['sponsor'] + " PUT: Failed to update Sponsor")
         self.assertEqual(200, rv.status_code,
                          Routes['sponsor'] + " PUT: Failed to update Sponsor")
+
+        # now try to get it
+        rv = self.app.get(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']))
+        self.output(loads(rv.data))
+        self.output(sponsor)
+        self.assertSponsorModelEqual(sponsor, loads(rv.data),
+                                     error_message=(Routes['sponsor'] +
+                                                    " Get: valid Fun"))
+        self.assertEqual(200, rv.status_code,
+                         Routes['fun'] + " Get: valid Fun")
 
 
 class TestEspys(TestSetup):
@@ -428,10 +441,9 @@ class TestEspys(TestSetup):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['espy'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
         result = {'message': {
-                              'points': message,
-                              'team_id': message
+                              'points': MISSING_PARAMETER,
+                              'team_id': MISSING_PARAMETER
                               }
                   }
         self.output(loads(rv.data))
@@ -615,8 +627,8 @@ class TestPlayer(TestSetup):
                          ' PUT: Valid player update')
         # duplicate email
         p = Player("first player", "new@mslb.ca")
-        DB.session.add(p)
-        DB.session.commit()
+        # DB.session.add(p)
+        # DB.session.commit()
         params = {'player_name': "David Duchovny", 'email': "new@mslb.ca"}
         rv = self.app.put(Routes['player'] + '/1',
                           data=params, headers=headers)
@@ -640,10 +652,9 @@ class TestPlayer(TestSetup):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['player'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
         result = {'message': {
-                              'player_name': message,
-                              'email': message
+                              'player_name': MISSING_PARAMETER,
+                              'email': MISSING_PARAMETER
                               }
                   }
         self.output(loads(rv.data))
@@ -821,9 +832,8 @@ class TestLeague(TestSetup):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['league'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
         result = {'message': {
-                              'league_name': message
+                              'league_name': MISSING_PARAMETER
                               }
                   }
         self.output(loads(rv.data))
@@ -886,12 +896,11 @@ class TestTeam(TestSetup):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['team'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
         result = {'message': {
-                              'color': message,
-                              'league_id': message,
-                              'sponsor_id': message,
-                              'year': message}
+                              'color': MISSING_PARAMETER,
+                              'league_id': MISSING_PARAMETER,
+                              'sponsor_id': MISSING_PARAMETER,
+                              'year': MISSING_PARAMETER}
                   }
         self.output(loads(rv.data))
         self.output(result)
@@ -1139,13 +1148,12 @@ class TestGame(TestSetup):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['game'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
         expect = {'message': {
-                              'away_team_id': message,
-                              'date': message,
-                              'home_team_id': message,
-                              'league_id': message,
-                              'time': message}}
+                              'away_team_id': MISSING_PARAMETER,
+                              'date': MISSING_PARAMETER,
+                              'home_team_id': MISSING_PARAMETER,
+                              'league_id': MISSING_PARAMETER,
+                              'time': MISSING_PARAMETER}}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['game'] +
@@ -1471,13 +1479,12 @@ class TestBat(TestSetup):
         # missing parameters
         params = {}
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
         expect = {
                   'message': {
-                              'game_id': message,
-                              'hit': message,
-                              'player_id': message,
-                              'team_id': message
+                              'game_id': MISSING_PARAMETER,
+                              'hit': MISSING_PARAMETER,
+                              'player_id': MISSING_PARAMETER,
+                              'team_id': MISSING_PARAMETER
                               }
                   }
         self.output(loads(rv.data))
@@ -1804,6 +1811,7 @@ class TestBat(TestSetup):
                          Routes['bat'] + " PUT: valid parameters")
         self.assertEqual(200, rv.status_code,
                          Routes['bat'] + " PUT: valid parameters")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

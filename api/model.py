@@ -16,7 +16,7 @@ from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
 from api.validators import rbi_validator, hit_validator, inning_validator,\
                            string_validator, date_validator, time_validator,\
                            field_validator, year_validator, gender_validator,\
-                           float_validator
+                           float_validator, boolean_validator
 roster = DB.Table('roster',
                   DB.Column('player_id',
                             DB.Integer,
@@ -290,7 +290,8 @@ class Player(DB.Model):
                name=None,
                email=None,
                gender=None,
-               password=None):
+               password=None,
+               active=None):
         '''
         updates an existing player
             Parameters:
@@ -318,6 +319,10 @@ class Player(DB.Model):
             self.name = name
         elif name is not None:
             raise InvalidField(payload={'details': "Player - name"})
+        if active is not None and boolean_validator(active):
+            self.active = active
+        elif active is not None:
+            raise InvalidField(payload={'detail': "Player - active"})
 
     def activate(self):
         '''
@@ -578,9 +583,10 @@ class Sponsor(DB.Model):
         return {'sponsor_id': self.id,
                 'sponsor_name': self.name,
                 'link': self.link,
-                'description': self.description}
+                'description': self.description,
+                'active': self.active}
 
-    def update(self, name=None, link=None, description=None):
+    def update(self, name=None, link=None, description=None, active=None):
         '''
             updates an existing sponsor
             Raises:
@@ -598,6 +604,10 @@ class Sponsor(DB.Model):
             self.link = link
         elif link is not None:
             raise InvalidField(payload={'details': "Sponsor - link"})
+        if active is not None and boolean_validator(active):
+            self.active = active
+        elif active is not None:
+            raise InvalidField(payload={'detail': "Player - active"})
 
     def activate(self):
         '''
@@ -704,8 +714,8 @@ class Game(DB.Model):
             raise TeamDoesNotExist(payload={'details': away_team_id})
         if League.query.get(league_id) is None:
             raise LeagueDoesNotExist(payload={'details': league_id})
-        if ((status != "" and not string_validator(status)) 
-            or (field != "" and not field_validator(field))):
+        if ((status != "" and not string_validator(status))
+                or (field != "" and not field_validator(field))):
             raise InvalidField(payload={'details': "Game - field/status"})
         # must be good now
         self.home_team_id = home_team_id
@@ -768,12 +778,12 @@ class Game(DB.Model):
         elif time is not None:
             raise InvalidField(payload={'details': "Game - time"})
         if (home_team_id is not None and
-            Team.query.get(home_team_id) is not None):
+                Team.query.get(home_team_id) is not None):
             self.home_team_id = home_team_id
         elif home_team_id is not None:
             raise TeamDoesNotExist(payload={'details': home_team_id})
         if (away_team_id is not None and
-             Team.query.get(away_team_id) is not None):
+                Team.query.get(away_team_id) is not None):
             self.away_team_id = away_team_id
         elif away_team_id is not None:
             raise TeamDoesNotExist(payload={'details': away_team_id})
@@ -1031,7 +1041,8 @@ def subscribe(kik, name, team_id):
 def unsubscribe(kik, team_id):
     player = Player.query.filter_by(kik=kik).first()
     if player is None:
-        raise PlayerNotSubscribed(payload={'details': "Player is not subscribed"})
+        raise PlayerNotSubscribed(payload={'details':
+                                           "Player is not subscribed"})
     team = Team.query.get(team_id)
     if team is None:
         raise TeamDoesNotExist(payload={"details": team_id})
