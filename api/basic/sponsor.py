@@ -16,10 +16,12 @@ parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
 parser.add_argument('link', type=str)
 parser.add_argument('description', type=str)
+parser.add_argument('active', type=int)
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('sponsor_name', type=str, required=True)
 post_parser.add_argument('link', type=str)
 post_parser.add_argument('description', type=str)
+post_parser.add_argument('active', type=int)
 HEADERS = [{'header': 'sponsor_name', 'required': True,
             'validator': string_validator}]
 
@@ -37,7 +39,8 @@ class SponsorAPI(Resource):
                         {sponsor_id:int,
                         sponsor_name :string,
                         link: string,
-                        description: string
+                        description: string,
+                        active: boolean
                         }
                 otherwise
                     status: 404
@@ -81,8 +84,11 @@ class SponsorAPI(Resource):
         """
             PUT request for Sponsor
             Route: Routes['sponsor']/<sponsor_id:int>
-            Parameters :
+            Parameters:
                 sponsor_name: The Sponsor's name (string)
+                link: the link to the sponsor (string)
+                description: a description of the sponsor (string)
+                active: 1 if the sponsor is active otherwise 0 (int)
             Returns:
                 if found and successful
                     status: 200
@@ -102,6 +108,7 @@ class SponsorAPI(Resource):
         link = None
         description = None
         name = None
+        active = True
         if sponsor is None:
             raise SponsorDoesNotExist(payload={'details': sponsor_id})
         args = parser.parse_args()
@@ -111,7 +118,12 @@ class SponsorAPI(Resource):
             link = args['link']
         if args['description']:
             description = args['description']
-        sponsor.update(name=name, link=link, description=description)
+        if args['active']:
+            active = args['active'] == 1 if True else False
+        sponsor.update(name=name,
+                       link=link,
+                       description=description,
+                       active=active)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -128,8 +140,7 @@ class SponsorListAPI(Resource):
         """
             GET request for Sponsor List
             Route: Routes['sponsor']
-            Parameters :
-
+            Parameters:
             Returns:
                 status: 200
                 mimetype: application/json
@@ -137,7 +148,8 @@ class SponsorListAPI(Resource):
                     Sponsors: [{sponsor_id:int,
                                 sponsor_name:string,
                                 description: string,
-                                link: string
+                                link: string,
+                                active: boolean
                                 },{...}
                             ]
         """
@@ -154,10 +166,11 @@ class SponsorListAPI(Resource):
         """
             POST request for Sponsor List
             Route: Routes['sponsor']/<sponsor_id:int>
-            Parameters :
+            Parameters:
                 sponsor_name: The Sponsor's name (string)
                 link: A link to sponsors website (string)
                 description: a description of the sponsor (string)
+                active: 1 if the sponsor if active otherwise 0
             Returns:
                 if successful
                     status: 200
@@ -173,16 +186,19 @@ class SponsorListAPI(Resource):
         sponsor_name = None
         description = None
         link = None
+        active = True
         if args['sponsor_name']:
             sponsor_name = args['sponsor_name']
         if args['description']:
             description = args['description']
         if args['link']:
             link = args['link']
-        print("link", link)
+        if args['active']:
+            active = args['active'] == 1 if True else False
         sponsor = Sponsor(sponsor_name,
                           link=link,
-                          description=description)
+                          description=description,
+                          active=active)
         DB.session.add(sponsor)
         DB.session.commit()
         sponsor_id = sponsor.id
