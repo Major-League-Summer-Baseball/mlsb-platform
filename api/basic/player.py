@@ -82,7 +82,7 @@ class PlayerAPI(Resource):
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
                 email: the players email (string)
-                active: 1 if true and 0 otherwise
+                active: 1 if player is active and 0 otherwise (int)
             Returns:
                 if found and successful
                     status: 200
@@ -138,16 +138,14 @@ class PlayerListAPI(Resource):
         """
             GET request for Player List
             Route: Routes['player']
-            Parameters :
-                player_name: The player's name (string)
-                gender: a one letter character representing gender (string)
             Returns:
                 status: 200
                 mimetype: application/json
                 data:
                     players: [{player_id:int,
                               player-name:string,
-                              gender: string},{}
+                              gender: string,
+                              active: boolean},{}
                             ]
         """
         # return a list of users
@@ -169,7 +167,7 @@ class PlayerListAPI(Resource):
                 gender: a one letter character representing gender (string)
                 email: the email of the player (string)
                 password: the password of the player(string)
-                active: 1 if true and 0 otherwise
+                active: 1 if player is active and 0 otherwise (int)
             Returns:
                 if successful
                     status: 200
