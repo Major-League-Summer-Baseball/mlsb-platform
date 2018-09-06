@@ -12,6 +12,22 @@ from datetime import date
 from api.variables import BATS, FIELDS
 
 
+def boolean_validator(value):
+    '''
+    boolean_validator
+        a general function to validate boolean parameter
+        Parameters:
+            value: the passed parameter to validate (boolean)
+        Returns:
+            True if valid
+            False otherwise
+    '''
+    validated = False
+    if value is True or value is False:
+        validated = True
+    return validated
+
+
 def string_validator(value):
     '''
     string_validator
@@ -26,13 +42,13 @@ def string_validator(value):
     # try to convert to int
     try:
         value = int(value)
-    except:
+    except Exception:
         pass
     try:
         # will be an int if successfully converted other it won't be
         if not isinstance(value, int) and str(value) != "":
             validated = True
-    except:
+    except Exception:
         pass
     return validated
 
@@ -67,7 +83,7 @@ def int_validator(value):
     try:
         if int(value) >= 0:
             validated = True
-    except:
+    except Exception:
         pass
     return validated
 
@@ -86,7 +102,7 @@ def float_validator(value):
     try:
         if float(value) >= 0:
             validated = True
-    except:
+    except Exception:
         pass
     return validated
 
@@ -105,7 +121,7 @@ def gender_validator(value):
     try:
         if str(value) != "" and (value.upper() in "FTM"):
             validated = True
-    except:
+    except Exception:
         pass
     return validated
 
@@ -179,7 +195,9 @@ def hit_validator(hit, gender=None):
     if string_validator(hit):
         if hit.lower() in BATS:
             valid = True
-            if gender != "f" and hit.lower() == "ss":
+            if ((gender is None or
+                    gender.lower() != "f") and
+                    hit.lower() == "ss"):
                 valid = False
     return valid
 
@@ -261,6 +279,20 @@ class Test(unittest.TestCase):
         self.assertEqual(gender_validator(test), True,
                          'Gender Validator: M was a invalid Gender')
 
+    def testBooleanValidator(self):
+        test = ""
+        self.assertEqual(boolean_validator(test), False,
+                         'Boolean Validator: "" was a valid boolean')
+        test = 1
+        self.assertEqual(boolean_validator(test), False,
+                         'Boolean Validator: 1 was a valid boolean')
+        test = True
+        self.assertEqual(boolean_validator(test), True,
+                         'Boolean Validator: True was not a valid boolean')
+        test = False
+        self.assertEqual(boolean_validator(test), True,
+                         'Boolean Validator: False was not a valid boolean')
+
     def testIntValidator(self):
         # test with a string
         test = ""
@@ -336,14 +368,19 @@ class Test(unittest.TestCase):
         self.assertEqual(hit_validator(test), True,
                          'Hit Validator: S was a invalid Hit')
         test = "ss"
-        self.assertEqual(hit_validator(test), True,
-                         'Hit Validator: SS was a invalid Hit')
+        self.assertEqual(hit_validator(test), False,
+                         'Hit Validator:' +
+                         'SS was a valid Hit for a non-specified gender')
+        test = "ss"
+        self.assertEqual(hit_validator(test, gender='f'), True,
+                         'Hit Validator:' +
+                         'SS was a invalid Hit for a girl')
         test = "ss"
         self.assertEqual(hit_validator(test, gender="m"), False,
                          'Hit Validator: SS was a invalid Hit for a guy')
         test = "hr"
-        self.assertEqual(hit_validator(test, gender="m"), False,
-                         'Hit Validator: SS was a invalid Hit for a guy')
+        self.assertEqual(hit_validator(test, gender="m"), True,
+                         'Hit Validator: HR was a invalid Hit for a guy')
 
     def testFieldValidator(self):
         test = 1
@@ -355,6 +392,7 @@ class Test(unittest.TestCase):
         test = "WP1"
         self.assertEqual(hit_validator(test), False,
                          'Field Validator: WP1 was not a valid Field')
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
