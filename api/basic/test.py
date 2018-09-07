@@ -40,14 +40,24 @@ class TestFun(TestSetup):
         self.assertEqual(rv.status_code, 400, Routes['fun'] +
                          " POST: POST request with invalid parameters")
 
-        # insert a fun object
-        fun = self.add_fun(100, year=1900)
+        # proper insertion with fun
+        fun_count = 100
+        fun = {"year": 1900, "count": fun_count}
+        rv = self.app.post(Routes['fun'], data=fun, headers=headers)
+        result = params
+        fun_year = loads(rv.data)
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(fun['year'], fun_year, Routes['fun'] +
+                         " POST: POST valid request")
+        self.assertEqual(rv.status_code, 201, Routes['fun'] +
+                         " POST: POST valid request")
 
         # test a get with funs
         rv = self.app.get(Routes['fun'])
         self.output(loads(rv.data))
         self.output(fun)
-        message = " GET Failed to return list of funs"
+        message = " GET Failed to return list of funs"        
         self.assertFunModelEqual(fun, loads(rv.data)[-1],
                                  error_message=(Routes['fun'] + message))
         self.assertEqual(200, rv.status_code, Routes['fun'] +
@@ -153,8 +163,6 @@ class TestFun(TestSetup):
 
 class TestSponsor(TestSetup):
     def testSponsorListAPI(self):
-        # insert a sponsor
-        sponsor = self.add_sponsor("XXTEST")
 
         # missing parameters
         params = {}
@@ -175,6 +183,20 @@ class TestSponsor(TestSetup):
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['sponsor'] +
+                         " POST: POST request with invalid parameters")
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['sponsor'] +
+                         " POST: POST request with invalid parameters")
+
+        # proper insertion with post
+        params = {'sponsor_name': "New Sponsor"}
+        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
+        result = {'sponsor_name': 'New Sponsor'}
+        sponsor = loads(rv.data)
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(sponsor['sponsor_name'], result['sponsor_name'],
+                         Routes['sponsor'] +
                          " POST: POST request with invalid parameters")
         self.assertEqual(rv.status_code, InvalidField.status_code,
                          Routes['sponsor'] +
@@ -738,11 +760,12 @@ class TestPlayer(TestSetup):
 
 class TestLeague(TestSetup):
     def testLeagueAPIGet(self):
-        # proper insertion with post
-        self.addLeagues()
+        # add a league
+        league = self.add_league("New League")
+        
         # invalid league id
-        rv = self.app.get(Routes['league'] + "/999")
-        expect = {'details': 999, 'message': LeagueDoesNotExist.message}
+        rv = self.app.get(Routes['league'] + "/-1")
+        expect = {'details': -1, 'message': LeagueDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, Routes['league'] +
@@ -750,22 +773,23 @@ class TestLeague(TestSetup):
         self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
                          Routes['league'] +
                          " GET invalid league id")
+
         # valid league id
-        rv = self.app.get(Routes['league'] + "/1")
-        result = {'league_id': 1, 'league_name': 'Monday & Wedneday'}
+        rv = self.app.get(Routes['league'] + "/" + str(league['league_id']))
         self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
+        self.output(league)
+        self.assertLeagueModelEqual(loads(rv.data), league, Routes['league'] +
                          " GET valid league id")
         self.assertEqual(rv.status_code, 200, Routes['league'] +
                          " GET valid league id")
 
     def testLeagueAPIDelete(self):
-        # proper insertion with post
-        self.addLeagues()
+        # add a league
+        league = self.add_league("New League")
+
         # delete of invalid league id
-        rv = self.app.delete(Routes['league'] + "/999", headers=headers)
-        result = {'details': 999, 'message': LeagueDoesNotExist.message}
+        rv = self.app.delete(Routes['league'] + "/-1", headers=headers)
+        result = {'details': -1, 'message': LeagueDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['league'] +
@@ -773,7 +797,10 @@ class TestLeague(TestSetup):
         self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
                          Routes['league'] +
                          " DELETE Invalid league id ")
-        rv = self.app.delete(Routes['league'] + "/1", headers=headers)
+
+        # delete a valid id
+        rv = self.app.delete(Routes['league'] + "/" + str(league['league_id']),
+                             headers=headers)
         result = None
         self.output(loads(rv.data))
         self.output(result)
@@ -783,13 +810,14 @@ class TestLeague(TestSetup):
                          ' DELETE Valid league id')
 
     def testLeagueAPIPut(self):
-        # must add a League
-        self.addLeagues()
+        # add a league
+        league = self.add_league("New League")
+
         # invalid league id
         params = {'league_name': 'Chainsaw Classic'}
-        rv = self.app.put(Routes['league'] + '/999',
+        rv = self.app.put(Routes['league'] + '/-1',
                           data=params, headers=headers)
-        result = {'details': 999, 'message': LeagueDoesNotExist.message}
+        result = {'details': -1, 'message': LeagueDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['league'] +
@@ -797,9 +825,10 @@ class TestLeague(TestSetup):
         self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
                          Routes['league'] +
                          ' PUT: Invalid league ID')
+
         # invalid league_name type
         params = {'league_name': 1}
-        rv = self.app.put(Routes['league'] + '/1',
+        rv = self.app.put(Routes['league'] + '/' + str(league['league_name']),
                           data=params, headers=headers)
         result = {'details': 'League - name', 'message': InvalidField.message}
         self.output(loads(rv.data))
@@ -809,9 +838,11 @@ class TestLeague(TestSetup):
         self.assertEqual(rv.status_code, InvalidField.status_code,
                          Routes['league'] +
                          ' PUT: Invalid parameters')
+
         # successfully update
-        params = {'league_name': "Chainsaw Classic"}
-        rv = self.app.put(Routes['league'] + '/1',
+        league['league_name'] = "Updated league name"
+        params = {'league_name': league['league_name']}
+        rv = self.app.put(Routes['league'] + '/' + str(league['league_name']),
                           data=params, headers=headers)
         result = None
         self.output(loads(rv.data))
@@ -822,13 +853,7 @@ class TestLeague(TestSetup):
                          ' PUT: Successful Update')
 
     def testLeagueListAPI(self):
-        # test an empty get
-        rv = self.app.get(Routes['league'])
-        empty = loads(rv.data)
-        self.assertEqual([], empty, Routes['league'] +
-                         " GET: did not return empty list")
-        self.assertEqual(rv.status_code, 200, Routes['league'] +
-                         " GET: did not return empty list")
+
         # missing parameters
         params = {}
         rv = self.app.post(Routes['league'], data=params, headers=headers)
@@ -842,6 +867,7 @@ class TestLeague(TestSetup):
                          " POST: request with missing parameter")
         self.assertEqual(loads(rv.data), result, Routes['league'] +
                          " POST: request with missing parameter")
+
         # testing a league name parameter
         params = {'league_name': 1}
         rv = self.app.post(Routes['league'], data=params, headers=headers)
@@ -853,6 +879,7 @@ class TestLeague(TestSetup):
         self.assertEqual(rv.status_code, InvalidField.status_code,
                          Routes['league'] +
                          " POST: request with invalid league_name")
+
         # proper insertion with post
         params = {'league_name': "Monday & Wednesday"}
         rv = self.app.post(Routes['league'], data=params, headers=headers)

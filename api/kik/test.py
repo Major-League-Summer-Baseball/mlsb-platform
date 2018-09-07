@@ -8,7 +8,7 @@ from api.helper import loads
 from api import DB
 from api.routes import Routes
 from api.model import Player, Espys
-from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
+from api.BaseTest import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
 from datetime import date, datetime, timedelta
 from api.BaseTest import TestSetup

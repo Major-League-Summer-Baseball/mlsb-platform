@@ -9,14 +9,13 @@ import logging
 from datetime import date
 from api.helper import loads
 from api.routes import Routes
-from api.credentials import ADMIN, PASSWORD, KIK, KIKPW
 from api.model import Player
 from base64 import b64encode
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
                     SponsorDoesNotExist, LeagueDoesNotExist
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
-from api.BaseTest import TestSetup
+from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")

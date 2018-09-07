@@ -9,10 +9,9 @@ from api.helper import loads
 from api import DB
 from api.routes import Routes
 from api.model import Player
-from api.credentials import ADMIN, PASSWORD
 from base64 import b64encode
 from datetime import date, timedelta
-from api.BaseTest import TestSetup
+from api.BaseTest import TestSetup, ADMIN, PASSWORD
 from api.errors import TeamDoesNotExist, NotTeamCaptain,\
                        PlayerNotSubscribed, GameDoesNotExist,\
                        InvalidField,  PlayerDoesNotExist
