@@ -118,7 +118,7 @@ class TestSetup(unittest.TestCase):
     def add_league(self, league_name):
         league = League(name=league_name)
         self.leagues_to_delete.append(league)
-        DB.sesion.add(sponsor)
+        DB.session.add(sponsor)
         DB.session.commit()
         return league.json()
 
