@@ -80,7 +80,8 @@ class TestSetup(unittest.TestCase):
             try:
                 DB.session.delete(item)
                 DB.session.commit()
-            except Exception:
+            except Exception as e:
+                print(e)
                 not_deleted.append(item)
         return not_deleted
 
@@ -118,7 +119,7 @@ class TestSetup(unittest.TestCase):
     def add_league(self, league_name):
         league = League(name=league_name)
         self.leagues_to_delete.append(league)
-        DB.session.add(sponsor)
+        DB.session.add(league)
         DB.session.commit()
         return league.json()
 
@@ -218,7 +219,7 @@ class TestSetup(unittest.TestCase):
 
     def assertLeagueModelEqual(self, l1, l2, error_message=""):
         """Asserts the two league json objects are equal"""
-        self.assertEqual(l1['name'], l2['name'], error_message)
+        self.assertEqual(l1['league_name'], l2['league_name'], error_message)
         self.assertEqual(l1['league_id'], l2['league_id'], error_message)
 
     def assertGameModelEqual(self, g1, g2, error_message=""):
@@ -235,7 +236,7 @@ class TestSetup(unittest.TestCase):
     def assertPlayerModelEqual(self, p1, p2, error_message=""):
         """Asserts the two player json objects are equal"""
         self.assertEqual(p1['player_id'], p2['player_id'], error_message)
-        self.assertEqual(p1['name'], p2['name'], error_message)
+        self.assertEqual(p1['player_name'], p2['player_name'], error_message)
         self.assertEqual(p1['gender'], p2['gender'], error_message)
         self.assertEqual(p1['active'], p2['active'], error_message)
 
