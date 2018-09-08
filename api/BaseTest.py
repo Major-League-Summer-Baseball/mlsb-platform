@@ -312,7 +312,6 @@ class TestSetup(unittest.TestCase):
                         expected_message,
                         error_message=""):
         # check object exists
-        print(route + "/" + str(object_id))
         self.getTest(route + "/" + str(object_id),
                      SUCCESSFUL_GET_CODE,
                      assert_function,
@@ -322,7 +321,6 @@ class TestSetup(unittest.TestCase):
         # delete object
         rv = self.app.delete(route + "/" + str(object_id), headers=headers)
         expect = None
-        print(rv)
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, error_message)

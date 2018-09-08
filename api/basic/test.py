@@ -30,7 +30,8 @@ VALID_YEAR = date.today().year
 
 
 class TestFun(TestSetup):
-    def testFunListAPI(self):
+    def testFunInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_fun
 
         # missing parameters
         params = {}
@@ -44,6 +45,9 @@ class TestFun(TestSetup):
         self.assertEqual(rv.status_code, InvalidField.status_code,
                          Routes['fun'] +
                          " POST: POST request with invalid parameters")
+
+    def testFunListAPI(self):
+        # TODO pagination
 
         # add some fun
         fun = self.add_fun(100, year=1900)
@@ -64,24 +68,19 @@ class TestFun(TestSetup):
         fun = self.add_fun(100, year=1900)
 
         # invalid year
-        rv = self.app.get(Routes['fun'] + "/" + str(INVALID_ID))
         expect = {'details': INVALID_ID, "message": FunDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['fun'] + " Get: Invalid Fun")
-        self.assertEqual(FunDoesNotExist.status_code, rv.status_code,
-                         Routes['fun'] + " Get: Invalid Fun")
+        self.getTest(Routes['fun'] + "/" + str(INVALID_ID),
+                     FunDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['fun'] + " Get: Invalid Fun")
 
         # valid year
-        rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
-        self.output(loads(rv.data))
-        self.output(fun)
-        self.assertFunModelEqual(fun, loads(rv.data),
-                                 error_message=(Routes['fun'] +
-                                                " Get: valid Fun"))
-        self.assertEqual(200, rv.status_code,
-                         Routes['fun'] + " Get: valid Fun")
+        self.getTest(Routes['fun'] + "/" + str(fun['year']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertFunModelEqual,
+                     fun,
+                     error_message=Routes['fun'] + " Get: valid Fun")
 
     def testFunAPIDelete(self):
         # insert a fun object
@@ -147,8 +146,8 @@ class TestFun(TestSetup):
 
 
 class TestSponsor(TestSetup):
-    def testSponsorListAPI(self):
-
+    def testSponsorInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_sponsor
         # missing parameters
         params = {}
         rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
@@ -174,6 +173,8 @@ class TestSponsor(TestSetup):
                          Routes['sponsor'] +
                          " POST: POST request with invalid parameters")
 
+    def testSponsorListAPI(self):
+        # TODO pagination
         # add a sponsor
         sponsor = self.add_sponsor("New Sponsor")
 
@@ -194,58 +195,42 @@ class TestSponsor(TestSetup):
         # insert a sponsor
         sponsor = self.add_sponsor("XXTEST")
 
-        # invalid sponsor
-        rv = self.app.get(Routes['sponsor'] + "/" + str(INVALID_ID))
+        # invalid sponsor id
         expect = {'details': INVALID_ID,
-                  'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " Get: Invalid Sponsor")
-        self.assertEqual(SponsorDoesNotExist.status_code, rv.status_code,
-                         Routes['sponsor'] + " Get: Invalid Sponsor")
+                  "message": SponsorDoesNotExist.message}
+        self.getTest(Routes['sponsor'] + "/" + str(INVALID_ID),
+                     SponsorDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['sponsor'] + " Get: Invalid Sponsor")
 
-        # valid sponsor
-        rv = self.app.get(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']))
-        expect = {'sponsor_id': sponsor['sponsor_id'],
-                  'sponsor_name': sponsor['sponsor_name'],
-                  'link': sponsor['link'],
-                  'description': sponsor['description'],
-                  'active': sponsor['active']}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertSponsorModelEqual(sponsor, loads(rv.data),
-                                     Routes['sponsor'] + " Get: Valid Sponsor")
-        self.assertEqual(200, rv.status_code,
-                         Routes['sponsor'] + " Get: valid Sponsor")
+        # valid sponsor id
+        self.getTest(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertSponsorModelEqual,
+                     sponsor,
+                     error_message=Routes['sponsor'] + " Get: valid Sponsor")
 
     def testSponsorAPIDelete(self):
         # insert a sponsor
         sponsor = self.add_sponsor("XXTEST")
 
         # delete of invalid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/" + str(INVALID_ID),
-                             headers=headers)
-        result = {'details': INVALID_ID,
-                  'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result,
-                         Routes['sponsor'] + " DELETE Invalid Sponsor id ")
-        self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
-                         Routes['sponsor'] + " DELETE Invalid Sponsor id ")
+        error_message = Routes['sponsor'] + " DELETE Invalid Sponsor id "
+        self.deleteValidTest(Routes['sponsor'],
+                             SponsorDoesNotExist.status_code,
+                             self.assertSponsorModelEqual,
+                             sponsor['sponsor_id'],
+                             sponsor,
+                             SponsorDoesNotExist.message,
+                             error_message=error_message)
 
         # delete valid sponsor id
-        rv = self.app.delete(Routes['sponsor'] + "/" +
-                             str(sponsor['sponsor_id']),
-                             headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result,
-                         Routes['sponsor'] + ' DELETE Valid sponsor id')
-        self.assertEqual(rv.status_code, 200,
-                         Routes['sponsor'] + " DELETE valid Sponsor id ")
+        error_message = Routes['sponsor'] + " DELETE valid Sponsor id "
+        self.deleteInvalidTest(Routes['sponsor'],
+                               SponsorDoesNotExist.status_code,
+                               SponsorDoesNotExist.message,
+                               error_message=error_message)
 
     def testSponsorAPIPut(self):
         # insert a sponsor
@@ -306,56 +291,69 @@ class TestSponsor(TestSetup):
 
 
 class TestLeague(TestSetup):
+    def testLeagueInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_league
+        # missing parameters
+        params = {}
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
+        result = {'message': {
+                              'league_name': MISSING_PARAMETER
+                              }
+                  }
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['league'] +
+                         " POST: request with missing parameter")
+        self.assertEqual(loads(rv.data), result, Routes['league'] +
+                         " POST: request with missing parameter")
+
+        # testing a league name parameter
+        params = {'league_name': 1}
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
+        result = {'details': 'League - name', 'message': InvalidField.message}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['league'] +
+                         " POST: request with invalid league_name")
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['league'] +
+                         " POST: request with invalid league_name")
+
+    def testLeagueListAPI(self):
+        # TODO pagination
+        # proper insertion with post
+        league = self.add_league("New League")
+
+        # test a get with league
+        rv = self.app.get(Routes['league'])
+        self.output(loads(rv.data))
+        self.assertTrue(len(loads(rv.data)) > 0,
+                        Routes['league'] +
+                        " GET: Failed to return list of leagues")
+        self.assertLeagueModelEqual(league, loads(rv.data)[-1],
+                                    error_message=Routes['league'] +
+                                    " GET: Failed to return list of leagues")
+        self.assertEqual(200, rv.status_code, Routes['league'] +
+                         " GET: Failed to return list of leagues")
+
     def testLeagueAPIGet(self):
         # add a league
         league = self.add_league("New League")
 
-        # invalid league id
-        rv = self.app.get(Routes['league'] + "/" + str(INVALID_ID))
-        expect = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect, Routes['league'] +
-                         " GET invalid league id")
-        self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
-                         Routes['league'] +
-                         " GET invalid league id")
+        # invalid League id
+        expect = {'details': INVALID_ID, "message": LeagueDoesNotExist.message}
+        self.getTest(Routes['league'] + "/" + str(INVALID_ID),
+                     LeagueDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['league'] + " Get: Invalid League")
 
-        # valid league id
-        rv = self.app.get(Routes['league'] + "/" + str(league['league_id']))
-        self.output(loads(rv.data))
-        self.output(league)
-        self.assertLeagueModelEqual(loads(rv.data), league, Routes['league'] +
-                                    " GET valid league id")
-        self.assertEqual(rv.status_code, 200, Routes['league'] +
-                         " GET valid league id")
-
-    def testLeagueAPIDelete(self):
-        # add a league
-        league = self.add_league("New League")
-
-        # delete of invalid league id
-        rv = self.app.delete(Routes['league'] + "/" + str(INVALID_ID),
-                             headers=headers)
-        result = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " DELETE Invalid league id ")
-        self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
-                         Routes['league'] +
-                         " DELETE Invalid league id ")
-
-        # delete a valid id
-        rv = self.app.delete(Routes['league'] + "/" + str(league['league_id']),
-                             headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         ' DELETE Valid league id')
-        self.assertEqual(rv.status_code, 200, Routes['league'] +
-                         ' DELETE Valid league id')
+        # valid League id
+        self.getTest(Routes['league'] + "/" + str(league['league_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertLeagueModelEqual,
+                     league,
+                     error_message=Routes['league'] + " Get: valid League")
 
     def testLeagueAPIPut(self):
         # add a league
@@ -400,80 +398,96 @@ class TestLeague(TestSetup):
         self.assertEqual(rv.status_code, 200, Routes['league'] +
                          ' PUT: Successful Update')
 
-    def testLeagueListAPI(self):
-
-        # missing parameters
-        params = {}
-        rv = self.app.post(Routes['league'], data=params, headers=headers)
-        result = {'message': {
-                              'league_name': MISSING_PARAMETER
-                              }
-                  }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " POST: request with missing parameter")
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " POST: request with missing parameter")
-
-        # testing a league name parameter
-        params = {'league_name': 1}
-        rv = self.app.post(Routes['league'], data=params, headers=headers)
-        result = {'details': 'League - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " POST: request with invalid league_name")
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['league'] +
-                         " POST: request with invalid league_name")
-
-        # proper insertion with post
-        league = self.add_league("New League")
-
-        # test a get with league
-        rv = self.app.get(Routes['league'])
-        self.output(loads(rv.data))
-        self.assertTrue(len(loads(rv.data)) > 0,
-                        Routes['league'] +
-                        " GET: Failed to return list of leagues")
-        self.assertLeagueModelEqual(league, loads(rv.data)[-1],
-                                    error_message=Routes['league'] +
-                                    " GET: Failed to return list of leagues")
-        self.assertEqual(200, rv.status_code, Routes['league'] +
-                         " GET: Failed to return list of leagues")
-
     def testLeagueAPIPost(self):
         pass
 
 
 class TestPlayer(TestSetup):
+    def testPlayerInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_player
+        # missing parameters
+        params = {}
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
+        result = {'message': {
+                              'player_name': MISSING_PARAMETER,
+                              'email': MISSING_PARAMETER
+                              }
+                  }
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with missing parameter"
+                         )
+        self.assertEqual(rv.status_code, 400, Routes['player'] +
+                         " POST: POST request with missing parameter"
+                         )
+
+        # testing a gender parameter
+        params = {'player_name': 'Dallas Fraser',
+                  'gender': 'X',
+                  'email': "new@mlsb.ca"}
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
+        result = {'details': 'Player - gender',
+                  'message': InvalidField.message}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with invalid gender"
+                         )
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['player'] +
+                         " POST: POST request with invalid gender"
+                         )
+
+        # testing player_name parameter
+        params = {'player_name': 1, 'gender': 'M', 'email': 'new@mlsb.ca'}
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
+        result = {'details': 'Player - name', 'message': InvalidField.message}
+        self.output(loads(rv.data))
+        self.output(result)
+        self.assertEqual(loads(rv.data), result, Routes['player'] +
+                         " POST: POST request with invalid name"
+                         )
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['player'] +
+                         " POST: POST request with invalid name"
+                         )
+
+    def testPlayerListApi(self):
+        # TODO Pagination
+        # add a player
+        player_one = self.add_player("Test Player",
+                                     "TestPlayer@mlsb.ca",
+                                     gender="M")
+        rv = self.app.get(Routes['player'])
+        player_list = loads(rv.data)
+        self.assertTrue(len(player_list) > 0, Routes['player'] +
+                        " GET: did not receive player list")
+        self.assertPlayerModelEqual(player_one,
+                                    player_list[-1],
+                                    error_message=Routes['player'] +
+                                    " GET: did not receive player list")
+
     def testPlayerApiGet(self):
 
         # add a player
         player = self.add_player("Test Player",
                                  "TestPlayer@mlsb.ca",
                                  gender="M")
+        # invalid Player id
+        expect = {'details': INVALID_ID, "message": PlayerDoesNotExist.message}
+        self.getTest(Routes['player'] + "/" + str(INVALID_ID),
+                     PlayerDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['player'] + " Get: Invalid Player")
 
-        # invalid player id
-        rv = self.app.get(Routes['player'] + "/" + str(INVALID_ID))
-        result = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " GET invalid player id")
-        self.assertEqual(rv.status_code, PlayerDoesNotExist.status_code,
-                         Routes['player'] +
-                         " GET invalid player id")
-
-        # valid user
-        rv = self.app.get(Routes['player'] + "/" + str(player['player_id']))
-        self.output(loads(rv.data))
-        self.output(player)
-        self.assertPlayerModelEqual(player, loads(rv.data), Routes['player'] +
-                                    " GET valid player id")
-        self.assertEqual(rv.status_code, 200, Routes['player'] +
-                         " GET valid player id")
+        # valid Player id
+        self.getTest(Routes['player'] + "/" + str(player['player_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertPlayerModelEqual,
+                     player,
+                     error_message=Routes['player'] + " Get: valid Player")
 
     def testPlayerApiDelete(self):
 
@@ -482,28 +496,22 @@ class TestPlayer(TestSetup):
                                  "TestPlayer@mlsb.ca",
                                  gender="M")
 
-        # delete of invalid player id
-        rv = self.app.delete(Routes['player'] + "/" + str(INVALID_ID),
-                             headers=headers)
-        result = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " DELETE Invalid player id ")
-        self.assertEqual(rv.status_code, PlayerDoesNotExist.status_code,
-                         Routes['player'] +
-                         " DELETE Invalid player id ")
+        # delete of invalid league id
+        error_message = Routes['player'] + " DELETE Invalid player id "
+        self.deleteValidTest(Routes['player'],
+                             PlayerDoesNotExist.status_code,
+                             self.assertPlayerModelEqual,
+                             player['player_id'],
+                             player,
+                             PlayerDoesNotExist.message,
+                             error_message=error_message)
 
-        # delete the player that was added
-        rv = self.app.delete(Routes['player'] + "/" + str(player['player_id']),
-                             headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         ' DELETE Valid player id')
-        self.assertEqual(rv.status_code, 200, Routes['player'] +
-                         ' DELETE Valid player id')
+        # delete valid player id
+        error_message = Routes['player'] + " DELETE valid player id "
+        self.deleteInvalidTest(Routes['player'],
+                               PlayerDoesNotExist.status_code,
+                               PlayerDoesNotExist.message,
+                               error_message=error_message)
 
     def testPlayerApiPut(self):
         # add a player
@@ -586,75 +594,13 @@ class TestPlayer(TestSetup):
                          Routes['player'] +
                          ' PUT: Valid player update')
 
-    def testPlayerListApi(self):
-
-        # missing parameters
-        params = {}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {'message': {
-                              'player_name': MISSING_PARAMETER,
-                              'email': MISSING_PARAMETER
-                              }
-                  }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with missing parameter"
-                         )
-        self.assertEqual(rv.status_code, 400, Routes['player'] +
-                         " POST: POST request with missing parameter"
-                         )
-
-        # testing a gender parameter
-        params = {'player_name': 'Dallas Fraser',
-                  'gender': 'X',
-                  'email': "new@mlsb.ca"}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {'details': 'Player - gender',
-                  'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with invalid gender"
-                         )
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['player'] +
-                         " POST: POST request with invalid gender"
-                         )
-
-        # testing player_name parameter
-        params = {'player_name': 1, 'gender': 'M', 'email': 'new@mlsb.ca'}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
-        result = {'details': 'Player - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with invalid name"
-                         )
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['player'] +
-                         " POST: POST request with invalid name"
-                         )
-
-        # add a player
-        player_one = self.add_player("Test Player",
-                                     "TestPlayer@mlsb.ca",
-                                     gender="M")
-        rv = self.app.get(Routes['player'])
-        player_list = loads(rv.data)
-        self.assertTrue(len(player_list) > 0, Routes['player'] +
-                        " GET: did not receive player list")
-        self.assertPlayerModelEqual(player_one,
-                                    player_list[-1],
-                                    error_message=Routes['player'] +
-                                    " GET: did not receive player list")
-
-        def testPlayerAPIPost(self):
+    def testPlayerAPIPost(self):
             pass
 
 
 class TestTeam(TestSetup):
-    def testTeamListAPI(self):
+    def testTeamInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_team
         # missing parameters
         params = {}
         rv = self.app.post(Routes['team'], data=params, headers=headers)
@@ -736,7 +682,11 @@ class TestTeam(TestSetup):
                          Routes['team'] +
                          " POST: request with invalid parameters")
 
+    def testTeamListAPI(self):
+        # TODO Pagination
         # testing with all valid parameters
+        sponsor = self.add_sponsor("New Sponsor")
+        league = self.add_league("New League")
         team = self.add_team("Black", sponsor, league, VALID_YEAR)
 
         # test a get with team
@@ -757,27 +707,20 @@ class TestTeam(TestSetup):
         league = self.add_league("New league")
         team = self.add_team("Black", sponsor, league, year=VALID_YEAR)
 
-        # test invalid team id
-        rv = self.app.get(Routes['team'] + "/" + str(INVALID_ID))
-        expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect, Routes['team'] +
-                         " GET: invalid team id")
-        self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
-                         Routes['team'] +
-                         " GET: invalid team id")
+        # invalid Team id
+        expect = {'details': INVALID_ID, "message": TeamDoesNotExist.message}
+        self.getTest(Routes['team'] + "/" + str(INVALID_ID),
+                     TeamDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['team'] + " Get: Invalid Team")
 
-        # test valid team id
-        rv = self.app.get(Routes['team'] + "/" + str(team['team_id']))
-        self.output(loads(rv.data))
-        self.output(team)
-        self.assertTeamModelEqual(team,
-                                  loads(rv.data),
-                                  error_message=Routes['team'] +
-                                  " GET: valid team id")
-        self.assertEqual(rv.status_code, 200, Routes['team'] +
-                         " GET: valid team id")
+        # valid Team id
+        self.getTest(Routes['team'] + "/" + str(team['team_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertTeamModelEqual,
+                     team,
+                     error_message=Routes['team'] + " Get: valid Team")
 
     def testTeamDelete(self):
         # add a team
@@ -785,28 +728,22 @@ class TestTeam(TestSetup):
         league = self.add_league("New league")
         team = self.add_team("Black", sponsor, league, year=VALID_YEAR)
 
-        # delete an invalid team id
-        rv = self.app.delete(Routes['team'] + "/" + str(INVALID_ID),
-                             headers=headers)
-        result = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         " DELETE: Invalid team id ")
-        self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
-                         Routes['team'] +
-                         " DELETE: Invalid team id ")
+        # delete of invalid league id
+        error_message = Routes['team'] + " DELETE Invalid team id "
+        self.deleteValidTest(Routes['team'],
+                             TeamDoesNotExist.status_code,
+                             self.assertTeamModelEqual,
+                             team['team_id'],
+                             team,
+                             TeamDoesNotExist.message,
+                             error_message=error_message)
 
-        # delete a valid team
-        rv = self.app.delete(Routes['team'] + "/" + str(team['team_id']),
-                             headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         ' DELETE: Valid team id')
-        self.assertEqual(rv.status_code, 200, Routes['team'] +
-                         ' DELETE: Valid team id')
+        # delete valid team id
+        error_message = Routes['team'] + " DELETE valid team id "
+        self.deleteInvalidTest(Routes['team'],
+                               TeamDoesNotExist.status_code,
+                               TeamDoesNotExist.message,
+                               error_message=error_message)
 
     def testTeamPut(self):
         # add a team
@@ -911,8 +848,8 @@ class TestTeam(TestSetup):
 
 
 class TestGame(TestSetup):
-    def testGameListAPI(self):
-
+    def testGameInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_game
         # missing parameters
         params = {}
         rv = self.app.post(Routes['game'], data=params, headers=headers)
@@ -1006,6 +943,14 @@ class TestGame(TestSetup):
                          Routes['game'] +
                          " POST: request with invalid away team")
 
+    def testGameListAPI(self):
+        # TODO Pagination
+        # add two teams, a sponsor and a league
+        league = self.add_league("New League")
+        sponsor = self.add_sponsor("Sponsor")
+        home_team = self.add_team("Black", sponsor, league, VALID_YEAR)
+        away_team = self.add_team("White", sponsor, league, VALID_YEAR)
+
         # add a game
         game = self.add_game("2014-02-10",
                              "22:40",
@@ -1025,29 +970,23 @@ class TestGame(TestSetup):
                          " GET: Failed to return list of games")
 
     def testGameGet(self):
-
-        # invalid id
-        rv = self.app.get(Routes['game'] + "/" + str(INVALID_ID))
-        expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
-        self.output(expect)
-        self.output(loads(rv.data))
-        self.assertEqual(expect, loads(rv.data), Routes['game'] +
-                         " GET: with invalid game id")
-        self.assertEqual(GameDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] + " GET: with invalid game id")
-
         # add a game
         game = addGame(self)
 
-        # valid id
-        rv = self.app.get(Routes['game'] + "/" + str(game['game_id']))
-        self.output(game)
-        self.output(loads(rv.data))
-        self.assertGameModelEqual(game, loads(rv.data),
-                                  error_message=Routes['game'] +
-                                  " GET: with valid game id")
-        self.assertEqual(200, rv.status_code, Routes['game'] +
-                         " GET: with valid game id")
+        # invalid Game id
+        expect = {'details': INVALID_ID, "message": GameDoesNotExist.message}
+        self.getTest(Routes['game'] + "/" + str(INVALID_ID),
+                     GameDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['game'] + " Get: Invalid Game")
+
+        # valid Game id
+        self.getTest(Routes['game'] + "/" + str(game['game_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertGameModelEqual,
+                     game,
+                     error_message=Routes['game'] + " Get: valid Game")
 
     def testGameDelete(self):
 
@@ -1263,14 +1202,13 @@ class TestGame(TestSetup):
 
 
 class TestBat(TestSetup):
-    def testBatList(self):
-        # add a game
+    def testBateInvalidPost(self):
+        # Note Valid Requests are tested in BaseTest method add_bat
+        # missing parameters
         game = addGame(self)
         player = self.add_player("Test Player",
                                  "TestPLayer@mlsb.ca",
                                  gender="M")
-
-        # missing parameters
         params = {}
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {
@@ -1336,7 +1274,7 @@ class TestBat(TestSetup):
                   'inning': 1
                               }
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
-        expect = {'details': '99', 'message': TeamDoesNotExist.message}
+        expect = {'details': str(INVALID_ID), 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['bat'] +
@@ -1399,10 +1337,17 @@ class TestBat(TestSetup):
                          Routes['bat'] +
                          " POST: request with invalid hit")
 
+    def testBatList(self):
+        # TODO Pagination
+        # add a game
+        game = addGame(self)
+        player = self.add_player("Test Player",
+                                 "TestPLayer@mlsb.ca",
+                                 gender="M")
+
     def testBatGet(self):
         # add a bat
         bat = addBat(self, "S")
-        self.show_results = True
         # get on invalid id
         expect = {'details': INVALID_ID, 'message': BatDoesNotExist.message}
         self.getTest(Routes['bat'] + "/" + str(INVALID_ID),
@@ -1454,7 +1399,7 @@ class TestBat(TestSetup):
                   'inning': 1}
         rv = self.app.put(Routes['bat'] + "/" + str(INVALID_ID),
                           data=params, headers=headers)
-        expect = {'details': 3, 'message': BatDoesNotExist.message}
+        expect = {'details': INVALID_ID, 'message': BatDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
