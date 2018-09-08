@@ -9,6 +9,7 @@ from pprint import PrettyPrinter
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
 from base64 import b64encode
 from datetime import date
+from api.helper import loads
 import unittest
 import tempfile
 import os
@@ -28,6 +29,9 @@ kik = {
     'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' + KIKPW, "utf-8")).decode("ascii")
 }
 
+SUCCESSFUL_GET_CODE = 200
+SUCCESSFUL_DELETE_CODE = 200
+INVALID_ID = 10000000
 
 class TestSetup(unittest.TestCase):
     def setUp(self):
@@ -145,8 +149,8 @@ class TestSetup(unittest.TestCase):
                  league=None,
                  year=date.today().year):
         team = Team(color=color,
-                    sponsor_id=sponsor.id,
-                    league_id=league.id,
+                    sponsor_id=sponsor['sponsor_id'],
+                    league_id=league['league_id'],
                     year=year)
         self.teams_to_delete.append(team)
         DB.session.add(team)
@@ -163,9 +167,9 @@ class TestSetup(unittest.TestCase):
                  field=""):
         game = Game(date,
                     time,
-                    home_team.id,
-                    away_team.id,
-                    league.id,
+                    home_team['team_id'],
+                    away_team['team_id'],
+                    league['league_id'],
                     status=status,
                     field=field)
         self.games_to_delete.append(game)
@@ -174,9 +178,9 @@ class TestSetup(unittest.TestCase):
         return game.json()
 
     def add_bat(self, player, team, game, classification, inning=1, rbi=0):
-        bat = Bat(player.id,
-                  team.id,
-                  game.id,
+        bat = Bat(player['player_id'],
+                  team['team_id'],
+                  game['game_id'],
                   classification,
                   inning=inning,
                   rbi=rbi)
@@ -194,7 +198,7 @@ class TestSetup(unittest.TestCase):
                   time=None,
                   date=None):
         espy = Espys(team.id,
-                     sponsor_id=sponsor.id,
+                     sponsor_id=sponsor['sponsor_id'],
                      description=description,
                      points=points,
                      receipt=receipt,
@@ -252,7 +256,7 @@ class TestSetup(unittest.TestCase):
                              t2['captain']['player_id'],
                              error_message)
         else:
-            self.assertEqual(t1.player_id, t2['captain'], error_message)
+            self.assertEqual(t1['captain'], t2['captain'], error_message)
 
     def assertEspysModelEqual(self, e1, e2, error_message=""):
         """Asserts the espys fun json objects are equal"""
@@ -274,5 +278,72 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(b1['player_id'], b2['player_id'], error_message)
         self.assertEqual(b1['hit'], b2['hit'], error_message)
 
+    def putTest(self,
+                route,
+                params,
+                expected_status_code,
+                assert_function,
+                expected_object,
+                error_message=""):
+        rv = self.app.put(route, data=params, header=headers)
+        self.output(loads(rv.data))
+        self.output(expected_object)
+        assert_function(expected_status_code, rv.status_code, error_message)
+        self.assertEqual(expected_object, loads(rv.data), error_message)
 
+    def getTest(self,
+                route,
+                expected_status_code,
+                assert_function,
+                expected_object,
+                error_message=""):
+        rv = self.app.get(route, headers=headers)
+        self.output(loads(rv.data))
+        self.output(expected_object)
+        assert_function(expected_object, loads(rv.data), error_message)
+        self.assertEqual(expected_status_code, rv.status_code, error_message)
 
+    def deleteValidTest(self,
+                        route,
+                        expected_status_code_after_deletion,
+                        assert_function,
+                        object_id,
+                        expected_object,
+                        expected_message,
+                        error_message=""):
+        # check object exists
+        print(route + "/" + str(object_id))
+        self.getTest(route + "/" + str(object_id),
+                     SUCCESSFUL_GET_CODE,
+                     assert_function,
+                     expected_object,
+                     error_message=error_message)
+
+        # delete object
+        rv = self.app.delete(route + "/" + str(object_id), headers=headers)
+        expect = None
+        print(rv)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(loads(rv.data), expect, error_message)
+        self.assertEqual(rv.status_code, SUCCESSFUL_DELETE_CODE, error_message)
+
+        # check object was deleted
+        self.getTest(route + "/" + str(object_id),
+                     expected_status_code_after_deletion,
+                     self.assertEqual,
+                     {"details": object_id, "message": expected_message},
+                     error_message=error_message)
+
+    def deleteInvalidTest(self,
+                          route,
+                          expected_status_code,
+                          expected_message,
+                          error_message=""):
+        rv = self.app.delete(route + "/" + str(INVALID_ID),
+                             headers=headers)
+        expect = {'details': INVALID_ID, 'message': expected_message}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(loads(rv.data), expect, error_message)
+        self.assertEqual(rv.status_code, expected_status_code, error_message)
