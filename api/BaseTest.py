@@ -31,7 +31,9 @@ kik = {
 
 SUCCESSFUL_GET_CODE = 200
 SUCCESSFUL_DELETE_CODE = 200
+SUCCESSFUL_PUT_CODE = 200
 INVALID_ID = 10000000
+
 
 class TestSetup(unittest.TestCase):
     def setUp(self):
@@ -40,6 +42,7 @@ class TestSetup(unittest.TestCase):
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
         self.d = "2014-8-23"
         self.t = "11:37"
+        self.counter = 1
         app.config['TESTING'] = True
         self.app = app.test_client()
         self.to_delete = []
@@ -77,6 +80,12 @@ class TestSetup(unittest.TestCase):
         final_not_delete = self.delete_list(to_delete)
         self.assertEqual(len(final_not_delete) > 0, False,
                          "Unable to delete everying upon tear down")
+
+    def increment_counter(self):
+        self.counter += 1
+
+    def get_counter(self):
+        return self.counter
 
     def delete_list(self, values):
         not_deleted = []
@@ -197,12 +206,13 @@ class TestSetup(unittest.TestCase):
                   receipt=None,
                   time=None,
                   date=None):
-        espy = Espys(team.id,
+        espy = Espys(team['team_id'],
                      sponsor_id=sponsor['sponsor_id'],
                      description=description,
                      points=points,
                      receipt=receipt,
-                     time=time, date=date)
+                     time=time,
+                     date=date)
         self.espys_to_delete.append(espy)
         DB.session.add(espy)
         DB.session.commit()
@@ -264,7 +274,7 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(e1['sponsor_id'], e2['sponsor_id'], error_message)
         self.assertEqual(e1['description'], e2['description'], error_message)
         self.assertEqual(e1['points'], e2['points'], error_message)
-        self.assertEqual(e1['receipt'], e2['recipt'], error_message)
+        self.assertEqual(e1['receipt'], e2['receipt'], error_message)
         self.assertEqual(e1['time'], e2['time'], error_message)
         self.assertEqual(e1['date'], e2['date'], error_message)
 
@@ -285,7 +295,7 @@ class TestSetup(unittest.TestCase):
                 assert_function,
                 expected_object,
                 error_message=""):
-        rv = self.app.put(route, data=params, header=headers)
+        rv = self.app.put(route, data=params, headers=headers)
         self.output(loads(rv.data))
         self.output(expected_object)
         assert_function(expected_status_code, rv.status_code, error_message)

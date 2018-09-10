@@ -17,8 +17,9 @@ from api.errors import \
 from datetime import date
 from base64 import b64encode
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                         INVALID_ID
-from api.testData import bat
+                         INVALID_ID, SUCCESSFUL_DELETE_CODE,\
+                         SUCCESSFUL_PUT_CODE
+from api.testData import bat, espys
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -107,42 +108,33 @@ class TestFun(TestSetup):
         # insert a fun object
         fun = self.add_fun(100, year=1900)
         updated_count = 50
+
         # invalid year
         params = {'count': updated_count}
-        rv = self.app.put(Routes['fun'] + "/" + str(INVALID_ID),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, "message": FunDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['fun'] + " Put: Invalid Fun")
-        self.assertEqual(FunDoesNotExist.status_code, rv.status_code,
-                         Routes['fun'] + " Put: Invalid Fun")
+        self.putTest(Routes['fun'] + "/" + str(INVALID_ID),
+                     params,
+                     FunDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=Routes['fun'] + " Put: Invalid Fun"
+                     )
 
         # valid year
-        rv = self.app.put(Routes['fun'] + "/" + str(fun['year']),
-                          data=params, headers=headers)
-        expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['fun'] + " Put: valid Fun")
-        self.assertEqual(200, rv.status_code,
-                         Routes['fun'] + " Put: valid Fun")
-
-        # now try to get it
-        rv = self.app.get(Routes['fun'] + "/" + str(fun['year']))
+        self.putTest(Routes['fun'] + "/" + str(fun['year']),
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     None,
+                     error_message=Routes['fun'] + " Put: valid Fun"
+                     )
         fun['count'] = updated_count
-        self.output(loads(rv.data))
-        self.output(fun)
-        self.assertFunModelEqual(fun, loads(rv.data),
-                                 error_message=(Routes['fun'] +
-                                                " Get: valid Fun"))
-        self.assertEqual(200, rv.status_code,
-                         Routes['fun'] + " Get: valid Fun")
-
-    def testFunAPIPost(self):
-        pass
+        # now try to get it
+        self.getTest(Routes['fun'] + "/" + str(fun['year']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertFunModelEqual,
+                     fun,
+                     error_message=Routes['fun'] + " Get: valid Fun")
 
 
 class TestSponsor(TestSetup):
@@ -239,55 +231,48 @@ class TestSponsor(TestSetup):
 
         # invalid sponsor id
         params = {'sponsor_name': 'New League'}
-        rv = self.app.put(Routes['sponsor'] + '/' + str(INVALID_ID),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID,
                   'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " PUT: given invalid sponsor ID")
-        self.assertEqual(SponsorDoesNotExist.status_code, rv.status_code,
-                         Routes['sponsor'] + " PUT: given invalid sponsor ID")
+        error_message = Routes['sponsor'] + " PUT: given invalid sponsor ID"
+        self.putTest(Routes['sponsor'] + "/" + str(INVALID_ID),
+                     params,
+                     SponsorDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message
+                     )
 
         # invalid parameters
         params = {'sponsor_name': 1}
-        rv = self.app.put(Routes['sponsor'] + '/' + str(sponsor['sponsor_id']),
-                          data=params, headers=headers)
-        expect = {'details': 'Sponsor - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['sponsor'] + " PUT: given invalid parameters")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['sponsor'] + " PUT: given invalid parameters")
+        expect = {'details': "Sponsor - name",
+                  'message': InvalidField.message}
+        error_message = Routes['sponsor'] + " PUT: given invalid parameters"
+        self.putTest(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']),
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message
+                     )
 
         # successful update
         params = {'sponsor_name': sponsor_updated_name}
         sponsor['sponsor_name'] = sponsor_updated_name
-        rv = self.app.put(Routes['sponsor'] + '/' + str(sponsor['sponsor_id']),
-                          data=params,
-                          headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(sponsor)
-        self.assertEqual(result, loads(rv.data),
-                         Routes['sponsor'] + " PUT: Failed to update Sponsor")
-        self.assertEqual(200, rv.status_code,
-                         Routes['sponsor'] + " PUT: Failed to update Sponsor")
+        error_message = Routes['sponsor'] + " PUT: Failed to update Sponsor"
+        self.putTest(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']),
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     None,
+                     error_message=error_message
+                     )
 
         # now try to get it
-        rv = self.app.get(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']))
-        self.output(loads(rv.data))
-        self.output(sponsor)
-        self.assertSponsorModelEqual(sponsor, loads(rv.data),
-                                     error_message=(Routes['sponsor'] +
-                                                    " Get: valid Fun"))
-        self.assertEqual(200, rv.status_code,
-                         Routes['fun'] + " Get: valid Fun")
-
-    def testSponsorAPIPost(self):
-        pass
+        self.getTest(Routes['sponsor'] + "/" + str(sponsor['sponsor_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertSponsorModelEqual,
+                     sponsor,
+                     error_message=Routes['fun'] + " Get: valid Sponsor")
 
 
 class TestLeague(TestSetup):
@@ -361,45 +346,42 @@ class TestLeague(TestSetup):
 
         # invalid league id
         params = {'league_name': 'Chainsaw Classic'}
-        rv = self.app.put(Routes['league'] + '/' + str(INVALID_ID),
-                          data=params, headers=headers)
         result = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         ' PUT: Invalid league ID')
-        self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
-                         Routes['league'] +
-                         ' PUT: Invalid league ID')
+        self.putTest(Routes['league'] + '/' + str(INVALID_ID),
+                     params,
+                     LeagueDoesNotExist.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=Routes['league'] + ' PUT:Invalid league ID')
 
         # invalid league_name type
         params = {'league_name': 1}
-        rv = self.app.put(Routes['league'] + '/' + str(league['league_id']),
-                          data=params, headers=headers)
         result = {'details': 'League - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         ' PUT: Invalid parameters')
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['league'] +
-                         ' PUT: Invalid parameters')
+        error_message = Routes['league'] + ' PUT: Invalid parameters'
+        self.putTest(Routes['league'] + '/' + str(league['league_id']),
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
 
         # successfully update
         league['league_name'] = "Updated league name"
         params = {'league_name': league['league_name']}
-        rv = self.app.put(Routes['league'] + '/' + str(league['league_id']),
-                          data=params, headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         ' PUT: Successful Update')
-        self.assertEqual(rv.status_code, 200, Routes['league'] +
-                         ' PUT: Successful Update')
+        error_message = Routes['league'] + ' PUT: Successful Update'
+        self.putTest(Routes['league'] + '/' + str(league['league_id']),
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     None,
+                     error_message=error_message)
 
-    def testLeagueAPIPost(self):
-        pass
+        # now get it
+        self.getTest(Routes['league'] + "/" + str(league['league_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertLeagueModelEqual,
+                     league,
+                     error_message=Routes['fun'] + " Get: valid League")
 
 
 class TestPlayer(TestSetup):
@@ -521,55 +503,58 @@ class TestPlayer(TestSetup):
 
         # invalid player id
         params = {'player_name': 'David Duchovny', 'gender': "F"}
-        rv = self.app.put(Routes['player'] + '/' + str(INVALID_ID),
-                          data=params,
-                          headers=headers)
         result = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         ' PUT: Invalid Player ID')
-        self.assertEqual(rv.status_code, PlayerDoesNotExist.status_code,
-                         Routes['player'] +
-                         ' PUT: Invalid Player ID')
+        error_message = Routes['player'] + ' PUT: Invalid Player ID'
+        self.putTest(Routes['player'] + '/' + str(INVALID_ID),
+                     params,
+                     PlayerDoesNotExist.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
 
         # invalid player_name type
         params = {'player_name': 1, 'gender': "F"}
-        rv = self.app.put(Routes['player'] + "/" + str(player['player_id']),
-                          data=params, headers=headers)
         result = {'details': 'Player - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         ' PUT: Invalid Player name')
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['player'] +
-                         ' PUT: Invalid Player name')
+        error_message = Routes['player'] + ' PUT: Invalid Player name'
+        self.putTest(Routes['player'] + "/" + str(player['player_id']),
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
         # invalid gender
         params = {'player_name': "David Duchovny", 'gender': "X"}
-        rv = self.app.put(Routes['player'] + "/" + str(player['player_id']),
-                          data=params, headers=headers)
         result = {'details': 'Player - gender',
                   'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         ' PUT: Invalid Player gender')
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['player'] +
-                         ' PUT: Invalid Player gender')
+        error_message = Routes['player'] + ' PUT: Invalid Player gender'
+        self.putTest(Routes['player'] + "/" + str(player['player_id']),
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
 
         # successfully update
         params = {'player_name': "David Duchovny", 'gender': "F"}
-        rv = self.app.put(Routes['player'] + "/" + str(player['player_id']),
-                          data=params, headers=headers)
+        player['player_name'] = "David Duchovny"
+        player['gender'] = "f"
         result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         ' PUT: Valid player update')
-        self.assertEqual(rv.status_code, 200, Routes['player'] +
-                         ' PUT: Valid player update')
+        error_message = Routes['player'] + ' PUT: Valid player update'
+        self.putTest(Routes['player'] + "/" + str(player['player_id']),
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
+        # now get it
+        error_message = Routes['player'] + " Get: valid player"
+        self.getTest(Routes['player'] + "/" + str(player['player_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertPlayerModelEqual,
+                     player,
+                     error_message=error_message)
 
     def testPlayerApiPutDuplicateEmail(self):
         # add two player
@@ -581,21 +566,15 @@ class TestPlayer(TestSetup):
 
         # try to update the first player to have the same email as the second
         params = {'email': player_two_email}
-        rv = self.app.put(Routes['player'] + '/' +
-                          str(player_one['player_id']),
-                          data=params, headers=headers)
         result = {'details': player_two_email,
                   'message': NonUniqueEmail.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         ' PUT: Valid player update')
-        self.assertEqual(rv.status_code, NonUniqueEmail.status_code,
-                         Routes['player'] +
-                         ' PUT: Valid player update')
-
-    def testPlayerAPIPost(self):
-            pass
+        error_message = Routes['player'] + ' PUT: Valid player update'
+        self.putTest(Routes['player'] + "/" + str(player_one['player_id']),
+                     params,
+                     NonUniqueEmail.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
 
 
 class TestTeam(TestSetup):
@@ -750,82 +729,79 @@ class TestTeam(TestSetup):
         sponsor = self.add_sponsor("New Sponsor")
         league = self.add_league("New league")
         team = self.add_team("Black", sponsor, league, year=VALID_YEAR)
+        invalid_route = Routes['team'] + '/' + str(INVALID_ID)
+        valid_route = Routes['team'] + '/' + str(team['team_id'])
 
         # invalid team id
         params = {'sponsor_id': str(sponsor['sponsor_id']),
                   'league_id': str(league['league_id']),
                   'color': "Black",
                   'year': VALID_YEAR}
-        rv = self.app.put(Routes['team'] + '/' + str(INVALID_ID),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['team'] + " PUT: given invalid team ID")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['team'] + " PUT: given invalid team ID")
+        error_message = Routes['team'] + " PUT: given invalid team ID"
+        self.putTest(invalid_route,
+                     params,
+                     TeamDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid sponsor_id
         params = {'sponsor_id': INVALID_ID,
                   'league_id': str(league['league_id']),
                   'color': "Black",
                   'year': VALID_YEAR}
-        rv = self.app.put(Routes['team'] + '/' + str(team['team_id']),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID,
                   'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['team'] + " PUT: given invalid sponsor")
-        self.assertEqual(SponsorDoesNotExist.status_code, rv.status_code,
-                         Routes['team'] + " PUT: given invalid sponsor")
+        error_message = Routes['team'] + " PUT: given invalid sponsor ID"
+        self.putTest(valid_route,
+                     params,
+                     SponsorDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid league_id
         params = {'sponsor_id': str(sponsor['sponsor_id']),
                   'league_id': INVALID_ID,
                   'color': "Black",
                   'year': VALID_YEAR}
-        rv = self.app.put(Routes['team'] + '/' + str(team['team_id']),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['team'] + " PUT: given invalid sponsor")
-        self.assertEqual(LeagueDoesNotExist.status_code, rv.status_code,
-                         Routes['team'] + " PUT: given invalid league")
+        error_message = Routes['team'] + " PUT: given invalid league ID"
+        self.putTest(valid_route,
+                     params,
+                     LeagueDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid color
         params = {'sponsor_id': str(sponsor['sponsor_id']),
                   'league_id': str(league['league_id']),
                   'color': 1,
                   'year': VALID_YEAR}
-        rv = self.app.put(Routes['team'] + '/' + str(team['team_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Team - color', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['team'] + " PUT: given invalid color")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['team'] + " PUT: given invalid color")
+        error_message = Routes['team'] + " PUT: given invalid color"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid year
         params = {'sponsor_id': str(sponsor['sponsor_id']),
                   'league_id': str(league['league_id']),
                   'color': "Black",
                   'year': -1}
-        rv = self.app.put(Routes['team'] + '/' + str(team['team_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Team - year', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['team'] + " PUT: given invalid year")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['team'] + " PUT: given invalid year")
+        error_message = Routes['team'] + " PUT: given invalid year"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # successful update
         sponsor_two = self.add_sponsor("second sponsor")
@@ -836,15 +812,16 @@ class TestTeam(TestSetup):
                   'sponsor_id': sponsor_two['sponsor_id'],
                   'league_id': league_two['league_id'],
                   'color': "Black"}
-        rv = self.app.put(Routes['team'] + '/' + str(team['team_id']),
-                          data=params, headers=headers)
+        team['sponsor_id'] = sponsor_two['sponsor_id']
+        team['league_id'] = league_two['league_id']
+        error_message = Routes['team'] + " PUT: Failed to update a team"
         expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect, Routes['team'] +
-                         " PUT: Failed to update a team")
-        self.assertEqual(rv.status_code, 200, Routes['team'] +
-                         " PUT: Failed to update a team")
+        self.putTest(valid_route,
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
 
 class TestGame(TestSetup):
@@ -1019,6 +996,8 @@ class TestGame(TestSetup):
     def testGamePut(self):
         # add a game
         game = addGame(self)
+        invalid_route = Routes['game'] + "/" + str(INVALID_ID)
+        valid_route = Routes['game'] + "/" + str(game['game_id'])
 
         # invalid game id
         params = {
@@ -1030,15 +1009,14 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(INVALID_ID),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid game id")
-        self.assertEqual(GameDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid game id")
+        error_message = Routes['game'] + " PUT: invalid game id"
+        self.putTest(invalid_route,
+                     params,
+                     GameDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid home team
         params = {
@@ -1049,16 +1027,15 @@ class TestGame(TestSetup):
           'league_id': game['league_id'],
           'status': "Championship",
           'field': "WP1"
-         }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
+        }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid home team")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid home team")
+        error_message = Routes['game'] + " PUT: invalid home team"
+        self.putTest(valid_route,
+                     params,
+                     TeamDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid away team
         params = {
@@ -1070,15 +1047,14 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid away team")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid away team")
+        error_message = Routes['game'] + " PUT: invalid away team"
+        self.putTest(valid_route,
+                     params,
+                     TeamDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid league
         params = {
@@ -1090,15 +1066,14 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid league")
-        self.assertEqual(LeagueDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid league")
+        error_message = Routes['game'] + " PUT: invalid league"
+        self.putTest(valid_route,
+                     params,
+                     LeagueDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid date
         params = {
@@ -1110,15 +1085,14 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Game - date', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid date")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid date")
+        error_message = Routes['game'] + " PUT: invalid date"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid time
         params = {
@@ -1130,15 +1104,14 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Game - time', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid time")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid time")
+        error_message = Routes['game'] + " PUT: invalid time"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid status
         params = {
@@ -1150,15 +1123,14 @@ class TestGame(TestSetup):
                   'status': 1,
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Game - status', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid status")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid status")
+        error_message = Routes['game'] + " PUT: invalid status"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # invalid field
         params = {
@@ -1170,15 +1142,14 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': 1
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Game - field', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: invalid field")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['game'] + " PUT: invalid field")
+        error_message = Routes['game'] + " PUT: invalid field"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
 
         # valid update parameters
         params = {
@@ -1190,15 +1161,29 @@ class TestGame(TestSetup):
                   'status': "Championship",
                   'field': "WP1"
                  }
-        rv = self.app.put(Routes['game'] + "/" + str(game['game_id']),
-                          data=params, headers=headers)
+        game['home_team_id'] = params['home_team_id']
+        game['away_team_id'] = params['away_team_id']
+        game['date'] = params['date']
+        game['time'] = params['time']
+        game['league_id'] = params['league_id']
+        game['status'] = params['status']
+        game['field'] = params['field']
         expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['game'] + " PUT: valid update")
-        self.assertEqual(200, rv.status_code,
-                         Routes['game'] + " PUT: valid update")
+        error_message = Routes['game'] + " PUT: valid update"
+        self.putTest(valid_route,
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
+        # test a valid get
+        error_message = Routes['game'] + " GET: just updated game"
+        self.getTest(valid_route,
+                     SUCCESSFUL_GET_CODE,
+                     self.assertGameModelEqual,
+                     game,
+                     error_message=error_message)
 
 
 class TestBat(TestSetup):
@@ -1274,7 +1259,8 @@ class TestBat(TestSetup):
                   'inning': 1
                               }
         rv = self.app.post(Routes['bat'], data=params, headers=headers)
-        expect = {'details': str(INVALID_ID), 'message': TeamDoesNotExist.message}
+        expect = {'details': str(INVALID_ID),
+                  'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['bat'] +
@@ -1282,6 +1268,7 @@ class TestBat(TestSetup):
         self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
                          Routes['bat'] +
                          " POST: request with invalid team")
+
         # testing invalid rbi
         params = {
                   'game_id': INVALID_ID,
@@ -1388,7 +1375,8 @@ class TestBat(TestSetup):
     def testBatPut(self):
         # add a bat
         bat = addBat(self, "S")
-
+        invalid_route = Routes['bat'] + "/" + str(INVALID_ID)
+        valid_route = Routes['bat'] + "/" + str(bat['bat_id'])
         # invalid bat ID
         params = {
                   'game_id': bat['game_id'],
@@ -1397,139 +1385,100 @@ class TestBat(TestSetup):
                   'rbi': 4,
                   'hit': "HR",
                   'inning': 1}
-        rv = self.app.put(Routes['bat'] + "/" + str(INVALID_ID),
-                          data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': BatDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid Bat id")
-        self.assertEqual(BatDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid Bat id")
+        error_message = Routes['bat'] + " PUT: invalid Bat id"
+        self.putTest(invalid_route,
+                     params,
+                     BatDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
         # test invalid game_id
         params = {
-                  'game_id': bat['game_id'],
+                  'game_id': INVALID_ID,
                   'player_id': bat['player_id'],
                   'team_id': bat['team_id'],
                   'rbi': 4,
                   'hit': "HR",
                   'inning': 1}
-        params = {
-                  'game_id': -1,
-                  'player_id': 1,
-                  'team_id': 1,
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1
-                              }
-        rv = self.app.put(Routes['bat'] + "/" + str(bat['bat_id']),
-                          data=params, headers=headers)
-        expect = {'details': -1, 'message': GameDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid game")
-        self.assertEqual(GameDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid game")
-        # test invalid game_id
+        expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
+        error_message = Routes['bat'] + " PUT: invalid game"
+        self.putTest(valid_route,
+                     params,
+                     GameDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
+        # test invalid player_id
         params = {
                   'game_id': bat['game_id'],
-                  'player_id': bat['player_id'],
+                  'player_id': INVALID_ID,
                   'team_id': bat['team_id'],
                   'rbi': 4,
                   'hit': "HR",
                   'inning': 1}
-        params = {
-                  'game_id': 1,
-                  'player_id': -1,
-                  'team_id': 1,
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1
-                              }
-        rv = self.app.put(Routes['bat'] + "/" + str(bat['bat_id']),
-                          data=params, headers=headers)
-        expect = {'details': -1, 'message': PlayerDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid player")
-        self.assertEqual(PlayerDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid player")
-        # test invalid game_id
+        expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
+        error_message = Routes['bat'] + " PUT: invalid player"
+        self.putTest(valid_route,
+                     params,
+                     PlayerDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
+        # test invalid team_id
         params = {
                   'game_id': bat['game_id'],
                   'player_id': bat['player_id'],
-                  'team_id': bat['team_id'],
+                  'team_id': INVALID_ID,
                   'rbi': 4,
                   'hit': "HR",
                   'inning': 1}
-        params = {
-                  'game_id': 1,
-                  'player_id': 1,
-                  'team_id': -1,
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1
-                              }
-        rv = self.app.put(Routes['bat'] + "/1", data=params, headers=headers)
-        expect = {'details': '-1', 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid team")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid team")
+        expect = {'details': str(INVALID_ID), 'message': TeamDoesNotExist.message}
+        error_message = Routes['bat'] + " PUT: invalid team"
+        self.putTest(valid_route,
+                     params,
+                     TeamDoesNotExist.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
         # test invalid rbi
         params = {
                   'game_id': bat['game_id'],
                   'player_id': bat['player_id'],
                   'team_id': bat['team_id'],
-                  'rbi': 4,
+                  'rbi': 10,
                   'hit': "HR",
                   'inning': 1}
-        params = {
-                  'game_id': 1,
-                  'player_id': 1,
-                  'team_id': 1,
-                  'rbi': 99,
-                  'hit': "HR",
-                  'inning': 1
-                              }
-        rv = self.app.put(Routes['bat'] + "/" + str(bat['bat_id']),
-                          data=params, headers=headers)
         expect = {'details': 'Bat - rbi', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid rbi")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid rbi")
+        error_message = Routes['bat'] + " PUT: invalid rbi"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
         # test invalid hit
         params = {
                   'game_id': bat['game_id'],
                   'player_id': bat['player_id'],
                   'team_id': bat['team_id'],
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1}
-        params = {
-                  'game_id': 1,
-                  'player_id': 1,
-                  'team_id': 1,
-                  'rbi': 4,
+                  'rbi': 1,
                   'hit': "XX",
-                  'inning': 1
-                              }
-        rv = self.app.put(Routes['bat'] + "/" + str(bat['bat_id']),
-                          data=params, headers=headers)
+                  'inning': 1}
         expect = {'details': 'Bat - hit', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid hit")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid hit")
+        error_message = Routes['bat'] + " PUT: invalid hit"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
         # test invalid inning
         params = {
                   'game_id': bat['game_id'],
@@ -1537,184 +1486,192 @@ class TestBat(TestSetup):
                   'team_id': bat['team_id'],
                   'rbi': 4,
                   'hit': "HR",
-                  'inning': 1}
-        params = {
-                  'game_id': 1,
-                  'player_id': 1,
-                  'team_id': 1,
-                  'rbi': 4,
-                  'hit': "hr",
-                  'inning': -1
-                              }
-        rv = self.app.put(Routes['bat'] + "/" + str(bat['bat_id']),
-                          data=params, headers=headers)
+                  'inning': -1}
         expect = {'details': 'Bat - inning', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: invalid inning")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['bat'] + " PUT: invalid inning")
+        error_message = Routes['bat'] + " PUT: invalid inning"
+        self.putTest(valid_route,
+                     params,
+                     InvalidField.status_code,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
         # valid update
+        second_game = addGame(self)
+        sponsor = self.add_sponsor("Second Sponsor")
+        league = self.add_league("Second League")
+        second_team = self.add_team("test team two",
+                                    sponsor=sponsor,
+                                    league=league)
+        second_player = self.add_player("test player two",
+                                        "testPlayerTwo@mlsb.ca",
+                                        "M")
         params = {
-                  'game_id': 1,
-                  'player_id': 1,
-                  'team_id': 1,
+                  'game_id': second_game['game_id'],
+                  'player_id': second_player['player_id'],
+                  'team_id': second_team['team_id'],
                   'rbi': 4,
                   'hit': "HR",
                   'inning': 1
                               }
-        rv = self.app.put(Routes['bat'] + "/" + str(bat['bat_id']),
-                          data=params, headers=headers)
+        bat['game_id'] = params['game_id']
+        bat['player_id'] = params['player_id']
+        bat['team_id'] = params['team_id']
+        bat['rbi'] = params['rbi']
+        bat['hit'] = params['hit']
+        bat['inning'] = params['inning']
         expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['bat'] + " PUT: valid parameters")
-        self.assertEqual(200, rv.status_code,
-                         Routes['bat'] + " PUT: valid parameters")
+        error_message = Routes['bat'] + " PUT: valid parameters"
+        self.putTest(valid_route,
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     expect,
+                     error_message=error_message)
+
+        # test a get to make sure it was updated
+        error_message = Routes['bat'] + " GET: updated bat"
+        self.getTest(valid_route,
+                     SUCCESSFUL_GET_CODE,
+                     self.assertBatModelEqual,
+                     bat,
+                     error_message=error_message)
 
 
 class TestEspys(TestSetup):
     def testEspysApiGet(self):
         # proper insertion
-        self.addEspys()
-        # invalid player id
-        rv = self.app.get(Routes['espy'] + "/100")
-        result = {'details': 100, 'message': EspysDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " GET invalid espy id")
-        self.assertEqual(rv.status_code, EspysDoesNotExist.status_code,
-                         Routes['espy'] + " GET invalid espy id")
-        # valid user
-        d = datetime.today().strftime("%Y-%m-%d")
-        t = datetime.today().strftime("%H:%M")
-        rv = self.app.get(Routes['espy'] + "/1")
-        result = {'date': d,
-                  'description': 'Kik transaction',
-                  'espy_id': 1,
-                  'points': 1.0,
-                  'receipt': None,
-                  'sponsor': None,
-                  'team': 'Domus Green',
-                  'time': t}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " GET valid espy id")
-        self.assertEqual(rv.status_code, 200, Routes['espy'] +
-                         " GET valid player id")
-        rv = self.app.get(Routes['espy'] + "/2")
-        d = datetime.today().strftime("%Y-%m-%d")
-        t = datetime.today().strftime("%H:%M")
-        result = {'date': d,
-                  'description': 'Purchase',
-                  'espy_id': 2,
-                  'points': 2.0,
-                  'receipt': '12019209129',
-                  'sponsor': 'Domus',
-                  'team': 'Chainsaw Black',
-                  'time': t}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " GET valid espy id")
-        self.assertEqual(rv.status_code, 200, Routes['espy'] +
-                         " GET valid player id")
+        points = 10
+        espy = addEspy(self, points)
+
+        # invalid espy id
+        result = {'details': INVALID_ID, 'message': EspysDoesNotExist.message}
+        error_message = Routes['espy'] + " GET invalid espy id"
+        self.getTest(Routes['espy'] + "/" + str(INVALID_ID),
+                     EspysDoesNotExist.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
+        # valid espy id
+        self.getTest(Routes['espy'] + "/" + str(espy['espy_id']),
+                     SUCCESSFUL_GET_CODE,
+                     self.assertEspysModelEqual,
+                     espy,
+                     error_message=error_message)
 
     def testEspysApiDelete(self):
         # proper insertion with post
-        self.addEspys()
-        # delete of invalid espy id
-        rv = self.app.delete(Routes['espy'] + "/100", headers=headers)
-        result = {'details': 100, 'message': EspysDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " DELETE Invalid espy id ")
-        self.assertEqual(rv.status_code, EspysDoesNotExist.status_code,
-                         Routes['espy'] + " DELETE Invalid espy id ")
-        rv = self.app.delete(Routes['espy'] + "/1", headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         ' DELETE Valid espy id')
-        self.assertEqual(rv.status_code, 200, Routes['espy'] +
-                         ' DELETE Valid espy id')
+        points = 10
+        espy = addEspy(self, points)
+
+        # delete invalid espy
+        error_message = Routes['espy'] + " DELETE Invalid espy id "
+        self.deleteValidTest(Routes['espy'],
+                             EspysDoesNotExist.status_code,
+                             self.assertEqual,
+                             espy['espy_id'],
+                             espy,
+                             EspysDoesNotExist.message,
+                             error_message=error_message)
+
+        # delete valid player id
+        error_message = Routes['espy'] + " DELETE valid espy id"
+        self.deleteInvalidTest(Routes['espy'],
+                               EspysDoesNotExist.status_code,
+                               EspysDoesNotExist.message,
+                               error_message=error_message)
 
     def testEspysApiPut(self):
         # must add a espy
-        self.addEspys()
-        # invalid espy id
-        params = {'team_id': 1,
-                  'sponsor_id': 1,
-                  'description': "Transaction",
-                  'points': 10,
-                  'receipt': "212309"}
-        rv = self.app.put(Routes['espy'] + '/100',
-                          data=params, headers=headers)
-        result = {'details': 100, 'message': EspysDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         ' PUT: Invalid espy ID')
-        self.assertEqual(rv.status_code, EspysDoesNotExist.status_code,
-                         Routes['espy'] + ' PUT: Invalid espy ID')
-        # invalid team id
-        params = {'team_id': 100,
-                  'sponsor_id': 1,
-                  'description': "Transaction",
-                  'points': 10,
-                  'receipt': "212309"}
-        rv = self.app.put(Routes['espy'] + '/1', data=params, headers=headers)
-        result = {'details': 100, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         ' PUT: Invalid espy team')
-        self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
-                         Routes['player'] + ' PUT: Invalid espy team')
-        # invalid sponsor id
-        params = {'team_id': 1,
-                  'sponsor_id': 100,
-                  'description': "Transaction",
-                  'points': 10,
-                  'receipt': "212309"}
-        rv = self.app.put(Routes['espy'] + '/1', data=params, headers=headers)
-        result = {'details': 100, 'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         ' PUT: Invalid sponsor for Espy')
-        self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
-                         Routes['espy'] + ' PUT: Invalid sponsor Espy')
-        # successfully update
-        params = {'team_id': 1,
-                  'sponsor_id': 1,
-                  'description': "Transaction",
-                  'points': 10,
-                  'receipt': "212309"}
-        rv = self.app.put(Routes['espy'] + '/1', data=params, headers=headers)
-        result = None
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         ' PUT: Valid espy update')
-        self.assertEqual(rv.status_code, 200, Routes['espy'] +
-                         ' PUT: Valid espy update')
+        points = 10
+        receipt = "New Receipt"
+        description = " New Description"
+        espy = addEspy(self, points)
+        valid_route = Routes['espy'] + "/" + str(espy['espy_id'])
+        invalid_route = Routes['espy'] + "/" + str(INVALID_ID)
 
-    def testEspysApiPost(self):
-        # test an empty get
-        rv = self.app.get(Routes['espy'])
-        empty = loads(rv.data)
-        self.assertEqual([], empty, Routes['espy'] +
-                         " GET: did not return empty list")
-        self.assertEqual(rv.status_code, 200, Routes['espy'] +
-                         " GET: did not return empty list")
+        # invalid espy id
+        params = {'team_id': espy['team_id'],
+                  'sponsor_id': espy['sponsor_id'],
+                  'description': description,
+                  'points': points,
+                  'receipt': receipt}
+        result = {'details': INVALID_ID, 'message': EspysDoesNotExist.message}
+        error_message = Routes['espy'] + ' PUT: Invalid espy ID'
+        self.putTest(invalid_route,
+                     params,
+                     EspysDoesNotExist.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
+        # invalid team id
+        params = {'team_id': INVALID_ID,
+                  'sponsor_id': espy['sponsor_id'],
+                  'description': description,
+                  'points': points,
+                  'receipt': receipt}
+        result = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
+        error_message = Routes['espy'] + ' PUT: Invalid espy team'
+        self.putTest(valid_route,
+                     params,
+                     EspysDoesNotExist.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
+        # invalid sponsor id
+        params = {'team_id': espy['team_id'],
+                  'sponsor_id': INVALID_ID,
+                  'description': description,
+                  'points': points,
+                  'receipt': receipt}
+        result = {'details': INVALID_ID,
+                  'message': SponsorDoesNotExist.message}
+        error_message = Routes['espy'] + ' PUT: Invalid sponsor'
+        self.putTest(valid_route,
+                     params,
+                     SponsorDoesNotExist.status_code,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
+        # successfully update
+        params = {'team_id': espy['team_id'],
+                  'sponsor_id': espy['sponsor_id'],
+                  'description': description,
+                  'points': points,
+                  'receipt': receipt}
+        result = None
+        error_message = Routes['espy'] + " PUT: Valid espy update"
+        self.putTest(valid_route,
+                     params,
+                     SUCCESSFUL_PUT_CODE,
+                     self.assertEqual,
+                     result,
+                     error_message=error_message)
+
+        # now get espy to ensure updated were saved
+        error_message = Routes['espy'] + " GET: updated espy"
+        espy['team_id'] = params['team_id']
+        espy['sponsor_id'] = params['sponsor_id']
+        espy['description'] = params['description']
+        espy['points'] = params['points']
+        espy['receipt'] = params['receipt']
+        self.getTest(valid_route,
+                     SUCCESSFUL_GET_CODE,
+                     self.assertEspysModelEqual,
+                     espy,
+                     error_message=error_message)
+
+    def testEspysApiInvalidPost(self):
         # missing parameters
+        sponsor = self.add_sponsor("Test Team")
+        team = self.add_team("Black",
+                             sponsor,
+                             self.add_league("Test League"),
+                             VALID_YEAR)
         params = {}
         rv = self.app.post(Routes['espy'], data=params, headers=headers)
         result = {'message': {
@@ -1730,13 +1687,13 @@ class TestEspys(TestSetup):
         self.assertEqual(rv.status_code, 400, Routes['espy'] +
                          " POST: POST request with missing parameter"
                          )
+
         # testing a team id parameter
-        self.addTeams()
-        params = {'team_id': 100,
-                  'sponsor_id': 1,
+        params = {'team_id': INVALID_ID,
+                  'sponsor_id': sponsor['sponsor_id'],
                   'points': 5}
         rv = self.app.post(Routes['espy'], data=params, headers=headers)
-        result = {'details': 100, 'message': TeamDoesNotExist.message}
+        result = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['espy'] +
@@ -1744,12 +1701,14 @@ class TestEspys(TestSetup):
         self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
                          Routes['espy'] +
                          " POST: POST request with invalid team")
+
         # testing sponsor id parameter
-        params = {'team_id': 1,
-                  'sponsor_id': 100,
+        params = {'team_id': team['team_id'],
+                  'sponsor_id': INVALID_ID,
                   'points': 5}
         rv = self.app.post(Routes['espy'], data=params, headers=headers)
-        result = {'details': 100, 'message': SponsorDoesNotExist.message}
+        result = {'details': INVALID_ID,
+                  'message': SponsorDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(result)
         self.assertEqual(loads(rv.data), result, Routes['espy'] +
@@ -1758,9 +1717,10 @@ class TestEspys(TestSetup):
         self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
                          Routes['espy'] +
                          " POST: POST request with invalid sponsor")
+
         # testing points parameter
-        params = {'team_id': 1,
-                  'sponsor_id': 100,
+        params = {'team_id': team['team_id'],
+                  'sponsor_id': sponsor['sponsor_id'],
                   'points': "XX"}
         rv = self.app.post(Routes['espy'], data=params, headers=headers)
         result = {'details': 'Game - points', 'message': InvalidField.message}
@@ -1771,42 +1731,22 @@ class TestEspys(TestSetup):
         self.assertEqual(rv.status_code, InvalidField.status_code,
                          Routes['espy'] +
                          " POST: POST request with invalid points")
-        # proper insertion with post
-        params = {'team_id': 1,
-                  'sponsor_id': 1,
-                  'points': 1}
-        rv = self.app.post(Routes['espy'], data=params, headers=headers)
-        result = 1
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " POST: POST request with valid data")
-        self.assertEqual(rv.status_code, 201, Routes['espy'] +
-                         " POST: POST request with valid data")
-        rv = self.app.get(Routes['espy'])
-        empty = loads(rv.data)
-        d = datetime.today().strftime("%Y-%m-%d")
-        t = datetime.today().strftime("%H:%M")
-        expect = [{'date': d,
-                   'description': None,
-                   'espy_id': 1,
-                   'points': 1.0,
-                   'receipt': None,
-                   'sponsor': 'Domus',
-                   'team': 'Domus Green',
-                   'time': t}]
-        self.output(empty)
-        self.output(expect)
-        self.assertEqual(expect, empty, Routes['espy'] +
-                         " GET: did not receive espy list")
 
 
 def addGame(tester):
     # add two teams, a sponsor and a league
-    league = tester.add_league("New League")
-    sponsor = tester.add_sponsor("Sponsor")
-    home_team = tester.add_team("Black", sponsor, league, VALID_YEAR)
-    away_team = tester.add_team("White", sponsor, league, VALID_YEAR)
+    counter = tester.get_counter()
+    tester.increment_counter()
+    league = tester.add_league("New League" + str(counter))
+    sponsor = tester.add_sponsor("Sponsor" + str(counter))
+    home_team = tester.add_team("Black" + str(counter),
+                                sponsor,
+                                league,
+                                VALID_YEAR)
+    away_team = tester.add_team("White" + str(counter),
+                                sponsor,
+                                league,
+                                VALID_YEAR)
     game = tester.add_game("2014-02-10",
                            "22:40",
                            home_team,
@@ -1816,8 +1756,10 @@ def addGame(tester):
 
 
 def addBat(tester, classification):
-    league = tester.add_league("New League")
-    sponsor = tester.add_sponsor("Sponsor")
+    counter = tester.get_counter()
+    tester.increment_counter()
+    league = tester.add_league("New League" + str(counter))
+    sponsor = tester.add_sponsor("Sponsor" + str(counter))
     home_team = tester.add_team("Black", sponsor, league, VALID_YEAR)
     away_team = tester.add_team("White", sponsor, league, VALID_YEAR)
     game = tester.add_game("2014-02-10",
@@ -1825,9 +1767,21 @@ def addBat(tester, classification):
                            home_team,
                            away_team,
                            league)
-    player = tester.add_player("Test Player", "TestPlayer@mlsb.ca", gender="M")
+    player = tester.add_player("Test Player" + str(counter),
+                               "TestPlayer" + str(counter) + "@mlsb.ca",
+                               gender="M")
     bat = tester.add_bat(player, home_team, game, classification)
     return bat
+
+
+def addEspy(tester, points):
+    counter = tester.get_counter()
+    tester.increment_counter()
+    league = tester.add_league("New League" + str(counter))
+    sponsor = tester.add_sponsor("Sponsor" + str(counter))
+    team = tester.add_team("Black", sponsor, league, VALID_YEAR)
+    espy = tester.add_espys(team, sponsor, points=points)
+    return espy
 
 
 if __name__ == "__main__":
