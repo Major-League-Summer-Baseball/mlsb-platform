@@ -172,7 +172,9 @@ class Espys(DB.Model):
         return {
                 'espy_id': self.id,
                 'team': str(Team.query.get(self.team_id)),
+                'team_id': self.team_id,
                 'sponsor': sponsor,
+                'sponsor_id': self.sponsor_id,
                 'description': self.description,
                 'points': self.points,
                 'receipt': self.receipt,
@@ -965,7 +967,7 @@ class Bat(DB.Model):
         elif rbi is not None:
             raise InvalidField(payload={'details': "Bat - rbi"})
         if hit is not None and hit_validator(hit):
-            self.hit = hit
+            self.classification = hit
         elif hit is not None:
             raise InvalidField(payload={'details': "Bat - hit"})
         if inning is not None and inning_validator(inning):
