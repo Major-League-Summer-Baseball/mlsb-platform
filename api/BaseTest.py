@@ -10,6 +10,7 @@ from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
 from base64 import b64encode
 from datetime import date
 from api.helper import loads
+from api.routes import Routes
 import unittest
 import tempfile
 import os
@@ -32,6 +33,7 @@ kik = {
 SUCCESSFUL_GET_CODE = 200
 SUCCESSFUL_DELETE_CODE = 200
 SUCCESSFUL_PUT_CODE = 200
+SUCCESSFUL_POST_CODE = 201
 INVALID_ID = 10000000
 
 
@@ -107,10 +109,15 @@ class TestSetup(unittest.TestCase):
             self.pp.pprint(data)
 
     def add_fun(self, count, year=date.today().year):
-        fun = Fun(year=year, count=count)
+        """Returns a fun json object that was created with a post request"""
+        params = {"year": year, "count": count}
+        rv = self.app.post(Routes['fun'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add fun object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add fun object")
+        fun = Fun.query.filter(Fun.year == loads(rv.data)).first()
         self.fun_to_delete.append(fun)
-        DB.session.add(fun)
-        DB.session.commit()
         return fun.json()
 
     def add_sponsor(self,
@@ -119,21 +126,32 @@ class TestSetup(unittest.TestCase):
                     description=None,
                     active=True,
                     nickname=None):
-        sponsor = Sponsor(sponsor_name,
-                          link=link,
-                          description=description,
-                          active=active,
-                          nickname=nickname)
+        """Returns a sponsor json object that was created with a post request"""
+        active = 1 if active else 0 
+        params = {'sponsor_name': sponsor_name,
+                  "link": link,
+                  "description": description,
+                  "active": active,
+                  "nickname": nickname}
+        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add sponsor object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add sponsor object")
+        sponsor = Sponsor.query.get(loads(rv.data))
         self.sponsors_to_delete.append(sponsor)
-        DB.session.add(sponsor)
-        DB.session.commit()
         return sponsor.json()
 
     def add_league(self, league_name):
-        league = League(name=league_name)
+        """Returns a league json object that was created with a post request"""
+        params = {"league_name": league_name}
+        rv = self.app.post(Routes['league'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add league object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add league object")
+        league = League.query.get(loads(rv.data))
         self.leagues_to_delete.append(league)
-        DB.session.add(league)
-        DB.session.commit()
         return league.json()
 
     def add_player(self,
@@ -142,14 +160,21 @@ class TestSetup(unittest.TestCase):
                    gender=None,
                    password='default',
                    active=True):
-        player = Player(player_name,
-                        email,
-                        gender=gender,
-                        password=password,
-                        active=active)
+        """Returns a player json object that was created with a post request"""
+        active = 1 if active else 0 
+        params = {"player_name": player_name,
+                  "email": email,
+                  "gender": gender,
+                  "password": password,
+                  "active": active
+                  }
+        rv = self.app.post(Routes['player'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add player object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add player object")
+        player = Player.query.get(loads(rv.data))
         self.players_to_delete.append(player)
-        DB.session.add(player)
-        DB.session.commit()
         return player.json()
 
     def add_team(self,
@@ -157,13 +182,19 @@ class TestSetup(unittest.TestCase):
                  sponsor=None,
                  league=None,
                  year=date.today().year):
-        team = Team(color=color,
-                    sponsor_id=sponsor['sponsor_id'],
-                    league_id=league['league_id'],
-                    year=year)
+        """Returns a team json object that was created with a post request"""
+        params = {"sponsor_id": sponsor['sponsor_id'],
+                  "league_id": league['league_id'],
+                  "color": color,
+                  "year": year
+                  }
+        rv = self.app.post(Routes['team'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add team object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add team object")
+        team = Team.query.get(loads(rv.data))
         self.teams_to_delete.append(team)
-        DB.session.add(team)
-        DB.session.commit()
         return team.json()
 
     def add_game(self,
@@ -174,28 +205,38 @@ class TestSetup(unittest.TestCase):
                  league,
                  status="",
                  field=""):
-        game = Game(date,
-                    time,
-                    home_team['team_id'],
-                    away_team['team_id'],
-                    league['league_id'],
-                    status=status,
-                    field=field)
+        """Returns a game json object that was created with a post request"""
+        params = {"home_team_id": int(home_team["team_id"]),
+                  "away_team_id": int(away_team["team_id"]),
+                  "date": date,
+                  "time": time,
+                  "league_id": int(league['league_id']),
+                  "status": status
+                  }
+        rv = self.app.post(Routes['game'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add game object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add game object")
+        game = Game.query.get(loads(rv.data))
         self.games_to_delete.append(game)
-        DB.session.add(game)
-        DB.session.commit()
         return game.json()
 
     def add_bat(self, player, team, game, classification, inning=1, rbi=0):
-        bat = Bat(player['player_id'],
-                  team['team_id'],
-                  game['game_id'],
-                  classification,
-                  inning=inning,
-                  rbi=rbi)
+        """Returns a bat json object that was created with a post request"""
+        params = {"player_id": int(player['player_id']),
+                  "rbi": rbi,
+                  "inning": inning,
+                  "hit": classification,
+                  "team_id": int(team['team_id']),
+                  "game_id": int(game["game_id"])}
+        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add bat object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add bat object")
+        bat = Bat.query.get(loads(rv.data))
         self.bats_to_delete.append(bat)
-        DB.session.add(bat)
-        DB.session.commit()
         return bat.json()
 
     def add_espys(self,
@@ -206,16 +247,20 @@ class TestSetup(unittest.TestCase):
                   receipt=None,
                   time=None,
                   date=None):
-        espy = Espys(team['team_id'],
-                     sponsor_id=sponsor['sponsor_id'],
-                     description=description,
-                     points=points,
-                     receipt=receipt,
-                     time=time,
-                     date=date)
+        params = {"team_id": team["team_id"],
+                  "sponsor_id": sponsor["sponsor_id"],
+                  "description": description,
+                  "points": points,
+                  "receipt": receipt,
+                  "date": date,
+                  "time": time}
+        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add espy object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add espy object")
+        espy = Espys.query.get(loads(rv.data))
         self.espys_to_delete.append(espy)
-        DB.session.add(espy)
-        DB.session.commit()
         return espy.json()
 
     def assertFunModelEqual(self, f1, f2, error_message=""):

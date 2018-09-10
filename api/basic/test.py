@@ -1331,6 +1331,8 @@ class TestBat(TestSetup):
         player = self.add_player("Test Player",
                                  "TestPLayer@mlsb.ca",
                                  gender="M")
+        pass
+
 
     def testBatGet(self):
         # add a bat
