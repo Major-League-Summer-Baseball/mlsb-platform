@@ -32,20 +32,18 @@ VALID_YEAR = date.today().year
 
 class TestFun(TestSetup):
     def testFunInvalidPost(self):
-        # Note Valid Requests are tested in BaseTest method add_fun
+        # Note Valid Requests are testedasdin BaseTest method add_fun
 
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['fun'], data=params, headers=headers)
         result = {'message': {'year': MISSING_PARAMETER}}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['fun'] +
-                         " POST: POST request with missing parameter"
-                         )
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['fun'] +
-                         " POST: POST request with invalid parameters")
+        error_message = Routes['fun'] + " POST: request with missing parameter"
+        self.postInvalidTest(Routes['fun'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
     def testFunListAPI(self):
         # TODO pagination
@@ -142,28 +140,27 @@ class TestSponsor(TestSetup):
         # Note Valid Requests are tested in BaseTest method add_sponsor
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
         result = {'message': {'sponsor_name': MISSING_PARAMETER}}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['sponsor'] +
-                         " POST: POST request with missing parameter"
-                         )
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['sponsor'] +
-                         " POST: POST request with invalid parameters")
+        error_message = (Routes['sponsor'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['sponsor'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # testing with improper name parameters
         params = {'sponsor_name': 1}
-        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
         result = {'details': 'Sponsor - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['sponsor'] +
-                         " POST: POST request with invalid parameters")
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['sponsor'] +
-                         " POST: POST request with invalid parameters")
+        error_message = (Routes['sponsor'] +
+                        " POST: request with invalid parameters")
+        self.postInvalidTest(Routes['sponsor'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
     def testSponsorListAPI(self):
         # TODO pagination
@@ -280,29 +277,30 @@ class TestLeague(TestSetup):
         # Note Valid Requests are tested in BaseTest method add_league
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['league'], data=params, headers=headers)
         result = {'message': {
                               'league_name': MISSING_PARAMETER
                               }
                   }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " POST: request with missing parameter")
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " POST: request with missing parameter")
+        error_message = (Routes['league'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['league'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # testing a league name parameter
         params = {'league_name': 1}
-        rv = self.app.post(Routes['league'], data=params, headers=headers)
         result = {'details': 'League - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['league'] +
-                         " POST: request with invalid league_name")
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['league'] +
-                         " POST: request with invalid league_name")
+        error_message = (Routes['league'] +
+                        " POST: request with invalid league_name")
+        self.postInvalidTest(Routes['league'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
     def testLeagueListAPI(self):
         # TODO pagination
@@ -389,51 +387,46 @@ class TestPlayer(TestSetup):
         # Note Valid Requests are tested in BaseTest method add_player
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {'message': {
                               'player_name': MISSING_PARAMETER,
                               'email': MISSING_PARAMETER
                               }
                   }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with missing parameter"
-                         )
-        self.assertEqual(rv.status_code, 400, Routes['player'] +
-                         " POST: POST request with missing parameter"
-                         )
+        error_message = (Routes['player'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['player'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # testing a gender parameter
         params = {'player_name': 'Dallas Fraser',
                   'gender': 'X',
                   'email': "new@mlsb.ca"}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {'details': 'Player - gender',
                   'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with invalid gender"
-                         )
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['player'] +
-                         " POST: POST request with invalid gender"
-                         )
+        error_message = (Routes['player'] +
+                        " POST: request with invalid gender")
+        self.postInvalidTest(Routes['player'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # testing player_name parameter
         params = {'player_name': 1, 'gender': 'M', 'email': 'new@mlsb.ca'}
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
         result = {'details': 'Player - name', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['player'] +
-                         " POST: POST request with invalid name"
-                         )
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['player'] +
-                         " POST: POST request with invalid name"
-                         )
+        error_message = (Routes['player'] +
+                        " POST: request with invalid player name")
+        self.postInvalidTest(Routes['player'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
     def testPlayerListApi(self):
         # TODO Pagination
@@ -582,21 +575,21 @@ class TestTeam(TestSetup):
         # Note Valid Requests are tested in BaseTest method add_team
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {'message': {
                               'color': MISSING_PARAMETER,
                               'league_id': MISSING_PARAMETER,
                               'sponsor_id': MISSING_PARAMETER,
                               'year': MISSING_PARAMETER}
                   }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         " POST: request with missing parameter"
-                         )
-        self.assertEqual(rv.status_code, 400, Routes['team'] +
-                         " POST: request with missing parameter"
-                         )
+        error_message = (Routes['team'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['team'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
+
         sponsor = self.add_sponsor("New Sponsor")
         league = self.add_league("New League")
 
@@ -605,61 +598,61 @@ class TestTeam(TestSetup):
                   'sponsor_id': sponsor['sponsor_id'],
                   'league_id': league['league_id'],
                   'year': VALID_YEAR}
-        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {'details': 'Team - color', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         " POST: request with invalid parameters")
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['team'] +
-                         " POST: request with invalid parameters")
+        error_message = (Routes['team'] +
+                        " POST: request with invalid color")
+        self.postInvalidTest(Routes['team'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # test invalid sponsor
         params = {'color': "Green",
                   'sponsor_id': INVALID_ID,
                   'league_id': league['league_id'],
                   'year': VALID_YEAR}
-        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {'details': INVALID_ID,
                   'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         " POST: request with invalid parameters")
-        self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
-                         Routes['team'] +
-                         " POST: request with invalid parameters")
+        error_message = (Routes['team'] +
+                        " POST: request with invalid sponsor id")
+        self.postInvalidTest(Routes['team'],
+                             params,
+                             SponsorDoesNotExist.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # test invalid league
         params = {'color': "Green",
                   'sponsor_id': sponsor['sponsor_id'],
                   'league_id': INVALID_ID,
                   'year': VALID_YEAR}
-        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         " POST: request with invalid parameters")
-        self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
-                         Routes['team'] +
-                         " POST: request with invalid parameters")
+        error_message = (Routes['league'] +
+                        " POST: request with invalid league id")
+        self.postInvalidTest(Routes['team'],
+                             params,
+                             LeagueDoesNotExist.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # test invalid year
         params = {'color': "Green",
                   'sponsor_id': sponsor['sponsor_id'],
                   'league_id': league['league_id'],
                   'year': -1}
-        rv = self.app.post(Routes['team'], data=params, headers=headers)
         result = {'details': 'Team - year', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['team'] +
-                         " POST: request with invalid parameters")
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['team'] +
-                         " POST: request with invalid parameters")
+        error_message = (Routes['team'] +
+                        " POST: request with invalid year")
+        self.postInvalidTest(Routes['team'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
     def testTeamListAPI(self):
         # TODO Pagination
@@ -829,19 +822,20 @@ class TestGame(TestSetup):
         # Note Valid Requests are tested in BaseTest method add_game
         # missing parameters
         params = {}
-        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'message': {
                               'away_team_id': MISSING_PARAMETER,
                               'date': MISSING_PARAMETER,
                               'home_team_id': MISSING_PARAMETER,
                               'league_id': MISSING_PARAMETER,
                               'time': MISSING_PARAMETER}}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['game'] +
-                         " POST: request with missing parameters")
-        self.assertEqual(400, rv.status_code, Routes['game'] +
-                         " POST: request with missing parameters")
+        error_message = (Routes['game'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['game'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # add two teams, a sponsor and a league
         league = self.add_league("New League")
@@ -857,15 +851,15 @@ class TestGame(TestSetup):
                   'time': "22:40",
                   'league_id': league['league_id']
                               }
-        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'details': 'Game - date', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['game'] +
-                         " POST: request with invalid date")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['game'] +
-                         " POST: request with invalid date")
+        error_message = (Routes['game'] +
+                        " POST: request with invalid date")
+        self.postInvalidTest(Routes['game'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid time
         params = {
@@ -875,14 +869,15 @@ class TestGame(TestSetup):
                   'time': "22:66",
                   'league_id': league['league_id']
                               }
-        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'details': 'Game - time', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['game'] +
-                         " POST: request with invalid time")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['game'] + " POST: request with invalid time")
+        error_message = (Routes['game'] +
+                        " POST: request with invalid time")
+        self.postInvalidTest(Routes['game'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid home team id
         params = {
@@ -892,15 +887,15 @@ class TestGame(TestSetup):
                   'time': "22:40",
                   'league_id': league['league_id']
                               }
-        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['game'] +
-                         " POST: request with invalid home team")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] +
-                         " POST: request with invalid home team")
+        error_message = (Routes['game'] +
+                        " POST: request with invalid home team id")
+        self.postInvalidTest(Routes['game'],
+                             params,
+                             TeamDoesNotExist.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid away team id
         params = {
@@ -910,15 +905,15 @@ class TestGame(TestSetup):
                   'time': "22:40",
                   'league_id': league['league_id']
                               }
-        rv = self.app.post(Routes['game'], data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['game'] +
-                         " POST: request with invalid away team")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['game'] +
-                         " POST: request with invalid away team")
+        error_message = (Routes['game'] +
+                        " POST: request with invalid away team id")
+        self.postInvalidTest(Routes['game'],
+                             params,
+                             TeamDoesNotExist.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
     def testGameListAPI(self):
         # TODO Pagination
@@ -1195,7 +1190,6 @@ class TestBat(TestSetup):
                                  "TestPLayer@mlsb.ca",
                                  gender="M")
         params = {}
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {
                   'message': {
                               'game_id': MISSING_PARAMETER,
@@ -1204,12 +1198,14 @@ class TestBat(TestSetup):
                               'team_id': MISSING_PARAMETER
                               }
                   }
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with missing parameters")
-        self.assertEqual(400, rv.status_code, Routes['bat'] +
-                         " POST: request with missing parameters")
+        error_message = (Routes['bat'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid player
         params = {
@@ -1220,15 +1216,15 @@ class TestBat(TestSetup):
                   'hit': "hr",
                   'inning': 1
                               }
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with invalid player")
-        self.assertEqual(PlayerDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] +
-                         " POST: request with invalid player")
+        error_message = (Routes['bat'] +
+                        " POST: request with invalid player id")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             PlayerDoesNotExist.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid game
         params = {
@@ -1239,15 +1235,15 @@ class TestBat(TestSetup):
                   'hit': "hr",
                   'inning': 1
                               }
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with invalid game")
-        self.assertEqual(GameDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] +
-                         " POST: request with invalid game")
+        error_message = (Routes['bat'] +
+                        " POST: request with invalid game id")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             GameDoesNotExist.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid team
         params = {
@@ -1258,16 +1254,16 @@ class TestBat(TestSetup):
                   'hit': "hr",
                   'inning': 1
                               }
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'details': str(INVALID_ID),
                   'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with invalid team")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['bat'] +
-                         " POST: request with invalid team")
+        error_message = (Routes['bat'] +
+                        " POST: request with invalid team id")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             TeamDoesNotExist.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
         # testing invalid rbi
         params = {
@@ -1278,15 +1274,16 @@ class TestBat(TestSetup):
                   'hit': "hr",
                   'inning': 1
                               }
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'details': 'Bat - rbi', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with invalid rbi")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['bat'] +
-                         " POST: request with invalid rbi")
+        error_message = (Routes['bat'] +
+                        " POST: request with invalid rbi")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
+
         # testing invalid inning
         params = {
                   'game_id': INVALID_ID,
@@ -1296,15 +1293,16 @@ class TestBat(TestSetup):
                   'hit': "hr",
                   'inning': -1
                               }
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'details': 'Bat - inning', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with invalid inning")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['bat'] +
-                         " POST: request with invalid inning")
+        error_message = (Routes['bat'] +
+                        " POST: request with invalid inning")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
+
         # testing invalid hit
         params = {
                   'game_id': INVALID_ID,
@@ -1314,15 +1312,15 @@ class TestBat(TestSetup):
                   'hit': "xx",
                   'inning': 1
                               }
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
         expect = {'details': 'Bat - hit', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['bat'] +
-                         " POST: request with invalid hit")
-        self.assertEqual(InvalidField.status_code, rv.status_code,
-                         Routes['bat'] +
-                         " POST: request with invalid hit")
+        error_message = (Routes['bat'] +
+                        " POST: request with invalid hit")
+        self.postInvalidTest(Routes['bat'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
 
     def testBatList(self):
         # TODO Pagination
@@ -1675,64 +1673,63 @@ class TestEspys(TestSetup):
                              self.add_league("Test League"),
                              VALID_YEAR)
         params = {}
-        rv = self.app.post(Routes['espy'], data=params, headers=headers)
         result = {'message': {
                               'points': MISSING_PARAMETER,
                               'team_id': MISSING_PARAMETER
                               }
                   }
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " POST: POST request with missing parameter"
-                         )
-        self.assertEqual(rv.status_code, 400, Routes['espy'] +
-                         " POST: POST request with missing parameter"
-                         )
+        error_message = (Routes['espy'] +
+                        " POST: request with missing parameter")
+        self.postInvalidTest(Routes['espy'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # testing a team id parameter
         params = {'team_id': INVALID_ID,
                   'sponsor_id': sponsor['sponsor_id'],
                   'points': 5}
-        rv = self.app.post(Routes['espy'], data=params, headers=headers)
         result = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " POST: POST request with invalid team")
-        self.assertEqual(rv.status_code, TeamDoesNotExist.status_code,
-                         Routes['espy'] +
-                         " POST: POST request with invalid team")
+        error_message = (Routes['espy'] +
+                        " POST: request with invalid team id")
+        self.postInvalidTest(Routes['espy'],
+                             params,
+                             TeamDoesNotExist.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
         # testing sponsor id parameter
         params = {'team_id': team['team_id'],
                   'sponsor_id': INVALID_ID,
                   'points': 5}
-        rv = self.app.post(Routes['espy'], data=params, headers=headers)
         result = {'details': INVALID_ID,
                   'message': SponsorDoesNotExist.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " POST: POST request with invalid sponsor"
-                         )
-        self.assertEqual(rv.status_code, SponsorDoesNotExist.status_code,
-                         Routes['espy'] +
-                         " POST: POST request with invalid sponsor")
+        error_message = (Routes['espy'] +
+                        " POST: request with invalid sponsor id")
+        self.postInvalidTest(Routes['espy'],
+                             params,
+                             SponsorDoesNotExist.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
+        
         # testing points parameter
         params = {'team_id': team['team_id'],
                   'sponsor_id': sponsor['sponsor_id'],
                   'points': "XX"}
-        rv = self.app.post(Routes['espy'], data=params, headers=headers)
         result = {'details': 'Game - points', 'message': InvalidField.message}
-        self.output(loads(rv.data))
-        self.output(result)
-        self.assertEqual(loads(rv.data), result, Routes['espy'] +
-                         " POST: POST request with invalid points")
-        self.assertEqual(rv.status_code, InvalidField.status_code,
-                         Routes['espy'] +
-                         " POST: POST request with invalid points")
+        error_message = (Routes['espy'] +
+                        " POST: request with invalid points")
+        self.postInvalidTest(Routes['espy'],
+                             params,
+                             InvalidField.status_code,
+                             self.assertEqual,
+                             result,
+                             error_message=error_message)
 
 
 def addGame(tester):

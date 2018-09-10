@@ -84,9 +84,11 @@ class TestSetup(unittest.TestCase):
                          "Unable to delete everying upon tear down")
 
     def increment_counter(self):
+        """Increments the counter by 1"""
         self.counter += 1
 
     def get_counter(self):
+        """Returns the counter used to differentiate between creates object"""
         return self.counter
 
     def delete_list(self, values):
@@ -247,6 +249,7 @@ class TestSetup(unittest.TestCase):
                   receipt=None,
                   time=None,
                   date=None):
+        """Returns a espy json object that was created with a post request"""
         params = {"team_id": team["team_id"],
                   "sponsor_id": sponsor["sponsor_id"],
                   "description": description,
@@ -333,6 +336,20 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(b1['player_id'], b2['player_id'], error_message)
         self.assertEqual(b1['hit'], b2['hit'], error_message)
 
+    def postInvalidTest(self,
+                        route,
+                        params,
+                        expected_status_code,
+                        assert_function,
+                        expect,
+                        error_message=""):
+        """Used to test an invalid post test"""
+        rv = self.app.post(route, data=params, headers=headers)
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expected_status_code, rv.status_code, error_message)
+        assert_function(expect, loads(rv.data), error_message)
+
     def putTest(self,
                 route,
                 params,
@@ -340,11 +357,12 @@ class TestSetup(unittest.TestCase):
                 assert_function,
                 expected_object,
                 error_message=""):
+        """Used to test a put request"""
         rv = self.app.put(route, data=params, headers=headers)
         self.output(loads(rv.data))
         self.output(expected_object)
-        assert_function(expected_status_code, rv.status_code, error_message)
-        self.assertEqual(expected_object, loads(rv.data), error_message)
+        self.assertEqual(expected_status_code, rv.status_code, error_message)
+        assert_function(expected_object, loads(rv.data), error_message)
 
     def getTest(self,
                 route,
@@ -352,6 +370,7 @@ class TestSetup(unittest.TestCase):
                 assert_function,
                 expected_object,
                 error_message=""):
+        """Used to test a get request"""
         rv = self.app.get(route, headers=headers)
         self.output(loads(rv.data))
         self.output(expected_object)
@@ -366,6 +385,7 @@ class TestSetup(unittest.TestCase):
                         expected_object,
                         expected_message,
                         error_message=""):
+        """Used to test a delete request for a valid resource"""
         # check object exists
         self.getTest(route + "/" + str(object_id),
                      SUCCESSFUL_GET_CODE,
@@ -393,6 +413,7 @@ class TestSetup(unittest.TestCase):
                           expected_status_code,
                           expected_message,
                           error_message=""):
+        """Used to test a delete request for an invalid resource"""
         rv = self.app.delete(route + "/" + str(INVALID_ID),
                              headers=headers)
         expect = {'details': INVALID_ID, 'message': expected_message}
