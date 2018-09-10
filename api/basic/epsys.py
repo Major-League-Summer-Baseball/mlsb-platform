@@ -130,7 +130,7 @@ class EspyAPI(Resource):
         if args['points']:
             points = args['points']
         if args['receipt']:
-            points = args['points']
+            receipt = args['receipt']
         if args['date'] and args['time']:
             date = args['date']
             time = args['time']
