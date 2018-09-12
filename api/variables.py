@@ -56,3 +56,4 @@ EVENTS = {2016: {
 # the fields we play at
 FIELDS = ["WP1", "WP2", "WP3", "WP4", "Hillside Upper", "Hillside Lower"]
 KIKPOINTS = 2  # the kik points assigned for subscription
+PAGE_SIZE = 30

@@ -12,6 +12,10 @@ from api.model import Team
 from datetime import date
 from api.authentication import requires_admin
 from api.errors import TeamDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
@@ -162,12 +166,12 @@ class TeamListAPI(Resource):
                               ,{...}
                             ]
         """
-        # return a list of teams
-        teams = Team.query.all()
-        result = []
-        for i in range(0, len(teams)):
-            result.append(teams[i].json())
-        resp = Response(dumps(result), status=200, mimetype="application/json")
+        # return a pagination of teams
+        page = request.args.get('page', 1, type=int)
+        pagination = Team.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['team'])
+        resp = Response(dumps(result), status=200,
+                        mimetype="application/json")
         return resp
 
     @requires_admin

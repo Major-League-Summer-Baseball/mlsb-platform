@@ -14,6 +14,7 @@ from api.routes import Routes
 import unittest
 import tempfile
 import os
+from api.variables import PAGE_SIZE
 
 
 # environment variables
@@ -92,6 +93,7 @@ class TestSetup(unittest.TestCase):
         return self.counter
 
     def delete_list(self, values):
+        """Deletes the list of values given from the database"""
         not_deleted = []
         for item in reversed(values):
             try:
@@ -103,10 +105,12 @@ class TestSetup(unittest.TestCase):
         return not_deleted
 
     def tables_created(self):
+        """Returns True if the tables are created"""
         # TODO figure out how to check if tables are created
         return True
 
     def output(self, data):
+        """Prints the data if show_results is True"""
         if self.show_results:
             self.pp.pprint(data)
 
@@ -421,3 +425,24 @@ class TestSetup(unittest.TestCase):
         self.output(expect)
         self.assertEqual(loads(rv.data), expect, error_message)
         self.assertEqual(rv.status_code, expected_status_code, error_message)
+
+    def getListTest(self, route, error_message=""):
+        """Runs a get test on lists"""
+        done = False
+        while not done:
+            # 
+            rv = self.app.get(route)
+            self.assertEqual(rv.status_code,
+                             SUCCESSFUL_GET_CODE,
+                             error_message)
+            pagination = loads(rv.data)
+            if not pagination['has_next']:
+                done = True
+                self.assertTrue(len(pagination['items']) >= 0)
+            else:
+                self.assertTrue(pagination['next_url'] is not None,
+                                error_message)
+                self.assertTrue(len(pagination['items']) > 0)
+                max_total = pagination['pages'] * PAGE_SIZE
+                self.assertTrue(pagination['total'] <= max_total)
+                route = pagination['next_url']

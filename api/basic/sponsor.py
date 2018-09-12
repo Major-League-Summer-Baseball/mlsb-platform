@@ -12,6 +12,10 @@ from api.model import Sponsor
 from api import DB
 from api.authentication import requires_admin
 from api.errors import SponsorDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
 parser.add_argument('link', type=str)
@@ -153,11 +157,11 @@ class SponsorListAPI(Resource):
                                 },{...}
                             ]
         """
-        # return a list of Sponsors
-        sponsors = Sponsor.query.all()
-        for i in range(0, len(sponsors)):
-            sponsors[i] = sponsors[i].json()
-        resp = Response(dumps(sponsors), status=200,
+        # return a pagination of Sponsors
+        page = request.args.get('page', 1, type=int)
+        pagination = Sponsor.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['sponsor'])
+        resp = Response(dumps(result), status=200,
                         mimetype="application/json")
         return resp
 

@@ -6,10 +6,7 @@
 '''
 import unittest
 from api.helper import loads
-from api import DB
 from api.routes import Routes
-from api.model import Player
-from datetime import datetime
 from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist,\
     PlayerDoesNotExist, NonUniqueEmail, LeagueDoesNotExist, GameDoesNotExist,\
@@ -17,9 +14,9 @@ from api.errors import \
 from datetime import date
 from base64 import b64encode
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                         INVALID_ID, SUCCESSFUL_DELETE_CODE,\
-                         SUCCESSFUL_PUT_CODE
-from api.testData import bat, espys
+                         INVALID_ID, SUCCESSFUL_PUT_CODE
+
+
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -46,21 +43,12 @@ class TestFun(TestSetup):
                              error_message=error_message)
 
     def testFunListAPI(self):
-        # TODO pagination
-
         # add some fun
-        fun = self.add_fun(100, year=1900)
+        self.add_fun(100, year=1900)
 
         # test a get with funs
-        rv = self.app.get(Routes['fun'])
-        self.output(loads(rv.data))
-        self.output(fun)
-        message = " GET Failed to return list of funs"
-        self.assertTrue(len(loads(rv.data)) > 0, Routes['fun'] + message)
-        self.assertFunModelEqual(fun, loads(rv.data)[-1],
-                                 error_message=(Routes['fun'] + message))
-        self.assertEqual(200, rv.status_code, Routes['fun'] +
-                         " GET Failed to return list of funs")
+        error_message = Routes['fun'] + " GET Failed to return list of funs"
+        self.getListTest(Routes['fun'], error_message=error_message)
 
     def testFunAPIGet(self):
         # insert a fun object
@@ -165,20 +153,12 @@ class TestSponsor(TestSetup):
     def testSponsorListAPI(self):
         # TODO pagination
         # add a sponsor
-        sponsor = self.add_sponsor("New Sponsor")
+        self.add_sponsor("New Sponsor")
 
         # test a get with sponsors
-        rv = self.app.get(Routes['sponsor'])
-        self.output(loads(rv.data)[-1])
-        self.output(sponsor)
-        self.assertTrue(len(loads(rv.data)) > 0,
-                        Routes['sponsor'] +
-                        " GET Failed to return list of sponsors")
-        self.assertSponsorModelEqual(sponsor, loads(rv.data)[-1],
-                                     error_message=Routes['sponsor'] +
-                                     " GET Failed to return list of sponsors")
-        self.assertEqual(200, rv.status_code, Routes['sponsor'] +
-                         " GET Failed to return list of sponsrs")
+        error_message = (Routes['sponsor'] +
+                         " GET Failed to return list of sponsors")
+        self.getListTest(Routes['sponsor'], error_message=error_message)
 
     def testSponsorAPIGet(self):
         # insert a sponsor
@@ -305,19 +285,12 @@ class TestLeague(TestSetup):
     def testLeagueListAPI(self):
         # TODO pagination
         # proper insertion with post
-        league = self.add_league("New League")
+        self.add_league("New League")
 
-        # test a get with league
-        rv = self.app.get(Routes['league'])
-        self.output(loads(rv.data))
-        self.assertTrue(len(loads(rv.data)) > 0,
-                        Routes['league'] +
-                        " GET: Failed to return list of leagues")
-        self.assertLeagueModelEqual(league, loads(rv.data)[-1],
-                                    error_message=Routes['league'] +
-                                    " GET: Failed to return list of leagues")
-        self.assertEqual(200, rv.status_code, Routes['league'] +
-                         " GET: Failed to return list of leagues")
+        # test a get with leagues
+        error_message = (Routes['league'] +
+                         " GET Failed to return list of leagues")
+        self.getListTest(Routes['league'], error_message=error_message)
 
     def testLeagueAPIGet(self):
         # add a league
@@ -431,20 +404,14 @@ class TestPlayer(TestSetup):
     def testPlayerListApi(self):
         # TODO Pagination
         # add a player
-        player_one = self.add_player("Test Player",
-                                     "TestPlayer@mlsb.ca",
-                                     gender="M")
-        rv = self.app.get(Routes['player'])
-        player_list = loads(rv.data)
-        self.assertTrue(len(player_list) > 0, Routes['player'] +
-                        " GET: did not receive player list")
-        self.assertPlayerModelEqual(player_one,
-                                    player_list[-1],
-                                    error_message=Routes['player'] +
-                                    " GET: did not receive player list")
+        self.add_player("Test Player", "TestPlayer@mlsb.ca", gender="M")
+
+        # test a get with leagues
+        error_message = (Routes['player'] +
+                         " GET Failed to return list of players")
+        self.getListTest(Routes['player'], error_message=error_message)
 
     def testPlayerApiGet(self):
-
         # add a player
         player = self.add_player("Test Player",
                                  "TestPlayer@mlsb.ca",
@@ -465,7 +432,6 @@ class TestPlayer(TestSetup):
                      error_message=Routes['player'] + " Get: valid Player")
 
     def testPlayerApiDelete(self):
-
         # add a player
         player = self.add_player("Test Player",
                                  "TestPlayer@mlsb.ca",
@@ -659,21 +625,14 @@ class TestTeam(TestSetup):
         # testing with all valid parameters
         sponsor = self.add_sponsor("New Sponsor")
         league = self.add_league("New League")
-        team = self.add_team("Black", sponsor, league, VALID_YEAR)
+        self.add_team("Black", sponsor, league, VALID_YEAR)
 
-        # test a get with team
-        rv = self.app.get(Routes['team'])
-        self.output(loads(rv.data))
-        self.output(team)
-        self.assertTeamModelEqual(team,
-                                  loads(rv.data)[-1],
-                                  error_message=Routes['team'] +
-                                  " GET: Failed to return list of teams")
-        self.assertEqual(200, rv.status_code, Routes['team'] +
-                         " GET: Failed to return list of teams")
+        # test a get with teams
+        error_message = (Routes['team'] +
+                         " GET Failed to return list of teams")
+        self.getListTest(Routes['team'], error_message=error_message)
 
     def testTeamGet(self):
-
         # add a team
         sponsor = self.add_sponsor("New Sponsor")
         league = self.add_league("New league")
@@ -924,22 +883,16 @@ class TestGame(TestSetup):
         away_team = self.add_team("White", sponsor, league, VALID_YEAR)
 
         # add a game
-        game = self.add_game("2014-02-10",
+        self.add_game("2014-02-10",
                              "22:40",
                              home_team,
                              away_team,
                              league)
 
-        # test a get with game
-        rv = self.app.get(Routes['game'])
-        self.output(loads(rv.data))
-        self.output(game)
-        self.assertGameModelEqual(game,
-                                  loads(rv.data)[-1],
-                                  error_message=Routes['game'] +
-                                  " GET: Failed to return list of games")
-        self.assertEqual(200, rv.status_code, Routes['team'] +
-                         " GET: Failed to return list of games")
+        # test a get with games
+        error_message = (Routes['game'] +
+                         " GET Failed to return list of games")
+        self.getListTest(Routes['game'], error_message=error_message)
 
     def testGameGet(self):
         # add a game
@@ -1323,14 +1276,10 @@ class TestBat(TestSetup):
                              error_message=error_message)
 
     def testBatList(self):
-        # TODO Pagination
-        # add a game
-        game = addGame(self)
-        player = self.add_player("Test Player",
-                                 "TestPLayer@mlsb.ca",
-                                 gender="M")
-        pass
-
+        # test a get with bat
+        error_message = (Routes['bat'] +
+                         " GET Failed to return list of bats")
+        self.getListTest(Routes['bat'], error_message=error_message)
 
     def testBatGet(self):
         # add a bat
@@ -1730,6 +1679,12 @@ class TestEspys(TestSetup):
                              self.assertEqual,
                              result,
                              error_message=error_message)
+
+    def testEspysList(self):
+        # test a get with espys
+        error_message = (Routes['espy'] +
+                         " GET Failed to return list of espys")
+        self.getListTest(Routes['espy'], error_message=error_message)
 
 
 def addGame(tester):

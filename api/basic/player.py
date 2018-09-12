@@ -11,6 +11,10 @@ from api.model import Player
 from api import DB
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
@@ -148,12 +152,11 @@ class PlayerListAPI(Resource):
                               active: boolean},{}
                             ]
         """
-        # return a list of users
-        players = Player.query.all()
-        for i in range(0, len(players)):
-            players[i] = players[i].json()
-        resp = Response(dumps(players),
-                        status=200,
+        # return a pagination of users
+        page = request.args.get('page', 1, type=int)
+        pagination = Player.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['player'])
+        resp = Response(dumps(result), status=200,
                         mimetype="application/json")
         return resp
 

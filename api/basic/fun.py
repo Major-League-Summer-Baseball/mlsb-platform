@@ -12,9 +12,14 @@ from api.model import Fun
 from api import DB
 from api.authentication import requires_admin
 from api.errors import FunDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('count', type=int)
+parser.add_argument("page", type=int)
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('year', type=int, required=True)
 post_parser.add_argument('count', type=int, required=True)
@@ -128,11 +133,11 @@ class FunListAPI(Resource):
                                 },{...}
                             ]
         """
-        # return a list of Sponsors
-        funs = Fun.query.all()
-        for i in range(0, len(funs)):
-            funs[i] = funs[i].json()
-        resp = Response(dumps(funs), status=200,
+        # return a pagination of sponsors
+        page = request.args.get('page', 1, type=int)
+        pagination = Fun.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['fun'])
+        resp = Response(dumps(result), status=200,
                         mimetype="application/json")
         return resp
 
