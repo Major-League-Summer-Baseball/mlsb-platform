@@ -74,7 +74,14 @@ def fun_object_doc():
                            route=Routes,
                            errors=ERRORS)
 
- 
+
+@app.route(Routes['dopagination'])
+def pagination_object_doc():
+  return render_template('documentation/paginationObject.html',
+                         route=Routes,
+                         errors=ERRORS)
+
+
 @app.route(Routes["doteamroster"])
 def teamroster_object_doc():
     return render_template('documentation/teamRosterObject.html',

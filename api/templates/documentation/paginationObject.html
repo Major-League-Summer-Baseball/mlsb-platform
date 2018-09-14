@@ -1,0 +1,62 @@
+{% extends "documentation/documentation_base.html" %}
+{% block content %}
+
+    <h1>Pagination Object</h1>
+    <p>
+    	A Pagination Object is used for any GET request that returns a list of Objects
+    </p>
+    <p>
+    The following table shows all bat attributes, what type each attribute is, and any restrictions on that attribute:
+    </p>
+    <table class="table table-bordered">
+        <thead>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Description</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>has_next</td>
+                <td>boolean</td>
+                <td>True if there are more pages</td>
+            </tr>
+            <tr>
+                <td>has_prev</td>
+                <td>boolean</td>
+                <td>True if there are previous pages</td>
+            </tr>
+            <tr>
+                <td>items</td>
+                <td>Array</td>
+                <td>An array of the objects request</td>
+            </tr>
+            <tr>
+                <td>next_url</td>
+                <td>String</td>
+                <td>The next page url, None if there are no more pages</td>
+            </tr>            
+            <tr>
+                <td>prev_url</td>
+                <td>String</td>
+                <td>The previous page url, None if there are previous pages</td>
+            </tr>
+            <tr>
+                <td>total</td>
+                <td>int</td>
+                <td>The total number of items for all pages</td>
+            </tr>
+            <tr>
+                <td>pages</td>
+                <td>int</td>
+                <td>The totla number of pages</td>
+                <td>0</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td>inning</td>
+                <td>int</td>
+                <td>The inning the bat occurred in</td>
+            </tr>
+    	</tbody>
+    </table>
+{% endblock %}

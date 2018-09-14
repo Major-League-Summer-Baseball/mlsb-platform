@@ -11,9 +11,10 @@ from json import loads as loader
 def loads(data):
     try:
         data = loader(data)
-    except:
+    except Exception as __:
         data = loader(data.decode('utf-8'))
     return data
+
 
 def pagination_response(pagination, route):
     """Returns a pagination repsonse that can be dump into json"""
@@ -24,10 +25,10 @@ def pagination_response(pagination, route):
     response['has_next'] = pagination.has_next
     response['has_prev'] = pagination.has_prev
     response['items'] = items
-    
+
     response['next_url'] = (route + "?page={}".format(pagination.next_num)
                             if pagination.has_next
-                            else None) 
+                            else None)
     response['prev_url'] = (route + "?page={}".format(pagination.prev_num)
                             if pagination.has_prev
                             else None)
@@ -46,6 +47,7 @@ class Test(unittest.TestCase):
 
     def testLoads(self):
         pass
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testLoads']

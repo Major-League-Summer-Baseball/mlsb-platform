@@ -58,6 +58,7 @@ Routes['doteam'] = "/documentation/object/team"
 Routes['doteamroster'] = "/documentation/object/teamroster"
 Routes['doleague'] = "/documentation/object/league"
 Routes['dofun'] = "/documentation/object/fun"
+Routes['dopagination'] = "/documentation/object/pagination"
 # db = documentation basic
 Routes['dbplayer'] = "/documentation/basic/player"
 Routes['dbbat'] = "/documentation/basic/bat"
