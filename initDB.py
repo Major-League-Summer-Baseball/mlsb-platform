@@ -7,6 +7,7 @@
 from api import DB
 from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat
 from api.variables import UNASSIGNED_EMAIL, HITS
+from tqdm import tqdm
 import requests
 import os
 import datetime
@@ -41,7 +42,7 @@ def mock_teams_games(league, sponsor_lookup):
                      team_two_players,
                      team_three_players,
                      team_four_players]
-    for team in team_players:
+    for team in tqdm(team_players, desc="Adding mock Players"):
         for player in team:
             DB.session.add(player)
     DB.session.commit()
@@ -59,7 +60,7 @@ def mock_teams_games(league, sponsor_lookup):
              Team(color="Green",
                   sponsor_id=random_value_lookup(sponsor_lookup).id,
                   league_id=league.id)]
-    for i in range(0, len(teams)):
+    for i in tqdm(range(0, len(teams)), desc="Adding mock players to Teams"):
         team = teams[i]
         DB.session.add(team)
         # add the players to the team
@@ -70,7 +71,7 @@ def mock_teams_games(league, sponsor_lookup):
     # add some random espsy to each team and create a lookup for team id to players
     team_player_lookup = {}
     random_prices = [9.99, 4.75, 100, 15.50, 12.99]
-    for i in range(0, len(teams)):
+    for i in tqdm(range(0, len(teams)), desc="Adding mock espys to Teams"):
         team_player_lookup[team.id] = team_players[i]
         team = teams[i]
         for __ in range(0, 4):
@@ -144,12 +145,12 @@ def mock_teams_games(league, sponsor_lookup):
                   status="To Be Played",
                   field="WP2")
                   ]
-    for game in games:
+    for game in tqdm(games, "Adding mock games"):
         DB.session.add(game)
     DB.session.commit()
     
     # now add a random score to the game
-    for game in games:
+    for game in tqdm(games, desc="Mocking scores for games"):
         add_random_score(game.id,
                          game.away_team_id,
                          team_player_lookup[game.away_team_id])
@@ -158,6 +159,7 @@ def mock_teams_games(league, sponsor_lookup):
                          team_player_lookup[game.home_team_id])
     DB.session.commit()
 
+
 def mock_league():
     """Returns a mock league that was added to local DB"""
     # add a demo league
@@ -165,6 +167,7 @@ def mock_league():
     DB.session.add(league)
     DB.session.commit()
     return league
+
 
 def create_fresh_tables():
     """Creates fresh tables and deletes any previous information"""
@@ -183,14 +186,17 @@ def create_fresh_tables():
                     ''')
     DB.create_all()
 
+
 def random_value_lookup(lookup):
     """Returns a object for a random key in the lookup"""
     __, value = random.choice(list(lookup.items()))
     return value
 
+
 def random_value_list(l):
     """Returns a random value for the given list l"""
     return l[random.randint(0, len(l) - 1)]
+
 
 def add_random_score(game_id, team_id, players):
     """Simulates a score by getting a random score and adding random bats"""
@@ -213,6 +219,14 @@ def add_random_score(game_id, team_id, players):
         DB.session.add(Bat(batter.id, team_id, game_id, bat, rbi=rbis))
     DB.session.commit()
 
+
+def pull_all_pages(url, pagination):
+    """ Pulls the items from all the pages (paginated object)"""
+    data = pagination['items']
+    if(pagination['has_more']):
+        data = data + pull_all_pages(requests.get(url + pagination['next_url']))
+    return data
+
 def pull_fun_count(url):
     """
     pull_fun_count
@@ -223,9 +237,12 @@ def pull_fun_count(url):
             None"""
     # add the fun counts
     funs = requests.get(url + "/api/fun").json()
-    for fun in funs:
+    if isinstance(funs, dict):
+        funs = pull_all_pages(funs)
+    for fun in tqdm(funs, desc="Pulling fun from {}".format(url)):
         DB.session.add(Fun(year=fun['year'], count=fun['count']))
     DB.session.commit()
+
 
 def pull_sponsors(url):
     """
@@ -241,8 +258,10 @@ def pull_sponsors(url):
     """
     # add all the sponsors
     _sponsors = requests.get(url + '/api/sponsors').json()
+    if isinstance(_sponsors, dict):
+        _sponsors = pull_all_pages(url, _sponsors)
     sponsors_lookup = {}
-    for sponsor in _sponsors:
+    for sponsor in tqdm(_sponsors, desc="Pulling sponsors from {}".format(url)):
         temp = Sponsor(sponsor['sponsor_name'],
                        link=sponsor['link'],
                        description=sponsor['description'])
@@ -264,8 +283,10 @@ def pull_leagues(url):
                 e.g. league_lookup = {1: League(), etc..}
     """
     _leagues = requests.get(url + "/api/leagues").json()
+    if isinstance(_leagues, dict):
+        _leagues = pull_all_pages(url, _leagues)
     leagues_lookup = {}
-    for league in _leagues:
+    for league in tqdm(_leagues, desc="Pulling leagues from {}".format(url)):
         temp  = League(name=league['name'])
         leagues_lookup[league['league_id']] = temp
         DB.session.add(temp)
@@ -285,8 +306,10 @@ def pull_players(url):
                 e.g. player_lookup = {1: Player(), etc..}
     """
     _players = requests.get(url + "/api/players").json()
+    if isinstance(_players, dict):
+        _players = pull_all_pages(url, _players)
     players_lookup = {}
-    for player in _players:
+    for player in tqdm(_players, desc="Pulling players from {}".format(url)):
         if (player['player_name'].lower() != "unassigned"):
             temp = Player(player['player_name'],
                           player['player_name'] + "@mlsb.ca",
@@ -320,13 +343,14 @@ def pull_teams(url, player_lookup, sponsor_lookup, league_lookup):
                 e.g. team_lookup = {1: Team(), etc..}
     """
     _teams = requests.get(url + "/api/teams").json()
+    if isinstance(_teams, dict):
+        _teams = pull_all_pages(url, _teams)
     team_lookups = {}
-    for team in _teams:
+    for team in tqdm(_teams, desc="Pulling teams from {}".format(url)):
         temp = Team(color=team['color'],
                     sponsor_id=sponsor_lookup[team['sponsor_id']].id,
                     league_id=league_lookup[team['league_id']].id,
-                    year=team['year'],
-                    )
+                    year=team['year'])
         # need to add the players from the roster to the team
         players = requests.get(url + "/api/teamroster/" + team['team_id']).json()
         for player in players:
@@ -350,8 +374,10 @@ def pull_games(url, team_lookup, league_lookup):
                 e.g. game_lookup = {1: Game(), etc..}
     """
     _games = requests.get(url + "/api/games").json()
+    if isinstance(_games, dict):
+        _games = pull_all_pages(url, _games)
     game_lookup = {}
-    for game in _games:
+    for game in tqdm(_games, desc="Pulling games from {}".format(url)):
         temp = Game(game['date'],
                     game['time'],
                     team_lookup[game['home_team_id']].id,
@@ -376,27 +402,50 @@ def pull_bats(url, team_lookup, player_lookup, game_lookup):
                 for the website bat id to local bat object
                 e.g. bat_lookup = {1: Bat(), etc..}
     """
-    # TODO
-    # need to update the get apis requests or add other routes
-    # that can handle large requests
-    pass
+    _bats = requests.get(url + "/api/bats").json()
+    if isinstance(_bats, dict):
+        _bats = pull_all_pages(url, _bats)
+    bat_lookup = {}
+    for bat in tqdm(_bats, desc="Pulling bats from {}".format(url)):
+        temp = Bat(player_lookup[bat['player_id']].id,
+                   team_lookup[bat['team_id']].id,
+                   game_lookup[bat['game_id']].id,
+                   bat['hit'],
+                   bat['inning'],
+                   bat['rbi'])
+        bat_lookup[bat['bat_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return bat_lookup
 
 def pull_espys(url, team_lookup, sponsor_lookup):
     """
     pull_espys
-        Returns a lookup of bats that were pulled
+        Returns a lookup of espys that were pulled
         from the website into local DB
         Parameters:
             url: the url of the main site
         Returns:
             a dictionary lookup
-                for the website bat id to local bat object
-                e.g. bat_lookup = {1: Bat(), etc..}
+                for the website espy id to local espy object
+                e.g. bat_lookup = {1: Espys(), etc..}
     """
-    # TODO
-    # need to update the get apis requests or add other routes
-    # that can handle large requests
-    pass
+    _espys = requests.get(url + "/api/espys").json()
+    if isinstance(_espys, dict):
+        _espys = pull_all_pages(url, _espys)
+    espy_lookup = {}
+    for espy in tqdm(_espys, desc="Pulling espys from {}".format(url)):
+        temp = Espys(team_lookup[espy['team_id']].id,
+                     sponsor_lookup[espy['sponsor_id']].id,
+                     espy['description'],
+                     espy['points'],
+                     espy['receipt'],
+                     espy['time'],
+                     espy['date'])
+        espy_lookup[espy['espy_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return bat_lookup
 
 def init_database(mock, copy_locally, url):
     """
@@ -430,6 +479,7 @@ def init_database(mock, copy_locally, url):
                                      league_lookup)
             game_lookup = pull_games(url, team_lookup, league_lookup)
             pull_bats(url, team_lookup, player_lookup, game_lookup)
+            pull_espys(url, team_lookup, sponsor_lookup)
     return
 
 
