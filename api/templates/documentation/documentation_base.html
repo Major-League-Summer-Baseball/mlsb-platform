@@ -12,6 +12,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
    	<link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
+   	<!-- Prettify -->
+   	<link href="{{ url_for('static', filename="css/docAndAdmin/prettify.css") }}" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename="css/docAndAdmin/simple-sidebar.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/docAndAdmin/documentation.css") }}" rel="stylesheet">
@@ -250,10 +252,18 @@
     </div><!-- /#wrapper -->
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!--  prettify -->
+    <script src="{{ url_for('static', filename="js/prettify.js") }}"></script>
     <!-- bootstrap js -->
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
     <!-- Menu Toggle Script -->
     <script>
+      $(document).ready(function () {
+          prettyPrint();
+          if (ready !== undefined){
+              ready();
+          }
+      });
 
       $("#menu-toggle").click(function(e) {
           e.preventDefault();
