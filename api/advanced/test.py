@@ -15,7 +15,9 @@ from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
                     SponsorDoesNotExist, LeagueDoesNotExist
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
-from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
+from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID
+import datetime
+from idlelib.idle_test.test_searchengine import Mock
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -26,117 +28,77 @@ kik = {
                                                   KIKPW, "utf-8")
                                             ).decode("ascii")
 }
-
+VALID_YEAR = date.today().year
+INVALID_YEAR = 100
 
 class GameTest(TestSetup):
-    def testPost(self):
-        # No games
-        rv = self.app.post(Routes['vgame'])
+
+    def testPostYear(self):
+        """Test the year parameter"""
+        # test an invalid year
+        MockLeague(self)
+        rv = self.app.post(Routes['vgame'], data={"year": INVALID_YEAR})
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vgame'] + " Post: View of Game")
-        self.addBats()
-        # just monday and wednesday
-        rv = self.app.post(Routes['vgame'], data={"league_id": 1})
-        expect = [{'away_bats': [],
-                   'away_score': 0,
-                   'away_team': {'captain': None,
-                                 'color': 'Black',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 2,
-                                 'team_id': 2,
-                                 'team_name': 'Chainsaw Black',
-                                 'year': date.today().year},
-                   'date': '2014-08-23 11:37',
-                   'game_id': 1,
-                   'home_bats': [{'bat_id': 1,
-                                  'hit': 's',
-                                  'inning': 5,
-                                  'name': 'Dallas Fraser',
-                                  'rbi': 1}],
-                   'home_score': 1,
-                   'home_team': {'captain': None,
-                                 'color': 'Green',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 1,
-                                 'team_id': 1,
-                                 'team_name': 'Domus Green',
-                                 'year': date.today().year},
-                   'league': {'league_id': 1,
-                              'league_name': 'Monday & Wedneday'},
-                   'status': ''}]
+                        Routes['vgame'] + " Post: invalid year")
+
+        # test a valid year
+        rv = self.app.post(Routes['vgame'], data={"year": VALID_YEAR})
+        expect = 3
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(3,
+                         len(loads(rv.data)),
+                         Routes['vgame'] + " Post: valid year")
+
+    def testPostLeagueId(self):
+        """Test league id parameter"""
+        # test an invalid league id
+        mocker = MockLeague(self)
+        rv = self.app.post(Routes['vgame'], data={"league_id": INVALID_ID})
+        expect = []
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vgame'] + " Post: View of Game")
-        # no parameters
-        rv = self.app.post(Routes['vgame'], data={})
-        expect = [{'away_bats': [],
-                   'away_score': 0,
-                   'away_team': {'captain': None,
-                                 'color': 'Black',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 2,
-                                 'team_id': 2,
-                                 'team_name': 'Chainsaw Black',
-                                 'year': date.today().year},
-                   'date': '2014-08-23 11:37',
-                   'game_id': 1,
-                   'home_bats': [{'hit': 's',
-                                  'bat_id': 1,
-                                  'inning': 5,
-                                  'name': 'Dallas Fraser',
-                                  'rbi': 1}],
-                   'home_score': 1,
-                   'home_team': {'captain': None,
-                                 'color': 'Green',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 1,
-                                 'team_id': 1,
-                                 'team_name': 'Domus Green',
-                                 'year': date.today().year},
-                   'league': {'league_id': 1,
-                              'league_name': 'Monday & Wedneday'},
-                   'status': ''},
-                  {'away_bats': [],
-                   'away_score': 0,
-                   'away_team': {'captain': None,
-                                 'color': 'Black',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 2,
-                                 'team_id': 2,
-                                 'team_name': 'Chainsaw Black',
-                                 'year': date.today().year},
-                   'date': '2014-08-23 11:37',
-                   'game_id': 2,
-                   'home_bats': [{'hit': 'k',
-                                  'bat_id': 2,
-                                  'inning': 5,
-                                  'name': 'My Dream Girl',
-                                  'rbi': 0}],
-                   'home_score': 0,
-                   'home_team': {'captain': None,
-                                 'color': 'Green',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 1,
-                                 'team_id': 1,
-                                 'team_name': 'Domus Green',
-                                 'year': date.today().year},
-                   'league': {'league_id': 2,
-                              'league_name': 'Tuesday & Thursday'},
-                   'status': ''}]
+                        Routes['vgame'] + " Post: invalid league id")
+
+        # test a valid league id
+        data = {"league_id": mocker.get_league()['league_id']}
+        rv = self.app.post(Routes['vgame'], data=data)
+        expect = 3
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, len(loads(rv.data)),
+                        Routes['vgame'] + " Post: valid league id")
+
+    def testPostGameId(self):
+        """Test game id parameter"""
+        # test an invalid league id
+        self.show_results = True
+        mocker = MockLeague(self)
+        rv = self.app.post(Routes['vgame'], data={"game_id": INVALID_ID})
+        expect = []
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vgame'] + " Post: View of Game")
+                        Routes['vgame'] + " Post: invalid game id")
+
+        # test a valid league id
+        data = {"game_id": mocker.get_games()[0]['game_id']}
+        rv = self.app.post(Routes['vgame'], data=data)
+        games_data = loads(rv.data) 
+        game_data = games_data[0]
+        expect = 1
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect, len(games_data))
+        self.assertEqual(6, game_data['away_score'])
+        self.assertEqual(4, len(game_data['away_bats']))
+        self.assertEqual(1, game_data['home_score'])
+        self.assertEqual(4, len(game_data['home_bats']))
+        self.assertLeagueModelEqual(mocker.get_league(), game_data['league'])
 
 
 class PlayerTest(TestSetup):
@@ -648,6 +610,110 @@ class TestLeagueLeaders(TestSetup):
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
                          " View: on 2017")
+
+
+class MockLeague():
+    def __init__(self, tester):
+        # add a league
+        self.league = tester.add_league("Advanced Test League")
+        self.sponsor = tester.add_sponsor("Advanced Test Sponsor")
+        self.field = "WP1"
+
+        # add some players
+        players = [("Test Player 1", "testPlayer1@mlsb.ca", "M"),
+                        ("Test Player 2", "testPlayer2@mlsb.ca", "F"),
+                        ("Test Player 3", "testPlayer3@mlsb.ca", "M"),
+                        ("Test Player 4", "testPlayer4@mlsb.ca", "F")
+                        ]
+        self.players = []
+        for player in players:
+            self.players.append(tester.add_player(player[0],
+                                                  player[1],
+                                                  gender=player[2]))
+
+        # add some teams
+        teams = [("Test Team", self.sponsor, self.league),
+                 ("Test Team 2", self.sponsor, self.league)]
+        self.teams = []
+        for team in teams:
+            self.teams.append(tester.add_team(team[0],
+                                              sponsor=team[1],
+                                              league=self.league))
+
+        # add the players to some teams
+        tester.add_player_to_team(self.teams[0], self.players[0], captain=True)
+        tester.add_player_to_team(self.teams[0], self.players[1])
+        tester.add_player_to_team(self.teams[1], self.players[2])
+        tester.add_player_to_team(self.teams[1], self.players[3], captain=True)
+
+        # add some games between the teams
+        today = datetime.date.today()
+        week_ago = today - datetime.timedelta(days=7)
+        next_week = today + datetime.timedelta(days=3)
+        last_week_string = week_ago.strftime( "%Y-%m-%d")
+        today_string = today.strftime("%Y-%m-%d")
+        next_week_string = next_week.strftime( "%Y-%m-%d")
+        games = [(last_week_string,
+                  "10:00",
+                  self.teams[0],
+                  self.teams[1],
+                  self.league, self.field),
+                 (today_string,
+                  "10:00",
+                  self.teams[1],
+                  self.teams[0],
+                  self.league, self.field),
+                 (next_week_string,
+                  "10:00",
+                  self.teams[0],
+                  self.teams[1],
+                  self.league, self.field),
+                 ]
+        self.games = []
+        for game in games:
+            self.games.append(tester.add_game(game[0],
+                                              game[1],
+                                              game[2],
+                                              game[3],
+                                              game[4],
+                                              field=game[5]))
+
+        # add some bats to the games
+        bats = [(self.players[0], self.teams[0], self.games[0], "K", 0),
+                (self.players[0], self.teams[0], self.games[0], "HR", 1),
+                (self.players[1], self.teams[0], self.games[0], "SS", 0),
+                (self.players[1], self.teams[0], self.games[0], "GO", 0),
+                (self.players[2], self.teams[1], self.games[0], "S", 0),
+                (self.players[2], self.teams[1], self.games[0], "D", 2),
+                (self.players[3], self.teams[1], self.games[0], "HR", 4),
+                (self.players[3], self.teams[1], self.games[0], "GO", 0),
+                ]
+        self.bats = []
+        for bat in bats:
+            self.bats.append(tester.add_bat(bat[0],
+                                            bat[1],
+                                            bat[2],
+                                            bat[3],
+                                            rbi=bat[4]))
+
+
+    def get_league(self):
+        return self.league
+
+    def get_sponsor(self):
+        return self.sponsor
+
+    def get_field(self):
+        return self.field
+
+    def get_players(self):
+        return self.players
+
+    def get_bats(self):
+        return self.bats
+
+    def get_games(self):
+        return self.games
 
 
 class TestImportTeam(TestSetup):
