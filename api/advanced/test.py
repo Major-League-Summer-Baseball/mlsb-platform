@@ -17,7 +17,7 @@ from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID
 import datetime
-from idlelib.idle_test.test_searchengine import Mock
+
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -31,6 +31,7 @@ kik = {
 VALID_YEAR = date.today().year
 INVALID_YEAR = 100
 
+
 class GameTest(TestSetup):
 
     def testPostYear(self):
@@ -42,7 +43,7 @@ class GameTest(TestSetup):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                        Routes['vgame'] + " Post: invalid year")
+                         Routes['vgame'] + " Post: invalid year")
 
         # test a valid year
         rv = self.app.post(Routes['vgame'], data={"year": VALID_YEAR})
@@ -62,7 +63,7 @@ class GameTest(TestSetup):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                        Routes['vgame'] + " Post: invalid league id")
+                         Routes['vgame'] + " Post: invalid league id")
 
         # test a valid league id
         data = {"league_id": mocker.get_league()['league_id']}
@@ -71,24 +72,23 @@ class GameTest(TestSetup):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, len(loads(rv.data)),
-                        Routes['vgame'] + " Post: valid league id")
+                         Routes['vgame'] + " Post: valid league id")
 
     def testPostGameId(self):
         """Test game id parameter"""
         # test an invalid league id
-        self.show_results = True
         mocker = MockLeague(self)
         rv = self.app.post(Routes['vgame'], data={"game_id": INVALID_ID})
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                        Routes['vgame'] + " Post: invalid game id")
+                         Routes['vgame'] + " Post: invalid game id")
 
         # test a valid league id
         data = {"game_id": mocker.get_games()[0]['game_id']}
         rv = self.app.post(Routes['vgame'], data=data)
-        games_data = loads(rv.data) 
+        games_data = loads(rv.data)
         game_data = games_data[0]
         expect = 1
         self.output(loads(rv.data))
@@ -102,225 +102,230 @@ class GameTest(TestSetup):
 
 
 class PlayerTest(TestSetup):
-    def testPost(self):
-        # no date
-        rv = self.app.post(Routes['vplayer'])
-        expect = {}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Player")
-        self.addBats()
-        # no parameters
-        rv = self.app.post(Routes['vplayer'])
-        expect = {'Dallas Fraser': {'avg': 1.0,
-                                    'bats': 1,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 0,
-                                    'id': 1,
-                                    'k': 0,
-                                    'rbi': 1,
-                                    's': 1,
-                                    'ss': 0},
-                  'My Dream Girl': {'avg': 0.0,
-                                    'bats': 1,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 0,
-                                    'id': 2,
-                                    'k': 1,
-                                    'rbi': 1,
-                                    's': 0,
-                                    'ss': 0}}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Player")
 
-    def testPostParameters(self):
-        self.addBunchBats()
-        rv = self.app.post(Routes['vplayer'])
-        expect = {'Dallas Fraser': {'avg': 1.0,
-                                    'bats': 1,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 0,
-                                    'id': 1,
-                                    'k': 0,
-                                    'rbi': 1,
-                                    's': 1,
-                                    'ss': 0},
-                  'My Dream Girl': {'avg': 0.0,
+    def testPostPlayerId(self):
+        """Test player id parameter"""
+        mocker = MockLeague(self)
+
+        # test an invalid player id
+        rv = self.app.post(Routes['vplayer'], data={'player_id': INVALID_ID})
+        expect = {}
+        self.output(expect)
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayer'] + " Post: invalid player id")
+
+        # test an valid player id
+        player_id = mocker.get_players()[0]['player_id']
+        rv = self.app.post(Routes['vplayer'], data={"player_id": player_id})
+        expect = {'Test Player 1': {'avg': 0.5,
                                     'bats': 2,
                                     'd': 0,
                                     'e': 0,
                                     'fc': 0,
                                     'fo': 0,
                                     'go': 0,
-                                    'hr': 0,
-                                    'id': 2,
-                                    'k': 2,
+                                    'hr': 1,
+                                    'id': player_id,
+                                    'k': 1,
                                     'rbi': 2,
                                     's': 0,
                                     'ss': 0}}
-        self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Player")
-        # filter based on league
-        rv = self.app.post(Routes['vplayer'], data={'league_id': 1})
-        expect = {'Dallas Fraser': {'avg': 1.0,
-                                    'bats': 1,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 0,
-                                    'id': 1,
-                                    'k': 0,
-                                    'rbi': 1,
-                                    's': 1,
-                                    'ss': 0}}
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayer'] + " Post: valid player id")
 
-        self.output(loads(rv.data))
+    def testPostYear(self):
+        MockLeague(self)
+
+        # test an invalid year
+        rv = self.app.post(Routes['vplayer'], data={'year': INVALID_YEAR})
+        expect = {}
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Player")
-        # filter based on team
-        rv = self.app.post(Routes['vplayer'], data={'team_id': 1})
-        expect = {'Dallas Fraser': {'avg': 1.0,
-                                    'bats': 1,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 0,
-                                    'id': 1,
-                                    'k': 0,
-                                    'rbi': 1,
-                                    's': 1,
-                                    'ss': 0},
-                  'My Dream Girl': {'avg': 0.0,
-                                    'bats': 1,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 0,
-                                    'id': 2,
-                                    'k': 1,
-                                    'rbi': 1,
-                                    's': 0,
-                                    'ss': 0}}
         self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayer'] + " Post: invalid year")
+
+        # test an valid year
+        rv = self.app.post(Routes['vplayer'], data={"year": VALID_YEAR})
+        self.output(loads(rv.data))
+        self.assertTrue(len(loads(rv.data).keys()) > 0,
+                        Routes['vplayer'] + " Post: valid year")
+
+    def testPostLeagueId(self):
+        mocker = MockLeague(self)
+
+        # test an invalid league id
+        rv = self.app.post(Routes['vplayer'], data={'league_id': INVALID_ID})
+        expect = {}
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vplayer'] + " Post: View of Player")
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayer'] + " Post: invalid league id")
+
+        # test an valid league id
+        league_id = mocker.get_league()['league_id']
+        expect = {'avg': 0.5,
+                  'bats': 2,
+                  'd': 0,
+                  'e': 0,
+                  'fc': 0,
+                  'fo': 0,
+                  'go': 0,
+                  'hr': 1,
+                  'id': mocker.get_players()[0]['player_id'],
+                  'k': 1,
+                  'rbi': 2,
+                  's': 0,
+                  'ss': 0}
+        player_check = mocker.get_players()[0]
+        rv = self.app.post(Routes['vplayer'], data={"league_id": league_id})
+        self.output(loads(rv.data))
+        self.assertTrue(len(loads(rv.data).keys()) == 4,
+                        Routes['vplayer'] + " Post: valid league id")
+        self.assertEqual(loads(rv.data)[player_check['player_name']],
+                         expect,
+                         Routes['vplayer'] + " Post: valid league id")
+
+    def testPostTeamId(self):
+        mocker = MockLeague(self)
+
+        # test an invalid team id
+        rv = self.app.post(Routes['vplayer'], data={'team_id': INVALID_ID})
+        expect = {}
+        self.output(expect)
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayer'] + " Post: invalid team id")
+
+        # test an valid team id
+        team_id = mocker.get_teams()[0]['team_id']
+        expect = {'avg': 0.5,
+                  'bats': 2,
+                  'd': 0,
+                  'e': 0,
+                  'fc': 0,
+                  'fo': 0,
+                  'go': 0,
+                  'hr': 1,
+                  'id': mocker.get_players()[0]['player_id'],
+                  'k': 1,
+                  'rbi': 2,
+                  's': 0,
+                  'ss': 0}
+        player_check = mocker.get_players()[0]
+        rv = self.app.post(Routes['vplayer'], data={"team_id": team_id})
+        self.output(loads(rv.data))
+        self.assertTrue(len(loads(rv.data).keys()) == 2,
+                        Routes['vplayer'] + " Post: valid team id")
+        self.assertEqual(loads(rv.data)[player_check['player_name']],
+                         expect,
+                         Routes['vplayer'] + " Post: valid team id")
+        absent_player_name = mocker.get_players()[2]['player_name']
+        player_present = absent_player_name in loads(rv.data).keys()
+        self.assertTrue(not player_present,
+                        Routes['vplayer'] + " Post: valid team id")
 
 
 class TeamTest(TestSetup):
-    def testPostNoParameters(self):
-        rv = self.app.post(Routes['vteam'])
+    def testPostTeamId(self):
+        mocker = MockLeague(self)
+
+        # invalid team id
+        rv = self.app.post(Routes['vteam'], data={'team_id': INVALID_ID})
         expect = {}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        self.addSeason()
-        rv = self.app.post(Routes['vteam'])
-        expect = {'1': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'name': 'Domus Green',
-                        'runs_against': 4,
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1},
-                  '2': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'name': 'Sentry Sky Blue',
-                        'runs_against': 4,
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1},
-                  '3': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'name': 'Nightschool Navy',
-                        'runs_against': 4,
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1},
-                  '4': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'name': 'Brick Blue',
-                        'runs_against': 4,
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1}}
+                         Routes['vteam'] + " Post: invalid team id")
+
+        # valid team id
+        team_id = mocker.get_teams()[0]['team_id']
+        rv = self.app.post(Routes['vteam'], data={'team_id': team_id})
+        expect = {'games': 3,
+                  'hits_allowed': 3,
+                  'hits_for': 2,
+                  'losses': 1,
+                  'name': 'Advanced Test Sponsor Test Team',
+                  'runs_against': 6,
+                  'runs_for': 1,
+                  'ties': 0,
+                  'wins': 0}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertTrue(len(loads(rv.data).keys()) == 1,
+                        Routes['vteam'] + " Post: valid team id")
+        self.assertEqual(expect, loads(rv.data)[str(team_id)],
+                         Routes['vteam'] + " Post: valid team id")
+
+    def testPostYear(self):
+        mocker = MockLeague(self)
+
+        # invalid year
+        rv = self.app.post(Routes['vteam'], data={'year': INVALID_YEAR})
+        expect = {}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
+                         Routes['vteam'] + " Post: invalid year")
 
-    def testParameters(self):
-        expect = {'1': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'runs_against': 4,
-                        'name': 'Domus Green',
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1},
-                  '2': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'name': 'Sentry Sky Blue',
-                        'runs_against': 4,
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1}}
-        self.addSeason()
-        rv = self.app.post(Routes['vteam'], data={'league_id': 1})
-        self.output(loads(rv.data), )
+        # valid year
+        team_id = mocker.get_teams()[0]['team_id']
+        rv = self.app.post(Routes['vteam'], data={'year': VALID_YEAR})
+        expect = {'games': 1,
+                  'hits_allowed': 3,
+                  'hits_for': 2,
+                  'losses': 1,
+                  'name': 'Advanced Test Sponsor Test Team',
+                  'runs_against': 6,
+                  'runs_for': 1,
+                  'ties': 0,
+                  'wins': 0}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertTrue(len(loads(rv.data).keys()) > 0,
+                        Routes['vteam'] + " Post: valid year")
+        self.assertEqual(expect,
+                         loads(rv.data)[str(team_id)],
+                         Routes['vteam'] + " Post: valid year")
+
+    def testLeagueId(self):
+        mocker = MockLeague(self)
+
+        # invalid league id
+        rv = self.app.post(Routes['vteam'], data={'league_id': INVALID_ID})
+        expect = {}
+        self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        expect = {'1': {'games': 3,
-                        'hits_allowed': 3,
-                        'hits_for': 3,
-                        'losses': 1,
-                        'runs_against': 4,
-                        'name': 'Domus Green',
-                        'runs_for': 4,
-                        'ties': 1,
-                        'wins': 1}}
-        rv = self.app.post(Routes['vteam'], data={'team_id': 1})
-        self.output(loads(rv.data), )
+                         Routes['vteam'] + " Post: invalid league id")
+
+        # valid league id
+        league_id = mocker.get_league()['league_id']
+        team_id = mocker.get_teams()[1]['team_id']
+        rv = self.app.post(Routes['vteam'], data={'league_id': league_id})
+        expect = {'games': 1,
+                  'hits_allowed': 2,
+                  'hits_for': 3,
+                  'losses': 0,
+                  'name': 'Advanced Test Sponsor Test Team 2',
+                  'runs_against': 1,
+                  'runs_for': 6,
+                  'ties': 0,
+                  'wins': 1}
+        self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
+        self.assertTrue(len(loads(rv.data).keys()) > 0,
+                        Routes['vteam'] + " Post: valid year")
+        self.assertEqual(expect,
+                         loads(rv.data)[str(team_id)],
+                         Routes['vteam'] + " Post: valid year")
 
 
 class testPlayerLookup(TestSetup):
@@ -566,7 +571,6 @@ class TestPlayerTeamLookup(TestSetup):
 class TestLeagueLeaders(TestSetup):
     def testMain(self):
         # fuck this test isnt great since
-        
         self.mockLeaders()
         params = {'stat': "hr"}
         rv = self.app.post(Routes['vleagueleaders'], data=params)
@@ -621,10 +625,9 @@ class MockLeague():
 
         # add some players
         players = [("Test Player 1", "testPlayer1@mlsb.ca", "M"),
-                        ("Test Player 2", "testPlayer2@mlsb.ca", "F"),
-                        ("Test Player 3", "testPlayer3@mlsb.ca", "M"),
-                        ("Test Player 4", "testPlayer4@mlsb.ca", "F")
-                        ]
+                   ("Test Player 2", "testPlayer2@mlsb.ca", "F"),
+                   ("Test Player 3", "testPlayer3@mlsb.ca", "M"),
+                   ("Test Player 4", "testPlayer4@mlsb.ca", "F")]
         self.players = []
         for player in players:
             self.players.append(tester.add_player(player[0],
@@ -650,9 +653,9 @@ class MockLeague():
         today = datetime.date.today()
         week_ago = today - datetime.timedelta(days=7)
         next_week = today + datetime.timedelta(days=3)
-        last_week_string = week_ago.strftime( "%Y-%m-%d")
+        last_week_string = week_ago.strftime("%Y-%m-%d")
         today_string = today.strftime("%Y-%m-%d")
-        next_week_string = next_week.strftime( "%Y-%m-%d")
+        next_week_string = next_week.strftime("%Y-%m-%d")
         games = [(last_week_string,
                   "10:00",
                   self.teams[0],
@@ -696,7 +699,6 @@ class MockLeague():
                                             bat[3],
                                             rbi=bat[4]))
 
-
     def get_league(self):
         return self.league
 
@@ -714,6 +716,9 @@ class MockLeague():
 
     def get_games(self):
         return self.games
+
+    def get_teams(self):
+        return self.teams
 
 
 class TestImportTeam(TestSetup):
@@ -906,7 +911,7 @@ class TestImportGames(TestSetup):
             team = self.tl.get_league_id("No League")
             self.assertEqual(True, False,
                              "League does not exist error should be raised")
-        except:
+        except Exception:
             pass
 
     def testImportGame(self):
@@ -989,6 +994,7 @@ class TestImportGames(TestSetup):
         self.assertEqual(self.tl.warnings, [])
         self.assertEqual(['X Green is not a team in the league'],
                          self.tl.errors)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

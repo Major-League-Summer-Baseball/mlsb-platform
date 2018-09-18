@@ -26,6 +26,9 @@ def post(team_id, year, league_id):
 
 
 def single_team(team_id):
+    team_query = Team.query.get(team_id)
+    if team_query is None:
+        return {}
     games = (DB.session.query(Game)
              .filter(or_(Game.away_team_id == team_id,
                          Game.home_team_id == team_id)
@@ -38,7 +41,7 @@ def single_team(team_id):
                       "runs_against": 0,
                       'hits_for': 0,
                       'hits_allowed': 0,
-                      'name': str(Team.query.get(team_id))}
+                      'name': str(team_query)}
             }
     for game in games:
         # loop through each game
