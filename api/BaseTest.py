@@ -271,10 +271,15 @@ class TestSetup(unittest.TestCase):
         return espy.json()
 
     def add_player_to_team(self, team, player, captain=False):
+        """Adds the given player to a team"""
         team = Team.query.get(team['team_id'])
         team.insert_player(player['player_id'], captain=captain)
         DB.session.commit()
-        return
+
+    def deactivate_player(self, player):
+        p = Player.query.get(player['player_id'])
+        p.deactivate()
+        DB.session.commit()
 
     def assertFunModelEqual(self, f1, f2, error_message=""):
         """Asserts the two fun json objects are equal"""

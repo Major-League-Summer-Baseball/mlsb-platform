@@ -9,7 +9,6 @@ import logging
 from datetime import date
 from api.helper import loads
 from api.routes import Routes
-from api.model import Player
 from base64 import b64encode
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
                     SponsorDoesNotExist, LeagueDoesNotExist
@@ -235,6 +234,7 @@ class PlayerTest(TestSetup):
 
 class TeamTest(TestSetup):
     def testPostTeamId(self):
+        """Test team id parameter"""
         mocker = MockLeague(self)
 
         # invalid team id
@@ -265,6 +265,7 @@ class TeamTest(TestSetup):
                          Routes['vteam'] + " Post: valid team id")
 
     def testPostYear(self):
+        """Test year parameter"""
         mocker = MockLeague(self)
 
         # invalid year
@@ -296,6 +297,7 @@ class TeamTest(TestSetup):
                          Routes['vteam'] + " Post: valid year")
 
     def testLeagueId(self):
+        """Test league id parameter"""
         mocker = MockLeague(self)
 
         # invalid league id
@@ -329,66 +331,88 @@ class TeamTest(TestSetup):
 
 
 class testPlayerLookup(TestSetup):
-    def testMain(self):
-        self.addPlayers()
-        # players email
-        expect = [{
-                   'gender': 'm',
-                   'player_id': 1,
-                   'player_name': 'Dallas Fraser'}]
-        rv = self.app.post(Routes['vplayerLookup'],
-                           data={'email': 'fras2560@mylaurier.ca'})
-        self.output(loads(rv.data), )
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        # players name
-        expect = [{'gender': 'm',
-                   'player_id': 1,
-                   'player_name': 'Dallas Fraser'}]
-        rv = self.app.post(Routes['vplayerLookup'],
-                           data={'player_name': 'Dallas'})
-        self.output(loads(rv.data), )
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        # only want active players
-        expect = [{'gender': 'm',
-                   'player_id': 1,
-                   'player_name': 'Dallas Fraser'}]
-        params = {"player_name": "Dallas", "active": 1}
-        rv = self.app.post(Routes['vplayerLookup'], data=params)
-        self.output(loads(rv.data), )
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        # not a player
+    def testPlayerName(self):
+        """Test player name parameter"""
+        mocker = MockLeague(self)
+
+        # non existent player name
         expect = []
-        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': 'XX'})
-        self.output(loads(rv.data), )
+        name = "NAME DOES NOT EXISTS FOR REASONS"
+        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': name})
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        # not an active player
-        Player.query.get(1).active = False
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerLookup'] + ": invalid player name")
+
+        # a valid player
+        expect = [mocker.get_players()[0]]
+        name = mocker.get_players()[0]['player_name']
+        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': name})
+        self.output(expect)
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerLookup'] + ": valid player name")
+
+    def testEmail(self):
+        """Test email parameter"""
+        mocker = MockLeague(self)
+
+        # non existent player name
         expect = []
-        params = {"player_name": "Dallas", "active": 1}
-        rv = self.app.post(Routes['vplayerLookup'], data=params)
-        self.output(loads(rv.data), )
+        email = "EMAILDOESNOTEXISTSFOR@reasons.com"
+        rv = self.app.post(Routes['vplayerLookup'], data={'email': email})
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
-        # not an active player but dont care
-        Player.query.get(1).active = False
-        expect = [{'gender': 'm',
-                   'player_id': 1,
-                   'player_name': 'Dallas Fraser'}]
-        params = {"player_name": "Dallas", "active": 0}
-        rv = self.app.post(Routes['vplayerLookup'], data=params)
-        self.output(loads(rv.data), )
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerLookup'] + ": invalid email")
+
+        # a valid email
+        expect = [mocker.get_players()[0]]
+        email = mocker.get_players()[0]['email']
+        rv = self.app.post(Routes['vplayerLookup'], data={'email': email})
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data),
-                         Routes['vteam'] + " Post: View of Team")
+        self.output(loads(rv.data))
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerLookup'] + ": valid email")
+
+    def testActive(self):
+        """Test active parameter"""
+        mocker = MockLeague(self)
+        self.show_results = True
+        # all players
+        player = mocker.get_players()[0]
+        expect = [player]
+        active = 0
+
+        name = player['player_name']
+        rv = self.app.post(Routes['vplayerLookup'], data={'active': active,
+                                                          'player_name': name})
+        self.output(expect)
+        self.output(loads(rv.data))
+        self.assertTrue(len(loads(rv.data)) > 0,
+                        Routes['vplayerLookup'] + ": active & non-active")
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerLookup'] + ": active & non-active")
+        
+
+        # now make the player non-active
+        self.deactivate_player(player)
+        # only active players
+        active = 1
+        rv = self.app.post(Routes['vplayerLookup'], data={'active': active,
+                                                          'player_name': name})
+        expect = []
+        self.output(expect)
+        self.output(loads(rv.data))
+        activity = [player['active'] for player in loads(rv.data)]
+        error_message = Routes['vplayerLookup'] + ": non-active player returned"
+        self.assertTrue(False not in activity, error_message)
+        self.assertEqual(expect, loads(rv.data), error_message)
 
 
 class TestTeamRoster(TestSetup):
