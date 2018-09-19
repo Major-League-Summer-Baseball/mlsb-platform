@@ -7,6 +7,7 @@ Purpose: To create an application to act as an api for the database
 from flask.ext.restful import Resource, reqparse
 from flask import Response
 from json import dumps
+from api.authentication import requires_admin
 from api import DB
 from api.model import Team
 from api.errors import TeamDoesNotExist
@@ -52,6 +53,7 @@ class TeamRosterAPI(Resource):
                             status=200, mimetype="application/json")
         return response
 
+    @requires_admin
     def delete(self, team_id):
         """
             DELETE request for Team Roster List
@@ -79,6 +81,7 @@ class TeamRosterAPI(Resource):
                             mimetype="application/json")
         return response
 
+    @requires_admin
     def post(self, team_id):
         """
             POST request for Team Roster List
