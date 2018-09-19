@@ -5,18 +5,15 @@
 @summary: Tests all the basic APIs
 '''
 import unittest
-import logging
+
 from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
 from api.model import Team, Player
-from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
-                    SponsorDoesNotExist, LeagueDoesNotExist, PlayerDoesNotExist
-from api.advanced.import_team import TeamList
-from api.advanced.import_league import LeagueList
+from api.errors import TeamDoesNotExist, PlayerNotOnTeam, PlayerDoesNotExist
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID,\
-    SUCCESSFUL_DELETE_CODE, SUCCESSFUL_POST_CODE, SUCCESSFUL_GET_CODE
+    SUCCESSFUL_DELETE_CODE, SUCCESSFUL_GET_CODE
 import datetime
 
 headers = {
@@ -411,7 +408,7 @@ class PlayerLookupTest(TestSetup):
         self.output(expect)
         self.output(loads(rv.data))
         activity = [player['active'] for player in loads(rv.data)]
-        error_message = Routes['vplayerLookup'] + ": non-active player returned"
+        error_message = Routes['vplayerLookup'] + ":non-active player returned"
         self.assertTrue(False not in activity, error_message)
         self.assertEqual(expect, loads(rv.data), error_message)
 
@@ -462,8 +459,8 @@ class TeamRosterTest(TestSetup):
 
         # invalid combination
         query = "?player_id=" + str(player_two_id)
-        rv = self.app.delete(Routes['team_roster'] + "/" + str(team_id) + query,
-                             headers=headers)
+        url_request = Routes['team_roster'] + "/" + str(team_id) + query
+        rv = self.app.delete(url_request, headers=headers)
         expect = {'details': player_two_id, 'message': PlayerNotOnTeam.message}
         self.output(loads(rv.data))
         self.output(expect)
@@ -491,8 +488,8 @@ class TeamRosterTest(TestSetup):
 
         # player does not exist
         query = "?player_id=" + str(INVALID_ID)
-        rv = self.app.delete(Routes['team_roster'] + "/" + str(team_id) + query,
-                             headers=headers)
+        url_request = Routes['team_roster'] + "/" + str(team_id) + query
+        rv = self.app.delete(url_request, headers=headers)
         expect = {'details': INVALID_ID, 'message': PlayerNotOnTeam.message}
         self.output(loads(rv.data))
         self.output(expect)
@@ -505,8 +502,8 @@ class TeamRosterTest(TestSetup):
 
         # proper deletion
         query = "?player_id=" + str(player_id)
-        rv = self.app.delete(Routes['team_roster'] + "/" + str(team_id) + query,
-                             headers=headers)
+        url_request = Routes['team_roster'] + "/" + str(team_id) + query
+        rv = self.app.delete(url_request, headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
@@ -523,7 +520,7 @@ class TeamRosterTest(TestSetup):
                         Routes['team_roster'] + " DELETE: player not removed")
         self.assertTrue(player.id != team.player_id,
                         Routes['team_roster'] + " DELETE: player not removed")
-        
+
     def testGet(self):
         # empty get
         rv = self.app.get(Routes['team_roster'] + "/" + str(INVALID_ID))
@@ -547,7 +544,7 @@ class TeamRosterTest(TestSetup):
 
         # get one team
         rv = self.app.get(Routes['team_roster'] + "/" + str(team_id))
-        expect = { 
+        expect = {
                   'captain': captain,
                   'color': team['color'],
                   'espys': 0,
@@ -643,7 +640,6 @@ class TestPlayerTeamLookup(TestSetup):
         team_two = mocker.get_teams()[1]
         params = {'player_name': "Test Player"}
         rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        self.show_results = True
         expect = [{'captain': player,
                    'color': team['color'],
                    'espys': 0,
@@ -665,7 +661,6 @@ class TestPlayerTeamLookup(TestSetup):
         self.assertEqual(expect,
                          loads(rv.data),
                          Routes['vplayerteamLookup'])
-        
 
     def testPlayerId(self):
         """Tests using a player id as a parameter"""
@@ -697,33 +692,11 @@ class TestLeagueLeaders(TestSetup):
     def testMain(self):
         # fuck this test isnt great since
         MockLeague(self)
-        self.show_results = True
 
         params = {'stat': "hr"}
         rv = self.app.post(Routes['vleagueleaders'], data=params)
         hr_hits = loads(rv.data)
-        expect = [{'hits': 3,
-                   'id': 3,
-                   'name': 'My Dream Girl',
-                   'team': 'Sentry Sky Blue',
-                   'team_id': 2},
-                  {'hits': 3,
-                   'id': 3,
-                   'name': 'My Dream Girl',
-                   'team': 'Brick Blue',
-                   'team_id': 4},
-                  {'hits': 3,
-                   'id': 2,
-                   'name': 'Dallas Fraser',
-                   'team': 'Domus Green',
-                   'team_id': 1},
-                  {'hits': 3,
-                   'id': 2,
-                   'name': 'Dallas Fraser',
-                   'team': 'Nightschool Navy',
-                   'team_id': 3}]
         self.output(loads(rv.data))
-        self.output(expect)
         error_message = Routes['vleagueleaders'] + " View: on all years"
         self.assertEqual(SUCCESSFUL_GET_CODE, rv.status_code, error_message)
         self.assertTrue(len(loads(rv.data)) > 0, error_message)
