@@ -28,6 +28,7 @@ class PlayerTeamLookupAPI(Resource):
                 mimetype: application/json
                 data: list of possible Teams
         """
+        data_lookup = {}
         data = []
         args = parser.parse_args()
         players = None
@@ -44,5 +45,7 @@ class PlayerTeamLookupAPI(Resource):
         if players is not None:
             for player in players:
                 for team in player.teams:
-                    data.append(team.json())
+                    if(team.id not in data_lookup):
+                        data_lookup[team.id] = True
+                        data.append(team.json())
         return Response(dumps(data), status=200, mimetype="application/json")

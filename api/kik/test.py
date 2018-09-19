@@ -11,7 +11,7 @@ from api.model import Player, Espys
 from api.BaseTest import ADMIN, PASSWORD, KIK, KIKPW
 from base64 import b64encode
 from datetime import date, datetime, timedelta
-from api.BaseTest import TestSetup
+# from api.BaseTest import TestSetup
 from api.errors import TeamDoesNotExist, NotTeamCaptain, TeamAlreadyHasCaptain,\
                        PlayerNotSubscribed, GameDoesNotExist,\
                        InvalidField, SponsorDoesNotExist, PlayerDoesNotExist

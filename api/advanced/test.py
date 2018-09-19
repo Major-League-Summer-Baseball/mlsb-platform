@@ -10,12 +10,13 @@ from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
+from api.model import Team, Player
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
                     SponsorDoesNotExist, LeagueDoesNotExist, PlayerDoesNotExist
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID,\
-    SUCCESSFUL_DELETE_CODE
+    SUCCESSFUL_DELETE_CODE, SUCCESSFUL_POST_CODE, SUCCESSFUL_GET_CODE
 import datetime
 
 headers = {
@@ -50,9 +51,8 @@ class GameTest(TestSetup):
         expect = 3
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(3,
-                         len(loads(rv.data)),
-                         Routes['vgame'] + " Post: valid year")
+        self.assertTrue(len(loads(rv.data)) > 0,
+                        Routes['vgame'] + " Post: valid year")
 
     def testPostLeagueId(self):
         """Test league id parameter"""
@@ -331,7 +331,7 @@ class TeamTest(TestSetup):
                          Routes['vteam'] + " Post: valid year")
 
 
-class testPlayerLookup(TestSetup):
+class PlayerLookupTest(TestSetup):
     def testPlayerName(self):
         """Test player name parameter"""
         mocker = MockLeague(self)
@@ -383,7 +383,7 @@ class testPlayerLookup(TestSetup):
     def testActive(self):
         """Test active parameter"""
         mocker = MockLeague(self)
-        self.show_results = True
+
         # all players
         player = mocker.get_players()[0]
         expect = [player]
@@ -399,10 +399,10 @@ class testPlayerLookup(TestSetup):
         self.assertEqual(expect,
                          loads(rv.data),
                          Routes['vplayerLookup'] + ": active & non-active")
-        
 
         # now make the player non-active
         self.deactivate_player(player)
+
         # only active players
         active = 1
         rv = self.app.post(Routes['vplayerLookup'], data={'active': active,
@@ -416,7 +416,7 @@ class testPlayerLookup(TestSetup):
         self.assertEqual(expect, loads(rv.data), error_message)
 
 
-class TestTeamRoster(TestSetup):
+class TeamRosterTest(TestSetup):
     def testPost(self):
         """Test adding an invalid player to a team"""
         # mock leagues tests a valid post
@@ -453,16 +453,18 @@ class TestTeamRoster(TestSetup):
                          Routes['team_roster'] + " PUT: invalid data")
 
     def testDelete(self):
+        """ Test deleting player from team roster"""
         # add player to team
         mocker = MockLeague(self)
+        team_id = mocker.get_teams()[0]['team_id']
+        player_id = mocker.get_players()[0]['player_id']
+        player_two_id = mocker.get_players()[2]['player_id']
 
         # invalid combination
-        query = "?player_id=2"
-        rv = self.app.delete(Routes['team_roster'] + "/1" + query,
+        query = "?player_id=" + str(player_two_id)
+        rv = self.app.delete(Routes['team_roster'] + "/" + str(team_id) + query,
                              headers=headers)
-        expect = {'details': 2, 'message': PlayerNotOnTeam.message}
-        print(rv)
-        print(rv.status_code)
+        expect = {'details': player_two_id, 'message': PlayerNotOnTeam.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect,
@@ -472,8 +474,34 @@ class TestTeamRoster(TestSetup):
                          rv.status_code,
                          Routes['team_roster'] + " PUT: invalid data")
 
-        team_id = mocker.get_teams()[0]['team_id']
-        player_id = mocker.get_players()[0]['player_id']
+        # team does not exists
+        query = "?player_id=" + str(player_id)
+        url_request = Routes['team_roster'] + "/" + str(INVALID_ID) + query
+        rv = self.app.delete(url_request,
+                             headers=headers)
+        expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['team_roster'] + "DELETE: Invalid player id")
+        self.assertEqual(TeamDoesNotExist.status_code,
+                         rv.status_code,
+                         Routes['team_roster'] + " PUT: invalid player id")
+
+        # player does not exist
+        query = "?player_id=" + str(INVALID_ID)
+        rv = self.app.delete(Routes['team_roster'] + "/" + str(team_id) + query,
+                             headers=headers)
+        expect = {'details': INVALID_ID, 'message': PlayerNotOnTeam.message}
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['team_roster'] + "DELETE: Invalid player id")
+        self.assertEqual(PlayerNotOnTeam.status_code,
+                         rv.status_code,
+                         Routes['team_roster'] + " PUT: invalid player id")
 
         # proper deletion
         query = "?player_id=" + str(player_id)
@@ -488,9 +516,16 @@ class TestTeamRoster(TestSetup):
         self.assertEqual(expect, loads(rv.data),
                          Routes['team_roster'] + "DELETE: Invalid combination")
 
+        # make sure player it not on team
+        team = Team.query.get(team_id)
+        player = Player.query.get(player_id)
+        self.assertTrue(player.id not in [p.id for p in team.players],
+                        Routes['team_roster'] + " DELETE: player not removed")
+        self.assertTrue(player.id != team.player_id,
+                        Routes['team_roster'] + " DELETE: player not removed")
+        
     def testGet(self):
         # empty get
-        self.show_results = True
         rv = self.app.get(Routes['team_roster'] + "/" + str(INVALID_ID))
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
@@ -512,7 +547,6 @@ class TestTeamRoster(TestSetup):
 
         # get one team
         rv = self.app.get(Routes['team_roster'] + "/" + str(team_id))
-        
         expect = { 
                   'captain': captain,
                   'color': team['color'],
@@ -534,87 +568,140 @@ class TestTeamRoster(TestSetup):
 
 class TestFun(TestSetup):
     def testPost(self):
-        self.addFun()
-        params = {'year': 2012}
+        """Test fun view"""
+        params = {'year': 2002}
         rv = self.app.post(Routes['vfun'], data=params)
-        expect = [{'count': 377, 'year': 2012}]
+        expect = [{'count': 89, 'year': 2002}]
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['vfun'] +
                          " View: on 2012 year")
+
+        # get all the years
         params = {}
         rv = self.app.post(Routes['vfun'], data=params)
-        expect = [
-                  {'count': 89, 'year': 2002},
-                  {'count': 100, 'year': 2003},
-                  {'count': 177, 'year': 2004},
-                  {'count': 186, 'year': 2005},
-                  {'count': 176, 'year': 2006},
-                  {'count': 254, 'year': 2007},
-                  {'count': 290, 'year': 2008},
-                  {'count': 342, 'year': 2009},
-                  {'count': 304, 'year': 2010},
-                  {'count': 377, 'year': 2011},
-                  {'count': 377, 'year': 2012},
-                  {'count': 461, 'year': 2013},
-                  {'count': 349, 'year': 2014},
-                  {'count': 501, 'year': 2015}]
+        expect = {'count': 89, 'year': 2002}
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vfun'] +
+        self.assertEqual(expect, loads(rv.data)[0], Routes['vfun'] +
                          " View: on 2012 year")
 
 
 class TestPlayerTeamLookup(TestSetup):
-    def testPost(self):
-        self.addPlayersToTeam()
-        params = {'player_name': "Dallas Fraser"}
+    def testEmail(self):
+        """Tests using a player email as a parameter"""
+        mocker = MockLeague(self)
+        league = mocker.get_league()
+        team = mocker.get_teams()[0]
+        player = mocker.get_players()[0]
+        sponsor = mocker.get_sponsor()
+
+        # test a test player emails
+        params = {'email': mocker.get_player_email(0)}
         rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': {'gender': 'm',
-                               'player_id': 1,
-                               'player_name': 'Dallas Fraser'},
-                   'color': 'Green',
+        expect = [{'captain': player,
+                   'color': team['color'],
                    'espys': 0,
-                   'league_id': None,
-                   'sponsor_id': 1,
-                   'team_id': 1,
-                   'team_name': 'Domus Green',
-                   'year': date.today().year}]
+                   'league_id': league['league_id'],
+                   'sponsor_id': sponsor['sponsor_id'],
+                   'team_id': team['team_id'],
+                   'team_name': team['team_name'],
+                   'year': team['year']}]
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
-                         " View: on Dallas Fraser")
-        params = {"player_name": "NotFuckingReal"}
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerteamLookup'])
+
+    def testPlayerName(self):
+        """Tests using a player name as a parameter"""
+        mocker = MockLeague(self)
+        league = mocker.get_league()
+        team = mocker.get_teams()[0]
+        player = mocker.get_players()[0]
+        sponsor = mocker.get_sponsor()
+
+        # test a test player names
+        params = {'player_name': mocker.get_players()[0]['player_name']}
         rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = []
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
-                         " View: on no one")
-        params = {"player_id": 1}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': {'gender': 'm',
-                               'player_id': 1,
-                               'player_name': 'Dallas Fraser'},
-                   'color': 'Green',
+        expect = [{'captain': player,
+                   'color': team['color'],
                    'espys': 0,
-                   'league_id': None,
-                   'sponsor_id': 1,
-                   'team_id': 1,
-                   'team_name': 'Domus Green',
-                   'year': date.today().year}]
+                   'league_id': league['league_id'],
+                   'sponsor_id': sponsor['sponsor_id'],
+                   'team_id': team['team_id'],
+                   'team_name': team['team_name'],
+                   'year': team['year']}]
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vplayerteamLookup'] +
-                         " View: on no one")
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerteamLookup'])
+
+        # test a test player names
+        player_two = mocker.get_players()[3]
+        team_two = mocker.get_teams()[1]
+        params = {'player_name': "Test Player"}
+        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        self.show_results = True
+        expect = [{'captain': player,
+                   'color': team['color'],
+                   'espys': 0,
+                   'league_id': league['league_id'],
+                   'sponsor_id': sponsor['sponsor_id'],
+                   'team_id': team['team_id'],
+                   'team_name': team['team_name'],
+                   'year': team['year']},
+                  {'captain': player_two,
+                   'color': team_two['color'],
+                   'espys': 0,
+                   'league_id': league['league_id'],
+                   'sponsor_id': sponsor['sponsor_id'],
+                   'team_id': team_two['team_id'],
+                   'team_name': team_two['team_name'],
+                   'year': team_two['year']}]
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerteamLookup'])
+        
+
+    def testPlayerId(self):
+        """Tests using a player id as a parameter"""
+        mocker = MockLeague(self)
+        league = mocker.get_league()
+        team = mocker.get_teams()[0]
+        player = mocker.get_players()[0]
+        sponsor = mocker.get_sponsor()
+
+        # test a test player names
+        params = {'player_id': mocker.get_players()[0]['player_id']}
+        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        expect = [{'captain': player,
+                   'color': team['color'],
+                   'espys': 0,
+                   'league_id': league['league_id'],
+                   'sponsor_id': sponsor['sponsor_id'],
+                   'team_id': team['team_id'],
+                   'team_name': team['team_name'],
+                   'year': team['year']}]
+        self.output(loads(rv.data))
+        self.output(expect)
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['vplayerteamLookup'])
 
 
 class TestLeagueLeaders(TestSetup):
     def testMain(self):
         # fuck this test isnt great since
-        self.mockLeaders()
+        MockLeague(self)
+        self.show_results = True
+
         params = {'stat': "hr"}
         rv = self.app.post(Routes['vleagueleaders'], data=params)
+        hr_hits = loads(rv.data)
         expect = [{'hits': 3,
                    'id': 3,
                    'name': 'My Dream Girl',
@@ -637,24 +724,28 @@ class TestLeagueLeaders(TestSetup):
                    'team_id': 3}]
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
-                         " View: on all years")
-        params = {'stat': "hr", 'year': 2016}
+        error_message = Routes['vleagueleaders'] + " View: on all years"
+        self.assertEqual(SUCCESSFUL_GET_CODE, rv.status_code, error_message)
+        self.assertTrue(len(loads(rv.data)) > 0, error_message)
+
+        # check the classification parameter change hits numbers
+        params = {'stat': "s"}
         rv = self.app.post(Routes['vleagueleaders'], data=params)
-        expect = [{'hits': 1,
-                   'id': 2,
-                   'name': 'Dallas Fraser',
-                   'team': 'Domus Green',
-                   'team_id': 1},
-                  {'hits': 1,
-                   'id': 3,
-                   'name': 'My Dream Girl',
-                   'team': 'Sentry Sky Blue',
-                   'team_id': 2}]
+        singles_hits = loads(rv.data)
+        error_message = Routes['vleagueleaders'] + " View: on all years"
+        self.assertEqual(SUCCESSFUL_GET_CODE, rv.status_code, error_message)
+        self.assertNotEqual(hr_hits, singles_hits, error_message)
+
+        # check the year parameter changes hits numbers
+        params = {'stat': "hr", 'year': VALID_YEAR + 1}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        expect = []
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
-                         " View: on 2017")
+        error_message = (Routes['vleagueleaders'] +
+                         " View: on {}".format(VALID_YEAR + 1))
+        self.assertEqual(expect, loads(rv.data), error_message)
+        self.assertNotEqual(hr_hits, loads(rv.data), error_message)
 
 
 class MockLeague():
@@ -763,280 +854,6 @@ class MockLeague():
 
     def get_player_email(self, index):
         return self.players[index]['player_name'].replace(" ", "") + "@mlsb.ca"
-
-class TestImportTeam(TestSetup):
-    def testColumnsIndives(self):
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
-        logger = logging.getLogger(__name__)
-        importer = TeamList([], logger=logger)
-        try:
-            importer.set_columns_indices("asd,asd,asd".split(","))
-            self.assertEqual(True, False,
-                             "Should have raised invalid field error")
-        except InvalidField as __:
-            pass
-        # if it runs then should be good
-        importer.set_columns_indices("Player Name,Player Email,Gender (M/F)"
-                                     .split(","))
-        self.assertEqual(importer.name_index, 0,
-                         "Name index not set properly")
-        self.assertEqual(importer.email_index, 1,
-                         "Email index not set properly")
-        self.assertEqual(importer.gender_index, 2,
-                         "Gender index not set properly")
-
-    def testImportHeaders(self):
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
-        logger = logging.getLogger(__name__)
-        lines = ["Sponsor:,Domus,",
-                 "Color:,Pink,",
-                 "Captain:,Dallas Fraser,",
-                 "League:,Monday & Wedneday,",
-                 "Player Name,Player Email,Gender (M/F)"]
-        importer = TeamList(lines, logger=logger)
-        # test a invalid sponsor
-        try:
-            importer.import_headers()
-            self.assertEqual(True, False, "Sponsor does not exist")
-        except SponsorDoesNotExist as __:
-            pass
-        self.addSponsors()
-        importer = TeamList(lines, logger=logger)
-        # test a invalid league
-        try:
-            importer.import_headers()
-            self.assertEqual(True, False, "League does not exist")
-        except LeagueDoesNotExist as __:
-            pass
-        self.addLeagues()
-        importer.import_headers()
-        self.assertEqual(importer.captain_name,
-                         "Dallas Fraser",
-                         "Captain name not set")
-        self.assertNotEqual(importer.team, None, "Team no set properly")
-
-    def testImportPlayers(self):
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
-        logger = logging.getLogger(__name__)
-        lines = ["Sponsor:,Domus,",
-                 "Color:,Pink,",
-                 "Captain:,Dallas Fraser,",
-                 "League:,Monday & Wedneday,",
-                 "Player Name,Player Email,Gender (M/F)"
-                 "Laura Visentin,vise3090@mylaurier.ca,F",
-                 "Dallas Fraser,fras2560@mylaurier.ca,M",
-                 "Mitchell Ellul,ellu6790@mylaurier.ca,M",
-                 "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
-                 "Adam Shaver,shav3740@mylaurier.ca,M",
-                 "Taylor Takamatsu,taka9680@mylaurier.ca,F",
-                 "Jordan Cross,cros7940@mylaurier.ca,M",
-                 "Erin Niepage,niep3130@mylaurier.ca,F",
-                 "Alex Diakun,diak1670@mylaurier.ca,M",
-                 "Kevin Holmes,holm4430@mylaurier.ca,M",
-                 "Kevin McGaire,kevinmcgaire@gmail.com,M",
-                 "Kyle Morrison,morr1090@mylaurier.ca,M",
-                 "Ryan Lackey,lack8060@mylaurier.ca,M",
-                 "Rory Landy,land4610@mylaurier.ca,M",
-                 "Claudia Vanderholst,vand6580@mylaurier.ca,F",
-                 "Luke MacKenzie,mack7980@mylaurier.ca,M",
-                 "Jaron Wu,wuxx9824@mylaurier.ca,M",
-                 "Tea Galli,gall2590@mylaurier.ca,F",
-                 "Cara Hueston ,hues8510@mylaurier.ca,F",
-                 "Derek Schoenmakers,scho8430@mylaurier.ca,M",
-                 "Marni Shankman,shan3500@mylaurier.ca,F",
-                 "Christie MacLeod ,macl5230@mylaurier.ca,F"
-                 ]
-        importer = TeamList(lines, logger=logger)
-        # mock the first half
-        self.addTeams()
-        importer.team = self.teams[0]
-        importer.captain_name = "Dakkas Fraser"
-        importer.email_index = 1
-        importer.name_index = 0
-        importer.gender_index = 2
-        # if no errors are raised then golden
-        importer.import_players(5)
-
-    def testAddTeam(self):
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(message)s')
-        logger = logging.getLogger(__name__)
-        lines = ["Sponsor:,Domus,",
-                 "Color:,Pink,",
-                 "Captain:,Dallas Fraser,",
-                 "League:,Monday & Wedneday,",
-                 "Player Name,Player Email,Gender (M/F)"
-                 "Laura Visentin,vise3090@mylaurier.ca,F",
-                 "Dallas Fraser,fras2560@mylaurier.ca,M",
-                 "Mitchell Ellul,ellu6790@mylaurier.ca,M",
-                 "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
-                 "Adam Shaver,shav3740@mylaurier.ca,M",
-                 "Taylor Takamatsu,taka9680@mylaurier.ca,F",
-                 "Jordan Cross,cros7940@mylaurier.ca,M",
-                 "Erin Niepage,niep3130@mylaurier.ca,F",
-                 "Alex Diakun,diak1670@mylaurier.ca,M",
-                 "Kevin Holmes,holm4430@mylaurier.ca,M",
-                 "Kevin McGaire,kevinmcgaire@gmail.com,M",
-                 "Kyle Morrison,morr1090@mylaurier.ca,M",
-                 "Ryan Lackey,lack8060@mylaurier.ca,M",
-                 "Rory Landy,land4610@mylaurier.ca,M",
-                 "Claudia Vanderholst,vand6580@mylaurier.ca,F",
-                 "Luke MacKenzie,mack7980@mylaurier.ca,M",
-                 "Jaron Wu,wuxx9824@mylaurier.ca,M",
-                 "Tea Galli,gall2590@mylaurier.ca,F",
-                 "Cara Hueston ,hues8510@mylaurier.ca,F",
-                 "Derek Schoenmakers,scho8430@mylaurier.ca,M",
-                 "Marni Shankman,shan3500@mylaurier.ca,F",
-                 "Christie MacLeod ,macl5230@mylaurier.ca,F"
-                 ]
-        importer = TeamList(lines, logger=logger)
-        self.addLeagues()
-        self.addSponsors()
-        # no point checking for errors that were tested above
-        importer.add_team()
-        self.assertEqual(importer.warnings, ['Team was created'],
-                         "Should be no warnings")
-
-
-class TestImportGames(TestSetup):
-    TEST = [
-                 "League:,Monday and Wednesday,,,",
-                 "Home Team,Away Team,Date,Time,Field",
-                 "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"]
-    TOO_SHORT = ["Home Team,Away Team,Date,Time,Field"]
-    TOO_FEW_COLUMNS = ["League:,Monday and Wednesday,,,",
-                       "Home Team,Away Team,Date,Time",
-                       "Domus Green,Chainsaw Black,2015-10-01", "12:00", "WP1"
-                       ]
-    MISSING_HOME_NAME = [
-                         "League:,Monday and Wednesday,,,",
-                         ",Away Team,Date,Time",
-                         "Domus Green,Chainsaw Black,2015-10-01",
-                         "12:00",
-                         "WP1"
-                            ]
-
-    def testParseHeader(self):
-        self.tl = LeagueList(TestImportGames.TEST)
-        l, h = self.tl.parse_header(TestImportGames.TEST[0: 2])
-        self.assertEqual(l, 'Monday and Wednesday')
-        self.assertEqual(h,
-                         ["Home Team", "Away Team", "Date", "Time", "Field"])
-
-    def testCheckHeader(self):
-        # check valid header
-        self.tl = LeagueList(TestImportGames.TEST)
-        valid = self.tl.check_header(TestImportGames.TEST[0:2])
-        self.assertEqual(valid, True)
-        # check a header that is too short
-        self.tl = LeagueList(TestImportGames.TOO_SHORT)
-        valid = self.tl.check_header(TestImportGames.TOO_SHORT[0:2])
-        self.assertEqual(valid, False)
-        # check a header that has too few columns
-        self.tl = LeagueList(TestImportGames.TOO_FEW_COLUMNS)
-        valid = self.tl.check_header(TestImportGames.TOO_FEW_COLUMNS[0:2])
-        self.assertEqual(valid, False)
-        # check a header that is missing a column
-        self.tl = LeagueList(TestImportGames.MISSING_HOME_NAME)
-        valid = self.tl.check_header(TestImportGames.TOO_FEW_COLUMNS[0:2])
-        self.assertEqual(valid, False)
-
-    def testGetLeagueID(self):
-        self.addLeagues()
-        self.tl = LeagueList(TestImportGames.TEST)
-        team = self.tl.get_league_id("Monday & Wedneday")
-        self.assertEqual(team, 1)
-        self.tl = LeagueList(TestImportGames.TEST)
-        try:
-            team = self.tl.get_league_id("No League")
-            self.assertEqual(True, False,
-                             "League does not exist error should be raised")
-        except Exception:
-            pass
-
-    def testImportGame(self):
-        self.addTeamWithLegaue()
-        # add games to the league
-        self.valid_test = [
-                           "League:,Monday & Wednesday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.league_id = 1
-        self.tl.set_columns_indices(self.valid_test[1].split(","))
-        self.tl.set_teams()
-        self.tl.import_game(self.valid_test[2])
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors, [])
-        # not a team in the league
-        self.valid_test = [
-                           "League:,Monday and Wednesday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Black,Chainsaw Black,2015-10-01,12:00, WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.league_id = 1
-        self.tl.set_columns_indices(self.valid_test[1].split(","))
-        self.tl.set_teams()
-        self.tl.import_game(self.valid_test[2])
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(self.tl.errors,
-                         ["Domus Black is not a team in the league"])
-
-    def testValidCases(self):
-        self.addTeamWithLegaue()
-        # import  a set of good games
-        self.valid_test = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.import_league()
-        self.assertEqual([], self.tl.warnings)
-        self.assertEqual([], self.tl.errors)
-
-    def testInvalidCases(self):
-        self.addTeamWithLegaue()
-        # test bad header
-        self.bad_header = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,sdjfkhskdj",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.bad_header)
-        self.tl.import_league()
-        # test bad league
-        self.bad_league = [
-                           "Leaguex:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.bad_league)
-        try:
-            self.tl.import_league()
-        except LeagueDoesNotExist:
-            pass
-        # test bad game
-        self.bad_game = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-xx-01,12:00,WP1"]
-        self.tl = LeagueList(self.bad_game)
-        try:
-            self.tl.import_league()
-            self.assertEqual(True, False, "should raise error")
-        except InvalidField:
-            pass
-        self.bad_team = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "X Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        # test bad team in game
-        self.tl = LeagueList(self.bad_team)
-        self.tl.import_league()
-        self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(['X Green is not a team in the league'],
-                         self.tl.errors)
 
 
 if __name__ == "__main__":
