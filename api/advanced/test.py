@@ -11,10 +11,11 @@ from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, InvalidField,\
-                    SponsorDoesNotExist, LeagueDoesNotExist
+                    SponsorDoesNotExist, LeagueDoesNotExist, PlayerDoesNotExist
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
-from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID
+from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID,\
+    SUCCESSFUL_DELETE_CODE
 import datetime
 
 headers = {
@@ -371,7 +372,7 @@ class testPlayerLookup(TestSetup):
 
         # a valid email
         expect = [mocker.get_players()[0]]
-        email = mocker.get_players()[0]['email']
+        email = mocker.get_player_email(0)
         rv = self.app.post(Routes['vplayerLookup'], data={'email': email})
         self.output(expect)
         self.output(loads(rv.data))
@@ -417,97 +418,113 @@ class testPlayerLookup(TestSetup):
 
 class TestTeamRoster(TestSetup):
     def testPost(self):
+        """Test adding an invalid player to a team"""
+        # mock leagues tests a valid post
+        mocker = MockLeague(self)
+        player_id = mocker.get_players()[0]['player_id']
+        team_id = mocker.get_teams()[0]['team_id']
+
         # invalid update
-        params = {"player_id": 1}
-        rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = {'details': 1, 'message': TeamDoesNotExist.message}
+        params = {"player_id": player_id}
+        rv = self.app.post(Routes['team_roster'] + "/" + str(INVALID_ID),
+                           data=params,
+                           headers=headers)
+        expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(loads(rv.data), expect,
                          Routes['team_roster'] + " POST: invalid data")
         self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
                          Routes['team_roster'] + " PUT: invalid data")
-        # add player to team
-        self.addTeams()
-        params = {"player_id": 1}
-        rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = None
+
+        # invalid player
+        params = {"player_id": INVALID_ID}
+        rv = self.app.post(Routes['team_roster'] + "/" + str(team_id),
+                           data=params,
+                           headers=headers)
+        expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['team_roster'] + " POST: proper data")
-        self.assertEqual(201, rv.status_code,
-                         Routes['team_roster'] + " PUT: invalid data")
-        # add a captain
-        params = {"player_id": 2, "captain": 1}
-        rv = self.app.post(Routes['team_roster'] + "/1", data=params)
-        expect = None
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(loads(rv.data), expect,
-                         Routes['team_roster'] + " POST: proper data")
-        self.assertEqual(201, rv.status_code,
+        self.assertEqual(loads(rv.data),
+                         expect,
+                         Routes['team_roster'] + " POST: invalid data")
+        self.assertEqual(TeamDoesNotExist.status_code,
+                         rv.status_code,
                          Routes['team_roster'] + " PUT: invalid data")
 
     def testDelete(self):
         # add player to team
-        self.addPlayersToTeam()
-        # missing data
-        rv = self.app.delete(Routes['team_roster'] + "/2")
-        message = 'Missing required parameter in the JSON body or the post body or the query string'
-        expect = {'message': {'player_id': message}}
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " DELETE: Missing header")
-        self.assertEqual(400, rv.status_code,
-                         Routes['team_roster'] + " PUT: invalid data")
+        mocker = MockLeague(self)
+
         # invalid combination
         query = "?player_id=2"
-        rv = self.app.delete(Routes['team_roster'] + "/1" + query)
+        rv = self.app.delete(Routes['team_roster'] + "/1" + query,
+                             headers=headers)
         expect = {'details': 2, 'message': PlayerNotOnTeam.message}
+        print(rv)
+        print(rv.status_code)
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " DELETE: Invalid combination")
-        self.assertEqual(PlayerNotOnTeam.status_code, rv.status_code,
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['team_roster'] + "DELETE: Invalid combination")
+        self.assertEqual(PlayerNotOnTeam.status_code,
+                         rv.status_code,
                          Routes['team_roster'] + " PUT: invalid data")
+
+        team_id = mocker.get_teams()[0]['team_id']
+        player_id = mocker.get_players()[0]['player_id']
+
         # proper deletion
-        query = "?player_id=1"
-        rv = self.app.delete(Routes['team_roster'] + "/1" + query)
+        query = "?player_id=" + str(player_id)
+        rv = self.app.delete(Routes['team_roster'] + "/" + str(team_id) + query,
+                             headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " DELETE: Invalid combination")
+        self.assertEqual(SUCCESSFUL_DELETE_CODE,
+                         rv.status_code,
+                         Routes['team_roster'] + "DELETE: Invalid combination")
+        self.assertEqual(expect, loads(rv.data),
+                         Routes['team_roster'] + "DELETE: Invalid combination")
 
     def testGet(self):
         # empty get
-        rv = self.app.get(Routes['team_roster'] + "/1")
-        expect = {'details': 1, 'message': TeamDoesNotExist.message}
+        self.show_results = True
+        rv = self.app.get(Routes['team_roster'] + "/" + str(INVALID_ID))
+        expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +
-                         " GET: team dne")
-        self.assertEqual(TeamDoesNotExist.status_code, rv.status_code,
-                         Routes['team_roster'] + " GET: team dne")
-        self.addPlayersToTeam()
+        self.assertEqual(expect,
+                         loads(rv.data),
+                         Routes['team_roster'] + " GET: team DNE")
+        self.assertEqual(TeamDoesNotExist.status_code,
+                         rv.status_code,
+                         Routes['team_roster'] + " GET: team DNE")
+
+        # add some teams
+        mocker = MockLeague(self)
+        team = mocker.get_teams()[0]
+        team_id = team['team_id']
+        captain = mocker.get_players()[0]
+        player = mocker.get_players()[1]
+        league = mocker.get_league()
+
         # get one team
-        rv = self.app.get(Routes['team_roster'] + "/1")
-        expect = {'captain': {
-                  'gender': 'm',
-                  'player_id': 1,
-                  'player_name': 'Dallas Fraser'},
-                  'color': 'Green',
+        rv = self.app.get(Routes['team_roster'] + "/" + str(team_id))
+        
+        expect = { 
+                  'captain': captain,
+                  'color': team['color'],
                   'espys': 0,
-                  'league_id': None,
-                  'players': [{
-                               'gender': 'm',
-                               'player_id': 1,
-                               'player_name': 'Dallas Fraser'}],
-                  'sponsor_id': 1,
-                  'team_id': 1,
-                  'team_name': 'Domus Green',
+                  'league_id': league['league_id'],
+                  'players': [
+                              captain,
+                              player
+                              ],
+                  'sponsor_id': team['sponsor_id'],
+                  'team_id': team['team_id'],
+                  'team_name': team['team_name'],
                   'year': date.today().year}
         self.output(loads(rv.data))
         self.output(expect)
@@ -648,10 +665,10 @@ class MockLeague():
         self.field = "WP1"
 
         # add some players
-        players = [("Test Player 1", "testPlayer1@mlsb.ca", "M"),
-                   ("Test Player 2", "testPlayer2@mlsb.ca", "F"),
-                   ("Test Player 3", "testPlayer3@mlsb.ca", "M"),
-                   ("Test Player 4", "testPlayer4@mlsb.ca", "F")]
+        players = [("Test Player 1", "TestPlayer1@mlsb.ca", "M"),
+                   ("Test Player 2", "TestPlayer2@mlsb.ca", "F"),
+                   ("Test Player 3", "TestPlayer3@mlsb.ca", "M"),
+                   ("Test Player 4", "TestPlayer4@mlsb.ca", "F")]
         self.players = []
         for player in players:
             self.players.append(tester.add_player(player[0],
@@ -744,6 +761,8 @@ class MockLeague():
     def get_teams(self):
         return self.teams
 
+    def get_player_email(self, index):
+        return self.players[index]['player_name'].replace(" ", "") + "@mlsb.ca"
 
 class TestImportTeam(TestSetup):
     def testColumnsIndives(self):

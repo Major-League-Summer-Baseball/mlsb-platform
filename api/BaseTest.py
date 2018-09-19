@@ -272,11 +272,30 @@ class TestSetup(unittest.TestCase):
 
     def add_player_to_team(self, team, player, captain=False):
         """Adds the given player to a team"""
-        team = Team.query.get(team['team_id'])
-        team.insert_player(player['player_id'], captain=captain)
-        DB.session.commit()
+        params = {"player_id": player['player_id']}
+        if captain:
+            params['captain'] = 1
+        rv = self.app.post(Routes['team_roster'] + "/" + str(team['team_id']),
+                           data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add player to team")
+
+    def remove_player_from_team(self, team, player):
+        """Removes a player from a team"""
+        query = "?player_id=" + str(player['player_id'])
+        url_request = (Routes['team_roster'] +
+                       "/" +
+                       str(team['team_id']) +
+                       query)
+        rv = self.app.delete(url_request, headers=headers)
+        self.assertEqual(SUCCESSFUL_DELETE_CODE,
+                         rv.status_code,
+                         "Unable to remove player to team")
+
 
     def deactivate_player(self, player):
+        """Deactivate the given player"""
         p = Player.query.get(player['player_id'])
         p.deactivate()
         DB.session.commit()
