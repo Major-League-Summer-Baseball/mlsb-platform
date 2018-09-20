@@ -130,7 +130,7 @@ class TestSponsor(TestSetup):
         params = {}
         result = {'message': {'sponsor_name': MISSING_PARAMETER}}
         error_message = (Routes['sponsor'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['sponsor'],
                              params,
                              InvalidField.status_code,
@@ -142,7 +142,7 @@ class TestSponsor(TestSetup):
         params = {'sponsor_name': 1}
         result = {'details': 'Sponsor - name', 'message': InvalidField.message}
         error_message = (Routes['sponsor'] +
-                        " POST: request with invalid parameters")
+                         " POST: request with invalid parameters")
         self.postInvalidTest(Routes['sponsor'],
                              params,
                              InvalidField.status_code,
@@ -262,7 +262,7 @@ class TestLeague(TestSetup):
                               }
                   }
         error_message = (Routes['league'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['league'],
                              params,
                              InvalidField.status_code,
@@ -274,7 +274,7 @@ class TestLeague(TestSetup):
         params = {'league_name': 1}
         result = {'details': 'League - name', 'message': InvalidField.message}
         error_message = (Routes['league'] +
-                        " POST: request with invalid league_name")
+                         " POST: request with invalid league_name")
         self.postInvalidTest(Routes['league'],
                              params,
                              InvalidField.status_code,
@@ -366,7 +366,7 @@ class TestPlayer(TestSetup):
                               }
                   }
         error_message = (Routes['player'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['player'],
                              params,
                              InvalidField.status_code,
@@ -381,7 +381,7 @@ class TestPlayer(TestSetup):
         result = {'details': 'Player - gender',
                   'message': InvalidField.message}
         error_message = (Routes['player'] +
-                        " POST: request with invalid gender")
+                         " POST: request with invalid gender")
         self.postInvalidTest(Routes['player'],
                              params,
                              InvalidField.status_code,
@@ -393,7 +393,7 @@ class TestPlayer(TestSetup):
         params = {'player_name': 1, 'gender': 'M', 'email': 'new@mlsb.ca'}
         result = {'details': 'Player - name', 'message': InvalidField.message}
         error_message = (Routes['player'] +
-                        " POST: request with invalid player name")
+                         " POST: request with invalid player name")
         self.postInvalidTest(Routes['player'],
                              params,
                              InvalidField.status_code,
@@ -548,7 +548,7 @@ class TestTeam(TestSetup):
                               'year': MISSING_PARAMETER}
                   }
         error_message = (Routes['team'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['team'],
                              params,
                              InvalidField.status_code,
@@ -566,7 +566,7 @@ class TestTeam(TestSetup):
                   'year': VALID_YEAR}
         result = {'details': 'Team - color', 'message': InvalidField.message}
         error_message = (Routes['team'] +
-                        " POST: request with invalid color")
+                         " POST: request with invalid color")
         self.postInvalidTest(Routes['team'],
                              params,
                              InvalidField.status_code,
@@ -582,7 +582,7 @@ class TestTeam(TestSetup):
         result = {'details': INVALID_ID,
                   'message': SponsorDoesNotExist.message}
         error_message = (Routes['team'] +
-                        " POST: request with invalid sponsor id")
+                         " POST: request with invalid sponsor id")
         self.postInvalidTest(Routes['team'],
                              params,
                              SponsorDoesNotExist.status_code,
@@ -597,7 +597,7 @@ class TestTeam(TestSetup):
                   'year': VALID_YEAR}
         result = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
         error_message = (Routes['league'] +
-                        " POST: request with invalid league id")
+                         " POST: request with invalid league id")
         self.postInvalidTest(Routes['team'],
                              params,
                              LeagueDoesNotExist.status_code,
@@ -612,7 +612,7 @@ class TestTeam(TestSetup):
                   'year': -1}
         result = {'details': 'Team - year', 'message': InvalidField.message}
         error_message = (Routes['team'] +
-                        " POST: request with invalid year")
+                         " POST: request with invalid year")
         self.postInvalidTest(Routes['team'],
                              params,
                              InvalidField.status_code,
@@ -788,7 +788,7 @@ class TestGame(TestSetup):
                               'league_id': MISSING_PARAMETER,
                               'time': MISSING_PARAMETER}}
         error_message = (Routes['game'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['game'],
                              params,
                              InvalidField.status_code,
@@ -812,7 +812,7 @@ class TestGame(TestSetup):
                               }
         expect = {'details': 'Game - date', 'message': InvalidField.message}
         error_message = (Routes['game'] +
-                        " POST: request with invalid date")
+                         " POST: request with invalid date")
         self.postInvalidTest(Routes['game'],
                              params,
                              InvalidField.status_code,
@@ -830,7 +830,7 @@ class TestGame(TestSetup):
                               }
         expect = {'details': 'Game - time', 'message': InvalidField.message}
         error_message = (Routes['game'] +
-                        " POST: request with invalid time")
+                         " POST: request with invalid time")
         self.postInvalidTest(Routes['game'],
                              params,
                              InvalidField.status_code,
@@ -848,7 +848,7 @@ class TestGame(TestSetup):
                               }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['game'] +
-                        " POST: request with invalid home team id")
+                         " POST: request with invalid home team id")
         self.postInvalidTest(Routes['game'],
                              params,
                              TeamDoesNotExist.status_code,
@@ -866,7 +866,7 @@ class TestGame(TestSetup):
                               }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['game'] +
-                        " POST: request with invalid away team id")
+                         " POST: request with invalid away team id")
         self.postInvalidTest(Routes['game'],
                              params,
                              TeamDoesNotExist.status_code,
@@ -884,10 +884,10 @@ class TestGame(TestSetup):
 
         # add a game
         self.add_game("2014-02-10",
-                             "22:40",
-                             home_team,
-                             away_team,
-                             league)
+                      "22:40",
+                      home_team,
+                      away_team,
+                      league)
 
         # test a get with games
         error_message = (Routes['game'] +
@@ -1152,7 +1152,7 @@ class TestBat(TestSetup):
                               }
                   }
         error_message = (Routes['bat'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['bat'],
                              params,
                              InvalidField.status_code,
@@ -1171,7 +1171,7 @@ class TestBat(TestSetup):
                               }
         expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
         error_message = (Routes['bat'] +
-                        " POST: request with invalid player id")
+                         " POST: request with invalid player id")
         self.postInvalidTest(Routes['bat'],
                              params,
                              PlayerDoesNotExist.status_code,
@@ -1190,7 +1190,7 @@ class TestBat(TestSetup):
                               }
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
         error_message = (Routes['bat'] +
-                        " POST: request with invalid game id")
+                         " POST: request with invalid game id")
         self.postInvalidTest(Routes['bat'],
                              params,
                              GameDoesNotExist.status_code,
@@ -1210,7 +1210,7 @@ class TestBat(TestSetup):
         expect = {'details': str(INVALID_ID),
                   'message': TeamDoesNotExist.message}
         error_message = (Routes['bat'] +
-                        " POST: request with invalid team id")
+                         " POST: request with invalid team id")
         self.postInvalidTest(Routes['bat'],
                              params,
                              TeamDoesNotExist.status_code,
@@ -1229,7 +1229,7 @@ class TestBat(TestSetup):
                               }
         expect = {'details': 'Bat - rbi', 'message': InvalidField.message}
         error_message = (Routes['bat'] +
-                        " POST: request with invalid rbi")
+                         " POST: request with invalid rbi")
         self.postInvalidTest(Routes['bat'],
                              params,
                              InvalidField.status_code,
@@ -1248,7 +1248,7 @@ class TestBat(TestSetup):
                               }
         expect = {'details': 'Bat - inning', 'message': InvalidField.message}
         error_message = (Routes['bat'] +
-                        " POST: request with invalid inning")
+                         " POST: request with invalid inning")
         self.postInvalidTest(Routes['bat'],
                              params,
                              InvalidField.status_code,
@@ -1267,7 +1267,7 @@ class TestBat(TestSetup):
                               }
         expect = {'details': 'Bat - hit', 'message': InvalidField.message}
         error_message = (Routes['bat'] +
-                        " POST: request with invalid hit")
+                         " POST: request with invalid hit")
         self.postInvalidTest(Routes['bat'],
                              params,
                              InvalidField.status_code,
@@ -1385,7 +1385,8 @@ class TestBat(TestSetup):
                   'rbi': 4,
                   'hit': "HR",
                   'inning': 1}
-        expect = {'details': str(INVALID_ID), 'message': TeamDoesNotExist.message}
+        expect = {'details': str(INVALID_ID),
+                  'message': TeamDoesNotExist.message}
         error_message = Routes['bat'] + " PUT: invalid team"
         self.putTest(valid_route,
                      params,
@@ -1628,7 +1629,7 @@ class TestEspys(TestSetup):
                               }
                   }
         error_message = (Routes['espy'] +
-                        " POST: request with missing parameter")
+                         " POST: request with missing parameter")
         self.postInvalidTest(Routes['espy'],
                              params,
                              InvalidField.status_code,
@@ -1642,7 +1643,7 @@ class TestEspys(TestSetup):
                   'points': 5}
         result = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['espy'] +
-                        " POST: request with invalid team id")
+                         " POST: request with invalid team id")
         self.postInvalidTest(Routes['espy'],
                              params,
                              TeamDoesNotExist.status_code,
@@ -1657,7 +1658,7 @@ class TestEspys(TestSetup):
         result = {'details': INVALID_ID,
                   'message': SponsorDoesNotExist.message}
         error_message = (Routes['espy'] +
-                        " POST: request with invalid sponsor id")
+                         " POST: request with invalid sponsor id")
         self.postInvalidTest(Routes['espy'],
                              params,
                              SponsorDoesNotExist.status_code,
@@ -1665,14 +1666,13 @@ class TestEspys(TestSetup):
                              result,
                              error_message=error_message)
 
-        
         # testing points parameter
         params = {'team_id': team['team_id'],
                   'sponsor_id': sponsor['sponsor_id'],
                   'points': "XX"}
         result = {'details': 'Game - points', 'message': InvalidField.message}
         error_message = (Routes['espy'] +
-                        " POST: request with invalid points")
+                         " POST: request with invalid points")
         self.postInvalidTest(Routes['espy'],
                              params,
                              InvalidField.status_code,
