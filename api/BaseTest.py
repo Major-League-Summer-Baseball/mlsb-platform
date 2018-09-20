@@ -24,11 +24,13 @@ KIK = os.environ['KIK']
 KIKPW = os.environ['KIKPW']
 
 headers = {
-    'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
+    'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD,
+                                                  "utf-8")).decode("ascii")
 }
 
 kik = {
-    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' + KIKPW, "utf-8")).decode("ascii")
+    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' + KIKPW,
+                                                  "utf-8")).decode("ascii")
 }
 
 SUCCESSFUL_GET_CODE = 200
@@ -132,8 +134,8 @@ class TestSetup(unittest.TestCase):
                     description=None,
                     active=True,
                     nickname=None):
-        """Returns a sponsor json object that was created with a post request"""
-        active = 1 if active else 0 
+        """Returns a sponsor json object created with a post request"""
+        active = 1 if active else 0
         params = {'sponsor_name': sponsor_name,
                   "link": link,
                   "description": description,
@@ -167,7 +169,7 @@ class TestSetup(unittest.TestCase):
                    password='default',
                    active=True):
         """Returns a player json object that was created with a post request"""
-        active = 1 if active else 0 
+        active = 1 if active else 0
         params = {"player_name": player_name,
                   "email": email,
                   "gender": gender,
@@ -292,7 +294,6 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(SUCCESSFUL_DELETE_CODE,
                          rv.status_code,
                          "Unable to remove player to team")
-
 
     def deactivate_player(self, player):
         """Deactivate the given player"""
@@ -460,7 +461,6 @@ class TestSetup(unittest.TestCase):
         """Runs a get test on lists"""
         done = False
         while not done:
-            # 
             rv = self.app.get(route)
             self.assertEqual(rv.status_code,
                              SUCCESSFUL_GET_CODE,
