@@ -9,56 +9,8 @@ from api.model import Player, Team, Bat, Sponsor, League, Game
 from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
                        LeagueDoesNotExist, SponsorDoesNotExist,\
                        NonUniqueEmail, GameDoesNotExist
-from pprint import PrettyPrinter
-from api import app, DB
 from api.BaseTest import TestSetup, INVALID_ID
-import tempfile
 from api.basic.test import VALID_YEAR
-
-
-def insertLeague(self):
-    DB.session.add(League("Monday & Wedneday"))
-    DB.session.commit()
-
-
-def insertSponsor(self):
-    DB.session.add(Sponsor("Domus"))
-    DB.session.commit()
-
-
-def insertSponsors(self):
-    DB.session.add(Sponsor("Domus"))
-    DB.session.add(Sponsor("Sentry"))
-    DB.session.commit()
-
-
-def insertTeams(self):
-    self.insertLeague()
-    self.insertSponsors()
-    DB.session.add(Team("green",
-                        sponsor_id=1,
-                        league_id=1))
-    DB.session.add(Team("sky",
-                        sponsor_id=2,
-                        league_id=1))
-    DB.session.commit()
-
-
-def insertPlayer(self):
-    DB.session.add(Player("Dallas Fraser", "fras2560@mylaurier.ca"))
-    DB.session.commit()
-
-
-def insertGame(self):
-    self.insertTeams()
-    self.insertPlayer()
-    DB.session.add(Game(self.d,
-                        self.t,
-                        1,
-                        2,
-                        1,
-                        status="Championships",
-                        field="WP1"))
 
 
 class SponsorModelTest(TestSetup):
