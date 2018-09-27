@@ -14,7 +14,8 @@ from api.errors import \
 from datetime import date
 from base64 import b64encode
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                         INVALID_ID, SUCCESSFUL_PUT_CODE
+                         INVALID_ID, SUCCESSFUL_PUT_CODE, addBat, addEspy,\
+                         addGame, VALID_YEAR
 
 
 headers = {
@@ -24,7 +25,6 @@ headers = {
 }
 MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
                      'or the post body or the query string')
-VALID_YEAR = date.today().year
 
 
 class TestFun(TestSetup):
@@ -1685,57 +1685,6 @@ class TestEspys(TestSetup):
         error_message = (Routes['espy'] +
                          " GET Failed to return list of espys")
         self.getListTest(Routes['espy'], error_message=error_message)
-
-
-def addGame(tester):
-    # add two teams, a sponsor and a league
-    counter = tester.get_counter()
-    tester.increment_counter()
-    league = tester.add_league("New League" + str(counter))
-    sponsor = tester.add_sponsor("Sponsor" + str(counter))
-    home_team = tester.add_team("Black" + str(counter),
-                                sponsor,
-                                league,
-                                VALID_YEAR)
-    away_team = tester.add_team("White" + str(counter),
-                                sponsor,
-                                league,
-                                VALID_YEAR)
-    game = tester.add_game("2014-02-10",
-                           "22:40",
-                           home_team,
-                           away_team,
-                           league)
-    return game
-
-
-def addBat(tester, classification):
-    counter = tester.get_counter()
-    tester.increment_counter()
-    league = tester.add_league("New League" + str(counter))
-    sponsor = tester.add_sponsor("Sponsor" + str(counter))
-    home_team = tester.add_team("Black", sponsor, league, VALID_YEAR)
-    away_team = tester.add_team("White", sponsor, league, VALID_YEAR)
-    game = tester.add_game("2014-02-10",
-                           "22:40",
-                           home_team,
-                           away_team,
-                           league)
-    player = tester.add_player("Test Player" + str(counter),
-                               "TestPlayer" + str(counter) + "@mlsb.ca",
-                               gender="M")
-    bat = tester.add_bat(player, home_team, game, classification)
-    return bat
-
-
-def addEspy(tester, points):
-    counter = tester.get_counter()
-    tester.increment_counter()
-    league = tester.add_league("New League" + str(counter))
-    sponsor = tester.add_sponsor("Sponsor" + str(counter))
-    team = tester.add_team("Black", sponsor, league, VALID_YEAR)
-    espy = tester.add_espys(team, sponsor, points=points)
-    return espy
 
 
 if __name__ == "__main__":

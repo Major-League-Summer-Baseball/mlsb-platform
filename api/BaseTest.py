@@ -38,6 +38,8 @@ SUCCESSFUL_DELETE_CODE = 200
 SUCCESSFUL_PUT_CODE = 200
 SUCCESSFUL_POST_CODE = 201
 INVALID_ID = 10000000
+UNAUTHORIZED = 401
+VALID_YEAR = date.today().year
 
 
 class TestSetup(unittest.TestCase):
@@ -83,6 +85,7 @@ class TestSetup(unittest.TestCase):
                      self.delete_list(self.leagues_to_delete) +
                      self.delete_list(self.fun_to_delete))
         final_not_delete = self.delete_list(to_delete)
+        print(final_not_delete)
         self.assertEqual(len(final_not_delete) > 0, False,
                          "Unable to delete everying upon tear down")
 
@@ -301,6 +304,26 @@ class TestSetup(unittest.TestCase):
         p.deactivate()
         DB.session.commit()
 
+    def submit_a_score(self, player, game, score, hr=[], ss=[]):
+        """Submits a score and returns the list of bats created"""
+        data = {'player_id': player['player_id'],
+                'game_id': game['game_id'],
+                'score': score,
+                'hr': hr,
+                'ss': ss}
+
+        rv = self.app.post(Routes['botsubmitscore'],
+                           data=data,
+                           headers=headers)
+        self.assertEqual(SUCCESSFUL_GET_CODE,
+                         rv.status_code,
+                         "Unable to submit a game score")
+        self.assertEqual(loads(rv.data), True, "Unable to submit a game score")
+        game_model = Game.query.get(game['game_id'])
+        for bat in game_model.bats:
+            self.bats_to_delete.append(bat)
+        return [bat.json() for bat in game_model.bats]
+
     def assertFunModelEqual(self, f1, f2, error_message=""):
         """Asserts the two fun json objects are equal"""
         self.assertEqual(f1['year'], f2['year'], error_message)
@@ -476,3 +499,63 @@ class TestSetup(unittest.TestCase):
                 max_total = pagination['pages'] * PAGE_SIZE
                 self.assertTrue(pagination['total'] <= max_total)
                 route = pagination['next_url']
+
+
+def addGame(tester):
+    """Returns a created game (creates, league, sponsor, two teams)"""
+    # add two teams, a sponsor and a league
+    counter = tester.get_counter()
+    tester.increment_counter()
+    league = tester.add_league("New League" + str(counter))
+    sponsor = tester.add_sponsor("Sponsor" + str(counter))
+    home_team = tester.add_team("Black" + str(counter),
+                                sponsor,
+                                league,
+                                VALID_YEAR)
+    away_team = tester.add_team("White" + str(counter),
+                                sponsor,
+                                league,
+                                VALID_YEAR)
+    game = tester.add_game("2014-02-10",
+                           "22:40",
+                           home_team,
+                           away_team,
+                           league)
+    return game
+
+
+def addBat(tester, classification):
+    """Returns a created bat
+
+    (creates a league, sponsor, two teams, game, player)
+    """
+    counter = tester.get_counter()
+    tester.increment_counter()
+    league = tester.add_league("New League" + str(counter))
+    sponsor = tester.add_sponsor("Sponsor" + str(counter))
+    home_team = tester.add_team("Black", sponsor, league, VALID_YEAR)
+    away_team = tester.add_team("White", sponsor, league, VALID_YEAR)
+    game = tester.add_game("2014-02-10",
+                           "22:40",
+                           home_team,
+                           away_team,
+                           league)
+    player = tester.add_player("Test Player" + str(counter),
+                               "TestPlayer" + str(counter) + "@mlsb.ca",
+                               gender="M")
+    bat = tester.add_bat(player, home_team, game, classification)
+    return bat
+
+
+def addEspy(tester, points):
+    """Returns a espy transaction
+
+    (Creates a league, sponsor, team and espys transaction)
+    """
+    counter = tester.get_counter()
+    tester.increment_counter()
+    league = tester.add_league("New League" + str(counter))
+    sponsor = tester.add_sponsor("Sponsor" + str(counter))
+    team = tester.add_team("Black", sponsor, league, VALID_YEAR)
+    espy = tester.add_espys(team, sponsor, points=points)
+    return espy
