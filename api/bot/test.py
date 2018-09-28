@@ -5,11 +5,9 @@
 @summary: Tests all the bot APIs
 '''
 from api.helper import loads
-from api import DB
 from api.routes import Routes
-from api.model import Player, Team
+from api.model import Team
 from base64 import b64encode
-from datetime import date, timedelta
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID, VALID_YEAR,\
                          SUCCESSFUL_GET_CODE, UNAUTHORIZED, addGame
 from api.errors import TeamDoesNotExist, NotTeamCaptain,\
@@ -179,7 +177,6 @@ class testUpcomingGames(TestSetup):
     def testMain(self):
         # non-subscribed player
         day = datetime.date.today() + datetime.timedelta(days=1)
-        
         game = addGame(self, day=day.strftime("%Y-%m-%d"), time="22:40")
         team_model = Team.query.get(game['home_team_id'])
         team = team_model.json()
@@ -200,9 +197,6 @@ class testUpcomingGames(TestSetup):
 
         # subscribed player upcoming games
         data = {'player_id': player['player_id']}
-        d = date.today().strftime("%Y-%m-%d")
-        d2 = (date.today() + timedelta(1)).strftime("%Y-%m-%d")
-        d3 = (date.today() + timedelta(5)).strftime("%Y-%m-%d")
         expect = [{'away_team': game['away_team'],
                    'away_team_id': game['away_team_id'],
                    'date': game['date'],
