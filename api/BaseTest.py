@@ -501,7 +501,7 @@ class TestSetup(unittest.TestCase):
                 route = pagination['next_url']
 
 
-def addGame(tester):
+def addGame(tester, day="2014-02-10", time="22:40"):
     """Returns a created game (creates, league, sponsor, two teams)"""
     # add two teams, a sponsor and a league
     counter = tester.get_counter()
@@ -516,8 +516,8 @@ def addGame(tester):
                                 sponsor,
                                 league,
                                 VALID_YEAR)
-    game = tester.add_game("2014-02-10",
-                           "22:40",
+    game = tester.add_game(day,
+                           time,
                            home_team,
                            away_team,
                            league)
