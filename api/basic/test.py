@@ -11,7 +11,6 @@ from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist,\
     PlayerDoesNotExist, NonUniqueEmail, LeagueDoesNotExist, GameDoesNotExist,\
     BatDoesNotExist, FunDoesNotExist
-from datetime import date
 from base64 import b64encode
 from api.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
                          INVALID_ID, SUCCESSFUL_PUT_CODE, addBat, addEspy,\
@@ -29,7 +28,7 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 class TestFun(TestSetup):
     def testFunInvalidPost(self):
-        # Note Valid Requests are testedasdin BaseTest method add_fun
+        # Note Valid Requests are tested in BaseTest method add_fun
 
         # missing parameters
         params = {}
