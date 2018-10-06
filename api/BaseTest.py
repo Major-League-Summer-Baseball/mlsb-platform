@@ -28,7 +28,7 @@ headers = {
                                                   "utf-8")).decode("ascii")
 }
 
-kik = {
+KIK_HEADER = {
     'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' + KIKPW,
                                                   "utf-8")).decode("ascii")
 }
@@ -85,7 +85,6 @@ class TestSetup(unittest.TestCase):
                      self.delete_list(self.leagues_to_delete) +
                      self.delete_list(self.fun_to_delete))
         final_not_delete = self.delete_list(to_delete)
-        print(final_not_delete)
         self.assertEqual(len(final_not_delete) > 0, False,
                          "Unable to delete everying upon tear down")
 
@@ -275,6 +274,13 @@ class TestSetup(unittest.TestCase):
         self.espys_to_delete.append(espy)
         return espy.json()
 
+    def add_kik_to_player(self, player, kik):
+        """Adds the kik user name to the player"""
+        player = DB.session.query(Player).get(player['player_id'])
+        player.kik = kik
+        DB.session.commit()
+        return player.json()
+
     def add_player_to_team(self, team, player, captain=False):
         """Adds the given player to a team"""
         params = {"player_id": player['player_id']}
@@ -319,6 +325,24 @@ class TestSetup(unittest.TestCase):
                          rv.status_code,
                          "Unable to submit a game score")
         self.assertEqual(loads(rv.data), True, "Unable to submit a game score")
+        game_model = Game.query.get(game['game_id'])
+        for bat in game_model.bats:
+            self.bats_to_delete.append(bat)
+        return [bat.json() for bat in game_model.bats]
+
+    def submit_a_score_by_kik(self, kik, game, score, hr=[], ss=[]):
+        """Submits a score & returns the list of bats created using kik api"""
+        data = {'kik': kik,
+                'game_id': game['game_id'],
+                'score': score,
+                'hr': hr,
+                'ss': ss}
+        rv = self.app.post(Routes['kiksubmitscore'],
+                           data=data,
+                           headers=KIK_HEADER)
+        message = "Unable to submit a game score using kik api"
+        self.assertEqual(SUCCESSFUL_GET_CODE, rv.status_code, message)
+        self.assertEqual(loads(rv.data), True, message)
         game_model = Game.query.get(game['game_id'])
         for bat in game_model.bats:
             self.bats_to_delete.append(bat)
