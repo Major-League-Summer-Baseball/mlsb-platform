@@ -576,7 +576,7 @@ class Sponsor(DB.Model):
         '''
             the string representation of the sponsor
         '''
-        return self.name
+        return self.name if self.name is not None else ""
 
     def json(self):
         '''
@@ -992,10 +992,9 @@ def subscribe(kik, name, team_id):
     # dont care if they are on the team
     # check for some goof
     player = Player.query.filter_by(kik=kik).filter_by(active=True).all()
-    if len(player) > 1:
-        if player[0].name != name:
-            s = "Kik user subscribing as two different people"
-            raise BadRequestError(payload={'details': s})
+    if len(player) > 1 and player[0].name != name:
+        s = "Kik user subscribing as two different people"
+        raise BadRequestError(payload={'details': s})
     team = Team.query.get(team_id)
     if team is None:
         raise TeamDoesNotExist(payload={'details': team_id})
