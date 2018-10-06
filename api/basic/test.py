@@ -281,7 +281,6 @@ class TestLeague(TestSetup):
                              error_message=error_message)
 
     def testLeagueListAPI(self):
-        
         # proper insertion with post
         self.add_league("New League")
 
@@ -400,7 +399,6 @@ class TestPlayer(TestSetup):
                              error_message=error_message)
 
     def testPlayerListApi(self):
-        
         # add a player
         self.add_player("Test Player", "TestPlayer@mlsb.ca", gender="M")
 
@@ -619,7 +617,6 @@ class TestTeam(TestSetup):
                              error_message=error_message)
 
     def testTeamListAPI(self):
-        
         # testing with all valid parameters
         sponsor = self.add_sponsor("New Sponsor")
         league = self.add_league("New League")
