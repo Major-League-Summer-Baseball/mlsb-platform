@@ -1,22 +1,50 @@
 '''
-Created on Sep 19, 2018
-
-@author: dfraser
+@author: Dallas Fraser
+@date: 2016-04-12
+@organization: MLSB API
+@summary: Tests all the imports classes
 '''
+from api.model import Team, Game, Player
+from api import DB
+from api.BaseTest import TestSetup
+from api.advanced.import_league import LeagueList
+from api.advanced.import_team import TeamList
+from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 import unittest
+import logging
+import datetime
+
+
+class MockSession():
+    def __init__(self, tester):
+        self.tester = tester
+
+    def add(self, obj):
+        if (type(obj) == Game):
+            self.tester.games_to_delete.append(obj)
+        elif (type(obj) == Player):
+            self.tester.players_to_delete.append(obj)
+        elif (type(obj) == Team):
+            self.tester.teams_to_delete.append(obj)
+        DB.session.add(obj)
+
+    def commit(self):
+        DB.session.commit()
+
 
 class TestImportTeam(TestSetup):
     def testColumnsIndives(self):
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
-        importer = TeamList([], logger=logger)
+        importer = TeamList([], logger=logger, session=MockSession(self))
         try:
             importer.set_columns_indices("asd,asd,asd".split(","))
             self.assertEqual(True, False,
                              "Should have raised invalid field error")
         except InvalidField as __:
             pass
+
         # if it runs then should be good
         importer.set_columns_indices("Player Name,Player Email,Gender (M/F)"
                                      .split(","))
@@ -28,114 +56,100 @@ class TestImportTeam(TestSetup):
                          "Gender index not set properly")
 
     def testImportHeaders(self):
+        # add a league and a sponsor
+        color = "Pink"
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
-        lines = ["Sponsor:,Domus,",
-                 "Color:,Pink,",
-                 "Captain:,Dallas Fraser,",
-                 "League:,Monday & Wedneday,",
-                 "Player Name,Player Email,Gender (M/F)"]
-        importer = TeamList(lines, logger=logger)
+        lines = ["Sponsor:,{},".format("Test Import Sponsor"),
+                 "Color:,{},".format(color),
+                 "Captain:,Test Captain,",
+                 "League:,{},".format("Test Import League"),
+                 "Player Name,Player Email,Gender (M/F)"
+                 "Laura Visentin,vise3090@mylaurier.ca,F",
+                 "Test Captain,testcaptainimport@mlsb.ca,M",
+                 "Test Girl,testgirlimport@mlsb.ca,F",
+                 "Test Boy,testboyimport@mlsb.ca,M"]
+        importer = TeamList(lines, logger=logger, session=MockSession(self))
+
         # test a invalid sponsor
         try:
             importer.import_headers()
             self.assertEqual(True, False, "Sponsor does not exist")
         except SponsorDoesNotExist as __:
             pass
-        self.addSponsors()
-        importer = TeamList(lines, logger=logger)
+
+        # add the sponsor
+        self.add_sponsor("Test Import Sponsor")
+        importer = TeamList(lines, logger=logger, session=MockSession(self))
+
         # test a invalid league
         try:
             importer.import_headers()
             self.assertEqual(True, False, "League does not exist")
         except LeagueDoesNotExist as __:
             pass
-        self.addLeagues()
+
+        # add the league
+        self.add_league("Test Import League")
         importer.import_headers()
         self.assertEqual(importer.captain_name,
-                         "Dallas Fraser",
+                         "Test Captain",
                          "Captain name not set")
         self.assertNotEqual(importer.team, None, "Team no set properly")
 
     def testImportPlayers(self):
+        # add a league and a sponsor
+        sponsor = self.add_sponsor("Test Import Sponsor")
+        league = self.add_league("Test Import League")
+        color = "Pink"
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
-        lines = ["Sponsor:,Domus,",
-                 "Color:,Pink,",
-                 "Captain:,Dallas Fraser,",
-                 "League:,Monday & Wedneday,",
+        lines = ["Sponsor:,{},".format(sponsor['sponsor_name']),
+                 "Color:,{},".format(color),
+                 "Captain:,Test Captain,",
+                 "League:,{},".format(league['league_name']),
                  "Player Name,Player Email,Gender (M/F)"
                  "Laura Visentin,vise3090@mylaurier.ca,F",
-                 "Dallas Fraser,fras2560@mylaurier.ca,M",
-                 "Mitchell Ellul,ellu6790@mylaurier.ca,M",
-                 "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
-                 "Adam Shaver,shav3740@mylaurier.ca,M",
-                 "Taylor Takamatsu,taka9680@mylaurier.ca,F",
-                 "Jordan Cross,cros7940@mylaurier.ca,M",
-                 "Erin Niepage,niep3130@mylaurier.ca,F",
-                 "Alex Diakun,diak1670@mylaurier.ca,M",
-                 "Kevin Holmes,holm4430@mylaurier.ca,M",
-                 "Kevin McGaire,kevinmcgaire@gmail.com,M",
-                 "Kyle Morrison,morr1090@mylaurier.ca,M",
-                 "Ryan Lackey,lack8060@mylaurier.ca,M",
-                 "Rory Landy,land4610@mylaurier.ca,M",
-                 "Claudia Vanderholst,vand6580@mylaurier.ca,F",
-                 "Luke MacKenzie,mack7980@mylaurier.ca,M",
-                 "Jaron Wu,wuxx9824@mylaurier.ca,M",
-                 "Tea Galli,gall2590@mylaurier.ca,F",
-                 "Cara Hueston ,hues8510@mylaurier.ca,F",
-                 "Derek Schoenmakers,scho8430@mylaurier.ca,M",
-                 "Marni Shankman,shan3500@mylaurier.ca,F",
-                 "Christie MacLeod ,macl5230@mylaurier.ca,F"
-                 ]
-        importer = TeamList(lines, logger=logger)
+                 "Test Captain,testcaptainimport@mlsb.ca,M",
+                 "Test Girl,testgirlimport@mlsb.ca,F",
+                 "Test Boy,testboyimport@mlsb.ca,M"]
+        importer = TeamList(lines, logger=logger, session=MockSession(self))
+
         # mock the first half
-        self.addTeams()
-        importer.team = self.teams[0]
-        importer.captain_name = "Dakkas Fraser"
+        team_id = self.add_team(color, sponsor, league)['team_id']
+        team = DB.session.query(Team).get(team_id)
+        importer.team = team
+        importer.captain_name = "Test Captain"
         importer.email_index = 1
         importer.name_index = 0
         importer.gender_index = 2
+
         # if no errors are raised then golden
         importer.import_players(5)
 
     def testAddTeam(self):
+        # add a league and a sponsor
+        sponsor = self.add_sponsor("Test Import Sponsor")
+        league = self.add_league("Test Import League")
+        color = "Pink"
+
+        # set the logger
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s')
         logger = logging.getLogger(__name__)
-        lines = ["Sponsor:,Domus,",
-                 "Color:,Pink,",
-                 "Captain:,Dallas Fraser,",
-                 "League:,Monday & Wedneday,",
+        lines = ["Sponsor:,{},".format(sponsor['sponsor_name']),
+                 "Color:,{},".format(color),
+                 "Captain:,Test Captain,",
+                 "League:,{},".format(league['league_name']),
                  "Player Name,Player Email,Gender (M/F)"
                  "Laura Visentin,vise3090@mylaurier.ca,F",
-                 "Dallas Fraser,fras2560@mylaurier.ca,M",
-                 "Mitchell Ellul,ellu6790@mylaurier.ca,M",
-                 "Mitchell Ortofsky,orto2010@mylaurier.ca,M",
-                 "Adam Shaver,shav3740@mylaurier.ca,M",
-                 "Taylor Takamatsu,taka9680@mylaurier.ca,F",
-                 "Jordan Cross,cros7940@mylaurier.ca,M",
-                 "Erin Niepage,niep3130@mylaurier.ca,F",
-                 "Alex Diakun,diak1670@mylaurier.ca,M",
-                 "Kevin Holmes,holm4430@mylaurier.ca,M",
-                 "Kevin McGaire,kevinmcgaire@gmail.com,M",
-                 "Kyle Morrison,morr1090@mylaurier.ca,M",
-                 "Ryan Lackey,lack8060@mylaurier.ca,M",
-                 "Rory Landy,land4610@mylaurier.ca,M",
-                 "Claudia Vanderholst,vand6580@mylaurier.ca,F",
-                 "Luke MacKenzie,mack7980@mylaurier.ca,M",
-                 "Jaron Wu,wuxx9824@mylaurier.ca,M",
-                 "Tea Galli,gall2590@mylaurier.ca,F",
-                 "Cara Hueston ,hues8510@mylaurier.ca,F",
-                 "Derek Schoenmakers,scho8430@mylaurier.ca,M",
-                 "Marni Shankman,shan3500@mylaurier.ca,F",
-                 "Christie MacLeod ,macl5230@mylaurier.ca,F"
-                 ]
-        importer = TeamList(lines, logger=logger)
-        self.addLeagues()
-        self.addSponsors()
+                 "Test Captain,testcaptainimport@mlsb.ca,M",
+                 "Test Girl,testgirlimport@mlsb.ca,F",
+                 "Test Boy,testboyimport@mlsb.ca,M"]
+        importer = TeamList(lines, logger=logger, session=MockSession(self))
+
         # no point checking for errors that were tested above
         importer.add_team()
         self.assertEqual(importer.warnings, ['Team was created'],
@@ -161,7 +175,7 @@ class TestImportGames(TestSetup):
                             ]
 
     def testParseHeader(self):
-        self.tl = LeagueList(TestImportGames.TEST)
+        self.tl = LeagueList(TestImportGames.TEST, session=MockSession(self))
         l, h = self.tl.parse_header(TestImportGames.TEST[0: 2])
         self.assertEqual(l, 'Monday and Wednesday')
         self.assertEqual(h,
@@ -169,132 +183,169 @@ class TestImportGames(TestSetup):
 
     def testCheckHeader(self):
         # check valid header
-        self.tl = LeagueList(TestImportGames.TEST)
+        self.tl = LeagueList(TestImportGames.TEST,
+                             session=MockSession(self))
         valid = self.tl.check_header(TestImportGames.TEST[0:2])
         self.assertEqual(valid, True)
         # check a header that is too short
-        self.tl = LeagueList(TestImportGames.TOO_SHORT)
+        self.tl = LeagueList(TestImportGames.TOO_SHORT,
+                             session=MockSession(self))
         valid = self.tl.check_header(TestImportGames.TOO_SHORT[0:2])
         self.assertEqual(valid, False)
         # check a header that has too few columns
-        self.tl = LeagueList(TestImportGames.TOO_FEW_COLUMNS)
+        self.tl = LeagueList(TestImportGames.TOO_FEW_COLUMNS,
+                             session=MockSession(self))
         valid = self.tl.check_header(TestImportGames.TOO_FEW_COLUMNS[0:2])
         self.assertEqual(valid, False)
         # check a header that is missing a column
-        self.tl = LeagueList(TestImportGames.MISSING_HOME_NAME)
+        self.tl = LeagueList(TestImportGames.MISSING_HOME_NAME,
+                             session=MockSession(self))
         valid = self.tl.check_header(TestImportGames.TOO_FEW_COLUMNS[0:2])
         self.assertEqual(valid, False)
 
     def testGetLeagueID(self):
-        self.addLeagues()
-        self.tl = LeagueList(TestImportGames.TEST)
-        team = self.tl.get_league_id("Monday & Wedneday")
-        self.assertEqual(team, 1)
-        self.tl = LeagueList(TestImportGames.TEST)
+        league_name = "Test Import Fake League"
+        league = self.add_league(league_name)
+        self.tl = LeagueList(TestImportGames.TEST,
+                             session=MockSession(self))
+        league_id = self.tl.get_league_id(league_name)
+        self.assertEqual(league['league_id'], league_id)
+        self.tl = LeagueList(TestImportGames.TEST,
+                             session=MockSession(self))
         try:
-            team = self.tl.get_league_id("No League")
+            self.tl.get_league_id("No League")
             self.assertEqual(True, False,
                              "League does not exist error should be raised")
         except Exception:
             pass
 
     def testImportGame(self):
-        self.addTeamWithLegaue()
-        # add games to the league
-        self.valid_test = [
-                           "League:,Monday & Wednesday,,,",
+        # add a league, sponsor and two teams
+        league_name = "Test Import Fake League"
+        league = self.add_league(league_name)
+        sponsor = self.add_sponsor("Import Test Sponsor")
+        t1 = self.add_team("Green", sponsor, league)
+        t2 = self.add_team("Black", sponsor, league)
+
+        # a valid request to add a game
+        day = datetime.date.today().strftime("%Y-%m-%d")
+        game_entry = "{},{},{},12:00,WP1".format(t1['team_name'],
+                                                 t2['team_name'],
+                                                 day)
+        self.valid_test = ["League:,{},,,".format(league_name),
                            "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.league_id = 1
+                           game_entry]
+        self.tl = LeagueList(self.valid_test,
+                             session=MockSession(self))
+        self.tl.league_id = league['league_id']
         self.tl.set_columns_indices(self.valid_test[1].split(","))
         self.tl.set_teams()
         self.tl.import_game(self.valid_test[2])
         self.assertEqual(self.tl.warnings, [])
         self.assertEqual(self.tl.errors, [])
-        # not a team in the league
-        self.valid_test = [
-                           "League:,Monday and Wednesday,,,",
+
+        # an invalid request - one team not in the league
+        game_entry = "{},{},{},12:00,WP1".format("NOT A TEAM",
+                                                 t2['team_name'],
+                                                 day)
+        self.valid_test = ["League:,{},,,".format(league_name),
                            "Home Team,Away Team,Date,Time,Field",
-                           "Domus Black,Chainsaw Black,2015-10-01,12:00, WP1"]
-        self.tl = LeagueList(self.valid_test)
-        self.tl.league_id = 1
+                           game_entry]
+        self.tl = LeagueList(self.valid_test,
+                             session=MockSession(self))
+        self.tl.league_id = league['league_id']
         self.tl.set_columns_indices(self.valid_test[1].split(","))
         self.tl.set_teams()
         self.tl.import_game(self.valid_test[2])
         self.assertEqual(self.tl.warnings, [])
         self.assertEqual(self.tl.errors,
-                         ["Domus Black is not a team in the league"])
+                         ["NOT A TEAM is not a team in the league"])
 
     def testValidCases(self):
-        self.addTeamWithLegaue()
+        # add a league, sponsor and two teams
+        league_name = "Test Import Fake League"
+        league = self.add_league(league_name)
+        sponsor = self.add_sponsor("Import Test Sponsor")
+        t1 = self.add_team("Green", sponsor, league)
+        t2 = self.add_team("Black", sponsor, league)
+
         # import  a set of good games
-        self.valid_test = [
-                           "League:,Monday & Wedneday,,,",
+        day = datetime.date.today().strftime("%Y-%m-%d")
+        game_entry = "{},{},{},12:00,WP1".format(t1['team_name'],
+                                                 t2['team_name'],
+                                                 day)
+        self.valid_test = ["League:,{},,,".format(league_name),
                            "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.valid_test)
+                           game_entry]
+        self.tl = LeagueList(self.valid_test,
+                             session=MockSession(self))
         self.tl.import_league()
         self.assertEqual([], self.tl.warnings)
         self.assertEqual([], self.tl.errors)
 
     def testInvalidCases(self):
-        self.addTeamWithLegaue()
+        # add a league, sponsor and two teams
+        league_name = "Test Import Fake League"
+        league = self.add_league(league_name)
+        sponsor = self.add_sponsor("Import Test Sponsor")
+        t1 = self.add_team("Green", sponsor, league)
+        t2 = self.add_team("Black", sponsor, league)
+
         # test bad header
-        self.bad_header = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,sdjfkhskdj",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
+        # import  a set of good games
+        day = datetime.date.today().strftime("%Y-%m-%d")
+        game_entry = "{},{},{},12:00,WP1".format(t1['team_name'],
+                                                 t2['team_name'],
+                                                 day)
+
+        self.bad_header = ["League:,{},,,".format(league_name),
+                           "Home Team,Away Team,Date,Time,asjdl9798u",
+                           game_entry]
         self.tl = LeagueList(self.bad_header)
         self.tl.import_league()
+
         # test bad league
-        self.bad_league = [
-                           "Leaguex:,Monday & Wedneday,,,",
+        self.bad_league = ["Leaguex:,{}xas,,,".format(league_name),
                            "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-10-01,12:00,WP1"]
-        self.tl = LeagueList(self.bad_league)
+                           game_entry]
+        self.tl = LeagueList(self.bad_league,
+                             session=MockSession(self))
         try:
             self.tl.import_league()
         except LeagueDoesNotExist:
             pass
+
         # test bad game
-        self.bad_game = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "Domus Green,Chainsaw Black,2015-xx-01,12:00,WP1"]
-        self.tl = LeagueList(self.bad_game)
+        game_entry = "{},{},2015-XX-01,12:00,WP1".format(t1['team_name'],
+                                                         t2['team_name'])
+        self.bad_game = ["League:,{},,,".format(league_name),
+                         "Home Team,Away Team,Date,Time,Field",
+                         game_entry]
+        self.tl = LeagueList(self.bad_game,
+                             session=MockSession(self))
         try:
             self.tl.import_league()
             self.assertEqual(True, False, "should raise error")
         except InvalidField:
             pass
-        self.bad_team = [
-                           "League:,Monday & Wedneday,,,",
-                           "Home Team,Away Team,Date,Time,Field",
-                           "X Green,Chainsaw Black,2015-10-01,12:00,WP1"]
+
         # test bad team in game
-        self.tl = LeagueList(self.bad_team)
+        bad_team = "xaasdasd3"
+        game_entry = "{},{},{},12:00,WP1".format(bad_team,
+                                                 t2['team_name'],
+                                                 day)
+        self.bad_team = ["League:,{},,,".format(league_name),
+                         "Home Team,Away Team,Date,Time,Field",
+                         game_entry]
+
+        self.tl = LeagueList(self.bad_team,
+                             session=MockSession(self))
         self.tl.import_league()
         self.assertEqual(self.tl.warnings, [])
-        self.assertEqual(['X Green is not a team in the league'],
+        self.assertEqual(['{} is not a team in the league'.format(bad_team)],
                          self.tl.errors)
 
 
-class Test(unittest.TestCase):
-
-
-    def setUp(self):
-        pass
-
-
-    def tearDown(self):
-        pass
-
-
-    def testName(self):
-        pass
-
-
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

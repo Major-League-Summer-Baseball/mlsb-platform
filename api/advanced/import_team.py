@@ -21,7 +21,13 @@ INVALID_FIELD = "{} had an invalid field"
 
 
 class TeamList():
-    def __init__(self, lines, logger=None):
+    def __init__(self, lines, logger=None, session=None):
+        """The constructor
+
+            lines: a list of lines parsed from csv
+            logger: a logger
+            session: a mocked database session
+        """
         self.success = False
         self.errors = []
         self.warnings = []
@@ -37,8 +43,12 @@ class TeamList():
         self.name_index = None
         self.email_index = None
         self.gender_index = None
+        self.session = session
+        if session is None:
+            self.session = DB.session
 
     def add_team(self):
+        """Adds a team to the database"""
         player_index = self.import_headers()
         self.logger.debug(self.lines[player_index - 1])
         self.set_columns_indices(self.lines[player_index - 1].split(","))
@@ -46,17 +56,18 @@ class TeamList():
         self.import_players(player_index)
         self.logger.debug("Imported players")
         # should be good no errors were raised
-        DB.session.commit()
+        self.session.commit()
         if self.captain is None:
             self.warnings.append("Captain was not assigned")
         else:
             # set the captain
             self.team.player_id = self.captain.id
-            DB.session.commit()
+            self.session.commit()
         self.logger.debug("Captain set")
         return
 
     def import_headers(self):
+        """Parse the headers of the csv and add team"""
         done = False
         i = 0
         sponsor = None
@@ -133,6 +144,7 @@ class TeamList():
         return player_index
 
     def import_players(self, player_index):
+        """Import a list of players"""
         while (player_index < len(self.lines) and
                len(self.lines[player_index].split(",")) > 1):
             info = self.lines[player_index].split(",")
@@ -148,7 +160,7 @@ class TeamList():
                 if player is None:
                     self.logger.debug(name + " " + email + " " + gender)
                     player = Player(name, email, gender=gender)
-                    DB.session.add(player)
+                    self.session.add(player)
                     self.logger.debug("Player was created")
                 else:
                     # this player is active
@@ -162,6 +174,7 @@ class TeamList():
         return
 
     def clean_cell(self, cell):
+        """Returns a clean cell"""
         return cell.strip().lower().replace(":", "")
 
     def set_columns_indices(self, header):
