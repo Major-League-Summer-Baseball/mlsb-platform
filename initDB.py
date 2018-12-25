@@ -491,13 +491,13 @@ if __name__ == "__main__":
             Author: Dallas Fraser (dallas.fraser.waterloo@gmail.com)
             """
     if ("FLASK_ENV" not in os.environ
-        or os.environ.get("FLASK_ENV").lower() != "docker"):
+            or os.environ.get("FLASK_ENV").lower() != "docker"):
         print("No FLASK_ENV set or not running on docker")
         print("Just exiting")
         exit
 
     if ("FLASK_ENV" not in os.environ
-        or os.environ.get("FLASK_ENV").lower() == "production"):
+            or os.environ.get("FLASK_ENV").lower() == "production"):
         print("Running on Production")
         exit
     parser = argparse.ArgumentParser(description=descp)
