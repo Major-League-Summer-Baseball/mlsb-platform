@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: The views for the teams a player is on
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api.model import Player

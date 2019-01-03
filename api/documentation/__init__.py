@@ -4,7 +4,7 @@ Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds the routes for the documentation
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response, render_template, make_response
 from json import dumps
 from api.routes import Routes

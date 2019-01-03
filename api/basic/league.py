@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: The basic league API
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from api.model import League
 from json import dumps

@@ -4,7 +4,7 @@ Date: 2014-08-25
 Project: MLSB API
 Purpose: To create an application to act as an api for the database
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api.authentication import requires_admin

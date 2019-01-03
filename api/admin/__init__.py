@@ -8,7 +8,7 @@ Purpose: Holds the routes for the admin side
 # Imports
 # -----------------------------------------------------------------------------
 from os.path import join
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response, render_template, make_response, send_file, url_for,\
                   send_from_directory, redirect, session, request
 from json import dumps, loads

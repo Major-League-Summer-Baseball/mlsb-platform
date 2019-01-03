@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: The basic bat API
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from api import DB
 from api.model import Bat

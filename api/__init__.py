@@ -6,13 +6,13 @@
 '''
 import os
 from flask import Flask, g, request
-from flask.ext.restful import Api
-from flask.ext.restful.utils import cors
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_restful import Api
+from flask_restful.utils import cors
+from flask_sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
 import logging
 import sys
-from flask.ext.cache import Cache
+from flask_caching import Cache
 
 URL = os.environ['DATABASE_URL']
 SECRET_KEY = os.environ['SECRET_KEY']
