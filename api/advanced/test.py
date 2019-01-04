@@ -264,6 +264,7 @@ class TeamTest(TestSetup):
 
     def testPostYear(self):
         """Test year parameter"""
+        self.show_results = True
         mocker = MockLeague(self)
 
         # invalid year
