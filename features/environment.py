@@ -7,18 +7,35 @@
 
 from behave import fixture, use_fixture
 from selenium import webdriver
-from api import app
+from selenium.webdriver import DesiredCapabilities
 import os
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 BASE_URL = "http://localhost:5000"
 DELAY = 5
 
+
 def after_step(context, step):
     if step.status == "failed":
-        step_str = step.name
+
+        # take a screen shot and save it
+        if not os.path.exists("failed_scenarios_screenshots"):
+            os.makedirs("failed_scenarios_screenshots")
+        context.browser.save_screenshot(
+            os.path.join(os.getcwd(),
+                         "failed_scenarios_screenshots",
+                         step.name + "_failed.png"))
         print("Failed a step, taking a screen shot")
         print(os.getcwd())
-        # take a screen shot and save it
+
+
+def after_scenario(context, scenario):
+    print("scenario status" + scenario.status)
+    if scenario.status == "failed":
+        if not os.path.exists("failed_scenarios_screenshots"):
+            os.makedirs("failed_scenarios_screenshots")
+        context.browser.save_screenshot(
+            os.path.join(os.getcwd(),
+                         "failed_scenarios_screenshots",
+                         scenario.name + "_failed.png"))
 
 
 @fixture
@@ -29,8 +46,16 @@ def selenium_browser_chrome(context):
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
-    context.browser = webdriver.Chrome(chrome_options=chrome_options)
+
+    
+    capabilities = DesiredCapabilities.CHROME.copy()
+    capabilities['acceptSslCerts'] = True 
+    capabilities['acceptInsecureCerts'] = True
+
+    context.browser = webdriver.Chrome(chrome_options=chrome_options,
+                                       desired_capabilities=capabilities)
     yield context.browser
 
     # clean up
