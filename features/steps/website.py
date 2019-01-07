@@ -20,14 +20,14 @@ def navigate_to_page(context, page):
         context.browser.get(BASE_URL + route + "/" + current_year())
         print("Page has loaded:" + page + "-" + page_url)
     else:
-        print("Already Loaded page"+ page + "-" + page_url)
+        print("Already Loaded page" + page + "-" + page_url)
     print(context)
 
 
 @when('I click on "{tab_name}" tab')
 def click_on_tab(context, tab_name):
     tab_name = tab_name.replace('"', '')
-    xpath = "//a[contains(text(), '" + tab_name +"')]"
+    xpath = "//a[contains(text(), '" + tab_name + "')]"
     element = context.browser.find_element_by_xpath(xpath)
     element.click()
     print("Click Event Button: " + tab_name)
@@ -37,7 +37,7 @@ def click_on_tab(context, tab_name):
 @when('I click on "{event_name}" event button')
 def click_on_event_page(context, event_name):
     event_name = event_name.replace('"', '')
-    xpath = "//a[contains(text(), '" + event_name +"')]"
+    xpath = "//a[contains(text(), '" + event_name + "')]"
     element = context.browser.find_element_by_xpath(xpath)
     element.click()
     print("Click Event Button: " + event_name)
