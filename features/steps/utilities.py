@@ -10,9 +10,10 @@ from environment import DELAY
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
+
 def wait_until_loaded(browser, element, delay=DELAY):
     try:
-        (WebDriverWait(browser,delay)
+        (WebDriverWait(browser, delay)
             .until(EC.presence_of_element_located(element)))
     except TimeoutException:
         print("Timeout Exception has been raised")
