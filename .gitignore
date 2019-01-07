@@ -62,3 +62,4 @@ target/
 .vagrant
 /.project
 /.pydevproject
+/failed_scenarios_screenshots/*
