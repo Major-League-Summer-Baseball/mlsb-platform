@@ -9,7 +9,7 @@ from behave import fixture, use_fixture
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 import os
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:8080"
 DELAY = 5
 
 
@@ -28,7 +28,6 @@ def after_step(context, step):
 
 
 def after_scenario(context, scenario):
-    print("scenario status" + scenario.status)
     if scenario.status == "failed":
         if not os.path.exists("failed_scenarios_screenshots"):
             os.makedirs("failed_scenarios_screenshots")
@@ -43,11 +42,11 @@ def selenium_browser_chrome(context):
 
     # start the browser
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--window-size=1920,1080")
+    # chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--no-sandbox")
+    # chrome_options.add_argument("--disable-dev-shm-usage")
+    # chrome_options.add_argument("--disable-gpu")
+    # chrome_options.add_argument("--window-size=1920,1080")
 
     
     capabilities = DesiredCapabilities.CHROME.copy()
