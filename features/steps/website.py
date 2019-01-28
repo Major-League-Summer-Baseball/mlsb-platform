@@ -6,7 +6,7 @@
 '''
 from selenium.webdriver.common.by import By
 from environment import BASE_URL
-from api.routes import Routes
+from routes import Routes
 from behave import given, when, then
 from steps import current_year
 from steps.utilities import wait_until_loaded
@@ -50,5 +50,12 @@ def assert_sample_text(context, text_sample):
     text_sample = text_sample.replace('"', '')
     xpath = "//p[contains(text(), '" + text_sample + "')]"
     context.browser.find_element_by_xpath(xpath)
+
+@then('I see a table cell containing "{text_sample}"')
+def assert_sample_text(context, text_sample):
+    text_sample = text_sample.replace('"', '')
+    xpath = "//td[contains(text(), '" + text_sample + "')]"
+    context.browser.find_element_by_xpath(xpath)
+
 
 
