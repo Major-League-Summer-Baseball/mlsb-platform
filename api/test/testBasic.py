@@ -12,9 +12,9 @@ from api.errors import \
     PlayerDoesNotExist, NonUniqueEmail, LeagueDoesNotExist, GameDoesNotExist,\
     BatDoesNotExist, FunDoesNotExist
 from base64 import b64encode
-from api.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                         INVALID_ID, SUCCESSFUL_PUT_CODE, addBat, addEspy,\
-                         addGame, VALID_YEAR
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
+                              INVALID_ID, SUCCESSFUL_PUT_CODE, addBat,\
+                              addEspy, addGame, VALID_YEAR
 
 
 headers = {

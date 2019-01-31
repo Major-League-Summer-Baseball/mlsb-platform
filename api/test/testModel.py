@@ -9,8 +9,7 @@ from api.model import Player, Team, Bat, Sponsor, League, Game
 from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
                        LeagueDoesNotExist, SponsorDoesNotExist,\
                        NonUniqueEmail, GameDoesNotExist
-from api.BaseTest import TestSetup, INVALID_ID
-from api.basic.test import VALID_YEAR
+from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
 
 
 class SponsorModelTest(TestSetup):

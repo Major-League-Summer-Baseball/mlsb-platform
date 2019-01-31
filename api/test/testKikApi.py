@@ -8,12 +8,13 @@ from api.helper import loads
 from api.routes import Routes
 from api.model import Espys, Team
 from base64 import b64encode
-from api.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID, VALID_YEAR,\
-                         SUCCESSFUL_GET_CODE, UNAUTHORIZED, KIK, KIKPW,\
-                         addGame
-from api.errors import TeamDoesNotExist, NotTeamCaptain, TeamAlreadyHasCaptain,\
-                       PlayerNotSubscribed, GameDoesNotExist,\
-                       InvalidField, SponsorDoesNotExist, PlayerDoesNotExist
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
+                              VALID_YEAR, SUCCESSFUL_GET_CODE, UNAUTHORIZED,\
+                              KIK, KIKPW, addGame
+from api.errors import TeamDoesNotExist, NotTeamCaptain,\
+                       TeamAlreadyHasCaptain, PlayerNotSubscribed,\
+                       GameDoesNotExist, InvalidField,\
+                       SponsorDoesNotExist, PlayerDoesNotExist
 import unittest
 import datetime
 headers = {

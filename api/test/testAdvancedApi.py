@@ -12,8 +12,9 @@ from api.routes import Routes
 from base64 import b64encode
 from api.model import Team, Player
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, PlayerDoesNotExist
-from api.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW, INVALID_ID,\
-                         SUCCESSFUL_DELETE_CODE, SUCCESSFUL_GET_CODE
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW,\
+                         INVALID_ID, SUCCESSFUL_DELETE_CODE,\
+                         SUCCESSFUL_GET_CODE
 import datetime
 
 headers = {
@@ -264,7 +265,6 @@ class TeamTest(TestSetup):
 
     def testPostYear(self):
         """Test year parameter"""
-        self.show_results = True
         mocker = MockLeague(self)
 
         # invalid year
