@@ -14,13 +14,16 @@ SPONSORS = {0: "notFound.png",
 TEAMS = {
          0: "noTeam.png",
          }  # maps the teams to their picture
+
 # the UNASSIGNED player id used for bats that are not assigned to a player
 UNASSIGNED = 1
 UNASSIGNED_EMAIL = "unassignedBats@mlsb.ca"
 HITS = ["s", "ss", "d", "hr"]  # the hits that are available
+
 # all the possible results from a bat
 BATS = ['s', 'd', 'ss', 'hr', 'k', 'e', 'fc', 'fo', 'go']
 GENDERS = ["f", "m"]  # the genders currently supported
+
 EVENTS = {2016: {
                   "Beerfest": "May 13th",
                   "ESPYS_Awards": "July 27th",
@@ -51,8 +54,19 @@ EVENTS = {2016: {
                   "Grand Bender": "July 28th",
                   "Tournaments": "June 1st, June 8th, June 29th, July 20th",
                   "Chainsaw Idol": "July 13th"
+              },
+          2019: {
+                  "Beerlympics": "TBD",
+                  "Jays_Game": "TBD",
+                  "Summerween": "TBD",
+                  "Mystery_Bus": "TBD",
+                  "Rafting": "TBD",
+                  "Grand Bender": "TBD",
+                  "Tournaments": "TBD, TBD, TBD, TBD",
+                  "Chainsaw Idol": "TBD"
               }
           }  # all the events baby
+
 # the fields we play at
 FIELDS = ["WP1", "WP2", "WP3", "WP4", "Hillside Upper", "Hillside Lower"]
 KIKPOINTS = 2  # the kik points assigned for subscription
