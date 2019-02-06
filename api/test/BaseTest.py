@@ -1,7 +1,8 @@
 '''
-Created on Apr 12, 2016
-
-@author: Dallas
+@author: Dallas Fraser
+@author: 2016-04-12
+@organization: MLSB API
+@summary: A base test class for testing API
 '''
 from api import app
 from api import DB
@@ -61,7 +62,9 @@ class TestSetup(unittest.TestCase):
         self.players_to_delete = []
         self.sponsors_to_delete = []
         self.leagues_to_delete = []
+        DB.session.expire_all()
         if (not self.tables_created()):
+
             DB.engine.execute('''
                                   DROP TABLE IF EXISTS fun;
                                   DROP TABLE IF EXISTS roster;
@@ -85,8 +88,12 @@ class TestSetup(unittest.TestCase):
                      self.delete_list(self.leagues_to_delete) +
                      self.delete_list(self.fun_to_delete))
         final_not_delete = self.delete_list(to_delete)
-        self.assertEqual(len(final_not_delete) > 0, False,
+        if len(final_not_delete) > 0:
+            print(final_not_delete)
+            self.assertFalse(True,
                          "Unable to delete everying upon tear down")
+        DB.session.expire_all()
+        
 
     def increment_counter(self):
         """Increments the counter by 1"""
