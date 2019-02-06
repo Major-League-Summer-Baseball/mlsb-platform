@@ -14,6 +14,7 @@ import datetime
 import random
 import argparse
 
+
 def mock_teams_games(league, sponsor_lookup):
     """
     mock_team_games
@@ -33,20 +34,20 @@ def mock_teams_games(league, sponsor_lookup):
                         Player("MalePlayer2", "mp2@mlsb.ca", gender="M"),
                         Player("FemalePlayer2", "fp2@mlsb.ca", gender="F")]
     team_three_players = [Player("Captain3", "captain3@mlsb.ca", gender="M"),
-                        Player("MalePlayer3", "mp3@mlsb.ca", gender="M"),
-                        Player("FemalePlayer3", "fp3@mlsb.ca", gender="F")]
+                          Player("MalePlayer3", "mp3@mlsb.ca", gender="M"),
+                          Player("FemalePlayer3", "fp3@mlsb.ca", gender="F")]
     team_four_players = [Player("Captain4", "captain4@mlsb.ca", gender="F"),
-                        Player("MalePlayer4", "mp4@mlsb.ca", gender="M"),
-                        Player("FemalePlayer4", "fp4@mlsb.ca", gender="F")]
-    team_players = [ team_one_players,
-                     team_two_players,
-                     team_three_players,
-                     team_four_players]
+                         Player("MalePlayer4", "mp4@mlsb.ca", gender="M"),
+                         Player("FemalePlayer4", "fp4@mlsb.ca", gender="F")]
+    team_players = [team_one_players,
+                    team_two_players,
+                    team_three_players,
+                    team_four_players]
     for team in tqdm(team_players, desc="Adding mock Players"):
         for player in team:
             DB.session.add(player)
     DB.session.commit()
-    
+
     # add four teams with some players
     teams = [Team(color="Black",
                   sponsor_id=random_value_lookup(sponsor_lookup).id,
@@ -67,8 +68,9 @@ def mock_teams_games(league, sponsor_lookup):
         for player in team_players[i]:
             team.insert_player(player.id, "captain" in player.name.lower())
     DB.session.commit()
-    
-    # add some random espsy to each team and create a lookup for team id to players
+
+    # add some random espsy to each team and
+    # create a lookup for team id to players
     team_player_lookup = {}
     random_prices = [9.99, 4.75, 100, 15.50, 12.99]
     for i in tqdm(range(0, len(teams)), desc="Adding mock espys to Teams"):
@@ -76,18 +78,19 @@ def mock_teams_games(league, sponsor_lookup):
         team = teams[i]
         for __ in range(0, 4):
             points = random_value_list(random_prices)
-            DB.session.add(Espys(team.id,
-                                 sponsor_id=random_value_lookup(sponsor_lookup).id,
-                                 description="Purchase",
-                                 points=points))
+            espy = Espys(team.id,
+                         sponsor_id=random_value_lookup(sponsor_lookup).id,
+                         description="Purchase",
+                         points=points)
+            DB.session.add(espy)
     DB.session.commit()
-    
+
     # add some games between the teams
     today = datetime.date.today()
     week_ago = today - datetime.timedelta(days=7)
     next_week = today + datetime.timedelta(days=3)
-    last_week_string = week_ago.strftime( "%Y-%m-%d")
-    next_week_string = next_week.strftime( "%Y-%m-%d")
+    last_week_string = week_ago.strftime("%Y-%m-%d")
+    next_week_string = next_week.strftime("%Y-%m-%d")
     games = [Game(last_week_string,
                   "10:00",
                   teams[0].id,
@@ -144,11 +147,11 @@ def mock_teams_games(league, sponsor_lookup):
                   league.id,
                   status="To Be Played",
                   field="WP2")
-                  ]
+             ]
     for game in tqdm(games, "Adding mock games"):
         DB.session.add(game)
     DB.session.commit()
-    
+
     # now add a random score to the game
     for game in tqdm(games, desc="Mocking scores for games"):
         add_random_score(game.id,
@@ -161,7 +164,7 @@ def mock_teams_games(league, sponsor_lookup):
 
 
 def mock_league():
-    """Returns a mock league that was added to local DB"""
+    """Returns a mock league that was added to local DB."""
     # add a demo league
     league = League(name="Demo League")
     DB.session.add(league)
@@ -170,7 +173,7 @@ def mock_league():
 
 
 def create_fresh_tables():
-    """Creates fresh tables and deletes any previous information"""
+    """Creates fresh tables and deletes any previous information."""
     # delete old information
     DB.session.commit()
     DB.engine.execute('''
@@ -188,18 +191,18 @@ def create_fresh_tables():
 
 
 def random_value_lookup(lookup):
-    """Returns a object for a random key in the lookup"""
+    """Returns a object for a random key in the lookup."""
     __, value = random.choice(list(lookup.items()))
     return value
 
 
 def random_value_list(l):
-    """Returns a random value for the given list l"""
+    """Returns a random value for the given list l."""
     return l[random.randint(0, len(l) - 1)]
 
 
 def add_random_score(game_id, team_id, players):
-    """Simulates a score by getting a random score and adding random bats"""
+    """Simulates a score by getting a random score and adding random bats."""
     score = random.randint(1, 15)
     while score > 0:
         batter = random_value_list(players)
@@ -221,11 +224,13 @@ def add_random_score(game_id, team_id, players):
 
 
 def pull_all_pages(url, pagination):
-    """ Pulls the items from all the pages (paginated object)"""
+    """ Pulls the items from all the pages (paginated object)."""
     data = pagination['items']
     if(pagination['has_more']):
-        data = data + pull_all_pages(requests.get(url + pagination['next_url']))
+        data = data + pull_all_pages(requests.get(url +
+                                                  pagination['next_url']))
     return data
+
 
 def pull_fun_count(url):
     """
@@ -261,7 +266,8 @@ def pull_sponsors(url):
     if isinstance(_sponsors, dict):
         _sponsors = pull_all_pages(url, _sponsors)
     sponsors_lookup = {}
-    for sponsor in tqdm(_sponsors, desc="Pulling sponsors from {}".format(url)):
+    for sponsor in tqdm(_sponsors,
+                        desc="Pulling sponsors from {}".format(url)):
         temp = Sponsor(sponsor['sponsor_name'],
                        link=sponsor['link'],
                        description=sponsor['description'])
@@ -269,6 +275,7 @@ def pull_sponsors(url):
         DB.session.add(temp)
     DB.session.commit()
     return sponsors_lookup
+
 
 def pull_leagues(url):
     """
@@ -287,11 +294,18 @@ def pull_leagues(url):
         _leagues = pull_all_pages(url, _leagues)
     leagues_lookup = {}
     for league in tqdm(_leagues, desc="Pulling leagues from {}".format(url)):
-        temp  = League(name=league['name'])
+        temp = League(name=league['league_name'])
         leagues_lookup[league['league_id']] = temp
         DB.session.add(temp)
     DB.session.commit()
     return leagues_lookup
+
+
+def create_email(player_name):
+    """Returns an email for the given player name."""
+    if player_name !=
+    return player_name + str(random.randint(0, 100000)) + "@mlsb.ca",
+
 
 def pull_players(url):
     """
@@ -312,23 +326,25 @@ def pull_players(url):
     for player in tqdm(_players, desc="Pulling players from {}".format(url)):
         if (player['player_name'].lower() != "unassigned"):
             temp = Player(player['player_name'],
-                          player['player_name'] + "@mlsb.ca",
+                          create_email(player['player_name']),
                           gender=player['gender'],
-                          active=player['active']
+                          active=False
                           )
             players_lookup[player['player_id']] = temp
             DB.session.add(temp)
     DB.session.commit()
     return players_lookup
 
+
 def is_player_captain(player, team):
-    """Returns whether the given player is the captain of the team"""
+    """Returns whether the given player is the captain of the team."""
     captain = False
-    if (team['captain'] != None
-        and 'player_id' in team['captain']
-        and (player['player_id'] == team['captain']['player_id'])):
+    if (team['captain'] is not None
+       and 'player_id' in team['captain']
+       and (player['player_id'] == team['captain']['player_id'])):
         captain = True
     return captain
+
 
 def pull_teams(url, player_lookup, sponsor_lookup, league_lookup):
     """
@@ -352,7 +368,9 @@ def pull_teams(url, player_lookup, sponsor_lookup, league_lookup):
                     league_id=league_lookup[team['league_id']].id,
                     year=team['year'])
         # need to add the players from the roster to the team
-        players = requests.get(url + "/api/teamroster/" + team['team_id']).json()
+        players = requests.get(url +
+                               "/api/teamroster/" +
+                               team['team_id']).json()
         for player in players:
             temp.insert_player(player_lookup[player['player_id']].id,
                                is_player_captain(player, team))
@@ -360,6 +378,7 @@ def pull_teams(url, player_lookup, sponsor_lookup, league_lookup):
         DB.session.add(temp)
     DB.session.commit()
     return team_lookups
+
 
 def pull_games(url, team_lookup, league_lookup):
     """
@@ -390,6 +409,7 @@ def pull_games(url, team_lookup, league_lookup):
     DB.session.commit()
     return game_lookup
 
+
 def pull_bats(url, team_lookup, player_lookup, game_lookup):
     """
     pull_bats
@@ -418,6 +438,7 @@ def pull_bats(url, team_lookup, player_lookup, game_lookup):
     DB.session.commit()
     return bat_lookup
 
+
 def pull_espys(url, team_lookup, sponsor_lookup):
     """
     pull_espys
@@ -445,9 +466,10 @@ def pull_espys(url, team_lookup, sponsor_lookup):
         espy_lookup[espy['espy_id']] = temp
         DB.session.add(temp)
     DB.session.commit()
-    return bat_lookup
+    return espy_lookup
 
-def init_database(mock, copy_locally, url):
+
+def init_database(mock, copy_locally, url, create_db):
     """
     init_database
         Initialize the database either by mocking data or copying main
@@ -455,14 +477,16 @@ def init_database(mock, copy_locally, url):
         Parameters:
             mock: whether to mock some data for the current year
             copy_locally: whether to copy the main website locally
-            url" the main website main url (https://www.mlsb.ca)
+            url: the main website main url (https://www.mlsb.ca)
+            create_db: True if database should be created
         Returns:
             None
     """
-    create_fresh_tables()
-    DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
-    pull_fun_count(url)
-    sponsor_lookup = pull_sponsors(url)
+    if (create_db):
+        create_fresh_tables()
+        DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
+        pull_fun_count(url)
+        sponsor_lookup = pull_sponsors(url)
     if (mock):
         print("Adding mock data ...")
         # add the unassigned bats player
@@ -507,10 +531,11 @@ if __name__ == "__main__":
                         help="The main platform URL",
                         default="http:www.mlsb.ca"
                         )
+    prompt = "Set if one wants to mock some data for this year"
     parser.add_argument("-mock",
                         dest="mock",
                         action="store_true",
-                        help="Set if one wants to mock some data",
+                        help=prompt,
                         default=False
                         )
     parser.add_argument("-localCopy",
@@ -519,8 +544,12 @@ if __name__ == "__main__":
                         help="Set if one wants to pull all data from url",
                         default=False
                         )
+    parser.add_argument("-createDB",
+                        dest="createDB",
+                        action="store_true",
+                        help="Set if want to create DB (delete if exists)",
+                        default=False
+                        )
     args = parser.parse_args()
     print(args)
-    init_database(args.mock, args.localCopy, args.url)
-    
-    
+    init_database(args.mock, args.localCopy, args.url, args.createDB)
