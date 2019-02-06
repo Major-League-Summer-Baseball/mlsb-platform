@@ -7,10 +7,10 @@ read -p "Are you sure you want to continue [Y/y]: "  cont
 
 if [ $cont = "Y" ]; then
     echo "Running UI tests"
-    winpty docker-compose exec mlsb behave;
+    behave;
 elif [  $cont = "y" ]; then
     echo "Running UI tests"
-    winpty docker-compose exec mlsb behave;
+    behave;
 else
     echo "Not running tests, have a nice day"
 fi
