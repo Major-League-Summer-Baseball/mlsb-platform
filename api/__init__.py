@@ -27,11 +27,14 @@ else:
                           'CACHE_REDIS_URL': os.environ['REDIS_URL']})
 from os import getcwd
 from os.path import join
+
 # create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # setup caching
 cache.init_app(app)
 DB = SQLAlchemy(app)
