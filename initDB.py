@@ -87,60 +87,60 @@ def mock_teams_games(league, sponsor_lookup):
 
     # add some games between the teams
     today = datetime.date.today()
-    week_ago = today - datetime.timedelta(days=7)
-    next_week = today + datetime.timedelta(days=3)
-    last_week_string = week_ago.strftime("%Y-%m-%d")
-    next_week_string = next_week.strftime("%Y-%m-%d")
-    games = [Game(last_week_string,
+    yesterday = today - datetime.timedelta(days=1)
+    tomorrow = today + datetime.timedelta(days=1)
+    past_string = yesterday.strftime("%Y-%m-%d")
+    upcoming_string = tomorrow.strftime("%Y-%m-%d")
+    games = [Game(past_string,
                   "10:00",
                   teams[0].id,
                   teams[1].id,
                   league.id,
                   status="Completed",
                   field="WP1"),
-             Game(last_week_string,
+             Game(past_string,
                   "10:00",
                   teams[2].id,
                   teams[3].id,
                   league.id,
                   status="Completed",
                   field="WP2"),
-             Game(last_week_string,
+             Game(past_string,
                   "11:00",
                   teams[0].id,
                   teams[2].id,
                   league.id,
                   status="Completed",
                   field="WP1"),
-             Game(last_week_string,
+             Game(past_string,
                   "11:00",
                   teams[1].id,
                   teams[3].id,
                   league.id,
                   status="Completed",
                   field="WP2"),
-             Game(next_week_string,
+             Game(upcoming_string,
                   "10:00",
                   teams[0].id,
                   teams[3].id,
                   league.id,
                   status="To Be Played",
                   field="WP1"),
-             Game(next_week_string,
+             Game(upcoming_string,
                   "10:00",
                   teams[2].id,
                   teams[1].id,
                   league.id,
                   status="To Be Played",
                   field="WP2"),
-             Game(next_week_string,
+             Game(upcoming_string,
                   "11:00",
                   teams[1].id,
                   teams[0].id,
                   league.id,
                   status="To Be Played",
                   field="WP1"),
-             Game(next_week_string,
+             Game(upcoming_string,
                   "11:00",
                   teams[3].id,
                   teams[2].id,
@@ -303,7 +303,6 @@ def pull_leagues(url):
 
 def create_email(player_name):
     """Returns an email for the given player name."""
-    if player_name !=
     return player_name + str(random.randint(0, 100000)) + "@mlsb.ca",
 
 
