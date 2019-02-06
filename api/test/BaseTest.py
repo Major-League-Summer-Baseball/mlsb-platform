@@ -62,7 +62,6 @@ class TestSetup(unittest.TestCase):
         self.players_to_delete = []
         self.sponsors_to_delete = []
         self.leagues_to_delete = []
-        DB.session.expire_all()
         if (not self.tables_created()):
 
             DB.engine.execute('''
@@ -79,54 +78,62 @@ class TestSetup(unittest.TestCase):
             DB.create_all()
 
     def tearDown(self):
-        to_delete = (self.delete_list(self.espys_to_delete) +
-                     self.delete_list(self.bats_to_delete) +
-                     self.delete_list(self.games_to_delete) +
-                     self.delete_list(self.players_to_delete) +
-                     self.delete_list(self.teams_to_delete) +
-                     self.delete_list(self.sponsors_to_delete) +
-                     self.delete_list(self.leagues_to_delete) +
-                     self.delete_list(self.fun_to_delete))
-        final_not_delete = self.delete_list(to_delete)
+        espy_query = Espys.query.get
+        bats_query = Bat.query.get
+        games_query = Game.query.get
+        player_query = Player.query.get
+        team_query = Team.query.get
+        sponsor_query = Sponsor.query.get
+        league_query = League.query.get
+        fun_query = Fun.query.get
+        to_delete = (self.delete_list(self.espys_to_delete, espy_query) +
+                     self.delete_list(self.bats_to_delete, bats_query) +
+                     self.delete_list(self.games_to_delete, games_query) +
+                     self.delete_list(self.players_to_delete, player_query) +
+                     self.delete_list(self.teams_to_delete, team_query) +
+                     self.delete_list(self.sponsors_to_delete, sponsor_query) +
+                     self.delete_list(self.leagues_to_delete, league_query) +
+                     self.delete_list(self.fun_to_delete, fun_query))
+        final_not_delete = to_delete
         if len(final_not_delete) > 0:
             print(final_not_delete)
             self.assertFalse(True,
-                         "Unable to delete everying upon tear down")
-        DB.session.expire_all()
-        
+                             "Unable to delete everying upon tear down")
 
     def increment_counter(self):
-        """Increments the counter by 1"""
+        """Increments the counter by 1."""
         self.counter += 1
 
     def get_counter(self):
-        """Returns the counter used to differentiate between creates object"""
+        """Returns the counter used to differentiate between creates object."""
         return self.counter
 
-    def delete_list(self, values):
-        """Deletes the list of values given from the database"""
+    def delete_list(self, values, query):
+        """Deletes the list of values given from the database."""
         not_deleted = []
-        for item in reversed(values):
+        for item_id in reversed(values):
             try:
-                DB.session.delete(item)
-                DB.session.commit()
+                item = query(item_id)
+                if item is not None:
+                    DB.session.delete(item)
+                    DB.session.commit()
             except Exception as e:
                 print(e)
-                not_deleted.append(item)
+                not_deleted.append(item_id)
         return not_deleted
 
     def tables_created(self):
-        """Returns True if the tables are created"""
+        """Returns True if the tables are created."""
         # TODO figure out how to check if tables are created
         return True
 
     def output(self, data):
-        """Prints the data if show_results is True"""
+        """Prints the data if show_results is True."""
         if self.show_results:
             self.pp.pprint(data)
 
     def add_fun(self, count, year=date.today().year):
-        """Returns a fun json object that was created with a post request"""
+        """Returns a fun json object that was created with a post request."""
         params = {"year": year, "count": count}
         rv = self.app.post(Routes['fun'], data=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
@@ -134,7 +141,7 @@ class TestSetup(unittest.TestCase):
                          "Unable to add fun object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add fun object")
         fun = Fun.query.filter(Fun.year == loads(rv.data)).first()
-        self.fun_to_delete.append(fun)
+        self.fun_to_delete.append(fun.id)
         return fun.json()
 
     def add_sponsor(self,
@@ -143,7 +150,7 @@ class TestSetup(unittest.TestCase):
                     description=None,
                     active=True,
                     nickname=None):
-        """Returns a sponsor json object created with a post request"""
+        """Returns a sponsor json object created with a post request."""
         active = 1 if active else 0
         params = {'sponsor_name': sponsor_name,
                   "link": link,
@@ -156,11 +163,11 @@ class TestSetup(unittest.TestCase):
                          "Unable to add sponsor object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add sponsor object")
         sponsor = Sponsor.query.get(loads(rv.data))
-        self.sponsors_to_delete.append(sponsor)
+        self.sponsors_to_delete.append(sponsor.id)
         return sponsor.json()
 
     def add_league(self, league_name):
-        """Returns a league json object that was created with a post request"""
+        """Returns league json object that was created with a post request."""
         params = {"league_name": league_name}
         rv = self.app.post(Routes['league'], data=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
@@ -168,7 +175,7 @@ class TestSetup(unittest.TestCase):
                          "Unable to add league object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add league object")
         league = League.query.get(loads(rv.data))
-        self.leagues_to_delete.append(league)
+        self.leagues_to_delete.append(league.id)
         return league.json()
 
     def add_player(self,
@@ -177,7 +184,7 @@ class TestSetup(unittest.TestCase):
                    gender=None,
                    password='default',
                    active=True):
-        """Returns a player json object that was created with a post request"""
+        """Returns player json object that was created with a post request."""
         active = 1 if active else 0
         params = {"player_name": player_name,
                   "email": email,
@@ -191,7 +198,7 @@ class TestSetup(unittest.TestCase):
                          "Unable to add player object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add player object")
         player = Player.query.get(loads(rv.data))
-        self.players_to_delete.append(player)
+        self.players_to_delete.append(player.id)
         return player.json()
 
     def add_team(self,
@@ -199,7 +206,7 @@ class TestSetup(unittest.TestCase):
                  sponsor=None,
                  league=None,
                  year=date.today().year):
-        """Returns a team json object that was created with a post request"""
+        """Returns a team json object that was created with a post request."""
         params = {"sponsor_id": sponsor['sponsor_id'],
                   "league_id": league['league_id'],
                   "color": color,
@@ -211,7 +218,7 @@ class TestSetup(unittest.TestCase):
                          "Unable to add team object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add team object")
         team = Team.query.get(loads(rv.data))
-        self.teams_to_delete.append(team)
+        self.teams_to_delete.append(team.id)
         return team.json()
 
     def add_game(self,
@@ -222,7 +229,7 @@ class TestSetup(unittest.TestCase):
                  league,
                  status="",
                  field=""):
-        """Returns a game json object that was created with a post request"""
+        """Returns a game json object that was created with a post request."""
         params = {"home_team_id": int(home_team["team_id"]),
                   "away_team_id": int(away_team["team_id"]),
                   "date": date,
@@ -236,11 +243,11 @@ class TestSetup(unittest.TestCase):
                          "Unable to add game object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add game object")
         game = Game.query.get(loads(rv.data))
-        self.games_to_delete.append(game)
+        self.games_to_delete.append(game.id)
         return game.json()
 
     def add_bat(self, player, team, game, classification, inning=1, rbi=0):
-        """Returns a bat json object that was created with a post request"""
+        """Returns a bat json object that was created with a post request."""
         params = {"player_id": int(player['player_id']),
                   "rbi": rbi,
                   "inning": inning,
@@ -253,7 +260,7 @@ class TestSetup(unittest.TestCase):
                          "Unable to add bat object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add bat object")
         bat = Bat.query.get(loads(rv.data))
-        self.bats_to_delete.append(bat)
+        self.bats_to_delete.append(bat.id)
         return bat.json()
 
     def add_espys(self,
@@ -264,7 +271,7 @@ class TestSetup(unittest.TestCase):
                   receipt=None,
                   time=None,
                   date=None):
-        """Returns a espy json object that was created with a post request"""
+        """Returns a espy json object that was created with a post request."""
         params = {"team_id": team["team_id"],
                   "sponsor_id": sponsor["sponsor_id"],
                   "description": description,
@@ -278,18 +285,18 @@ class TestSetup(unittest.TestCase):
                          "Unable to add espy object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add espy object")
         espy = Espys.query.get(loads(rv.data))
-        self.espys_to_delete.append(espy)
+        self.espys_to_delete.append(espy.id)
         return espy.json()
 
     def add_kik_to_player(self, player, kik):
-        """Adds the kik user name to the player"""
+        """Adds the kik user name to the player."""
         player = DB.session.query(Player).get(player['player_id'])
         player.kik = kik
         DB.session.commit()
         return player.json()
 
     def add_player_to_team(self, team, player, captain=False):
-        """Adds the given player to a team"""
+        """Adds the given player to a team."""
         params = {"player_id": player['player_id']}
         if captain:
             params['captain'] = 1
@@ -300,7 +307,7 @@ class TestSetup(unittest.TestCase):
                          "Unable to add player to team")
 
     def remove_player_from_team(self, team, player):
-        """Removes a player from a team"""
+        """Removes a player from a team."""
         query = "?player_id=" + str(player['player_id'])
         url_request = (Routes['team_roster'] +
                        "/" +
@@ -312,13 +319,13 @@ class TestSetup(unittest.TestCase):
                          "Unable to remove player to team")
 
     def deactivate_player(self, player):
-        """Deactivate the given player"""
+        """Deactivate the given player."""
         p = Player.query.get(player['player_id'])
         p.deactivate()
         DB.session.commit()
 
     def submit_a_score(self, player, game, score, hr=[], ss=[]):
-        """Submits a score and returns the list of bats created"""
+        """Submits a score and returns the list of bats created."""
         data = {'player_id': player['player_id'],
                 'game_id': game['game_id'],
                 'score': score,
@@ -334,11 +341,11 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(loads(rv.data), True, "Unable to submit a game score")
         game_model = Game.query.get(game['game_id'])
         for bat in game_model.bats:
-            self.bats_to_delete.append(bat)
+            self.bats_to_delete.append(bat.id)
         return [bat.json() for bat in game_model.bats]
 
     def submit_a_score_by_kik(self, kik, game, score, hr=[], ss=[]):
-        """Submits a score & returns the list of bats created using kik api"""
+        """Submits a score & returns the list of bats created using kik api."""
         data = {'kik': kik,
                 'game_id': game['game_id'],
                 'score': score,
@@ -352,16 +359,16 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(loads(rv.data), True, message)
         game_model = Game.query.get(game['game_id'])
         for bat in game_model.bats:
-            self.bats_to_delete.append(bat)
+            self.bats_to_delete.append(bat.id)
         return [bat.json() for bat in game_model.bats]
 
     def assertFunModelEqual(self, f1, f2, error_message=""):
-        """Asserts the two fun json objects are equal"""
+        """Asserts the two fun json objects are equal."""
         self.assertEqual(f1['year'], f2['year'], error_message)
         self.assertEqual(f1['count'], f2['count'], error_message)
 
     def assertSponsorModelEqual(self, s1, s2, error_message=""):
-        """Asserts the two sponsors json objects are equal"""
+        """Asserts the two sponsors json objects are equal."""
         self.assertEqual(s1['sponsor_id'], s2['sponsor_id'], error_message)
         self.assertEqual(s1['sponsor_name'], s2['sponsor_name'], error_message)
         self.assertEqual(s1['link'], s2['link'], error_message)
@@ -369,12 +376,12 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(s1['active'], s2['active'], error_message)
 
     def assertLeagueModelEqual(self, l1, l2, error_message=""):
-        """Asserts the two league json objects are equal"""
+        """Asserts the two league json objects are equal."""
         self.assertEqual(l1['league_name'], l2['league_name'], error_message)
         self.assertEqual(l1['league_id'], l2['league_id'], error_message)
 
     def assertGameModelEqual(self, g1, g2, error_message=""):
-        """Asserts the two game json objects are equal"""
+        """Asserts the two game json objects are equal."""
         self.assertEqual(g1['date'], g2['date'], error_message)
         self.assertEqual(g1['time'], g2['time'], error_message)
         self.assertEqual(g1['away_team_id'], g2['away_team_id'], error_message)
@@ -385,14 +392,14 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(g1['game_id'], g2['game_id'], error_message)
 
     def assertPlayerModelEqual(self, p1, p2, error_message=""):
-        """Asserts the two player json objects are equal"""
+        """Asserts the two player json objects are equal."""
         self.assertEqual(p1['player_id'], p2['player_id'], error_message)
         self.assertEqual(p1['player_name'], p2['player_name'], error_message)
         self.assertEqual(p1['gender'], p2['gender'], error_message)
         self.assertEqual(p1['active'], p2['active'], error_message)
 
     def assertTeamModelEqual(self, t1, t2, error_message=""):
-        """Asserts the two team json objects are equal"""
+        """Asserts the two team json objects are equal."""
         self.assertEqual(t1['team_id'], t2['team_id'], error_message)
         self.assertEqual(t1['color'], t2['color'], error_message)
         self.assertEqual(t1['sponsor_id'], t2['sponsor_id'], error_message)
@@ -406,7 +413,7 @@ class TestSetup(unittest.TestCase):
             self.assertEqual(t1['captain'], t2['captain'], error_message)
 
     def assertEspysModelEqual(self, e1, e2, error_message=""):
-        """Asserts the espys fun json objects are equal"""
+        """Asserts the espys fun json objects are equal."""
         self.assertEqual(e1['team_id'], e2['team_id'], error_message)
         self.assertEqual(e1['sponsor_id'], e2['sponsor_id'], error_message)
         self.assertEqual(e1['description'], e2['description'], error_message)
@@ -416,7 +423,7 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(e1['date'], e2['date'], error_message)
 
     def assertBatModelEqual(self, b1, b2, error_message=""):
-        """Asserts the two bat json objects are equal"""
+        """Asserts the two bat json objects are equal."""
         self.assertEqual(b1['bat_id'], b2['bat_id'], error_message)
         self.assertEqual(b1['team_id'], b2['team_id'], error_message)
         self.assertEqual(b1['game_id'], b2['game_id'], error_message)
@@ -432,7 +439,7 @@ class TestSetup(unittest.TestCase):
                         assert_function,
                         expect,
                         error_message=""):
-        """Used to test an invalid post test"""
+        """Used to test an invalid post test."""
         rv = self.app.post(route, data=params, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
@@ -446,7 +453,7 @@ class TestSetup(unittest.TestCase):
                 assert_function,
                 expected_object,
                 error_message=""):
-        """Used to test a put request"""
+        """Used to test a put request."""
         rv = self.app.put(route, data=params, headers=headers)
         self.output(loads(rv.data))
         self.output(expected_object)
@@ -459,7 +466,7 @@ class TestSetup(unittest.TestCase):
                 assert_function,
                 expected_object,
                 error_message=""):
-        """Used to test a get request"""
+        """Used to test a get request."""
         rv = self.app.get(route, headers=headers)
         self.output(loads(rv.data))
         self.output(expected_object)
@@ -474,7 +481,7 @@ class TestSetup(unittest.TestCase):
                         expected_object,
                         expected_message,
                         error_message=""):
-        """Used to test a delete request for a valid resource"""
+        """Used to test a delete request for a valid resource."""
         # check object exists
         self.getTest(route + "/" + str(object_id),
                      SUCCESSFUL_GET_CODE,
@@ -502,7 +509,7 @@ class TestSetup(unittest.TestCase):
                           expected_status_code,
                           expected_message,
                           error_message=""):
-        """Used to test a delete request for an invalid resource"""
+        """Used to test a delete request for an invalid resource."""
         rv = self.app.delete(route + "/" + str(INVALID_ID),
                              headers=headers)
         expect = {'details': INVALID_ID, 'message': expected_message}
@@ -512,7 +519,7 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(rv.status_code, expected_status_code, error_message)
 
     def getListTest(self, route, error_message=""):
-        """Runs a get test on lists"""
+        """Runs a get test on lists."""
         done = False
         while not done:
             rv = self.app.get(route)
@@ -533,7 +540,7 @@ class TestSetup(unittest.TestCase):
 
 
 def addGame(tester, day="2014-02-10", time="22:40"):
-    """Returns a created game (creates, league, sponsor, two teams)"""
+    """Returns a created game (creates, league, sponsor, two teams)."""
     # add two teams, a sponsor and a league
     counter = tester.get_counter()
     tester.increment_counter()
@@ -556,7 +563,7 @@ def addGame(tester, day="2014-02-10", time="22:40"):
 
 
 def addBat(tester, classification):
-    """Returns a created bat
+    """Returns a created bat.
 
     (creates a league, sponsor, two teams, game, player)
     """
@@ -579,7 +586,7 @@ def addBat(tester, classification):
 
 
 def addEspy(tester, points):
-    """Returns a espy transaction
+    """Returns a espy transaction.
 
     (Creates a league, sponsor, team and espys transaction)
     """
