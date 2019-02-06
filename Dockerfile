@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.7
 
 Label maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
 
