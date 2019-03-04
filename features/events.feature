@@ -1,3 +1,6 @@
+#Author: dallas.fraser.waterloo@gmail.com
+#Keywords Summary : Test the league events
+
 Feature: The league events
 	Background:
 		Given I navigate to the "events" page

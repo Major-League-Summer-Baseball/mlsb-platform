@@ -1,3 +1,6 @@
+#Author: dallas.fraser.waterloo@gmail.com
+#Keywords Summary : Test the sponsor banner at the top
+
 Feature: The league schedule
 
 	Background:
@@ -5,3 +8,6 @@ Feature: The league schedule
 
 	Scenario: Ensure some games are displayed
 		Then I see a table cell containing "WP1"
+
+	Scenario: Ensure sorting works
+	
