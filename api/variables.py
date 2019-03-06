@@ -4,6 +4,9 @@ Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds constant variables that used
 '''
+# cache timeout for the main website (how ofter things are cached for)
+CACHE_TIMEOUT = 600
+
 NOTFOUND = "notFound.png"
 SPONSORS = {0: "notFound.png",
             1: "domus.png",

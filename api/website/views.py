@@ -10,7 +10,7 @@ from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
                     redirect, request
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
-from api.variables import UNASSIGNED, EVENTS, NOTFOUND
+from api.variables import UNASSIGNED, EVENTS, NOTFOUND, CACHE_TIMEOUT
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
@@ -204,7 +204,7 @@ def sponsor_page(year, sponsor_id):
 
 
 @app.route(Routes["schedulepage"] + "/<int:year>")
-@cache.cached(timeout=14400)
+@cache.cached(timeout=CACHE_TIMEOUT)
 def schedule(year):
     return render_template("website/schedule.html",
                            route=Routes,
@@ -215,7 +215,7 @@ def schedule(year):
 
 
 @app.route(Routes['standingspage'] + "/<int:year>")
-@cache.cached(timeout=14400)
+@cache.cached(timeout=CACHE_TIMEOUT)
 def standings(year):
     return render_template("website/standings.html",
                            route=Routes,
@@ -226,7 +226,7 @@ def standings(year):
 
 
 @app.route(Routes['statspage'] + "/<int:year>")
-@cache.cached(timeout=600)
+@cache.cached(timeout=CACHE_TIMEOUT)
 def stats_page(year):
     players = player_summary(year)
     return render_template("website/stats.html",
@@ -411,7 +411,7 @@ def get_sponsor_breakdown(year, garbage):
 
 
 @app.route(Routes['espysbreakdown'] + "/<int:year>")
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_espys_breakdown(year):
     teams = DB.session.query(Team).filter(Team.year == year).all()
     result = []
