@@ -153,7 +153,7 @@ def mock_teams_games(league, sponsor_lookup):
     DB.session.commit()
 
     # now add a random score to the game
-    for game in tqdm(games, desc="Mocking scores for games"):
+    for game in tqdm(games[:4], desc="Mocking scores for games"):
         add_random_score(game.id,
                          game.away_team_id,
                          team_player_lookup[game.away_team_id])
