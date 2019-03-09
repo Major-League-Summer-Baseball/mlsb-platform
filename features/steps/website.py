@@ -78,5 +78,10 @@ def assert_top_leader_more_than_bottom(context):
     assert(parse_leader_int(top_leader.text)
            >= parse_leader_int(bottom_leader.text))
 
+@then('I see some sponsor score in the top')
+def assert_sponsors_in_top(context):
+    some_sponsor = ("(//div[contains(@class, 'flickity-slider')]"+
+                    "/div[contains(@class, 'sponsor-cell')]/a)[1]")
+    context.browser.find_element_by_xpath(some_sponsor)
 
 
