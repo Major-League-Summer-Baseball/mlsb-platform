@@ -3,3 +3,8 @@
 
 @tag
 Feature: Sponsor banner
+	Background:
+        Given I navigate to the "home" page
+
+    Scenario: See some sponsots
+        Then I see some sponsor score in the top
