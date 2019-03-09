@@ -18,3 +18,7 @@ def wait_until_loaded(browser, element, delay=DELAY):
     except TimeoutException:
         print("Timeout Exception has been raised")
         raise TimeoutException()
+
+def parse_leader_int(leader_entry):
+    return int(leader_entry.split("-")[-1].strip())
+    
