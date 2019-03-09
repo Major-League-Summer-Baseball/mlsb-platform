@@ -52,10 +52,16 @@ def assert_sample_text(context, text_sample):
     context.browser.find_element_by_xpath(xpath)
 
 @then('I see a table cell containing "{text_sample}"')
-def assert_sample_text(context, text_sample):
+def assert_table_text(context, text_sample):
     text_sample = text_sample.replace('"', '')
     xpath = "//td[contains(text(), '" + text_sample + "')]"
     context.browser.find_element_by_xpath(xpath)
+
+@then('I see a game score in the banner')
+def assert_game_present(context):
+    xpath = "//div[contains(@class, 'game-date')]"
+    context.browser.find_element_by_xpath(xpath)
+
 
 
 
