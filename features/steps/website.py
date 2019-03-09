@@ -9,7 +9,7 @@ from environment import BASE_URL
 from routes import Routes
 from behave import given, when, then
 from steps import current_year
-from steps.utilities import wait_until_loaded
+from steps.utilities import wait_until_loaded, parse_leader_int
 
 
 @given('I navigate to the "{page}" page')
@@ -62,6 +62,21 @@ def assert_game_present(context):
     xpath = "//div[contains(@class, 'game-date')]"
     context.browser.find_element_by_xpath(xpath)
 
+@then('I see some league leaders')
+def assert_league_leaers(context):
+    xpath = "(//ul[contains(@class, 'sleemanList')]/li/span)[1]"
+    context.browser.find_element_by_xpath(xpath)
+
+@then('the top leaders has more than bottom')
+def assert_top_leader_more_than_bottom(context):
+    top = "(//ul[contains(@class, 'sleemanList')]/li)[1]"
+    top_leader = context.browser.find_element_by_xpath(top)
+    bottom = "(//ul[contains(@class, 'sleemanList')]/li)[last()]"
+    bottom_leader = context.browser.find_element_by_xpath(bottom)
+    print(top_leader.text)
+    print(bottom_leader.text)
+    assert(parse_leader_int(top_leader.text)
+           > parse_leader_int(bottom_leader.text))
 
 
 
