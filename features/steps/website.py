@@ -76,7 +76,7 @@ def assert_top_leader_more_than_bottom(context):
     print(top_leader.text)
     print(bottom_leader.text)
     assert(parse_leader_int(top_leader.text)
-           > parse_leader_int(bottom_leader.text))
+           >= parse_leader_int(bottom_leader.text))
 
 
 
