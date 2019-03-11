@@ -34,9 +34,9 @@ services:
         volumes:
             - "postgres:/data"
         ports:
-            - 5433:5432
+            - 5436:5432
         expose:
-            - 5433
+            - 5436
             - 5432
 
     redis:

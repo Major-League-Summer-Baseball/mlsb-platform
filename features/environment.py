@@ -48,9 +48,8 @@ def selenium_browser_chrome(context):
     # chrome_options.add_argument("--disable-gpu")
     # chrome_options.add_argument("--window-size=1920,1080")
 
-    
     capabilities = DesiredCapabilities.CHROME.copy()
-    capabilities['acceptSslCerts'] = True 
+    capabilities['acceptSslCerts'] = True
     capabilities['acceptInsecureCerts'] = True
 
     context.browser = webdriver.Chrome(chrome_options=chrome_options,

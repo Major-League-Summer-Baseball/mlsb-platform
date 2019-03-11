@@ -18,6 +18,7 @@
                 <div id="{{id}}" class="tab-pane fade in">
             {% endif %}
         <h4>{{league.name}}
+        <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="loader{{id}}" />
         <table id="{{id}}League" width="100%" class="display">
             <thead>
                 <tr>
@@ -31,17 +32,6 @@
                 </tr>
             </thead>
             <tbody>
-                {% for game in league.games %}
-                    <tr>
-                        <td>{{game.date}}</td>
-                        <td>{{game.time}}</td>
-                        <td>{{game.score}}</td>
-                        <td><a href="{{route.teampage}}/{{year}}/{{game.home_team_id}}">{{game.home_team}}</a></td>
-                        <td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
-                        <td>{{game.field}}</td>
-                        <td>{{game.status}}</td>
-                    </tr>
-                {% endfor %}
             </tbody>
         </table>
         </div>
@@ -50,13 +40,75 @@
 {% endblock %}
 {% block script %}
 <script>
+
+function displayLeague(league_id, games){
+    var table = $('#{{id}}League').DataTable({
+                    "data": games,
+                    "order": [[0, "asc"]],
+                    "columns": [
+                        {"data": "date"},
+                        {"data": "time"},
+                        {"data": "score"},
+                        {"data": "home_team", "render": teamLinkRender},
+                        {"data": "away_team", "render": teamLinkRender},
+                        {"data": "field"},
+                        {"data": "status"}
+                    ]
+                    
+    });
+    // jump to todays date
+    table.jumpToData("{{base.today}}}", 0);
+    $('#loader' + league_id).hide();
+}
+
+
+function teamLinkRender(data, type, row, meta){
+    if(type === 'display'){
+        console.log(data,row)
+        data = '<a href="{{route.teampage}}/{{year}}/' + data.id + '">' + data.name + '</a>';
+    }
+    return data;
+}
+
+function loadLeague(league_id, url, items){
+    $.ajax ({
+        type: "GET",
+        url: url,
+        contentType: "application/json",
+        data: JSON.stringify({}),
+        dataType: 'json',
+        async: true,
+        success: function (result){
+            if(result.has_next === true){
+                loadLeague(league_id, url, items.concat(result.items))
+            } else{
+                displayLeague(items.concat(result.items))
+            }
+        }, error: function(request, error){
+            console.log(request);
+            console.log(error);
+        }
+    })
+}
+
+// plug-in code for jumping a page with a certain value
+jQuery.fn.dataTable.Api.register( 'page.jumpToData()', function ( data, column ) {
+    var pos = this.column(column, {order:'current'}).data().indexOf( data );
+ 
+    if ( pos >= 0 ) {
+        var page = Math.floor( pos / this.page.info().length );
+        this.page( page ).draw( false );
+    }
+ 
+    return this;
+} );
+
 $(document).ready(ready());
 function ready(){
-    console.log("Done");
+    // load the table for the schedule using ajax
+
     {% for id, league in games.items() %}
-        $('#{{id}}League').DataTable({
-            "order": [[0, "asc"]]
-        });
+        loadLeague({{id}}, "{{route.vschedule}}/{{year}}/{{id}}", []);
     {% endfor %}
 }
 </script>

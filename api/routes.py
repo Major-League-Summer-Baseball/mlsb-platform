@@ -19,6 +19,7 @@ Routes['bat'] = "/api/bats"
 Routes['team_roster'] = "/api/teamroster"
 Routes['espy'] = "/api/espys"
 Routes['fun'] = "/api/fun"
+
 # advanced routes
 Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"
@@ -27,6 +28,7 @@ Routes['vplayerLookup'] = "/api/view/player_lookup"
 Routes['vfun'] = "/api/view/fun"
 Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
 Routes['vleagueleaders'] = "/api/view/league_leaders"
+Routes['vschedule'] = "/api/view/schedule"
 
 # Kik APIS
 Routes['kiksubscribe'] = "/api/kik/subscribe"
@@ -49,6 +51,7 @@ Routes['botcaptaingames'] = "/api/bot/captain/games"
 # -----------------------------------------------------------------------------
 Routes['dindex'] = "/documentation"
 Routes['dresponse'] = "/documentation/object/response"
+
 # do = documentation object
 Routes['doplayer'] = "/documentation/object/player"
 Routes['dobat'] = "/documentation/object/bat"
@@ -59,6 +62,7 @@ Routes['doteamroster'] = "/documentation/object/teamroster"
 Routes['doleague'] = "/documentation/object/league"
 Routes['dofun'] = "/documentation/object/fun"
 Routes['dopagination'] = "/documentation/object/pagination"
+
 # db = documentation basic
 Routes['dbplayer'] = "/documentation/basic/player"
 Routes['dbbat'] = "/documentation/basic/bat"
@@ -68,6 +72,7 @@ Routes['dbteam'] = "/documentation/basic/team"
 Routes['dbteamroster'] = "/documentation/basic/teamroster"
 Routes['dbleague'] = "/documentation/basic/league"
 Routes['dbfun'] = "/documentation/basic/fun"
+
 # dv = documentation view
 Routes['dvgame'] = "/documentation/views/game"
 Routes['dvplayer'] = "/documentation/views/player"
@@ -100,11 +105,13 @@ Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
 Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
 Routes['logo'] = "/logo"
+
 # sponsors pages
 Routes['sponsorspage'] = "/website/sponsor"
 Routes['sponsorspicture'] = "/website/sponsor/picture"
 Routes['sponsorspage'] = "/website/sponsors_list"
 Routes['teampicture'] = "/website/team/picture"
+
 # baseball pages
 Routes['homepage'] = "/website"
 Routes['teampage'] = "/website/teams"
@@ -114,11 +121,14 @@ Routes['teamspage'] = "/website/teams"
 Routes['statspage'] = "/website/stats"
 Routes['playerpage'] = "/website/player"
 Routes['leagueleaderpage'] = "/website/leaders"
+
 # events
 Routes['eventspage'] = "/website/event"
+
 # posts pages
 Routes['posts'] = "/website/posts"
 Routes['postpicture'] = "/website/post/pictures"
+
 # Captain help
 Routes['findunsubscribed'] = "/website/captains/unsubscribed"
 Routes['espysbreakdown'] = "/website/espysbreakdown"
@@ -127,6 +137,7 @@ Routes['sponsorbreakdown'] = "/website/sponsorbreakdown"
 # -----------------------------------------------------------------------------
 # Admin
 # -----------------------------------------------------------------------------
+
 # editting columns
 Routes['aindex'] = "/admin"
 Routes['aportal'] = "/admin/portal"
@@ -144,18 +155,22 @@ Routes['editfun'] = "/admin/edit/fun"
 Routes['nonactiveplayers'] = "/admin/edit/non_active_players"
 Routes['adeactivateplayer'] = "/admin/edit/player/deactivate"
 Routes['adeactivatesponsor'] = "/admin/edit/sponsor/deactivate"
+
 # imports from csv
 Routes['importteam'] = "/admin/import/team"
 Routes['importgame'] = "/admin/import/game"
 Routes['importbat'] = "/admin/import/score"
+
 # import routes
 Routes["import_team_list"] = "/admin/import/team/list"
 Routes["import_game_list"] = "/admin/import/game/list"
 Routes["import_bat_list"] = "/admin/import/bat/list"
+
 # templates
 Routes['team_template'] = "/admin/template/team"
 Routes['game_template'] = "/admin/template/game"
 Routes['bat_template'] = "/admin/template/bat"
+
 # views for checking statuses
 Routes['panel_captain_to_submit'] = "/admin/views/captains"
 # -----------------------------------------------------------------------------

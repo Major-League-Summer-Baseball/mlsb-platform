@@ -17,10 +17,15 @@ def loads(data):
 
 
 def pagination_response(pagination, route):
-    """Returns a pagination repsonse that can be dump into json"""
+    """Returns a pagination response that can be dump into json"""
     items = []
     for item in pagination.items:
         items.append(item.json())
+    return pagination_response_items(pagination, route, items)
+
+
+def pagination_response_items(pagination, route, items):
+    """Returns a pagination response for the given items"""
     response = {}
     response['has_next'] = pagination.has_next
     response['has_prev'] = pagination.has_prev

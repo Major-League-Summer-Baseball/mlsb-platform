@@ -204,7 +204,6 @@ def sponsor_page(year, sponsor_id):
 
 
 @app.route(Routes["schedulepage"] + "/<int:year>")
-@cache.cached(timeout=CACHE_TIMEOUT)
 def schedule(year):
     return render_template("website/schedule.html",
                            route=Routes,
@@ -296,6 +295,8 @@ def leaders_page(year):
                            women=women,
                            title="League Leaders",
                            year=year)
+
+
 '''
 # -----------------------------------------------------------------------------
 #             STATIC PAGES
@@ -445,6 +446,7 @@ def get_espys_breakdown(year):
     tree['children'] = result
     return json.dumps(tree)
 
+
 '''
 # -----------------------------------------------------------------------------
 
@@ -455,7 +457,7 @@ def get_espys_breakdown(year):
 '''
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_sponsor(sponsor_id):
     s = Sponsor.query.get(sponsor_id)
     expect = None
@@ -465,7 +467,7 @@ def get_sponsor(sponsor_id):
     return expect
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_espy(year):
     espy = []
     espys = func.sum(Espys.points).label("espys")
@@ -482,7 +484,7 @@ def get_espy(year):
     return espy
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_team(year, tid):
     result = Team.query.get(tid)
     team = None
@@ -529,7 +531,7 @@ def get_team(year, tid):
     return team
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_teams(year):
     result = (DB.session.query(Team.id, Team.color, Sponsor.nickname)
               .join(Sponsor)
@@ -542,7 +544,7 @@ def get_teams(year):
     return teams
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_games(year=None, summary=False):
     games = {}
     leagues = League.query.all()
@@ -574,7 +576,7 @@ def get_games(year=None, summary=False):
     return games
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_leagues(year):
     result = League.query.all()
     leagues = {}
@@ -613,7 +615,7 @@ def get_upcoming_games(year):
     return game_summary(year=year, today=True, increment=1)
 
 
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def base_data(year):
     base = {}
     base['games'] = get_upcoming_games(year)
@@ -624,6 +626,7 @@ def base_data(year):
     else:
         fun_count = fun_count
     base['fun'] = fun_count
+    base['today'] = datetime.now().strftime("%Y-%m-%d")
     return base
 
 
@@ -736,7 +739,8 @@ def post_raw_html(f, year):
                 result += lines
             lines = fn.readline().strip()
     return result
+
+
 '''
 # -----------------------------------------------------------------------------
 '''
-    
