@@ -12,11 +12,13 @@ from datetime import datetime, date, time
 from api.errors import LeagueDoesNotExist
 from api.routes import Routes
 from flask import request
-from api.variables import PAGE_SIZE
+from api import cache
+from api.variables import PAGE_SIZE, CACHE_TIMEOUT
 from api.helper import pagination_response_items
 
 
 class ScheduleAPI(Resource):
+    @cache.memoize(timeout=CACHE_TIMEOUT)
     def get(self, year, league_id):
         """
             Get request for schedule data
