@@ -208,8 +208,8 @@ def schedule(year):
     return render_template("website/schedule.html",
                            route=Routes,
                            base=base_data(year),
-                           games=get_games(year),
                            title="Schedule",
+                           leagues=get_leagues(),
                            year=year)
 
 
@@ -219,7 +219,7 @@ def standings(year):
     return render_template("website/standings.html",
                            route=Routes,
                            base=base_data(year),
-                           leagues=get_leagues(year),
+                           leagues=get_league_standings(year),
                            title="Standings",
                            year=year)
 
@@ -456,6 +456,10 @@ def get_espys_breakdown(year):
 # -----------------------------------------------------------------------------
 '''
 
+@cache.memoize(timeout=CACHE_TIMEOUT)
+def get_leagues():
+  return [league.json() for league in League.query.all()]
+
 
 @cache.memoize(timeout=CACHE_TIMEOUT)
 def get_sponsor(sponsor_id):
@@ -544,40 +548,9 @@ def get_teams(year):
     return teams
 
 
-@cache.memoize(timeout=CACHE_TIMEOUT)
-def get_games(year=None, summary=False):
-    games = {}
-    leagues = League.query.all()
-    t = time(0, 0)
-    if year is not None:
-        d1 = date(year, 1, 1)
-        d2 = date(year, 12, 30)
-    elif summary:
-        today = date.today()
-        d1 = date(today.year, today.month, today.day - 3)
-        d2 = date(today.year, today.month, today.day + 3)
-    else:
-        d1 = date(2014, 1, 1)
-        d2 = date(date.today().year, 12, 30)
-    start = datetime.combine(d1, t)
-    end = datetime.combine(d2, t)
-    for league in leagues:
-        g = (Game.query.filter(and_(Game.league_id == league.id,
-                                    Game.date.between(start, end)))
-             ).order_by("date").all()
-        games[league.id] = {'league_name': league.name, 'games': []}
-        for game in g:
-            result = game.json()
-            if game.date < datetime.today():
-                scores = game.summary()
-                result['score'] = (str(scores['home_score']) + '-' +
-                                   str(scores['away_score']))
-            games[league.id]['games'].append(result)
-    return games
-
 
 @cache.memoize(timeout=CACHE_TIMEOUT)
-def get_leagues(year):
+def get_league_standings(year):
     result = League.query.all()
     leagues = {}
     for league in result:
