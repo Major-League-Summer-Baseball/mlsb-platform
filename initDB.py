@@ -27,18 +27,19 @@ def mock_teams_games(league, sponsor_lookup):
             None
     """
     # add some players
-    team_one_players = [Player("Captain1", "captain1@mlsb.ca", gender="M"),
-                        Player("MalePlayer1", "mp1@mlsb.ca", gender="M"),
-                        Player("FemalePlayer1", "fp1@mlsb.ca", gender="F")]
-    team_two_players = [Player("Captain2", "captain2@mlsb.ca", gender="F"),
-                        Player("MalePlayer2", "mp2@mlsb.ca", gender="M"),
-                        Player("FemalePlayer2", "fp2@mlsb.ca", gender="F")]
-    team_three_players = [Player("Captain3", "captain3@mlsb.ca", gender="M"),
-                          Player("MalePlayer3", "mp3@mlsb.ca", gender="M"),
-                          Player("FemalePlayer3", "fp3@mlsb.ca", gender="F")]
-    team_four_players = [Player("Captain4", "captain4@mlsb.ca", gender="F"),
-                         Player("MalePlayer4", "mp4@mlsb.ca", gender="M"),
-                         Player("FemalePlayer4", "fp4@mlsb.ca", gender="F")]
+    domain = "@" + league.name.replace(" ", "")
+    team_one_players = [Player("Captain1", "captain1" + domain, gender="M"),
+                        Player("MalePlayer1", "mp1" + domain, gender="M"),
+                        Player("FemalePlayer1", "fp1" + domain, gender="F")]
+    team_two_players = [Player("Captain2", "captain2" + domain, gender="F"),
+                        Player("MalePlayer2", "mp2" + domain, gender="M"),
+                        Player("FemalePlayer2", "fp2" + domain, gender="F")]
+    team_three_players = [Player("Captain3", "captain3" + domain, gender="M"),
+                          Player("MalePlayer3", "mp3" + domain, gender="M"),
+                          Player("FemalePlayer3", "fp3" + domain, gender="F")]
+    team_four_players = [Player("Captain4", "captain4" + domain, gender="F"),
+                         Player("MalePlayer4", "mp4" + domain, gender="M"),
+                         Player("FemalePlayer4", "fp4" + domain, gender="F")]
     team_players = [team_one_players,
                     team_two_players,
                     team_three_players,
@@ -86,74 +87,60 @@ def mock_teams_games(league, sponsor_lookup):
     DB.session.commit()
 
     # add some games between the teams
+    # need a bunch of games
     today = datetime.date.today()
-    yesterday = today - datetime.timedelta(days=1)
-    tomorrow = today + datetime.timedelta(days=1)
-    past_string = yesterday.strftime("%Y-%m-%d")
-    upcoming_string = tomorrow.strftime("%Y-%m-%d")
-    games = [Game(past_string,
-                  "10:00",
-                  teams[0].id,
-                  teams[1].id,
-                  league.id,
-                  status="Completed",
-                  field="WP1"),
-             Game(past_string,
-                  "10:00",
-                  teams[2].id,
-                  teams[3].id,
-                  league.id,
-                  status="Completed",
-                  field="WP2"),
-             Game(past_string,
-                  "11:00",
-                  teams[0].id,
-                  teams[2].id,
-                  league.id,
-                  status="Completed",
-                  field="WP1"),
-             Game(past_string,
-                  "11:00",
-                  teams[1].id,
-                  teams[3].id,
-                  league.id,
-                  status="Completed",
-                  field="WP2"),
-             Game(upcoming_string,
-                  "10:00",
-                  teams[0].id,
-                  teams[3].id,
-                  league.id,
-                  status="To Be Played",
-                  field="WP1"),
-             Game(upcoming_string,
-                  "10:00",
-                  teams[2].id,
-                  teams[1].id,
-                  league.id,
-                  status="To Be Played",
-                  field="WP2"),
-             Game(upcoming_string,
-                  "11:00",
-                  teams[1].id,
-                  teams[0].id,
-                  league.id,
-                  status="To Be Played",
-                  field="WP1"),
-             Game(upcoming_string,
-                  "11:00",
-                  teams[3].id,
-                  teams[2].id,
-                  league.id,
-                  status="To Be Played",
-                  field="WP2")
-             ]
+    games = []
+    for day in range(-3, 3):
+      date_string = (today + datetime.timedelta(days=day)).strftime("%Y-%m-%d")
+      status = "Completed" if day < 0 else "To Be Played"
+      games.append(Game(date_string,
+                        "10:00",
+                        teams[0].id,
+                        teams[1].id,
+                        league.id,
+                        status=status,
+                        field="WP1"))
+      games.append(Game(date_string,
+                        "10:00",
+                        teams[2].id,
+                        teams[3].id,
+                        league.id,
+                        status=status,
+                        field="WP2"))
+      games.append(Game(date_string,
+                        "11:00",
+                        teams[0].id,
+                        teams[2].id,
+                        league.id,
+                        status=status,
+                        field="WP1"))
+      games.append(Game(date_string,
+                        "11:00",
+                        teams[2].id,
+                        teams[1].id,
+                        league.id,
+                        status=status,
+                        field="WP2"))
+      games.append(Game(date_string,
+                        "12:00",
+                        teams[0].id,
+                        teams[3].id,
+                        league.id,
+                        status=status,
+                        field="WP1"))
+      games.append(Game(date_string,
+                        "12:00",
+                        teams[2].id,
+                        teams[1].id,
+                        league.id,
+                        status=status,
+                        field="WP2"))
     for game in tqdm(games, "Adding mock games"):
         DB.session.add(game)
     DB.session.commit()
 
     # now add a random score to the game
-    for game in tqdm(games[:4], desc="Mocking scores for games"):
+    for game in tqdm(games[:18], desc="Mocking scores for games"):
         add_random_score(game.id,
                          game.away_team_id,
                          team_player_lookup[game.away_team_id])
@@ -163,10 +150,10 @@ def mock_teams_games(league, sponsor_lookup):
     DB.session.commit()
 
 
-def mock_league():
+def mock_league(league_name="Demo League"):
     """Returns a mock league that was added to local DB."""
     # add a demo league
-    league = League(name="Demo League")
+    league = League(name=league_name)
     DB.session.add(league)
     DB.session.commit()
     return league
@@ -491,6 +478,8 @@ def init_database(mock, copy_locally, url, create_db):
         # add the unassigned bats player
         league = mock_league()
         mock_teams_games(league, sponsor_lookup)
+        league_2 = mock_league(league_name="Mock League 2")
+        mock_teams_games(league_2, sponsor_lookup)
     else:
         if(copy_locally):
             print("Pulling a local copy of the given website")
