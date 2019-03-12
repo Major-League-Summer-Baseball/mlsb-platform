@@ -8,3 +8,6 @@ Feature: The league schedule
 
     Scenario: Ensure some games are displayed
         Then I see a table cell containing "WP1"
+
+    Scenario: Ensure table sorted by date and on today
+        Then I see a table cell containing today's date
