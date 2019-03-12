@@ -59,5 +59,5 @@ class ScheduleAPI(Resource):
             else:
                 result['score'] = ""
             data.append(result)
-        url_route = Routes['vschedule'] + "/" + year + "/" + league_id
+        url_route = Routes['vschedule'] + "/" + str(year) + "/" + str(league_id)
         return pagination_response_items(games, url_route, data)
