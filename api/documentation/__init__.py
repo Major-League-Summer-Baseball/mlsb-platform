@@ -193,6 +193,12 @@ def league_leaders_view_doc():
                            route=Routes,
                            errors=ERRORS)
 
+@app.route(Routes['dvschedule'])
+def schedule_view_doc():
+  return render_template('documentation/scheduleView.html',
+                         route=Routes,
+                         errors=ERRORS)
+
 # -----------------------------------------------------------------------------
 # KIK documentation
 # -----------------------------------------------------------------------------

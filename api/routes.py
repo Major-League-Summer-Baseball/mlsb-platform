@@ -81,6 +81,8 @@ Routes['dvfun'] = "/documentation/views/fun"
 Routes['dvplayerLookup'] = "/documentation/view/player_lookup"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
+Routes['dvschedule'] = "/documentation/views/schedule"
+
 # kik documentation
 Routes['dkiksubscribe'] = "/documentation/kik/subscribe"
 Routes['dkiksubmitscore'] = "/documentation/kik/submit_score"
@@ -89,6 +91,7 @@ Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
 Routes['dkiktransaction'] = "/documentation/kik/transaction"
 Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
 Routes['dkikunsubscribe'] = "/documentation/kik/unsubscribe"
+
 # bot documentation
 Routes['dbotsubscribe'] = "/documentation/bot/subscribe"
 Routes['dbotsubmitscore'] = "/documentation/bot/submit_score"
