@@ -41,48 +41,64 @@
 {% block script %}
 <script>
 
+/** Displays the given league and its games as Data Table.*/
 function displayLeague(league_id, games){
-    var table = $('#{{id}}League').DataTable({
+    var table = $('#'+ league_id +'League').DataTable({
                     "data": games,
                     "order": [[0, "asc"]],
                     "columns": [
                         {"data": "date"},
                         {"data": "time"},
                         {"data": "score"},
-                        {"data": "home_team", "render": teamLinkRender},
-                        {"data": "away_team", "render": teamLinkRender},
+                        {"data": "home_team", "render": homeTeamLinkRender},
+                        {"data": "away_team", "render": awayTeamLinkRender},
                         {"data": "field"},
                         {"data": "status"}
                     ]
                     
     });
+
     // jump to todays date
-    table.jumpToData("{{base.today}}}", 0);
+    table.page.jumpToData("{{base.today}}", 0);
     $('#loader' + league_id).hide();
 }
 
-
-function teamLinkRender(data, type, row, meta){
+/** Renders the away team as a link. */
+function awayTeamLinkRender(data, type, row, meta){
     if(type === 'display'){
-        console.log(data,row)
-        data = '<a href="{{route.teampage}}/{{year}}/' + data.id + '">' + data.name + '</a>';
+        data = '<a href="{{route.teampage}}/{{year}}/' + row.away_team_id + '">' + row.away_team + '</a>';
     }
     return data;
 }
 
-function loadLeague(league_id, url, items){
+/** Renders the home team as a link*/
+function homeTeamLinkRender(data, type, row, meta){
+    if(type === 'display'){
+        data = '<a href="{{route.teampage}}/{{year}}/' + row.home_team_id + '">' + row.home_team + '</a>';
+    }
+    return data;
+}
+
+/**
+* Load the given league.
+* 
+* @param {int} league_id - the id of the league
+* @param {string} url - the get url request
+* @param {Array.<Object>} games - a list of games
+*/
+function loadLeague(league_id, url, games){
     $.ajax ({
         type: "GET",
         url: url,
         contentType: "application/json",
-        data: JSON.stringify({}),
         dataType: 'json',
         async: true,
         success: function (result){
+            games = games.concat(result.items);
             if(result.has_next === true){
-                loadLeague(league_id, url, items.concat(result.items))
+                loadLeague(league_id, url, games)
             } else{
-                displayLeague(items.concat(result.items))
+                displayLeague(league_id, games)
             }
         }, error: function(request, error){
             console.log(request);
@@ -91,22 +107,23 @@ function loadLeague(league_id, url, items){
     })
 }
 
-// plug-in code for jumping a page with a certain value
-jQuery.fn.dataTable.Api.register( 'page.jumpToData()', function ( data, column ) {
-    var pos = this.column(column, {order:'current'}).data().indexOf( data );
- 
-    if ( pos >= 0 ) {
-        var page = Math.floor( pos / this.page.info().length );
-        this.page( page ).draw( false );
-    }
- 
-    return this;
-} );
-
+/** Called when document is ready. */
 $(document).ready(ready());
 function ready(){
-    // load the table for the schedule using ajax
 
+    // plug-in code for jumping a page with a certain value
+    jQuery.fn.dataTable.Api.register( 'page.jumpToData()', function ( data, column ) {
+        var pos = this.column(column, {order:'current'}).data().indexOf( data );
+     
+        if ( pos >= 0 ) {
+            var page = Math.floor( pos / this.page.info().length );
+            this.page( page ).draw( false );
+        }
+     
+        return this;
+    } );
+
+    // load the table for the schedule using ajax
     {% for id, league in games.items() %}
         loadLeague({{id}}, "{{route.vschedule}}/{{year}}/{{id}}", []);
     {% endfor %}
