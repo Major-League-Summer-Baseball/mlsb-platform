@@ -5,11 +5,16 @@
 @summary: The steps for various website pages
 '''
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+
 from environment import BASE_URL
 from routes import Routes
 from behave import given, when, then
 from steps import current_year
 from steps.utilities import wait_until_loaded, parse_leader_int
+import datetime
 
 
 @given('I navigate to the "{page}" page')
@@ -51,11 +56,16 @@ def assert_sample_text(context, text_sample):
     xpath = "//p[contains(text(), '" + text_sample + "')]"
     context.browser.find_element_by_xpath(xpath)
 
+@then("I see a table cell containing today's date")
+def assert_table_today(context):
+    assert_table_text(context, datetime.date.today().strftime("%Y-%m-%d"))
+
 @then('I see a table cell containing "{text_sample}"')
 def assert_table_text(context, text_sample):
     text_sample = text_sample.replace('"', '')
     xpath = "//td[contains(text(), '" + text_sample + "')]"
-    context.browser.find_element_by_xpath(xpath)
+    element = (By.XPATH, xpath)
+    wait_until_loaded(context.browser, element)
 
 @then('I see a game score in the banner')
 def assert_game_present(context):
@@ -84,4 +94,10 @@ def assert_sponsors_in_top(context):
                     "/div[contains(@class, 'sponsor-cell')]/a)[1]")
     context.browser.find_element_by_xpath(some_sponsor)
 
+
+def wait_for_element(driver, element, TIMEOUT=10):
+    # wait for element to appear, then hover it
+    wait = WebDriverWait(driver, TIMEOUT)
+    men_menu = wait.until(ec.visibility_of_element_located(element))
+    ActionChains(driver).move_to_element(men_menu).perform()
 
