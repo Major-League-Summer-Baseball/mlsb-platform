@@ -1,25 +1,25 @@
 {% extends "website/new-base.html" %}
 {% block content %}
     <ul class="nav nav-pills" id="listing">
-        {% for id, league in games.items() %}
+        {% for league in leagues %}
             {% if loop.index == 1 %}
-                <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
+                <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
             {% else %}
-                <li role="presentation" class="presentation"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
+                <li role="presentation" class="presentation"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
             {% endif %}
         {% endfor %}
         
     </ul>
     <div class="tab-content">
-    {% for id, league in games.items() %}
+    {% for league in leagues %}
             {% if loop.index == 1 %}
-                <div id="{{id}}" class="tab-pane fade in active">
+                <div id="{{league.league_id}}" class="tab-pane fade in active">
             {% else %}
-                <div id="{{id}}" class="tab-pane fade in">
+                <div id="{{league.league_id}}" class="tab-pane fade in">
             {% endif %}
         <h4>{{league.name}}
-        <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="loader{{id}}" />
-        <table id="{{id}}League" width="100%" class="display">
+        <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="loader{{league.league_id}}" />
+        <table id="{{league.league_id}}League" width="100%" class="display">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -96,7 +96,7 @@ function loadLeague(league_id, url, games){
         success: function (result){
             games = games.concat(result.items);
             if(result.has_next === true){
-                loadLeague(league_id, url, games)
+                loadLeague(league_id, result.next_url, games)
             } else{
                 displayLeague(league_id, games)
             }
@@ -124,8 +124,8 @@ function ready(){
     } );
 
     // load the table for the schedule using ajax
-    {% for id, league in games.items() %}
-        loadLeague({{id}}, "{{route.vschedule}}/{{year}}/{{id}}", []);
+    {% for league in leagues %}
+        loadLeague({{league.league_id}}, "{{route.vschedule}}/{{year}}/{{league.league_id}}", []);
     {% endfor %}
 }
 </script>
