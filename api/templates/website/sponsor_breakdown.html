@@ -37,7 +37,6 @@
 {% block script %}
 <script>
 function ready(){
-    console.log("Done");
     $('#teams').DataTable({
         "order": [[0, "asc"]]
     });
@@ -76,7 +75,6 @@ function ready(){
         .attr("y1", "100%");
     d3.json("{{route.sponsorbreakdown}}/{{year}}/1", function(root) {
         $("#img1").hide();
-        console.log(root)    
         hierarchy.nodes(root);
         x.domain([0, root.value]).nice();
         down(root, 0);

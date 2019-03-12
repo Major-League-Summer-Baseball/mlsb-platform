@@ -95,7 +95,6 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
 var updates = {};
 
 function postPlayer(){
-    console.log("Fucker");
     var email, player_name, gender;
     email = $('#newEmail').val();
     player_name = $("#newName").val();
@@ -127,8 +126,8 @@ function postPlayer(){
           $("#newName").val('');
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       }
     });
 }
@@ -139,11 +138,9 @@ function change(id, cat){
     }
     updates[id][cat] = $('#' + id + '_' + cat).val();
     $('#updateButton').attr('disabled', false);
-    console.log(updates);
 }
 
 function deletePlayer(id){
-    console.log("Fucker");
     var email, player_name, gender;
     email = $('#newEmail').val();
     player_name = $("#newName").val();
@@ -161,11 +158,10 @@ function deletePlayer(id){
       success: function (results){
           alert('Player was removed successfully');
           $('#'+id).remove();
-          console.log(results    )
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }
@@ -176,8 +172,6 @@ function putPlayers(){
     }
 }
 function putPlayer(id, attributes){
-    console.log("Fucker", attributes);
-    console.log(id);
     $.ajax
     ({
       type: "PUT",
@@ -189,11 +183,10 @@ function putPlayer(id, attributes){
       dataType: "json",
       success: function (results){
           alert('Player was updated successfully');
-          console.log(results)
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }
@@ -201,11 +194,9 @@ function putPlayer(id, attributes){
 function searchPlayer(){
     var search = $('#searchValue').val();
     var player;
-    console.log(search)
     $("#myTable tr").each(function(){
             player = $('#'+this.id+"_player_name").val();
             if (player != null){
-                console.log(player, this.id, player.indexOf(search));
                 if (player.indexOf(search) > -1){
                     $("#"+this.id).show();
                 }else{

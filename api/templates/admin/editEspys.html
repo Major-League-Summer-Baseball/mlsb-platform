@@ -121,7 +121,6 @@ function addEspy(team_id){
     if (time != ""){
         data['time'] = time
     }
-    console.log(data);
     $.ajax
     ({
       type: "POST",
@@ -133,7 +132,6 @@ function addEspy(team_id){
       dataType: "json",
       success: function (result){
           alert('Espys was added to team successfully');
-          console.log(result);
           var i1,i2, result;
           i1 = '<td>'+result +'</td>' + '<td>'+sponsor +'</td>' + '<td>'+description +'</td>'+ '<td>'+ points +'</td>' +  '<td>'+date +'</td>' + '<td>'+time +'</td>'+ '<td>'+receipt +'</td>'
           i2 = '<td><button type="button" class="btn btn-warning" onclick="deleteEspys('+result+')">Delete Espy</button></rd>'
@@ -141,15 +139,14 @@ function addEspy(team_id){
           $("#espys").append(result);
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
-          console.log(request.responseJSON);
+          console.error(request.text);
+          console.error(error);
+          console.error(request.responseJSON);
       } 
     });
 }
 
 function deleteEspys(espy_id){
-    console.log("Fucker");
     var data = { "espy_id": espy_id};
     $.ajax
     ({
@@ -161,14 +158,13 @@ function deleteEspys(espy_id){
       data: JSON.stringify(data),
       dataType: "json",
       success: function (results){
-          console.log(results)
           alert('Espy was removed from team successfully');
           $('#'+espy_id).remove()
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
-          console.log(request.responseJSON);
+          console.error(request.text);
+          console.error(error);
+          console.error(request.responseJSON);
       } 
     });
 }

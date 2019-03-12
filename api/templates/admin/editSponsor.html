@@ -105,7 +105,6 @@
 var updates = {};
 
 function postSponsor(){
-    console.log("Fucker");
     var sponsor_name, link, description;
     sponsor_name = $("#newName").val();
     link = $("#newLink").val();
@@ -115,7 +114,6 @@ function postSponsor(){
                 "link": link,
                 "description": description
                  };
-    console.log(data);
     $.ajax
     ({
       type: "POST",
@@ -141,8 +139,8 @@ function postSponsor(){
           $("#newDescription").val('');
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       }
     });
 }
@@ -153,11 +151,9 @@ function change(id, cat){
     }
     updates[id][cat] = $('#' + id + '_' + cat).val();
     $('#updateButton').attr('disabled', false);
-    console.log(updates);
 }
 
 function deleteSponsor(id){
-    console.log("Fucker");
     var data = { "id": id};
     $.ajax
     ({
@@ -173,11 +169,10 @@ function deleteSponsor(id){
       success: function (results){
           alert('Sponsor was removed successfully');
           $('#'+id).remove();
-          console.log(results    )
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }
@@ -188,8 +183,6 @@ function putSponsors(){
     }
 }
 function putSponsor(id, attributes){
-    console.log("Fucker", attributes);
-    console.log(id);
     $.ajax
     ({
       type: "PUT",
@@ -203,11 +196,10 @@ function putSponsor(id, attributes){
       dataType: "json",
       success: function (results){
           alert('sponsor was updated successfully');
-          console.log(results)
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }

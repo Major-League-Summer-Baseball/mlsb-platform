@@ -101,8 +101,8 @@ function loadLeague(league_id, url, games){
                 displayLeague(league_id, games)
             }
         }, error: function(request, error){
-            console.log(request);
-            console.log(error);
+            console.error(request);
+            console.error(error);
         }
     })
 }

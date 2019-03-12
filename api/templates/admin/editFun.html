@@ -69,7 +69,6 @@
 var updates = {};
 
 function postFun(){
-    console.log("Fucker");
     var year, count;
     year = $('#newYear').val();
     count = $("#newCount").val();
@@ -94,8 +93,8 @@ function postFun(){
           $("#newCount").val('');
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       } 
     });
 }
@@ -106,11 +105,9 @@ function change(id, cat){
     }
     updates[id][cat] = $('#' + id + '_' + cat).val();
     $('#updateButton').attr('disabled', false);
-    console.log(updates);
 }
 
 function deleteFun(id){
-    console.log("Fucker");
     var data = { "id": id};
     $.ajax
     ({
@@ -124,11 +121,10 @@ function deleteFun(id){
       success: function (results){
           alert('Fun was removed successfully');
           $('#'+id).remove();
-          console.log(results    )
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       } 
     });
 }
@@ -140,8 +136,6 @@ function putFuns(){
 }
 
 function putFun(id, attributes){
-    console.log("Fucker", attributes);
-    console.log(id);
     $.ajax
     ({
       type: "PUT",
@@ -153,11 +147,10 @@ function putFun(id, attributes){
       dataType: "json",
       success: function (results){
           alert('Fun was updated successfully');
-          console.log(results)
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       } 
     });
 }

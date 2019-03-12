@@ -355,7 +355,6 @@ function postBat(team, team_id){
             'inning': inning,
             'hit': hit
             }
-    console.log(data);
     $.ajax
     ({
       type: "POST",
@@ -375,9 +374,7 @@ function postBat(team, team_id){
           /*i6 = makePlayerSelect(bat_id, player_id);*/
           i6 = '<button class="btn btn-danger" onclick="deleteBat('+bat_id+');">Delete Bat </button>'
           result = '<tr id="'+bat_id+'"><td>' + bat_id + '</td><td>'+player_name+'</td><td>' + rbi + '</td><td>'+inning+ '</td><td>'+hit+ '</td><td>'+i6+ '</td></tr>'
-          console.log(result)
           $("#"+team+"Bats").append(result);
-          console.log()
           $('#'+team+"_new_player_id").val("default");
           $('#'+team+"_outside_new_player_id").val("default");
           $('#'+team+"_new_rbi").val("");
@@ -385,8 +382,8 @@ function postBat(team, team_id){
           $('#'+team+"_new_hit").val("default");
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       } 
     });
 }
@@ -406,11 +403,10 @@ function deleteBat(bat_id){
       success: function (results){
           alert('Bat was removed successfully');
           $('#'+bat_id).remove();
-          console.log(results)
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       } 
     });
 }

@@ -188,7 +188,6 @@
     var funIndex = 0
     function updateGauge(){
         funIndex = (funIndex + 1) % funs.length;
-        console.log(funs);
         gauge2.update(funs[funIndex].count)
         $('#funMeter').text('Fun Meter ' + funs[funIndex].year);
     }

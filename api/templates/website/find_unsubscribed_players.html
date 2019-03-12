@@ -20,7 +20,6 @@
 {% block script %}
 <script>
 function ready(){
-    console.log("Done");
     $('#teams').DataTable({
         "order": [[0, "asc"]]
     });
@@ -40,15 +39,14 @@ function findPlayers(){
       async: false,
       dataType: "json",
       success: function (players){
-          console.log(players);
           for (var i=0; i<players.length; i++){
               element = '<li class="list-group-item leaderPoint">' + players[i].player_name + '</li>'
               $('#playerList').append(element);
           }
       }, error: function(request, error){
           alert("There was a problem. Contact scores@mlsb.ca");
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
     } 
     });
 }

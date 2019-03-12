@@ -129,7 +129,6 @@ var updates = {};
 function makeSponsors(sponsor, id){
     var select = '<select class="selectpicker" value="" id="'+id+'_sponsor_id" onclick="change('+id+', \'sponsor_id\');">';
     $("#newSponsorId > option").each(function(){
-        console.log(this.text, this.value)
         if (this.value != sponsor){
             select += '<option value="' + this.value+'">'+this.text+'</option>';
         }else{
@@ -143,7 +142,6 @@ function makeSponsors(sponsor, id){
 function makeLeagues(league, id){
     var select = '<select class="selectpicker" value="" id="'+id+'_league_id" onclick="change('+id+', \'league_id\');">';
     $("#newLeagueId > option").each(function(){
-        console.log(this.text, this.value)
         select += '<option value="' + this.value+'">'+this.text+'</option>';
     });
     select += '</select>'
@@ -151,7 +149,6 @@ function makeLeagues(league, id){
 }
 
 function postTeam(){
-    console.log("Fucker");
     var color, sponsor_id, league_id, year, espys;
     color = $('#newColor').val();
     sponsor_id = $('#newSponsorId').val();
@@ -192,8 +189,8 @@ function postTeam(){
           $('#newEspys').val('');
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       }
     });
 }
@@ -208,11 +205,9 @@ function change(id, cat){
         updates[id][cat] = $('#' + id + '_' + cat).val();
     }
     $('#updateButton').attr('disabled', false);
-    console.log(updates);
 }
 
 function deleteTeam(id){
-    console.log("Fucker");
     var data = { "id": id};
     $.ajax
     ({
@@ -226,11 +221,10 @@ function deleteTeam(id){
       success: function (results){
           alert('Team was removed successfully');
           $('#'+id).remove();
-          console.log(results    )
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }
@@ -241,8 +235,6 @@ function putTeams(){
     }
 }
 function putTeam(id, attributes){
-    console.log("Fucker", attributes);
-    console.log(id);
     $.ajax
     ({
       type: "PUT",
@@ -256,9 +248,9 @@ function putTeam(id, attributes){
           alert('team was updated successfully');
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(request.text);
-          console.log(error);
+          console.error(request);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }

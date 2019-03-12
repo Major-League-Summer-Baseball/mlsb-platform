@@ -186,7 +186,6 @@ function makeTeams(id, league, team, team_id){
 }
 
 function postGame(){
-    console.log("Fucker");
     var away_team_id,home_team_id, date, time, status, league_id, field, data;
     league_id = $('#new_league_id').val();
     away_team_id = $('#new_away_team_id').val();
@@ -194,7 +193,6 @@ function postGame(){
     field = $('#new_field').val();
     time = $('#new_time').val();
     date = $('#new_date').val();
-    console.log(away_team_id,home_team_id, date,status, league_id);
     if (away_team_id == home_team_id){
         alert("One team cannot play itself");
         return;
@@ -203,7 +201,6 @@ function postGame(){
         return;
     }
     status = $('#new_status').val();
-    console.log("Here");
     data = {
             'league_id': league_id,
             'away_team_id':away_team_id,
@@ -213,7 +210,6 @@ function postGame(){
             'time':time,
             'field':field
             }
-    console.log(data);
     $.ajax
     ({
       type: "POST",
@@ -236,12 +232,11 @@ function postGame(){
           i10 = '    <button type="button" class="btn btn-danger" onclick="deleteGame('+game_id+');">Delete</button>';
           
           result = '<tr id="'+game_id+'"><td>' + game_id + '</td><td>Can\'t edit which league the game belongs to</td><td>' + i3 + '</td><td>'+i4+ '</td><td>'+i5+ '</td><td>'+i6+ '</td><td>'+i7+ '</td><td>'+i8+'</td><td>'+i9+'</td><td>'+i10+'</td></tr>'
-          console.log(result)
           $("#gameTable").append(result);
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request);
-          console.log(error);
+          console.error(request);
+          console.error(error);
       } 
     });
 }
@@ -250,14 +245,11 @@ function change(id, cat){
     if (!(id  in updates)){
         updates[id] = {}
     }
-    console.log('#' + id + '_' + cat);
     updates[id][cat] = $('#' + id + '_' + cat).val();
     $('#updateButton').attr('disabled', false);
-    console.log(updates);
 }
 
 function deleteGame(id){
-    console.log("Fucker");
     var data = { "id": id};
     $.ajax
     ({
@@ -273,8 +265,8 @@ function deleteGame(id){
           $('#'+id).remove();
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
     } 
     });
 }
@@ -285,8 +277,6 @@ function putGames(){
     }
 }
 function putGame(id, attributes){
-    console.log("Fucker", attributes);
-    console.log(id);
     $.ajax
     ({
       type: "PUT",
@@ -300,8 +290,8 @@ function putGame(id, attributes){
           alert('game was updated successfully');
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
     } 
     });
 }

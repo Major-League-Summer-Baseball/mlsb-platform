@@ -120,7 +120,6 @@ function addPlayer(team_id){
     var player_id  = $('#selectPlayer').val();
     var player_name = $('#selectPlayer option:selected').text();
     var data = { "player_id": player_id};
-    console.log(data);
     $.ajax
     ({
       type: "POST",
@@ -142,14 +141,13 @@ function addPlayer(team_id){
           $('#captainSelect').append(option);
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
-          console.log(request.text);
-          console.log(error);
+          console.error(request.text);
+          console.error(error);
       }
     });
 }
 
 function deletePlayer(player_id, team_id){
-    console.log("Fucker");
     var data = { "player_id": player_id};
     $.ajax
     ({
@@ -161,13 +159,12 @@ function deletePlayer(player_id, team_id){
       data: JSON.stringify(data),
       dataType: "json",
       success: function (results){
-          console.log(results)
           alert('player was removed from team successfully');
           $('#'+player_id).remove()
       }, error: function(request, error){
          showErrors(request.responseJSON, request.status);
-         console.log(request.text);
-         console.log(error);
+         console.error(request.text);
+         console.error(error);
       }
     });
 }

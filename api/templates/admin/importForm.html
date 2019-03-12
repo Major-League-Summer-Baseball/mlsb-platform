@@ -42,7 +42,6 @@
 {% block script %}
 <script>
 function showModal(){
-    console.log("Show Modal");
     $('#file-div').show();
     $('#file_modal').modal("show");
     $('#warnings').empty();
@@ -72,7 +71,6 @@ function submitForm(){
         processData: false,
         async: false,
         success: function(warnings) {
-            console.log(warnings);
             $('#file-div').hide();
             $('#file_modalText').text('--');
             $('#modal-title').text('Successful');
@@ -83,8 +81,8 @@ function submitForm(){
             }
         }, error: function(request, error){
             showErrors(request.responseJSON, request.status);
-            console.log(request.responseJSON);
-            console.log(error);
+            console.error(request.responseJSON);
+            console.error(error);
         }
     });
 }
