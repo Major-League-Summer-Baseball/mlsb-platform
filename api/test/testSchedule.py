@@ -4,9 +4,7 @@
 @organization: MLSB API
 @summary: Tests the schedule view api
 '''
-import unittest
 
-from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from api.errors import LeagueDoesNotExist
