@@ -31,13 +31,16 @@ class ScheduleAPI(Resource):
                 mimetype: application/json
                 data: [
                         {
+                            "away_team_id": int,
+                            "away_team": str,
                             "date": str,
-                            "time": str,
-                            "score": int,
-                            "home_team": {"id": teamId, "name": teamName},
-                            "away_team": {"id": teamId, "name": teamName},
                             "field": str,
-                            "status": str
+                            "home_team_id": int,
+                            "home_team": str,
+                            "league_id": int,
+                            "score": str(home team - away team),
+                            "status": str,
+                            "time": str
                         }
                     ]
         """
