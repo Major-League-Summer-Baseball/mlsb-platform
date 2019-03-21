@@ -30,54 +30,8 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li>
-                    <a onclick="toggleBasics();">
-                      RESTful routes
-                    </a>
-                </li>
-                <li class="indent-nav basicsSidebar" style="display: none">
-                    <a href="{{route.dbbat}}">
-                      Bat Route
-                    </a>
-                </li>
-
-                <li class="indent-nav basicsSidebar" style="display: none">
-                    <a href="{{route.dbgame}}">
-                      Game Route
-                    </a>
-                </li>
-                <li class="indent-nav basicsSidebar" style="display: none">
-                    <a href="{{route.dbplayer}}">
-                      Player Route
-                    </a>
-                </li>
-                <li class="indent-nav basicsSidebar" style="display: none">
-                    <a href="{{route.dbsponsor}}">
-                      Sponsor Route
-                    </a>
-                </li>
-                <li class="indent-nav basicsSidebar" style="display: none">
-                    <a href="{{route.dbteam}}">
-                      Team Route
-                    </a>
-                </li>
-                <li class="indent-nav basicsSidebar" style="display: none">
-                    <a href="{{route.dbleague}}">
-                      League Route
-                    </a>
-                </li>
-                <li class="indent-nav basicsSideBar" style="display: none">
-                  <a href="{{route.dbfun}}">
-                    Fun Route
-                  </a>
-                </li>
-                <li>
                     <a onclick="toggleObjects();">
                       Objects
-                    </a>
-                </li>
-                <li class="indent-nav objectsSidebar" style="display: none">
-                    <a href="{{route.dopagination}}">
-                      Pagination Object
                     </a>
                 </li>
                 <li class="indent-nav objectsSidebar" style="display: none">
@@ -86,8 +40,23 @@
                     </a>
                 </li>
                 <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.dofun}}">
+                      Fun Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
                     <a href="{{route.dogame}}">
                       Game Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.doleague}}">
+                      League Object
+                    </a>
+                </li>
+                <li class="indent-nav objectsSidebar" style="display: none">
+                    <a href="{{route.dopagination}}">
+                      Pagination Object
                     </a>
                 </li>
                 <li class="indent-nav objectsSidebar" style="display: none">
@@ -110,14 +79,44 @@
                       Team Roster Object
                     </a>
                 </li>
-                <li class="indent-nav objectsSidebar" style="display: none">
-                    <a href="{{route.doleague}}">
-                      League Object
+                <li>
+                    <a onclick="toggleBasics();">
+                      RESTful routes
                     </a>
                 </li>
-                <li class="indent-nav objectsSidebar" style="display: none">
-                    <a href="{{route.dofun}}">
-                      Fun Object
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbbat}}">
+                      Bat Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSideBar" style="display: none">
+                  <a href="{{route.dbfun}}">
+                    Fun Route
+                  </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbgame}}">
+                      Game Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbleague}}">
+                      League Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbplayer}}">
+                      Player Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbsponsor}}">
+                      Sponsor Route
+                    </a>
+                </li>
+                <li class="indent-nav basicsSidebar" style="display: none">
+                    <a href="{{route.dbteam}}">
+                      Team Route
                     </a>
                 </li>
                 <li>
@@ -126,8 +125,28 @@
                     </a>
                 </li>
                 <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvfun}}">
+                      Fun View
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
                     <a href="{{route.dvgame}}">
                       Game View
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvleagueleaders}}">
+                      League Leaders View
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvplayerLookup}}">
+                      Lookup Player View
+                    </a>
+                </li>
+                <li class="indent-nav viewsSidebar" style="display: none">
+                    <a href="{{route.dvplayerteamLookup}}">
+                      Lookup Player's Teams View
                     </a>
                 </li>
                 <li class="indent-nav viewsSidebar" style="display: none">
@@ -136,13 +155,13 @@
                     </a>
                 </li>
                 <li class="indent-nav viewsSidebar" style="display: none">
-                    <a href="{{route.dvteam}}">
-                      Team View
+                    <a href="{{route.dvschedule}}">
+                      Schedule View
                     </a>
                 </li>
                 <li class="indent-nav viewsSidebar" style="display: none">
-                    <a href="{{route.dvplayerLookup}}">
-                      Lookup Player
+                    <a href="{{route.dvteam}}">
+                      Team View
                     </a>
                 </li>
                 <li class="indent-nav viewsSidebar" style="display: none">
@@ -150,34 +169,9 @@
                       Team Roster View
                     </a>
                 </li>
-                <li class="indent-nav viewsSidebar" style="display: none">
-                    <a href="{{route.dvfun}}">
-                      Fun View
-                    </a>
-                </li>
-                <li class="indent-nav viewsSidebar" style="display: none">
-                    <a href="{{route.dvplayerteamLookup}}">
-                      Lookup Player's Teams
-                    </a>
-                </li>
-                <li class="indent-nav viewsSidebar" style="display: none">
-                    <a href="{{route.dvleagueleaders}}">
-                      League Leaders
-                    </a>
-                </li>
-                <li class="indent-nav viewsSidebar" style="display: none">
-                    <a href="{{route.dvschedule}}">
-                      Schedule
-                    </a>
-                </li>
                 <li>
                     <a onclick="toggleBot();">
                       Bot APIs
-                    </a>
-                </li>
-                <li class="indent-nav botSidebar" style="display: none">
-                    <a href="{{route.dbotupcominggames}}">
-                      Players' upcoming games
                     </a>
                 </li>
                 <li class="indent-nav botSidebar" style="display: none">
@@ -195,24 +189,17 @@
                       Captain Submit Score
                     </a>
                 </li>
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbotupcominggames}}">
+                      Players' upcoming games
+                    </a>
+                </li>
+
+                
+                
                 <li>
                     <a onclick="toggleKik();">
-                      Kik APIs
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkiksubscribe}}">
-                      Player Subscription
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkikunsubscribe}}">
-                      Player Unsubscribe
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkikupcominggames}}">
-                      Players' upcoming games
+                      Deprecated Kik APIs
                     </a>
                 </li>
                 <li class="indent-nav kikSidebar" style="display: none">
@@ -228,6 +215,21 @@
                 <li class="indent-nav kikSidebar" style="display: none">
                     <a href="{{route.dkiksubmitscore}}">
                       Captain Submit Score
+                    </a>
+                </li>
+                <li class="indent-nav kikSidebar" style="display: none">
+                    <a href="{{route.dkiksubscribe}}">
+                      Player Subscription
+                    </a>
+                </li>
+                <li class="indent-nav kikSidebar" style="display: none">
+                    <a href="{{route.dkikunsubscribe}}">
+                      Player Unsubscribe
+                    </a>
+                </li>
+                <li class="indent-nav kikSidebar" style="display: none">
+                    <a href="{{route.dkikupcominggames}}">
+                      Players' upcoming games
                     </a>
                 </li>
                 <li class="indent-nav kikSidebar" style="display: none">
