@@ -101,6 +101,7 @@ Routes['dbottransaction'] = "/documentation/bot/transaction"
 Routes['dbotcaptaingames'] = "/documentation/bot/captain/games"
 Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
 
+
 # -----------------------------------------------------------------------------
 # Website
 # -----------------------------------------------------------------------------
@@ -124,6 +125,7 @@ Routes['teamspage'] = "/website/teams"
 Routes['statspage'] = "/website/stats"
 Routes['playerpage'] = "/website/player"
 Routes['leagueleaderpage'] = "/website/leaders"
+Routes['alltimeleaderspage'] = Routes['leagueleaderpage'] + "/alltime"
 
 # events
 Routes['eventspage'] = "/website/event"
