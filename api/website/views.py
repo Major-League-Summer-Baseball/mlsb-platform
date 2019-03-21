@@ -14,7 +14,8 @@ from api.variables import UNASSIGNED, EVENTS, NOTFOUND, CACHE_TIMEOUT
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
-from api.advanced.league_leaders import get_leaders
+from api.advanced.league_leaders import get_leaders,\
+                                        get_leaders_not_grouped_by_team
 from api import DB
 from sqlalchemy.sql import func
 import os.path
@@ -218,6 +219,7 @@ def schedule(year):
 @app.route(Routes['standingspage'] + "/<int:year>")
 @cache.cached(timeout=CACHE_TIMEOUT)
 def standings(year):
+    """ """
     return render_template("website/standings.html",
                            route=Routes,
                            base=base_data(year),
@@ -287,6 +289,7 @@ def player_page(year, player_id):
 
 
 @app.route(Routes['leagueleaderpage'] + "/<int:year>")
+@cache.cached(timeout=CACHE_TIMEOUT)
 def leaders_page(year):
     women = get_leaders("ss", year=year)[:5]
     men = get_leaders("hr", year=year)[:5]
@@ -298,6 +301,26 @@ def leaders_page(year):
                            title="League Leaders",
                            year=year)
 
+@app.route(Routes['alltimeleaderspage'] + "/<int:year>")
+@cache.cached(timeout=CACHE_TIMEOUT)
+def all_time_leaders_page(year):
+  hrSingleSeason = get_leaders("hr")
+  ssSingleSeason = get_leaders("ss")
+  hrAllSeason = get_leaders_not_grouped_by_team("hr")
+  ssAllSeason = get_leaders_not_grouped_by_team("ss")
+  return render_template("website/all-time-leaders.html",
+                           route=Routes,
+                           base=base_data(year),
+                           hrSingleSeason=hrSingleSeason,
+                           ssSingleSeason=ssSingleSeason,
+                           hrAllSeason=hrAllSeason,
+                           ssAllSesaon=ssAllSeason,
+                           title="League Leaders",
+                           year=year)
+
+
+  hrSingleSeason = get_leaders("hr")[:10]
+  hrAllSeason = get_leaders("hr")[:10]
 
 '''
 # -----------------------------------------------------------------------------
@@ -338,37 +361,6 @@ def rules_fields(year):
                            base=base_data(year),
                            title="Fields & Rules",
                            year=year)
-
-
-@app.route("/test/<int:year>")
-def test(year):
-    return render_template("website/test.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Test",
-                           year=year)
-
-
-@app.route(Routes['findunsubscribed'] + "/<int:year>")
-def captain_find_unsubscribed(year):
-    return render_template("website/find_unsubscribed_players.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Find Unsubscribed Players",
-                           year=year,
-                           teams=get_teams(year))
-
-
-@app.route(Routes['findunsubscribed'] + "/<int:year>" + "/<int:team>")
-def captain_find_unsubscribed_get(year, team):
-    team = Team.query.get(team)
-    if team is None:
-        return json.dumps("[]")
-    result = []
-    for player in team.players:
-        if player.kik is None:
-            result.append(player.json())
-    return json.dumps(result)
 
 
 @app.route(Routes['sponsorbreakdown'] + "/<int:year>")
