@@ -1,66 +1,66 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
 <table id="espys" class="table table-bordered table-striped">
-	<thead>
-		<tr>
-			<th>Id</th>
-			<th>Sponsor</th>
-			<th>Description</th>
-			<th>Points</th>
-			<th>Date</th>
-			<th>Time</th> 
-			<th>Receipt</th>
-			<th></th>
-		</tr>
-	<thead>
-	<tbody id="espys">
-		{% for espy in espys %}
-			<tr id="{{espy.espy_id}}">
-				<td>{{espy.espy_id}}</td>
-				<td>{{espy.sponsor}}</td>
-				<td>{{espy.description}}</td>
-				<td>{{espy.points}}</td>
-				<td>{{espy.date}}</td>
-				<td>{{espy.time}}</td>
-				<td>{{espy.receipt}}</td>
-				<td><button type="button" class="btn btn-warning" onclick="deleteEspys({{espy.espy_id}})">Delete Espy Transaction</button></td>
-			</tr>
-		{% endfor %}
-	</tbody>
-	<tfoot>
-		<tr>
-			<td>
-				<button type="button" class="btn btn-info" onclick="addEspy({{team_id}});">Add Espy</button>
-			</td>
-				<td>
-					<select data-placeholder="Choose a Team" id="selectSponsor" name="standard" class="chosen-select">
-						<option id="NoSponsor" value="0" selected="selected" >
-							No Sponsor
-						</option>
-					{% for sponsor in sponsors %}
-						<option id="{{sponsor.sponsor_id}}" value="{{sponsor.sponsor_id}}">{{sponsor.sponsor_name}}</option>
-					{% endfor %}
-				</td>
-				<td>
-					<input id="description" value="" placeholder="Description">
-				</td>
-				<td>
-					<input id="points" value="" placeholder="Points">
-				</td>
-				<td>
-						<input class="input" value=""  placeholder="YYYY-MM-DD" id='date'>
-				</td>
-				<td>
-					<input class="input" value=""  placeholder="HH:MM" id='time'>
-				</td>
-				<td>
-					<input class="input" value=""  placeholder="Receipt Number or Notes" id='receipt'>
-				</td>
-				<td>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Sponsor</th>
+            <th>Description</th>
+            <th>Points</th>
+            <th>Date</th>
+            <th>Time</th> 
+            <th>Receipt</th>
+            <th></th>
+        </tr>
+    <thead>
+    <tbody id="espys">
+        {% for espy in espys %}
+            <tr id="{{espy.espy_id}}">
+                <td>{{espy.espy_id}}</td>
+                <td>{{espy.sponsor}}</td>
+                <td>{{espy.description}}</td>
+                <td>{{espy.points}}</td>
+                <td>{{espy.date}}</td>
+                <td>{{espy.time}}</td>
+                <td>{{espy.receipt}}</td>
+                <td><button type="button" class="btn btn-warning" onclick="deleteEspys({{espy.espy_id}})">Delete Espy Transaction</button></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+                <button type="button" class="btn btn-info" onclick="addEspy({{team_id}});">Add Espy</button>
+            </td>
+                <td>
+                    <select data-placeholder="Choose a Team" id="selectSponsor" name="standard" class="chosen-select">
+                        <option id="NoSponsor" value="0" selected="selected" >
+                            No Sponsor
+                        </option>
+                    {% for sponsor in sponsors %}
+                        <option id="{{sponsor.sponsor_id}}" value="{{sponsor.sponsor_id}}">{{sponsor.sponsor_name}}</option>
+                    {% endfor %}
+                </td>
+                <td>
+                    <input id="description" value="" placeholder="Description">
+                </td>
+                <td>
+                    <input id="points" value="" placeholder="Points">
+                </td>
+                <td>
+                        <input class="input" value=""  placeholder="YYYY-MM-DD" id='date'>
+                </td>
+                <td>
+                    <input class="input" value=""  placeholder="HH:MM" id='time'>
+                </td>
+                <td>
+                    <input class="input" value=""  placeholder="Receipt Number or Notes" id='receipt'>
+                </td>
+                <td>
 
-				</td>
-		</tr>
-	</tfoot>
+                </td>
+        </tr>
+    </tfoot>
 </table>
 <!-- the error modal -->
 <div class="modal fade" id="file_modal">
@@ -86,101 +86,96 @@
 {% block script %}
 <script>
 function ready(){
-	$(function(){
-		$(".chosen-select").chosen({});
-	})
+    $(function(){
+        $(".chosen-select").chosen({});
+    })
 }
 
 function addEspy(team_id){
-	var sponsor_id, sponsor, description, points, receipt, date, time;
-	var data = {'team_id': team_id};
+    var sponsor_id, sponsor, description, points, receipt, date, time;
+    var data = {'team_id': team_id};
 
-	sponsor_id = $('#selectSponsor').val();
-	sponsor = $("#selectSponsor option:selected").text();
-	if (sponsor_id != 0){
-		data['sponsor_id'] = sponsor_id;
-		sponsor = "None";
-	}
-	description = $('#description').val();
-	if (description != ""){
-		data['description'] = description;
-	}
-	points = $('#points').val();
-	if (points != ""){
-		data['points'] = points;
-	}
-	receipt = $('#receipt').val()
-	if (receipt != ""){
-		data['receipt'] = receipt
-	}
-	date = $('#date').val()
-	if (date != ""){
-		data['date'] = date
-	}
-	time = $('#time').val()
-	if (time != ""){
-		data['time'] = time
-	}
-	console.log(data);
-	$.ajax
-	({
-	  type: "POST",
-	  url: "{{route.espy}}",
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
+    sponsor_id = $('#selectSponsor').val();
+    sponsor = $("#selectSponsor option:selected").text();
+    if (sponsor_id != 0){
+        data['sponsor_id'] = sponsor_id;
+        sponsor = "None";
+    }
+    description = $('#description').val();
+    if (description != ""){
+        data['description'] = description;
+    }
+    points = $('#points').val();
+    if (points != ""){
+        data['points'] = points;
+    }
+    receipt = $('#receipt').val()
+    if (receipt != ""){
+        data['receipt'] = receipt
+    }
+    date = $('#date').val()
+    if (date != ""){
+        data['date'] = date
+    }
+    time = $('#time').val()
+    if (time != ""){
+        data['time'] = time
+    }
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.espy}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (result){
-  		alert('Espys was added to team successfully');
-  		console.log(result);
-  		var i1,i2, result;
-  		i1 = '<td>'+result +'</td>' + '<td>'+sponsor +'</td>' + '<td>'+description +'</td>'+ '<td>'+ points +'</td>' +  '<td>'+date +'</td>' + '<td>'+time +'</td>'+ '<td>'+receipt +'</td>'
-  		i2 = '<td><button type="button" class="btn btn-warning" onclick="deleteEspys('+result+')">Delete Espy</button></rd>'
-  		result = '<tr id="'+result+'">'+ i1 + i2 +  '</tr>';
-  		$("#espys").append(result);
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-      	console.log(request.responseJSON);
-    } 
-	});
+      success: function (result){
+          alert('Espys was added to team successfully');
+          var i1,i2, result;
+          i1 = '<td>'+result +'</td>' + '<td>'+sponsor +'</td>' + '<td>'+description +'</td>'+ '<td>'+ points +'</td>' +  '<td>'+date +'</td>' + '<td>'+time +'</td>'+ '<td>'+receipt +'</td>'
+          i2 = '<td><button type="button" class="btn btn-warning" onclick="deleteEspys('+result+')">Delete Espy</button></rd>'
+          result = '<tr id="'+result+'">'+ i1 + i2 +  '</tr>';
+          $("#espys").append(result);
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request.text);
+          console.error(error);
+          console.error(request.responseJSON);
+      } 
+    });
 }
 
 function deleteEspys(espy_id){
-	console.log("Fucker");
-	var data = { "espy_id": espy_id};
-	$.ajax
-	({
-	  type: "DELETE",
-	  url: "{{route.espy}}/"+espy_id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,	
-	  data: JSON.stringify(data),
+    var data = { "espy_id": espy_id};
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.espy}}/"+espy_id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,    
+      data: JSON.stringify(data),
       dataType: "json",
-	  success: function (results){
-	  	console.log(results)
-  		alert('Espy was removed from team successfully');
-  		$('#'+espy_id).remove()
-	  }, error: function(request, error){
-        showErrors(request.responseJSON, request.status);
-        console.log(request.text);
-        console.log(error);
-      	console.log(request.responseJSON);
-          
-    } 
-	});
+      success: function (results){
+          alert('Espy was removed from team successfully');
+          $('#'+espy_id).remove()
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request.text);
+          console.error(error);
+          console.error(request.responseJSON);
+      } 
+    });
 }
 
 function showErrors(response, status_code){
-	$('#file_modal').modal("show");
-	$('#errors').empty();
-	var element;
-	$('#modal-title').text( response.message + " - " + status_code);
-	element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
-	$('#errors').append(element);	
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element);    
 
 }
 </script>

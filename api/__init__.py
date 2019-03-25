@@ -4,37 +4,40 @@
 @organization: MLSB API
 @summary: Holds the model for the database
 '''
-import os
+# imports for normal things
 from flask import Flask, g, request
-from flask.ext.restful import Api
-from flask.ext.restful.utils import cors
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_restful import Api
+from flask_restful.utils import cors
+from flask_sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
+from flask_caching import Cache
+from os import getcwd
+from os.path import join
+from api.routes import Routes
 import logging
 import sys
-from flask.ext.cache import Cache
+import os
 
+URL = os.environ['DATABASE_URL']
+SECRET_KEY = os.environ['SECRET_KEY']
 local = False
-try:
-    # running local
-    from api.credentials import URL, SECRET_KEY
-    # locally just use simple cache
+if "REDIS_URL" not in os.environ:
     cache = Cache(config={'CACHE_TYPE': 'simple'})
     local = True
-    print("Running Locally")
-except:
-    URL = os.environ['DATABASE_URL']
-    SECRET_KEY = os.environ['SECRET_KEY']
+    print("Using a simple cache")
+else:
     # on a machine use a real cache
     cache = Cache(config={'CACHE_TYPE': 'redis',
                           'CACHE_REDIS_URL': os.environ['REDIS_URL']})
-from os import getcwd
-from os.path import join
+
+
 # create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # setup caching
 cache.init_app(app)
 DB = SQLAlchemy(app)
@@ -52,10 +55,53 @@ PICTURES = join(getcwd(), "api", "static", "pictures")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] = "./static"
 
+
+# these imports cannot be at the top right now
+
+# imports for website, documentation, admin
 from api.website import views
 from api import admin
 from api import documentation
 from api import errorHandlers
+
+# imports for basic apis
+from api.basic.player import PlayerAPI, PlayerListAPI
+from api.basic.sponsor import SponsorAPI, SponsorListAPI
+from api.basic.league import LeagueAPI, LeagueListAPI
+from api.basic.team import TeamAPI, TeamListAPI
+from api.basic.game import GameAPI, GameListAPI
+from api.basic.bat import BatAPI, BatListAPI
+from api.basic.epsys import EspyAPI, EspyListAPI
+from api.basic.fun import FunAPI, FunListAPI
+from api.advanced.team_roster import TeamRosterAPI
+
+# imports for advanced apis
+from api.advanced.game_stats import GameStatsAPI
+from api.advanced.players_stats import PlayerStatsAPI
+from api.advanced.team_stats import TeamStatsAPI
+from api.advanced.player_lookup import PlayerLookupAPI
+from api.advanced.fun import AdvancedFunAPI
+from api.advanced.player_teams import PlayerTeamLookupAPI
+from api.advanced.league_leaders import LeagueLeadersAPI
+from api.advanced.schedule import ScheduleAPI
+
+# imports for bot apis
+from api.bot.submit_scores import SubmitScoresAPI as BotSubmitScoresAPI
+from api.bot.authenticate_captain import \
+    AuthenticateCaptainAPI as BotAuthenticateCaptainAPI
+from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
+from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
+
+# imports for kik apis
+from api.kik.submit_scores import SubmitScoresAPI
+from api.kik.authenticate_captain import AuthenticateCaptainAPI
+from api.kik.subscribe import SubscribeToTeamAPI
+from api.kik.submit_transaction import SubmitTransactionAPI
+from api.kik.get_captain_games import CaptainGamesAPI
+from api.kik.get_upcoming_games import UpcomingGamesAPI
+from api.kik.unsubscribe import UnSubscribeToTeamAPI
+
+
 @app.after_request
 def add_cors(resp):
     """ Ensure all responses have the CORS headers.
@@ -68,23 +114,14 @@ def add_cors(resp):
     resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET'
     t = 'Access-Control-Allow-Headers'
     resp.headers[t] = request.headers.get('Access-Control-Request-Headers',
-                                          'Authorization' )
+                                          'Authorization')
     # set low for debugging
     if app.debug:
         resp.headers['Access-Control-Max-Age'] = '1'
     return resp
 
+
 # basic routes
-from api.basic.player import PlayerAPI, PlayerListAPI
-from api.basic.sponsor import SponsorAPI, SponsorListAPI
-from api.basic.league import LeagueAPI, LeagueListAPI
-from api.basic.team import TeamAPI, TeamListAPI
-from api.basic.game import GameAPI, GameListAPI
-from api.basic.bat import BatAPI, BatListAPI
-from api.basic.epsys import EspyAPI, EspyListAPI
-from api.basic.fun import FunAPI, FunListAPI
-from api.advanced.team_roster import TeamRosterAPI
-from api.routes import Routes
 api.add_resource(FunListAPI,
                  Routes['fun'],
                  endpoint="funs")
@@ -138,13 +175,6 @@ api.add_resource(TeamRosterAPI,
                  endpoint="teamrosters")
 
 # add advanced routes
-from api.advanced.game_stats import GameStatsAPI
-from api.advanced.players_stats import PlayerStatsAPI
-from api.advanced.team_stats import TeamStatsAPI
-from api.advanced.player_lookup import PlayerLookupAPI
-from api.advanced.fun import AdvancedFunAPI
-from api.advanced.player_teams import PlayerTeamLookupAPI
-from api.advanced.league_leaders import LeagueLeadersAPI
 api.add_resource(GameStatsAPI, Routes['vgame'], endpoint="vgame")
 api.add_resource(PlayerStatsAPI, Routes['vplayer'], endpoint="vplayer")
 api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
@@ -155,15 +185,11 @@ api.add_resource(PlayerTeamLookupAPI, Routes['vplayerteamLookup'],
                  endpoint='vplayerteamLookup')
 api.add_resource(LeagueLeadersAPI, Routes['vleagueleaders'],
                  endpoint='vleagueleaders')
+api.add_resource(ScheduleAPI,
+                 Routes['vschedule'] + "/<int:year>" + "/<int:league_id>",
+                 endpoint='vSchedule')
 
 # add kik routes
-from api.kik.submit_scores import SubmitScoresAPI
-from api.kik.authenticate_captain import AuthenticateCaptainAPI
-from api.kik.subscribe import SubscribeToTeamAPI
-from api.kik.submit_transaction import SubmitTransactionAPI
-from api.kik.get_captain_games import CaptainGamesAPI
-from api.kik.get_upcoming_games import UpcomingGamesAPI
-from api.kik.unsubscribe import UnSubscribeToTeamAPI
 api.add_resource(AuthenticateCaptainAPI,
                  Routes['kikcaptain'],
                  endpoint="kikcaptain")
@@ -187,10 +213,6 @@ api.add_resource(UnSubscribeToTeamAPI,
                  endpoint="kikunsubscribe")
 
 # add bot routes
-from api.bot.submit_scores import SubmitScoresAPI as BotSubmitScoresAPI
-from api.bot.authenticate_captain import AuthenticateCaptainAPI as BotAuthenticateCaptainAPI
-from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
-from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 api.add_resource(BotAuthenticateCaptainAPI,
                  Routes['botcaptain'],
                  endpoint="botcaptain")

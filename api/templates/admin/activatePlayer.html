@@ -10,25 +10,24 @@
 {% block script %}
 <script>
 function activate(id, year, submission){
-	var data = {"active": submission};
-	$.ajax
-	({
-	  type: "POST",
-	  url: "{{route.adeactivateplayer}}/"+year+"/"+id,
-	  contentType: "application/json",
-	  dataType: 'json',
-	  async: false,
-	  data: JSON.stringify(data),
-	  success: function (success){
-  		if (success != true){
-  			alert("Action was not taken properly");
-  		}
-	  }, error: function(request, error){
-        alert("Error on submission")
-        console.log(request);
-        console.log(error);
-    	} 
-	});
+    var data = {"active": submission};
+    $.ajax({
+          type: "POST",
+            url: "{{route.adeactivateplayer}}/"+year+"/"+id,
+            contentType: "application/json",
+            dataType: 'json',
+            async: false,
+            data: JSON.stringify(data),
+            success: function (success){
+                if (success != true){
+                    alert("Action was not taken properly");
+                }
+            }, error: function(request, error){
+                alert("Error on submission")
+                console.log(request);
+                console.log(error);
+            }
+    });
 }
 
 </script>

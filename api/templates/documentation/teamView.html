@@ -4,137 +4,137 @@
 <h4>POST</h4>
 <code>{{route.vteam}}</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Teams-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">year</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The year of play</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">league_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Leagues-ID</td>
-			</tr>
-			
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">team_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Teams-ID</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">year</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The year of play</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">league_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Leagues-ID</td>
+            </tr>
+            
+        </tbody>
+    </table>
 
 <strong>Success 200</strong>
-	Returns a object {team_id: {Folowing Object} }
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">espys</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The amount of points accumulated</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">away_losses</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The losses as the away team</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">away_wins</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The wins as the away team</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">home_losses</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The losses as the home team</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">home_wins</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The wins as the home team</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">hits_allowed</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of hits allowed</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">wins</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total number of wins</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">losses</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total numbers of losses</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">ties</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total number of ties</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">games</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total number of games played</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">runs_for</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total number of runs scored</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">runs_against</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total of runs allowed</td>
-			</tr>
-		</tbody>
-	</table>
+    Returns a object {team_id: {Folowing Object} }
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">espys</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The amount of points accumulated</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">away_losses</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The losses as the away team</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">away_wins</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The wins as the away team</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">home_losses</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The losses as the home team</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">home_wins</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The wins as the home team</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">hits_allowed</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of hits allowed</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">wins</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total number of wins</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">losses</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total numbers of losses</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">ties</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total number of ties</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">games</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total number of games played</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">runs_for</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total number of runs scored</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">runs_against</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total of runs allowed</td>
+            </tr>
+        </tbody>
+    </table>
 <h5>Example</h5>
 <code>
 {   '1': {   'away_losses': 1,
-                             'away_wins': 0,
-                             'games': 0,
-                             'hits_allowed': 3,
-                             'hits_for': 3,
-                             'home_losses': 0,
-                             'home_wins': 1,
-                             'losses': 1,
-                             'runs_against': 4,
-                             'runs_for': 4,
-                             'ties': 1,
-                             'wins': 1},
-                    '2': {   'away_losses': 1,
-                             'away_wins': 0,
-                             'games': 0,
-                             'hits_allowed': 3,
-                             'hits_for': 3,
-                             'home_losses': 0,
-                             'home_wins': 1,
-                             'losses': 1,
-                             'runs_against': 4,
-                             'runs_for': 4,
-                             'ties': 1,
-                             'wins': 1}
-                         }
+             'away_wins': 0,
+             'games': 0,
+             'hits_allowed': 3,
+             'hits_for': 3,
+             'home_losses': 0,
+             'home_wins': 1,
+             'losses': 1,
+             'runs_against': 4,
+             'runs_for': 4,
+             'ties': 1,
+             'wins': 1},
+    '2': {   'away_losses': 1,
+             'away_wins': 0,
+             'games': 0,
+             'hits_allowed': 3,
+             'hits_for': 3,
+             'home_losses': 0,
+             'home_wins': 1,
+             'losses': 1,
+             'runs_against': 4,
+             'runs_for': 4,
+             'ties': 1,
+             'wins': 1}
+}
 
 </code>
 

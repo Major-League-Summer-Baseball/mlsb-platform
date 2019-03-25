@@ -5,13 +5,17 @@
 @summary: The basic espys API
 '''
 
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
 from api.model import Espys
 from api.authentication import requires_admin
 from api.errors import EspysDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('team_id', type=int)
@@ -130,7 +134,7 @@ class EspyAPI(Resource):
         if args['points']:
             points = args['points']
         if args['receipt']:
-            points = args['points']
+            receipt = args['receipt']
         if args['date'] and args['time']:
             date = args['date']
             time = args['time']
@@ -175,12 +179,12 @@ class EspyListAPI(Resource):
                               ,{...}
                             ]
         """
-        # return a list of teams
-        espys = Espys.query.all()
-        result = []
-        for i in range(0, len(espys)):
-            result.append(espys[i].json())
-        resp = Response(dumps(result), status=200, mimetype="application/json")
+        # return a pagination of teams
+        page = request.args.get('page', 1, type=int)
+        pagination = Espys.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['espy'])
+        resp = Response(dumps(result), status=200,
+                        mimetype="application/json")
         return resp
 
     @requires_admin

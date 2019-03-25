@@ -3,21 +3,21 @@
 
     <h1>Team Roster Object</h1>
     <p>
-    	A team roster Object is the information returned from Team Roster View
+        A team roster Object is the information returned from Team Roster View
     </p>
     <p>
     The following table shows all team roster attributes, what type each attribute is, and any restrictions on that attribute:
     </p>
     <table class="table table-bordered">
-    	<thead>
-    		<th>Key</th>
-    		<th>Type</th>
-    		<th>Description</th>
-    		<th>Example</th>
-    	</thead>
-    	<tbody>
+        <thead>
+            <th>Key</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Example</th>
+        </thead>
+        <tbody>
             <tr>
-                <td class="col-md-3">Teams-ID</td>
+                <td class="col-md-3">team_id</td>
                 <td class="col-md-3">Team Object</td>
                 <td class="col-md-3">See more infromation on the <a href="{{route.doteam}}">Team Object</a></td>
                 <td class="col-md-3">
@@ -57,31 +57,31 @@
                 </td>
 
             </tr>        
-    	</tbody>
+        </tbody>
     </table>
     <h4>Example:</h4>
     <code>
 {   '0': {   'captain': None,
-                                 'color': 'Black',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 2,
-                                 'team_id': 2,
-                                 'team_name': 'Chainsaw Black',
-                                 'year': 2015},
-                        'captain': None,
-                        'players': []},
-                    {   '1': {   'captain': {   'email': 'fras2560@mylaurier.ca',
-                                                'gender': 'm',
-                                                'player_id': 1,
-                                                'player_name': 'Dallas Fraser'},
-                                 'color': 'Green',
-                                 'espys': 0,
-                                 'league_id': None,
-                                 'sponsor_id': 1,
-                                 'team_id': 1,
-                                 'team_name': 'Domus Green',
-                                 'year': 2015},
+             'color': 'Black',
+             'espys': 0,
+             'league_id': None,
+             'sponsor_id': 2,
+             'team_id': 2,
+             'team_name': 'Chainsaw Black',
+             'year': 2015},
+    'captain': None,
+    'players': []},
+{   '1': {   'captain': { 'email': 'fras2560@mylaurier.ca',
+                          'gender': 'm',
+                          'player_id': 1,
+                          'player_name': 'Dallas Fraser'},
+             'color': 'Green',
+             'espys': 0,
+             'league_id': None,
+             'sponsor_id': 1,
+             'team_id': 1,
+             'team_name': 'Domus Green',
+             'year': 2015},
                         'captain': {   'email': 'fras2560@mylaurier.ca',
                                        'gender': 'm',
                                        'player_id': 1,

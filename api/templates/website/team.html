@@ -1,52 +1,52 @@
 {% extends "website/new-base.html" %}
 {% block content %}
 <p>
-	<strong>Captain:</strong> {{team.captain}}<br/>
-	<strong>League:</strong> {{team.league}}<br/>
-	<strong>Record:</strong> {{team.wins}} - {{team.losses}} - {{team.ties}}<br/>
+    <strong>Captain:</strong> {{team.captain}}<br/>
+    <strong>League:</strong> {{team.league}}<br/>
+    <strong>Record:</strong> {{team.wins}} - {{team.losses}} - {{team.ties}}<br/>
 </p>
 <h4>Roster</h4>
 <ul class="listgroup leadersList">
 {% for player in team.players %}
-	<li class="list-group-item leaderPoint"> {{player}} </li>
+    <li class="list-group-item leaderPoint"> {{player}} </li>
 {% endfor %}
 <ul>
 <h4>Stats</h4>
 <table class="display" id="teamTable" cellspacing="0" width="100%">
-	<thead>
-		<th>Player</th>
-		<th>Ave.</th>
-		<th>SP</th>
-		<th>S</th>
-		<th>SS</th>
-		<th>D</th>
-		<th>HR</th>
-		<th>AB</th>
-	</thead>
-	<tbody>
-		{% for player in team.stats %}
-			<tr>
-				<td><a href="{{route.playerpage}}/{{year}}/{{player.id}}">{{player.name}}</a></td>
-				<td>{{player.ba}}</td>
-				<td>{{player.sp}}</td>
-				<td>{{player.s}}</td>
-				<td>{{player.ss}}</td>
-				<td>{{player.d}}</td>
-				<td>{{player.hr}}</td>
-				<td>{{player.bats}}</td>
-			</tr>
-		{% endfor %}
-	</tbody>
+    <thead>
+        <th>Player</th>
+        <th>Ave.</th>
+        <th>SP</th>
+        <th>S</th>
+        <th>SS</th>
+        <th>D</th>
+        <th>HR</th>
+        <th>AB</th>
+    </thead>
+    <tbody>
+        {% for player in team.stats %}
+            <tr>
+                <td><a href="{{route.playerpage}}/{{year}}/{{player.id}}">{{player.name}}</a></td>
+                <td>{{player.ba}}</td>
+                <td>{{player.sp}}</td>
+                <td>{{player.s}}</td>
+                <td>{{player.ss}}</td>
+                <td>{{player.d}}</td>
+                <td>{{player.hr}}</td>
+                <td>{{player.bats}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
 {% block script %}
 <script>
 $(document).ready(ready());
 function ready(){
-	console.log("Done");
-		$('#teamTable').DataTable({
-		"order": [[6, "desc"]]
-	});
+    console.log("Done");
+        $('#teamTable').DataTable({
+            "order": [[6, "desc"]]
+        });
 }
 </script>
 {% endblock %}

@@ -4,13 +4,17 @@
 @organization: MLSB API
 @summary: The basic league API
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from api.model import League
 from json import dumps
 from api import DB
 from api.authentication import requires_admin
 from api.errors import LeagueDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('league_name', type=str)
 post_parser = reqparse.RequestParser()
@@ -122,12 +126,12 @@ class LeagueListAPI(Resource):
                                   },{...}
                             ]
         """
-        # return a list of leagues
-        leagues = League.query.all()
-        result = []
-        for i in range(0, len(leagues)):
-            result.append(leagues[i].json())
-        resp = Response(dumps(result), status=200, mimetype="application/json")
+        # return a pagination of leagues
+        page = request.args.get('page', 1, type=int)
+        pagination = League.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['league'])
+        resp = Response(dumps(result), status=200,
+                        mimetype="application/json")
         return resp
 
     @requires_admin

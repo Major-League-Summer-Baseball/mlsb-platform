@@ -5,9 +5,8 @@
 @summary: Holds a class LeagueList that helps imports a League (list of games)
 '''
 # imports
-from api.model import Sponsor, Team, Game, League
+from api.model import Sponsor, Game, League
 from api import DB
-from api.validators import time_validator, string_validator, date_validator
 from api.errors import InvalidField, LeagueDoesNotExist
 import logging
 import datetime
@@ -22,7 +21,18 @@ INVALID_TEAM = "{} is not a team in the league"
 
 
 class LeagueList():
-    def __init__(self, lines, year=datetime.datetime.now().year, logger=None):
+    def __init__(self,
+                 lines,
+                 year=datetime.datetime.now().year,
+                 logger=None,
+                 session=None):
+        """A constructor
+
+            lines: a list of lines from the csv
+            year: the year the league was
+            logger: a logger
+            session: mock a database session
+        """
         self.success = False
         self.errors = []
         self.warnings = []
@@ -33,6 +43,9 @@ class LeagueList():
             logger = logging.getLogger(__name__)
         self.logger = logger
         self.year = year
+        self.session = session
+        if session is None:
+            self.session = DB.session
 
     def import_league(self):
         '''
@@ -66,7 +79,7 @@ class LeagueList():
         if len(self.errors) < 1:
             self.logger.debug("Committing")
             # no major errors so commit changes
-            DB.session.commit()
+            self.session.commit()
         return
 
     def get_league_id(self, league):
@@ -163,7 +176,7 @@ class LeagueList():
                         away_team,
                         self.league_id,
                         field=field)
-            DB.session.add(game)
+            self.session.add(game)
         return
 
     def check_header(self, header):
@@ -174,7 +187,7 @@ class LeagueList():
         Returns:
             valid: True if the header meets the template (boolean)
         '''
-        valid = True 
+        valid = True
         if len(header) < 2:
             valid = False
         elif len(header[0].split(",")) < 2 or len(header[1].split(",")) < 5:

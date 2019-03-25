@@ -4,51 +4,51 @@
 <h4>POST</h4>
 <code>{{route.vplayerteamLookup}}</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">player_name</td>
-				<td class="col-md-3">str</td>
-				<td class="col-md-3">The Player's name</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">email</td>
-				<td class="col-md-3">str</td>
-				<td class="col-md-3">The Player's email</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">player-Id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Player's id</td>
-			</tr>		
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">player_name</td>
+                <td class="col-md-3">str</td>
+                <td class="col-md-3">The Player's name</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">email</td>
+                <td class="col-md-3">str</td>
+                <td class="col-md-3">The Player's email</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">player_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Player's id</td>
+            </tr>        
+        </tbody>
+    </table>
 
 <strong>Success 200</strong>
-	returns a List of <a href="{{route.doteam}}">Teams</a>
-	<br/>
-	<h5>Example</h5>
-	<code>
-	[   {   'captain': {   'gender': 'm',
-                       'player_id': 1,
-                       'player_name': 'Dallas Fraser'},
-                        'color': 'Green',
-                        'espys': 0,
-                        'league_id': None,
-                        'sponsor_id': 1,
-                        'team_id': 1,
-                        'team_name': 'Domus Green',
-                        'year': 2016}]
+    returns a List of <a href="{{route.doteam}}">Teams</a>
+    <br/>
+    <h5>Example</h5>
+    <code>
+    [   {   'captain': { 'gender': 'm',
+                         'player_id': 1,
+                         'player_name': 'Dallas Fraser'},
+            'color': 'Green',
+            'espys': 0,
+            'league_id': None,
+            'sponsor_id': 1,
+            'team_id': 1,
+            'team_name': 'Domus Green',
+            'year': 2016}]
     </code>
 
 {% endblock %}

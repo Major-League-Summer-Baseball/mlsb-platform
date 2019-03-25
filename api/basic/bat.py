@@ -4,13 +4,17 @@
 @organization: MLSB API
 @summary: The basic bat API
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from api import DB
 from api.model import Bat
 from json import dumps
 from api.authentication import requires_admin
 from api.errors import BatDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int)
 parser.add_argument('rbi', type=int)
@@ -168,12 +172,12 @@ class BatListAPI(Resource):
                                 ,{...}
                            ]
         """
-        #  return a list of bats
-        bats = Bat.query.all()
-        result = []
-        for i in range(0, len(bats)):
-            result.append(bats[i].json())
-        resp = Response(dumps(result), status=200, mimetype="application/json")
+        #  return a pagination of bats
+        page = request.args.get('page', 1, type=int)
+        pagination = Bat.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['bat'])
+        resp = Response(dumps(result), status=200,
+                        mimetype="application/json")
         return resp
 
     @requires_admin

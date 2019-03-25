@@ -1,17 +1,17 @@
 {% extends "admin/admin_base.html" %}
 {% block content %}
-	<table id="myTable" class="table table-bordered table-striped">
-		<thead>
-			<th>Name</th>
-		</thead>
-		<tbody id="playerNackTable" >
-			{% for entry in players %}
-				<tr class="sponsorEntry" id="{{entry.player_id}}">
-					<td>
-						<a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}">{{entry.player_name}} - {{entry.email}}</a>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+    <table id="myTable" class="table table-bordered table-striped">
+        <thead>
+            <th>Name</th>
+        </thead>
+        <tbody id="playerNackTable" >
+            {% for entry in players %}
+                <tr class="sponsorEntry" id="{{entry.player_id}}">
+                    <td>
+                        <a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}">{{entry.player_name}} - {{entry.email}}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

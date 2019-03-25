@@ -1,63 +1,132 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-	<ul class="nav nav-pills" id="listing">
-		{% for id, league in games.items() %}
-			{% if loop.index == 1 %}
-				<li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
-			{% else %}
-				<li role="presentation" class="presentation"><a data-toggle="pill" href="#{{id}}">{{league.league_name}}</a></li>
-			{% endif %}
-		{% endfor %}
-		
-	</ul>
-	<div class="tab-content">
-	{% for id, league in games.items() %}
-			{% if loop.index == 1 %}
-				<div id="{{id}}" class="tab-pane fade in active">
-			{% else %}
-				<div id="{{id}}" class="tab-pane fade in">
-			{% endif %}
-		<h4>{{league.name}}
-		<table id="{{id}}League" width="100%" class="display">
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Time</th>
-					<th>Score</th>
-					<th>Home Team</th>
-					<th>Away Team</th>
-					<th>Field</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for game in league.games %}
-					<tr>
-						<td>{{game.date}}</td>
-						<td>{{game.time}}</td>
-						<td>{{game.score}}</td>
-						<td><a href="{{route.teampage}}/{{year}}/{{game.home_team_id}}">{{game.home_team}}</a></td>
-						<td><a href="{{route.teampage}}/{{year}}/{{game.away_team_id}}">{{game.away_team}}</a></td>
-						<td>{{game.field}}</td>
-						<td>{{game.status}}</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		</div>
-	{% endfor %}
-	</div>
+    <ul class="nav nav-pills" id="listing">
+        {% for league in leagues %}
+            {% if loop.index == 1 %}
+                <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
+            {% else %}
+                <li role="presentation" class="presentation"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
+            {% endif %}
+        {% endfor %}
+        
+    </ul>
+    <div class="tab-content">
+    {% for league in leagues %}
+            {% if loop.index == 1 %}
+                <div id="{{league.league_id}}" class="tab-pane fade in active">
+            {% else %}
+                <div id="{{league.league_id}}" class="tab-pane fade in">
+            {% endif %}
+        <h4>{{league.name}}
+        <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="loader{{league.league_id}}" />
+        <table id="{{league.league_id}}League" width="100%" class="display">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Score</th>
+                    <th>Home Team</th>
+                    <th>Away Team</th>
+                    <th>Field</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        </div>
+    {% endfor %}
+    </div>
 {% endblock %}
 {% block script %}
 <script>
+
+/** Displays the given league and its games as Data Table.*/
+function displayLeague(league_id, games){
+    var table = $('#'+ league_id +'League').DataTable({
+                    "data": games,
+                    "order": [[0, "asc"]],
+                    "columns": [
+                        {"data": "date"},
+                        {"data": "time"},
+                        {"data": "score"},
+                        {"data": "home_team", "render": homeTeamLinkRender},
+                        {"data": "away_team", "render": awayTeamLinkRender},
+                        {"data": "field"},
+                        {"data": "status"}
+                    ]
+                    
+    });
+
+    // jump to todays date
+    table.page.jumpToData("{{base.today}}", 0);
+    $('#loader' + league_id).hide();
+}
+
+/** Renders the away team as a link. */
+function awayTeamLinkRender(data, type, row, meta){
+    if(type === 'display'){
+        data = '<a href="{{route.teampage}}/{{year}}/' + row.away_team_id + '">' + row.away_team + '</a>';
+    }
+    return data;
+}
+
+/** Renders the home team as a link*/
+function homeTeamLinkRender(data, type, row, meta){
+    if(type === 'display'){
+        data = '<a href="{{route.teampage}}/{{year}}/' + row.home_team_id + '">' + row.home_team + '</a>';
+    }
+    return data;
+}
+
+/**
+* Load the given league.
+* 
+* @param {int} league_id - the id of the league
+* @param {string} url - the get url request
+* @param {Array.<Object>} games - a list of games
+*/
+function loadLeague(league_id, url, games){
+    $.ajax ({
+        type: "GET",
+        url: url,
+        contentType: "application/json",
+        dataType: 'json',
+        async: true,
+        success: function (result){
+            games = games.concat(result.items);
+            if(result.has_next === true){
+                loadLeague(league_id, result.next_url, games)
+            } else{
+                displayLeague(league_id, games)
+            }
+        }, error: function(request, error){
+            console.error(request);
+            console.error(error);
+        }
+    })
+}
+
+/** Called when document is ready. */
 $(document).ready(ready());
 function ready(){
-	console.log("Done");
-	{% for id, league in games.items() %}
-		$('#{{id}}League').DataTable({
-		"order": [[0, "asc"]]
-	});
-	{% endfor %}
+
+    // plug-in code for jumping a page with a certain value
+    jQuery.fn.dataTable.Api.register( 'page.jumpToData()', function ( data, column ) {
+        var pos = this.column(column, {order:'current'}).data().indexOf( data );
+     
+        if ( pos >= 0 ) {
+            var page = Math.floor( pos / this.page.info().length );
+            this.page( page ).draw( false );
+        }
+     
+        return this;
+    } );
+
+    // load the table for the schedule using ajax
+    {% for league in leagues %}
+        loadLeague({{league.league_id}}, "{{route.vschedule}}/{{year}}/{{league.league_id}}", []);
+    {% endfor %}
 }
 </script>
 {% endblock %}

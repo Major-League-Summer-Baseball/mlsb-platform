@@ -1,34 +1,34 @@
 {% extends "website/new-base.html" %}
 {% block content %}
 <div class="row">
-	<div class="col-xs-12 col-sm-6">
-		<h4 class="leaderTitle sleeman">
-		Sleeman Sluggers
-		</h4>
-		<ul class="listgroup leadersList">
-		{% for player in men %}
-			<li class="list-group-item leaderPoint">
-				<span class="badge leaderBadge">{{loop.index}}</span>
-				{{player.name}} - {{player.hits}}
-				<img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
-			</li>
-		{% endfor %}
-		</ul>
-	</div>	
-	<div class="col-xs-12 col-sm-6" >
-		<h4 class="leaderTitle sapporo">
-		Sapporo Singles
-		</h4>
-		<ol class="listgroup leadersList">
-		{% for player in women %}
-			<li class="list-group-item leaderPoint">
-				<span class="badge leaderBadge">{{loop.index}}</span>
-			 	{{player.name}} - {{player.hits}}
-			 	<img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
-			</li>
-		{% endfor %}
-		</ol>
-	</div>
+    <div class="col-xs-12 col-sm-6">
+        <h4 class="leaderTitle sleeman">
+        Sleeman Sluggers
+        </h4>
+        <ul class="listgroup leadersList sleemanList">
+        {% for player in men %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">{{loop.index}}</span>
+                {{player.name}} - {{player.hits}}
+                <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+            </li>
+        {% endfor %}
+        </ul>
+    </div>    
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderTitle sapporo">
+        Sapporo Singles
+        </h4>
+        <ol class="listgroup leadersList">
+        {% for player in women %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">{{loop.index}}</span>
+                 {{player.name}} - {{player.hits}}
+                 <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
 </div>
 {% endblock %}
 {% block script %}

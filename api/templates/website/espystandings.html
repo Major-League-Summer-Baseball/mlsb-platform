@@ -1,29 +1,28 @@
 {% extends "website/new-base.html" %}
 {% block content %}
-	<table id="espys" width="100%" class="display">
-		<thead>
-			<tr>
-				<th>Team</th>
-				<th>ESPY Points</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for team in standings %}
-				<tr>
-					<td>{{team.name}}</td>
-					<td>{{team.espys}}</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+    <table id="espys" width="100%" class="display">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>ESPY Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in standings %}
+                <tr>
+                    <td>{{team.name}}</td>
+                    <td>{{team.espys}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 {% block script %}
 <script>
 function ready(){
-	console.log("Done");
-	var table = $('#espys').DataTable({
-		"order": [[1, "desc"]]
-	});
+    var table = $('#espys').DataTable({
+        "order": [[1, "desc"]]
+    });
 }
 </script>
 {% endblock %}

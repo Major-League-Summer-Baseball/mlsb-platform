@@ -4,114 +4,114 @@
 <h4>POST</h4>
 <code>{{route.vplayer}}</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">player_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Players-ID</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">year</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The year the stats occurred</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">league_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Leagues-ID/td>
-			</tr>
-			<tr>
-				<td class="col-md-3">team_id</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The Teams-ID</td>
-			</tr>
-			
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">player_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Players-ID</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">year</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The year the stats occurred</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">league_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Leagues-ID/td>
+            </tr>
+            <tr>
+                <td class="col-md-3">team_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Teams-ID</td>
+            </tr>
+            
+        </tbody>
+    </table>
 
 <strong>Success 200</strong>
-	returns a dictionary {'player name': {Following Object}}
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">avg</td>
-				<td class="col-md-3">float</td>
-				<td class="col-md-3">The Players batting average</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">bats</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The total number bats the player had</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">d</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of doubles the player had</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">go</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of ground outs the player had</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">hr</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of home runs the player had</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">k</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of strike outs the player had</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">pf</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of pop flys the player had</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">s</td>
-				<td class="col-md-3">int</td>
-				<td class="col-md-3">The number of singles the player had</td>
-			</tr>
-		</tbody>
-	</table>
-	<h5>Example</h5>
-	<code>
-	{   'Dallas Fraser': {   'avg': 1.0,
-                         'bats': 1,
-                         'd': 0,	
-                         'go': 0,
-                         'hr': 0,
-                         'k': 0,
-                         'pf': 0,
-                         's': 1},
-        'My Dream Girl': {   'avg': 0.0,
-                                         'bats': 1,
-                                         'd': 0,
-                                         'go': 0,
-                                         'hr': 0,
-                                         'k': 1,
-                                         'pf': 0,
-                                         's': 0}}
+    returns a dictionary {'player name': {Following Object}}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">avg</td>
+                <td class="col-md-3">float</td>
+                <td class="col-md-3">The Players batting average</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">bats</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The total number bats the player had</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">d</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of doubles the player had</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">go</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of ground outs the player had</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">hr</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of home runs the player had</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">k</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of strike outs the player had</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">pf</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of pop flys the player had</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">s</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The number of singles the player had</td>
+            </tr>
+        </tbody>
+    </table>
+    <h5>Example</h5>
+    <code>
+    {   'Dallas Fraser': { 'avg': 1.0,
+                           'bats': 1,
+                           'd': 0,
+                           'go': 0,
+                           'hr': 0,
+                           'k': 0,
+                           'pf': 0,
+                           's': 1},
+        'My Dream Girl': { 'avg': 0.0,
+                           'bats': 1,
+                           'd': 0,
+                           'go': 0,
+                           'hr': 0,
+                           'k': 1,
+                           'pf': 0,
+                           's': 0}}
 
-	</code>
+    </code>
 
 {% endblock %}

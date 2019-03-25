@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: The views for looking up a player
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api.model import Player
@@ -12,6 +12,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('email', type=str)
 parser.add_argument('player_name', type=str)
 parser.add_argument("active", type=int)
+
 
 class PlayerLookupAPI(Resource):
     def post(self):

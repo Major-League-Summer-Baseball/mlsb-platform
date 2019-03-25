@@ -3,46 +3,53 @@
 
     <h1>Player Object</h1>
     <p>
-    	A player Object is the information stored relating to the player and its attributes.
+        A player Object is the information stored relating to the player and its attributes.
     </p>
     <p>
     The following table shows all player attributes, what type each attribute is, and any restrictions on that attribute:
     </p>
     <table class="table table-bordered">
-    	<thead>
-    		<th>Attribute</th>
-    		<th>Type</th>
-    		<th>Required</th>
-    		<th>Description</th>
+        <thead>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
             <th>Default</th>
             <th>Restrictions</th>
-            
-    	</thead>
-    	<tbody>
-    		<tr>
-	    		<td>player_id</td>
-	    		<td>integer</td>
-	    		<td>Generated</td>
+        </thead>
+        <tbody>
+            <tr>
+                <td>player_id</td>
+                <td>integer</td>
+                <td>Generated</td>
                 <td>The player's identifier</td>
-	    		<td>--</td>
-                <td>--</td>
-    		</tr>
-    		<tr>
-    			<td>player_name</td>
-    			<td>string</td>
-    			<td>yes</td>
-    			<td>The player's name</td>
                 <td>--</td>
                 <td>--</td>
-    		</tr>
-    		<tr>
-    			<td>gender</td>
-    			<td>string</td>
-    			<td>yes</td>
-    			<td>The player gender</td>
+            </tr>
+            <tr>
+                <td>player_name</td>
+                <td>string</td>
+                <td>yes</td>
+                <td>The player's name</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td>gender</td>
+                <td>string</td>
+                <td>yes</td>
+                <td>The player gender</td>
                 <td>--</td>
                 <td>F, M, or T</td>
-    		</tr> 
-    	</tbody>
+            </tr>
+            <tr>
+                <td>active</td>
+                <td>boolean</td>
+                <td>no</td>
+                <td>True if the player is still active otherwise False</td>
+                <td>True</td>
+                <td>--</td>
+            </tr>
+        </tbody>
     </table>
 {% endblock %}

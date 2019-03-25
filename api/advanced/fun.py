@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: The views for fun
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB

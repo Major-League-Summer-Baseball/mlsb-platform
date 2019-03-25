@@ -5,255 +5,285 @@
 <h4>GET</h4>
 <code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Sponsors-ID</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Sponsors-ID</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">200</td>
-				<td class="col-md-3"><a href="{{route.dosponsor}}">Sponsor Object</a></td>
-				<td class="col-md-3">Successful</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
-			</tr>
-			
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">200</td>
+                <td class="col-md-3"><a href="{{route.dosponsor}}">Sponsor Object</a></td>
+                <td class="col-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
+            </tr>
+            
+        </tbody>
+    </table>
 
 
 <h4>DELETE</h4>
 <code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
-	Permission: admin
+    Permission: admin
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">id</td>
-				<td class="colo-md-3">int</td>
-				<td class="colo-md-3">The Sponsors-ID</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">id</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">The Sponsors-ID</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">200</td>
-				<td class="col-md-3">--</td>
-				<td class="col-md-3">Successful</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">200</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 
 <h4>PUT</h4>
 <code>{{route.sponsor}}/:id</code>
 <p style="color:#808080">
-	Permission: admin
+    Permission: admin
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">sponsor_name</td>
-				<td class="colo-md-3">string</td>
-				<td class="colo-md-3">The name of the Sponsor</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.InvalidField.message}}</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">sponsor_name</td>
+                <td class="colo-md-3">string</td>
+                <td class="colo-md-3">The name of the Sponsor</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">link</td>
+                <td class="colo-md-3">string</td>
+                <td class="colo-md-3">A link to the Sponsor's promotional material</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">description</td>
+                <td class="colo-md-3">string</td>
+                <td class="colo-md-3">A description about the Sponsor</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">active</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">1 if the Sponsor is active otherwise inactive (no paramter then assume active)</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.InvalidField.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.InvalidField.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">200</td>
-				<td class="col-md-3"></td>
-				<td class="col-md-3">Successful</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.InvalidField.message}}</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">200</td>
+                <td class="col-md-3"></td>
+                <td class="col-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.InvalidField.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.InvalidField.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 
 <h4>POST</h4>
 <code>{{route.sponsor}}</code>
 <p style="color:#808080">
-	Permission: admin
+    Permission: admin
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">sponsor_name</td>
-				<td class="colo-md-3">string</td>
-				<td class="colo-md-3">The name of Sponsor</td>	
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">sponsor_name</td>
+                <td class="colo-md-3">string</td>
+                <td class="colo-md-3">The name of the Sponsor</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">link</td>
+                <td class="colo-md-3">string</td>
+                <td class="colo-md-3">A link to the Sponsor's promotional material</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">description</td>
+                <td class="colo-md-3">string</td>
+                <td class="colo-md-3">A description about the Sponsor</td>
+            </tr>
+            <tr>
+                <td class="colo-md-3">active</td>
+                <td class="colo-md-3">int</td>
+                <td class="colo-md-3">1 if the Sponsor is active otherwise inactive (no paramter then assume active)</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">201</td>
-				<td class="col-md-3">int: the created sponsor id</td>
-				<td class="col-md-3">Successful</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">400</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">Missing required parameter</td>
-			</tr>
-			<tr>
-				<td class="col-md-3">{{errors.InvalidField.status_code}}</td>
-				<td class="col-md-3">--</a></td>
-				<td class="col-md-3">{{errors.InvalidField.message}}</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">201</td>
+                <td class="col-md-3">int: the created sponsor id</td>
+                <td class="col-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">400</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">Missing required parameter</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.InvalidField.status_code}}</td>
+                <td class="col-md-3">--</a></td>
+                <td class="col-md-3">{{errors.InvalidField.message}}</td>
+            </tr>
+        </tbody>
+    </table>
 
 
 <h4>GET</h4>
 <code>{{route.sponsor}}</code>
 <p style="color:#808080">
-	Permission: none
+    Permission: none
 </p>
 <strong>Parameter</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Field</th>
-				<th class="col-md-3">Type</th>
-				<th class="col-md-3">Description</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-				<td class="colo-md-3">--</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">--</td>
+                <td class="colo-md-3">--</td>
+            </tr>
+        </tbody>
+    </table>
 
 <strong>Responses</strong>
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="col-md-3">Status Code</th>
-				<th class="col-md-3">Response Object</th>
-				<th class="col-md-3">Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td class="col-md-3">200</td>
-				<td class="col-md-3">List of <a href="{{route.dosponsor}}">Sponsors</a></td>
-				<td class="col-md-3">Successful</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">200</td>
+                <td class="col-md-3"><a href="{{route.dopagination}}">Paginated</a> <a href="{{route.dosponsor}}">Sponsors</a></td>
+                <td class="col-md-3">Successful</td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}

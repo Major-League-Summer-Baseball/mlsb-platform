@@ -1,0 +1,68 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        <h4 class="leaderTitle sleeman">
+        Single Season Sleeman Slugger
+        </h4>
+        <ul class="listgroup leadersList sleemanList singleSeason">
+        {% for player in hrSingleSeason %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">{{loop.index}}</span>
+                {{player.year}} - {{player.name}} - {{player.hits}}
+                <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <h4 class="leaderTitle sleeman">
+        All-Time Sleeman Slugger <a href="#" data-toggle="toolip" title="For those who played too long">[?]</a>
+        </h4>
+        <ul class="listgroup leadersList sleemanList singleSeason">
+        {% for player in hrAllSeason %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">{{loop.index}}</span>
+                {{player.name}} - {{player.hits}}
+                <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderTitle sapporo">
+        Single Season Sapporo Singles
+        </h4>
+        <ol class="listgroup leadersList">
+        {% for player in ssSingleSeason %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">{{loop.index}}</span>
+                 {{player.year}} - {{player.name}} - {{player.hits}}
+                 <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderTitle sapporo">
+        All-Time Sapporo Singles
+        </h4>
+        <ol class="listgroup leadersList">
+        {% for player in ssSingleSeason %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">{{loop.index}}</span>
+                 {{player.name}} - {{player.hits}}
+                 <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+</script>
+{% endblock %}

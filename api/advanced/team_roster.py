@@ -4,9 +4,10 @@ Date: 2014-08-25
 Project: MLSB API
 Purpose: To create an application to act as an api for the database
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
+from api.authentication import requires_admin
 from api import DB
 from api.model import Team
 from api.errors import TeamDoesNotExist
@@ -52,6 +53,7 @@ class TeamRosterAPI(Resource):
                             status=200, mimetype="application/json")
         return response
 
+    @requires_admin
     def delete(self, team_id):
         """
             DELETE request for Team Roster List
@@ -71,14 +73,14 @@ class TeamRosterAPI(Resource):
         if team is None:
             raise TeamDoesNotExist(payload={'details': team_id})
         team.remove_player(args['player_id'])
-        DB.session.commit()
         if team.player_id == args['player_id']:
             team.player_id = None
-            DB.session.commit()
+        DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
         return response
 
+    @requires_admin
     def post(self, team_id):
         """
             POST request for Team Roster List

@@ -4,13 +4,17 @@
 @organization: MLSB API
 @summary: The basic game API
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
 from api.model import Game
 from api.authentication import requires_admin
 from api.errors import GameDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('home_team_id', type=int)
 parser.add_argument('away_team_id', type=int)
@@ -178,12 +182,12 @@ class GameListAPI(Resource):
                                 ,{...}
                            ]
         """
-        # return a list of games
-        games = Game.query.all()
-        result = []
-        for i in range(0, len(games)):
-            result.append(games[i].json())
-        resp = Response(dumps(result), status=200, mimetype="application/json")
+        # return a pagination of games
+        page = request.args.get('page', 1, type=int)
+        pagination = Game.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['game'])
+        resp = Response(dumps(result), status=200,
+                        mimetype="application/json")
         return resp
 
     @requires_admin

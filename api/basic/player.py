@@ -4,23 +4,29 @@
 @organization: MLSB API
 @summary: The basic player API
 '''
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api.model import Player
 from api import DB
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
+from api.variables import PAGE_SIZE
+from api.routes import Routes
+from api.helper import pagination_response
+from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
 parser.add_argument('email', type=str)
 parser.add_argument('password', type=str)
+parser.add_argument('active', type=int)
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('player_name', type=str, required=True)
 post_parser.add_argument('gender', type=str)
 post_parser.add_argument('email', type=str, required=True)
 post_parser.add_argument('password', type=str)
+post_parser.add_argument("active", type=int)
 
 
 class PlayerAPI(Resource):
@@ -80,6 +86,7 @@ class PlayerAPI(Resource):
                 player_name: The player's name (string)
                 gender: a one letter character representing gender (string)
                 email: the players email (string)
+                active: 1 if player is active and 0 otherwise (int)
             Returns:
                 if found and successful
                     status: 200
@@ -106,15 +113,19 @@ class PlayerAPI(Resource):
         player_name = None
         gender = None
         email = None
+        active = True
         if args['player_name']:
             player_name = args['player_name']
         if args['gender']:
             gender = args['gender']
         if args['email']:
             email = args['email']
+        if args['active']:
+            active = args['active'] == 1 if True else False 
         player.update(name=player_name,
                       gender=gender,
-                      email=email)
+                      email=email,
+                      active=active)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -131,24 +142,21 @@ class PlayerListAPI(Resource):
         """
             GET request for Player List
             Route: Routes['player']
-            Parameters :
-                player_name: The player's name (string)
-                gender: a one letter character representing gender (string)
             Returns:
                 status: 200
                 mimetype: application/json
                 data:
                     players: [{player_id:int,
                               player-name:string,
-                              gender: string},{}
+                              gender: string,
+                              active: boolean},{}
                             ]
         """
-        # return a list of users
-        players = Player.query.all()
-        for i in range(0, len(players)):
-            players[i] = players[i].json()
-        resp = Response(dumps(players),
-                        status=200,
+        # return a pagination of users
+        page = request.args.get('page', 1, type=int)
+        pagination = Player.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['player'])
+        resp = Response(dumps(result), status=200,
                         mimetype="application/json")
         return resp
 
@@ -162,6 +170,7 @@ class PlayerListAPI(Resource):
                 gender: a one letter character representing gender (string)
                 email: the email of the player (string)
                 password: the password of the player(string)
+                active: 1 if player is active and 0 otherwise (int)
             Returns:
                 if successful
                     status: 200
@@ -186,6 +195,7 @@ class PlayerListAPI(Resource):
         player_name = None
         email = None
         password = "default"
+        active = True
         if args['player_name']:
             player_name = args['player_name']
         if args['gender']:
@@ -194,7 +204,9 @@ class PlayerListAPI(Resource):
             email = args['email']
         if args['password']:
             password = args['password']
-        player = Player(player_name, email, gender, password)
+        if args['active']:
+            active = args['active'] == 1 if True else False 
+        player = Player(player_name, email, gender, password, active=active)
         DB.session.add(player)
         DB.session.commit()
         result = player.id

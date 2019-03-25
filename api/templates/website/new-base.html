@@ -82,21 +82,31 @@
 
                     <div class="collapse navbar-collapse navbar-left">
                         <ul class="nav navbar-nav">
-                              <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
-                              <li><a href="{{route.standingspage}}/{{year}}">PBR Power Rankings</a></li>
-                              <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
-                              <li><a href="{{route.leagueleaderpage}}/{{year}}">League Leaders</a></li>
+                            <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
+                            <li><a href="{{route.standingspage}}/{{year}}">PBR Power Rankings</a></li>
+                            <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">League Leaders <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li>
+                                      <a href="{{route.leagueleaderpage}}/{{year}}">This Season</a>
+                                  </li>
+                                  <li>
+                                      <a href="{{route.alltimeleaderspage}}/{{year}}">All-Time</a>
+                                  </li>
+                                </ul>
+                            </li>
                             <li><a href="{{route.statspage}}/{{year}}">Player Stats</a></li>
                             <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Archive <b class="caret"></b></a>
-                          <ul class="dropdown-menu">
-                            <li><a href="/">Current Year</a></li>
-                            {% for n in range (2016, year) %}
-                              <li><a href="{{route.homepage}}/{{n}}">{{n}}</a></li>
-                            {% endfor %}
-                            </ul>
-                        </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Archive <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li><a href="/">Current Year</a></li>
+                                  {% for n in range (2016, year) %}
+                                    <li><a href="{{route.homepage}}/{{n}}">{{n}}</a></li>
+                                  {% endfor %}
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                 </div><!--/.container-->
@@ -128,10 +138,10 @@
                             <img class="social-icon" src="{{ url_for('static', filename="kik.png")}}"/>
                         </a>
                         -->
-                        <a href="https://www.facebook.com/MLSB2018/" target="_blank" class="social-link">
+                        <a href="https://www.facebook.com/MLSB{{year}}/" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
                         </a>
-                        <a href="https://www.instagram.com/mlsb2018/" target="_blank" class="social-link">
+                        <a href="https://www.instagram.com/mlsb{{year}}/" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
                         </a>
                         <!--
@@ -149,7 +159,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-4">
-                    &copy; MLSB 2016. All Rights Reserved.
+                    &copy; MLSB 2019. All Rights Reserved.
                 </div>
                 <!-- <div class="col-sm-8">
                     <ul class="pull-right">
@@ -188,7 +198,6 @@
     var funIndex = 0
     function updateGauge(){
         funIndex = (funIndex + 1) % funs.length;
-        console.log(funs);
         gauge2.update(funs[funIndex].count)
         $('#funMeter').text('Fun Meter ' + funs[funIndex].year);
     }
@@ -228,7 +237,7 @@
                       contentType: "application/json",
                       data: JSON.stringify({}),
                       dataType: 'json',
-                      async: false,
+                      async: true,
                         dataType: "json",
                         success: function (result){
                           funs = result
