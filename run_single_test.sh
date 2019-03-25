@@ -15,7 +15,7 @@ if [ $cont = "Y" ]; then
     winpty docker-compose exec mlsb python -m unittest discover -s api/test -p $1
 elif [  $cont = "y" ]; then
     echo "Running test: $1"
-    winpty docker-compose exec mlsb python -m unittest discover -s api/test -p $1
+    winpty docker-compose exec mlsb python -m unittest discover -s api/test -p $1*.py
 else
     echo "Not running tests, have a nice day"
 fi
