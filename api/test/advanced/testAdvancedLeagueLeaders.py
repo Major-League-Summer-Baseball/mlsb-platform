@@ -10,7 +10,7 @@ from api.routes import Routes
 from base64 import b64encode
 from api.test.advanced.mock_league import MockLeague
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
-
+from api.errors import InvalidField
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -25,105 +25,65 @@ VALID_YEAR = date.today().year
 INVALID_YEAR = 100
 
 
-class TestPlayerTeamLookup(TestSetup):
-    def testEmail(self):
-        """Tests using a player email as a parameter"""
-        mocker = MockLeague(self)
-        league = mocker.get_league()
-        team = mocker.get_teams()[0]
-        player = mocker.get_players()[0]
-        sponsor = mocker.get_sponsor()
+class TestLeagueLeaders(TestSetup):
 
-        # test a test player emails
-        params = {'email': mocker.get_player_email(0)}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': player,
-                   'color': team['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team['team_id'],
-                   'team_name': team['team_name'],
-                   'year': team['year']}]
+    def testInvalidtStat(self):
+        """Test a stat that is not valid"""
+        MockLeague(self)
+        params = {'stat': "XXX"}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        expect = {}
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect,
-                         loads(rv.data),
-                         Routes['vplayerteamLookup'])
+        self.assertEqual(rv.status_code, InvalidField.status_code,
+                         Routes['vleagueleaders'] +
+                         " View: invalid stat accepted")
 
-    def testPlayerName(self):
-        """Tests using a player name as a parameter"""
-        mocker = MockLeague(self)
-        league = mocker.get_league()
-        team = mocker.get_teams()[0]
-        player = mocker.get_players()[0]
-        sponsor = mocker.get_sponsor()
+    def testNonEmptyStat(self):
+        """Test a stat that is not empty"""
+        MockLeague(self)
+        params = {'stat': "hr"}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        self.output(loads(rv.data))
+        self.assertTrue(len(loads(rv.data)) > 0, Routes['vleagueleaders'] +
+                        " View: hr stat was empty for all years")
 
-        # test a test player names
-        params = {'player_name': mocker.get_players()[0]['player_name']}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': player,
-                   'color': team['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team['team_id'],
-                   'team_name': team['team_name'],
-                   'year': team['year']}]
+    def testEmptyYear(self):
+        """Test an empty year"""
+        MockLeague(self)
+        params = {'stat': "hr", 'year': INVALID_YEAR}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        expect = []
         self.output(loads(rv.data))
         self.output(expect)
-        self.assertEqual(expect,
-                         loads(rv.data),
-                         Routes['vplayerteamLookup'])
+        self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
+                         " View: empty stat on all years")
 
-        # test a test player names
-        player_two = mocker.get_players()[3]
-        team_two = mocker.get_teams()[1]
-        params = {'player_name': "Test Player"}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': player,
-                   'color': team['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team['team_id'],
-                   'team_name': team['team_name'],
-                   'year': team['year']},
-                  {'captain': player_two,
-                   'color': team_two['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team_two['team_id'],
-                   'team_name': team_two['team_name'],
-                   'year': team_two['year']}]
+    def testNonEmptyYear(self):
+        """Test a non-empty year"""
+        MockLeague(self)
+        params = {'stat': "k", 'year': VALID_YEAR}
+        rv = self.app.post(Routes['vleagueleaders'], data=params)
         self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect,
-                         loads(rv.data),
-                         Routes['vplayerteamLookup'])
+        self.assertTrue(len(loads(rv.data)) > 0, Routes['vleagueleaders'] +
+                        " View: hr stat was empty")
 
-    def testPlayerId(self):
-        """Tests using a player id as a parameter"""
-        mocker = MockLeague(self)
-        league = mocker.get_league()
-        team = mocker.get_teams()[0]
-        player = mocker.get_players()[0]
-        sponsor = mocker.get_sponsor()
-
-        # test a test player names
-        params = {'player_id': mocker.get_players()[0]['player_id']}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': player,
-                   'color': team['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team['team_id'],
-                   'team_name': team['team_name'],
-                   'year': team['year']}]
-        self.output(loads(rv.data))
-        self.output(expect)
-        self.assertEqual(expect,
-                         loads(rv.data),
-                         Routes['vplayerteamLookup'])
+    def testGroupByTeam(self):
+        """Test a non-empty year"""
+        MockLeague(self)
+        params = {'stat': "hr", 'year': VALID_YEAR}
+        not_grouped = self.app.post(Routes['vleagueleaders'], data=params)
+        params = {'stat': "hr", 'year': VALID_YEAR, 'group_by_team': 0}
+        grouped = self.app.post(Routes['vleagueleaders'], data=params)
+        self.output(loads(not_grouped.data))
+        self.output(loads(grouped.data))
+        self.assertFalse(loads(not_grouped.data) == loads(grouped.data),
+                         Routes['vleagueleaders'] +
+                         " View: group same as not grouped")
+        for entry in loads(grouped.data):
+            self.assertTrue(entry['team_id'] is None,
+                            Routes['vleagueleaders'] +
+                            " View: group by team, team should be None")
+            self.assertTrue(entry['team'] is None,
+                            Routes['vleagueleaders'] +
+                            " View: group by team, team should be None")
