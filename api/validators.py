@@ -4,7 +4,6 @@ Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds data validators
 '''
-import unittest
 import time
 import datetime
 from datetime import date
