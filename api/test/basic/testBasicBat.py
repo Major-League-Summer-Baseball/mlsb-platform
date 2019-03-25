@@ -11,7 +11,7 @@ from api.errors import \
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
                               INVALID_ID, SUCCESSFUL_PUT_CODE, addBat,\
-                            addGame
+                              addGame
 
 
 headers = {
