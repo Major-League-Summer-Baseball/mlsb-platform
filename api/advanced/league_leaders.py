@@ -12,6 +12,8 @@ from api.model import Player, Bat, Game, Team
 from datetime import datetime, date, time
 from sqlalchemy.sql import func
 from api.variables import UNASSIGNED_EMAIL
+from api.validators import hit_validator
+from api.errors import InvalidField
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('group_by_team', type=int)
@@ -22,9 +24,9 @@ def get_leaders(hit, year=None):
     """Returns the top ten leaders for the given stats grouped by teams
         Parameters:
           hit: the type of hit classification to get the leaders for
-          year: if given then get leaders for just that year otherwise all years
-                are considered
-        Returns: a list of 
+          year: if given then get leaders for just that year otherwise
+                all years are considered
+        Returns: a list of
                 { 'name': str,
                   'id': int,
                   'hits': str,
@@ -86,9 +88,9 @@ def get_leaders_not_grouped_by_team(hit, year=None):
     """Returns the top ten leaders for the given stats not grouped by teams
         Parameters:
           hit: the type of hit classification to get the leaders for
-          year: if given then get leaders for just that year otherwise all years
-                are considered
-        Returns: a list of 
+          year: if given then get leaders for just that year otherwise
+                all years are considered
+        Returns: a list of
                 { 'name': str,
                   'id': int,
                   'hits': str,
@@ -99,7 +101,6 @@ def get_leaders_not_grouped_by_team(hit, year=None):
     """
     leaders = []
     hits = func.count(Bat.player_id).label("total")
-    t = time(0, 0)
     t = time(0, 0)
     if year is not None:
         d1 = date(year, 1, 1)
@@ -134,6 +135,9 @@ def get_leaders_not_grouped_by_team(hit, year=None):
         result = {'name': player[0],
                   'id': player[1],
                   'hits': player[2],
+                  'team_id': None,
+                  'team': None,
+                  'year': year
                   }
         leaders.append(result)
     return leaders
@@ -158,13 +162,14 @@ class LeagueLeadersAPI(Resource):
         stat = None
         group_by_team = True
         args = parser.parse_args()
-
         if args['year']:
             year = args['year']
-        if args['stat']:
+        if args['stat'] and hit_validator(args['stat']):
             stat = args['stat']
-        if args['group_by_team']:
-            group_by_team = True if arg['group_by_team'] == 1 else False
+        else:
+            raise InvalidField(payload={'details': 'Invalid stat'})
+        if args['group_by_team'] == 0:
+            group_by_team = False
         if group_by_team:
             players = get_leaders(stat, year=year)
         else:
