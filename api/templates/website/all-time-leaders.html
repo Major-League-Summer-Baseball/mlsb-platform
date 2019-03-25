@@ -52,7 +52,7 @@
         All-Time Sapporo Singles
         </h4>
         <ol class="listgroup leadersList">
-        {% for player in ssSingleSeason %}
+        {% for player in ssAllSeason %}
             <li class="list-group-item leaderPoint">
                 <span class="badge leaderBadge">{{loop.index}}</span>
                  {{player.name}} - {{player.hits}}
