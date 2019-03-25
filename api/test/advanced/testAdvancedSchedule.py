@@ -13,7 +13,6 @@ from api.test.advanced.mock_league import MockLeague
 import datetime
 
 
-
 class TestSchedule(TestSetup):
     def testEmptyYear(self):
         """Test schedule view for empty league"""
@@ -26,7 +25,8 @@ class TestSchedule(TestSetup):
 
     def testLeagueDoesNotExist(self):
         """Test schedule view for empty league"""
-        rv = self.app.get(Routes['vschedule'] + "/2012" + "/" + str(INVALID_ID))
+        url = Routes['vschedule'] + "/2012" + "/" + str(INVALID_ID)
+        rv = self.app.get(url)
         self.output(rv.status_code)
         self.output(LeagueDoesNotExist.status_code)
         self.assertEqual(rv.status_code, LeagueDoesNotExist.status_code,
