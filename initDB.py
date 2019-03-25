@@ -91,50 +91,51 @@ def mock_teams_games(league, sponsor_lookup):
     today = datetime.date.today()
     games = []
     for day in range(-3, 3):
-      date_string = (today + datetime.timedelta(days=day)).strftime("%Y-%m-%d")
-      status = "Completed" if day < 0 else "To Be Played"
-      games.append(Game(date_string,
-                        "10:00",
-                        teams[0].id,
-                        teams[1].id,
-                        league.id,
-                        status=status,
-                        field="WP1"))
-      games.append(Game(date_string,
-                        "10:00",
-                        teams[2].id,
-                        teams[3].id,
-                        league.id,
-                        status=status,
-                        field="WP2"))
-      games.append(Game(date_string,
-                        "11:00",
-                        teams[0].id,
-                        teams[2].id,
-                        league.id,
-                        status=status,
-                        field="WP1"))
-      games.append(Game(date_string,
-                        "11:00",
-                        teams[2].id,
-                        teams[1].id,
-                        league.id,
-                        status=status,
-                        field="WP2"))
-      games.append(Game(date_string,
-                        "12:00",
-                        teams[0].id,
-                        teams[3].id,
-                        league.id,
-                        status=status,
-                        field="WP1"))
-      games.append(Game(date_string,
-                        "12:00",
-                        teams[2].id,
-                        teams[1].id,
-                        league.id,
-                        status=status,
-                        field="WP2"))
+        date_string = (today +
+                       datetime.timedelta(days=day)).strftime("%Y-%m-%d")
+        status = "Completed" if day < 0 else "To Be Played"
+        games.append(Game(date_string,
+                          "10:00",
+                          teams[0].id,
+                          teams[1].id,
+                          league.id,
+                          status=status,
+                          field="WP1"))
+        games.append(Game(date_string,
+                          "10:00",
+                          teams[2].id,
+                          teams[3].id,
+                          league.id,
+                          status=status,
+                          field="WP2"))
+        games.append(Game(date_string,
+                          "11:00",
+                          teams[0].id,
+                          teams[2].id,
+                          league.id,
+                          status=status,
+                          field="WP1"))
+        games.append(Game(date_string,
+                          "11:00",
+                          teams[2].id,
+                          teams[1].id,
+                          league.id,
+                          status=status,
+                          field="WP2"))
+        games.append(Game(date_string,
+                          "12:00",
+                          teams[0].id,
+                          teams[3].id,
+                          league.id,
+                          status=status,
+                          field="WP1"))
+        games.append(Game(date_string,
+                          "12:00",
+                          teams[2].id,
+                          teams[1].id,
+                          league.id,
+                          status=status,
+                          field="WP2"))
     for game in tqdm(games, "Adding mock games"):
         DB.session.add(game)
     DB.session.commit()
