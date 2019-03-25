@@ -13,6 +13,7 @@ parser.add_argument('email', type=str)
 parser.add_argument('player_name', type=str)
 parser.add_argument("active", type=int)
 
+
 class PlayerLookupAPI(Resource):
     def post(self):
         """
