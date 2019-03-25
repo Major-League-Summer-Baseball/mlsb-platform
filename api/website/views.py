@@ -314,7 +314,7 @@ def all_time_leaders_page(year):
                            hrSingleSeason=hrSingleSeason,
                            ssSingleSeason=ssSingleSeason,
                            hrAllSeason=hrAllSeason,
-                           ssAllSesaon=ssAllSeason,
+                           ssAllSeason=ssAllSeason,
                            title="League Leaders",
                            year=year)
 

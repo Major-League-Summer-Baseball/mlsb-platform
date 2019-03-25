@@ -214,9 +214,9 @@ def add_random_score(game_id, team_id, players):
 def pull_all_pages(url, pagination):
     """ Pulls the items from all the pages (paginated object)."""
     data = pagination['items']
-    if(pagination['has_more']):
-        data = data + pull_all_pages(requests.get(url +
-                                                  pagination['next_url']))
+    if(pagination['has_next']):
+        pagination = requests.get(url + pagination['next_url'])
+        data = data + pull_all_pages(url, pagination.json())
     return data
 
 
@@ -231,7 +231,7 @@ def pull_fun_count(url):
     # add the fun counts
     funs = requests.get(url + "/api/fun").json()
     if isinstance(funs, dict):
-        funs = pull_all_pages(funs)
+        funs = pull_all_pages(url, funs)
     for fun in tqdm(funs, desc="Pulling fun from {}".format(url)):
         DB.session.add(Fun(year=fun['year'], count=fun['count']))
     DB.session.commit()
