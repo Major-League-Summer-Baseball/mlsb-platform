@@ -22,11 +22,11 @@
                 <td class="col-md-3">
                     If 1 then all stats for players are grouped by team
                     (players only show up for each team they are one).
-                    If false Otherwise all plThe hit classification to find league leader
+                    If false Otherwise all players appear once (all team stats are summed)
                 </td>
             </tr>
             <tr>
-                <td class="col-md-3">stat</td>
+                <td class="col-md-3">stat (required)</td>
                 <td class="col-md-3">str</td>
                 <td class="col-md-3">The hit classification to find league leader</td>
             </tr>
@@ -71,7 +71,26 @@
             <tr>
                 <td class="col-md-3">team</td>
                 <td class="col-md-3">str</td>
-                <td class="col-md-3">The team name the player was playing for</td>
+                <td class="col-md-3">
+                    The team name the player was playing for
+                    (None if group_by_team is 0)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">team_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">
+                    The id of the team the player was playing for
+                    (None if group_by_team is 0)
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-3">year</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">
+                    The year that stats occurred
+                    (None if group_by_team is 0 and no year was given)
+                </td>
             </tr>
         </tbody>
     </table>
