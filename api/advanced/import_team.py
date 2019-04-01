@@ -18,7 +18,21 @@ INVALID_FILE = "File was not given in right format (use template)"
 EXAMPLE_FOUND = "First entry contain the templates example, just skipped it"
 EMAIL_NAME = "Player {} email was found but had different name"
 INVALID_FIELD = "{} had an invalid field"
+INVALID_ROW = "Unsure what to do with the following row: {}"
+PLAYER_ROW_IDENTIFIER = "player"
 
+# a dictionary of the headers needed with their keys
+#and how they appear in csv
+HEADERS = {"name": "Player Name",
+           "email": "Player Email",
+           "gender": "Gender (M/F)"}
+
+# a dictionary of the background needed with their keys
+#and how they appear in csv
+BACKGROUND = {"sponsor_name": "sponsor",
+              "team_color": "color",
+              "captain_name": "captain",
+              "league_name": "league"}
 
 class TeamList():
     def __init__(self, lines, logger=None, session=None):
@@ -198,3 +212,113 @@ class TeamList():
         if self.gender_index is None:
             raise InvalidField(payload={'details': "Gender header missing"})
         return
+
+
+def get_column_indices_lookup(header):
+    """ Returns a dictionary used to lookup indices for various fields
+    Parameters:
+        header: the header array
+    Returns:
+        a dictionary {str(field): int(index)}
+    """
+    lookup = {}
+    for i in range(0, len(header)):
+        if "email" in header[i].lower():
+            lookup["email"] = i
+        elif "name" in header[i].lower():
+            lookup["name"] = i
+        elif "gender" in header[i].lower():
+            lookup["gender"] = i
+    if "email" not in lookup:
+        raise InvalidField(payload={'details': "Email header missing"})
+    if "name" not in lookup:
+        raise InvalidField(payload={'details': "Player header missing"})
+    if "gender" not in lookup:
+        raise InvalidField(payload={'details': "Gender header missing"})
+    return lookup
+
+
+def parse_player_information(info, lookup):
+    """Parse a player and return a json object
+    Parameters:
+        info: a list of information about player
+        lookup: the lookup for what fields and their indices in the info list
+    Return:
+        a dictionary {'player_id': int,
+                      'name': str,
+                      'email': str,
+                      'gender': str}
+    """
+    player_json = {}
+    for key, value in lookup.items():
+        player_json[key] = info[value].strip()
+    player_id = None
+    player = Player.query.filter(Player.email ==
+                                 player_json['email'].lower()).first()
+    if player is not None:
+        player_id = player.id
+    player_json['player_id'] = player_id
+    return 
+
+
+def extract_players(players, lookup, delimiter=","):
+    """Extract the players and return a list of players in json format
+    Parameters:
+        players: a list of rows that contain player information
+        lookup: the lookup for what fields and their indices in the players
+    Return:
+        a dictionary with players_info, warnings
+        where
+            players_info: an array of dictionary {'player_id': int,
+                                                 'name': str,
+                                                 'email': str,
+                                                 'gender': str}
+            warnings: a list of warnings encountered
+    """
+    players_info = []
+    warnings = []
+    for info in players:
+        if len(info) == len(lookup):
+            player = parse_player_information(info, lookup)
+            if player['name'].lower().startswith("ex."):
+                warning = "Player example was left - {}".format(" ".join(info))
+                warnings.append(warning)
+            else:
+                players_info.append(player)
+    return {'player_info': players_info, 'warnings': warnings}
+
+
+def clean_cell(cell):
+    """Returns a clean cell"""
+    return cell.strip().lower().replace(":", "")
+
+
+def parse_lines(lines, delimiter=","):
+    """Parses the lines and returns a tuple with the three parts
+    Parameters:
+        lines: a list of lines
+    Returns:
+        a dictionary with background, header, players, warnings where:
+            background: list of sponsor, color, captain, league
+            header: the header row
+            players: a list of player lines
+            warnings: a list of lines that were not recognized
+    """
+    background = {}
+    header = None
+    players = []
+    warnings = []
+    for line in lines:
+        info = line.split(delimiter)
+        if clean_cell(info[0]) in BACKGROUND.values():
+            background[clean_cell(info[0])] = info[1].strip()
+        elif PLAYER_ROW_IDENTIFIER in info[0].lower().strip():
+            header = info
+        elif len(info) >= len(HEADERS.keys()):
+            players.append(info)
+        else:
+            warnings.append(INVALID_ROW.format(line))
+    return {'background': background,
+            'header': header,
+            'players': players,
+            'warnings': warnings}
