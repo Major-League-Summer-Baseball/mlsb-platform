@@ -7,8 +7,11 @@
 from datetime import date
 from base64 import b64encode
 from api.advanced.import_team import parse_lines, BACKGROUND, HEADERS,\
-                                     INVALID_ROW
+                                     INVALID_ROW, extract_player_information,\
+                                     extract_players,\
+                                     extract_column_indices_lookup
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
+from api.errors import InvalidField
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -234,4 +237,162 @@ class TestTeamImportParseLines(TestSetup):
                          expected_players,
                          "Players not returned")
 
+class TestTeamImportExtracingFunction(TestSetup):
+    def testExtractPlayerInformation(self):
+        # the test date
+        name = "Test Import Parse PlayerCaptain"
+        email = "testImportParsePlayer@mlsb.ca"
+        gender = "M"
+        info = [name, email, gender]
 
+        # parse the information using the lookup
+        lookup = {"email": 1, "name": 0, "gender": 2}
+        result = extract_player_information(info, lookup)
+
+        # expecting the player to not be found but data parsed
+        self.assertEqual(result['player_id'],
+                         None,
+                         "Player id set for non-existent player")
+        self.assertEqual(result['name'],
+                         name,
+                         "Player name was not extracted")
+        self.assertEqual(result['email'],
+                         email,
+                         "Player email was not extracted")
+        self.assertEqual(result['gender'],
+                         gender,
+                         "Player gender was not extracted")
+
+        # now again with player in database
+        player = self.add_player(name, email, gender, "", True)
+        result = extract_player_information(info, lookup)
+
+        # expecting the player to not be found but data parsed
+        self.assertEqual(result['player_id'],
+                         player['player_id'],
+                         "Player id not set for existing player")
+        self.assertEqual(result['name'],
+                         name,
+                         "Player name was not extracted")
+        self.assertEqual(result['email'],
+                         email,
+                         "Player email was not extracted")
+        self.assertEqual(result['gender'],
+                         gender,
+                         "Player gender was not extracted")
+
+    def testExtractPlayers(self):
+        # player data to extract
+        player_one = {'name': "p1",
+                      'email': "testImportPlayersOne@mlsb.ca",
+                      'gender': "M"}
+        player_two = {'name': "p2",
+                      'email': "testImportPlayersTwo@mlsb.ca",
+                      'gender': "F"}
+        players = [[player_one['email'],
+                    player_one['name'],
+                    player_one['gender']],
+                   [player_two['email'],
+                    player_two['name'],
+                    player_two['gender']]]
+
+        # extract the two players
+        lookup = {"email": 0, "name": 1, "gender": 2}
+        result = extract_players(players, lookup)
+
+        # should have two players
+        self.assertEqual(len(result['player_info']),
+                         2,
+                         "Some player was not extracted")
+
+        # should have no warnings
+        self.assertEqual(len(result['warnings']),
+                         0,
+                         "Unexpected wanring when extracting players")
+
+        # check player one
+        self.assertEqual(result['player_info'][0]['player_id'],
+                         None,
+                         "Player id set for non-existent player")
+        self.assertEqual(result['player_info'][0]['name'],
+                         player_one['name'],
+                         "Player name was not extracted")
+        self.assertEqual(result['player_info'][0]['email'],
+                         player_one['email'],
+                         "Player email was not extracted")
+        self.assertEqual(result['player_info'][0]['name'],
+                         player_one['name'],
+                         "Player name was not parsed")
+
+        # check player two
+        self.assertEqual(result['player_info'][1]['player_id'],
+                         None,
+                         "Player id set for non-existent player")
+        self.assertEqual(result['player_info'][1]['name'],
+                         player_two['name'],
+                         "Player name was not extracted")
+        self.assertEqual(result['player_info'][1]['email'],
+                         player_two['email'],
+                         "Player email was not extracted")
+        self.assertEqual(result['player_info'][1]['name'],
+                         player_two['name'],
+                         "Player name was not parsed")
+
+    def testExtractPlayersWarnings(self):
+                # player data to extract
+        player_one = {'name': "ex. p1",
+                      'email': "testImportPlayersOne@mlsb.ca",
+                      'gender': "M"}
+        player_two = {'name': "p2",
+                      'email': "testImportPlayersTwo@mlsb.ca",
+                      'gender': "F"}
+        players = [[player_one['email'],
+                    player_one['name'],
+                    player_one['gender']],
+                   [player_two['email'],
+                    player_two['name'],
+                    player_two['gender'],
+                    "Extra Row"]]
+
+        # extract the two players
+        lookup = {"email": 0, "name": 1, "gender": 2}
+        result = extract_players(players, lookup)
+
+        # should have two players
+        self.assertEqual(len(result['player_info']),
+                         0,
+                         "Some player was not extracted")
+
+        # should have no warnings
+        self.assertEqual(len(result['warnings']),
+                         2,
+                         "Unexpected wanring when extracting players")
+
+    def testExtractColumnIndicesLookup(self):
+        # simple working example
+        header = ["Email", "name", "GeNdEr"]
+        lookup = extract_column_indices_lookup(header)
+        self.assertEqual(0, lookup['email'], "Did not extract email header")
+        self.assertEqual(1, lookup['name'], "Did not extract name header")
+        self.assertEqual(2, lookup['gender'], "Did not extract gender header")
+
+        try:
+            header = ["Email", "name"]
+            lookup = extract_column_indices_lookup(header)
+            self.assertTrue(False, "Should have raised exception")
+        except InvalidField:
+            pass
+
+        try:
+            header = ["Email", "gender"]
+            lookup = extract_column_indices_lookup(header)
+            self.assertTrue(False, "Should have raised exception")
+        except InvalidField:
+            pass
+
+        try:
+            header = ["name", "gender"]
+            lookup = extract_column_indices_lookup(header)
+            self.assertTrue(False, "Should have raised exception")
+        except InvalidField:
+            pass
