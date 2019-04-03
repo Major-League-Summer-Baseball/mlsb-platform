@@ -9,9 +9,10 @@ from base64 import b64encode
 from api.advanced.import_team import parse_lines, BACKGROUND, HEADERS,\
                                      INVALID_ROW, extract_player_information,\
                                      extract_players,\
-                                     extract_column_indices_lookup
+                                     extract_column_indices_lookup,\
+                                     extract_background
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
-from api.errors import InvalidField
+from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -24,6 +25,7 @@ kik = {
 }
 VALID_YEAR = date.today().year
 INVALID_YEAR = 100
+
 
 class TestTeamImportParseLines(TestSetup):
 
@@ -49,7 +51,6 @@ class TestTeamImportParseLines(TestSetup):
 
         # expecting no warnings
         self.assertEqual(result['warnings'], [], "Expected no warnings")
-        
 
         # check background
         expected_background = {'sponsor': sponsor,
@@ -99,7 +100,6 @@ class TestTeamImportParseLines(TestSetup):
 
         # expecting no warnings
         self.assertEqual(result['warnings'], [], "Expected no warnings")
-        
 
         # check background
         expected_background = {'sponsor': sponsor,
@@ -121,9 +121,9 @@ class TestTeamImportParseLines(TestSetup):
         self.assertEqual(result['header'], expected_header, error)
 
         # check the players
-        expected_players = [["Test Captain","testcaptainimport@mlsb.ca","M"],
-                            ["Test Girl","testgirlimport@mlsb.ca","F"],
-                            ["Test Boy","testboyimport@mlsb.ca","M"]]
+        expected_players = [["Test Captain", "testcaptainimport@mlsb.ca", "M"],
+                            ["Test Girl", "testgirlimport@mlsb.ca", "F"],
+                            ["Test Boy", "testboyimport@mlsb.ca", "M"]]
         self.assertEqual(result['players'],
                          expected_players,
                          "Players not returned")
@@ -150,7 +150,6 @@ class TestTeamImportParseLines(TestSetup):
 
         # expecting no warnings
         self.assertEqual(result['warnings'], [], "Expected no warnings")
-        
 
         # check background
         expected_background = {'sponsor': sponsor,
@@ -230,12 +229,13 @@ class TestTeamImportParseLines(TestSetup):
         self.assertEqual(result['header'], expected_header, error)
 
         # check the players
-        expected_players = [["Test Captain","testcaptainimport@mlsb.ca","M"],
-                            ["Test Girl","testgirlimport@mlsb.ca","F"],
-                            ["Test Boy","testboyimport@mlsb.ca","M"]]
+        expected_players = [["Test Captain", "testcaptainimport@mlsb.ca", "M"],
+                            ["Test Girl", "testgirlimport@mlsb.ca", "F"],
+                            ["Test Boy", "testboyimport@mlsb.ca", "M"]]
         self.assertEqual(result['players'],
                          expected_players,
                          "Players not returned")
+
 
 class TestTeamImportExtracingFunction(TestSetup):
     def testExtractPlayerInformation(self):
@@ -396,3 +396,171 @@ class TestTeamImportExtracingFunction(TestSetup):
             self.assertTrue(False, "Should have raised exception")
         except InvalidField:
             pass
+
+
+class TestTeamImportExtractBackground(TestSetup):
+    def testExtractBackgroundErrors(self):
+        """Test that errors are raised for incomplete background """
+
+        # some date to use through out test
+        sponsor = "TTIEB Non-existent sponsor"
+        color = "Some Color"
+        captain = "TTIEB Non-existent player"
+        league = "TTIEB Non-existent league"
+
+        # missing background values
+        try:
+            extract_background({})
+            self.assertTrue(False, "Expecting exception raised")
+        except InvalidField:
+            pass
+
+        # given league example
+        background = {'sponsor': sponsor,
+                      'color': color,
+                      'captain': captain,
+                      'league': "ex. League Example"}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except InvalidField:
+            pass
+
+        # given captain example
+        background = {'sponsor': sponsor,
+                      'color': color,
+                      'captain': "ex. captain",
+                      'league': league}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except InvalidField:
+            pass
+
+        # given color example
+        background = {'sponsor': sponsor,
+                      'color': "ex. color",
+                      'captain': captain,
+                      'league': league}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except InvalidField:
+            pass
+
+        # given sponsor example
+        background = {'sponsor': sponsor,
+                      'color': "ex. color",
+                      'captain': captain,
+                      'league': league}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except InvalidField:
+            pass
+
+    def testExtractBackgroundCantFindSponsor(self):
+        """Test extract background when cant find sponsor"""
+
+        # some date to use through out test
+        league = "TTIEB Non-existent league"
+        self.add_league(league)
+        sponsor = "TTIEB Non-existent sponsor"
+        color = "Some Color"
+        captain = "TTIEB Non-existent player"
+        background = {'sponsor': sponsor,
+                      'color': color,
+                      'captain': captain,
+                      'league': league}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except SponsorDoesNotExist:
+            pass
+
+    def testExtractBackgroundCantFindLeague(self):
+        """ Test extract background when cant find league"""
+
+        # some date to use through out test
+        league = "TTIEB Non-existent league"
+        sponsor = "TTIEB Non-existent sponsor"
+        self.add_sponsor(sponsor)
+        color = "Some Color"
+        captain = "TTIEB Non-existent player"
+        background = {'sponsor': sponsor,
+                      'color': color,
+                      'captain': captain,
+                      'league': league}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except LeagueDoesNotExist:
+            pass
+
+    def testExtractBackgroundNewTeam(self):
+        """Test extract background for a new team"""
+
+        # some date to use through out test
+        league = "TTIEB Non-existent league"
+        sponsor = "TTIEB Non-existent sponsor"
+        self.add_sponsor(sponsor)
+        self.add_league(league)
+        color = "Some Color"
+        captain = "TTIEB Non-existent player"
+        background = {'sponsor': sponsor,
+                      'color': color,
+                      'captain': captain,
+                      'league': league}
+
+        # extract the background
+        result = extract_background(background)
+
+        # make sure the values match what was given
+        self.assertEqual(result['sponsor']['sponsor_name'],
+                         sponsor,
+                         "Extracted wrong sponsor")
+        self.assertEqual(result['league']['league_name'],
+                         league,
+                         "Extracted wrong league")
+        self.assertEqual(result['team']['color'],
+                         color,
+                         "Extracted wrong color")
+        self.assertEqual(result['captain']['player_name'],
+                         captain,
+                         "Extract wrong captain")
+
+    def testExtractBackgroundExistingTeam(self):
+        """Test extract background for an existing team"""
+
+        # some date to use through out test
+        league_name = "TTIEB Non-existent league"
+        sponsor_name = "TTIEB Non-existent sponsor"
+        color = "Some Color"
+        sponsor = self.add_sponsor(sponsor_name)
+        league = self.add_league(league_name)
+        team = self.add_team(color, sponsor, league, date.today().year)
+        captain = "TTIEB Non-existent player"
+        background = {'sponsor': sponsor_name,
+                      'color': color,
+                      'captain': captain,
+                      'league': league_name}
+
+        # extract the background
+        result = extract_background(background)
+
+        # make sure the values match what was given
+        self.assertEqual(result['sponsor']['sponsor_name'],
+                         sponsor_name,
+                         "Extracted wrong sponsor")
+        self.assertEqual(result['league']['league_name'],
+                         league_name,
+                         "Extracted wrong league")
+        self.assertEqual(result['team']['color'],
+                         color,
+                         "Extracted wrong color")
+        self.assertEqual(result['team']['team_id'],
+                         team["team_id"],
+                         "Extracted wrong existing team")
+        self.assertEqual(result['captain']['player_name'],
+                         captain,
+                         "Extract wrong captain")
