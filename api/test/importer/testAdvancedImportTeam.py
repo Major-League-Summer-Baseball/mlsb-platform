@@ -4,15 +4,18 @@
 @organization: MLSB API
 @summary: Tests the importing of team csv
 '''
+from sqlalchemy import func
 from datetime import date
 from base64 import b64encode
+from api.model import Team
 from api.advanced.import_team import parse_lines, BACKGROUND, HEADERS,\
                                      INVALID_ROW, extract_player_information,\
                                      extract_players,\
                                      extract_column_indices_lookup,\
-                                     extract_background
+                                     extract_background, TeamList
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
 from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
+from api.test.importer.testImportMockSession import TestImportMockSession
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -239,6 +242,7 @@ class TestTeamImportParseLines(TestSetup):
 
 class TestTeamImportExtracingFunction(TestSetup):
     def testExtractPlayerInformation(self):
+        """Test extract player information"""
         # the test date
         name = "Test Import Parse PlayerCaptain"
         email = "testImportParsePlayer@mlsb.ca"
@@ -282,6 +286,7 @@ class TestTeamImportExtracingFunction(TestSetup):
                          "Player gender was not extracted")
 
     def testExtractPlayers(self):
+        """Test extracting a list of players"""
         # player data to extract
         player_one = {'name': "p1",
                       'email': "testImportPlayersOne@mlsb.ca",
@@ -339,7 +344,8 @@ class TestTeamImportExtracingFunction(TestSetup):
                          "Player name was not parsed")
 
     def testExtractPlayersWarnings(self):
-                # player data to extract
+        """Test extract list of players that have warnings"""
+        # player data to extract
         player_one = {'name': "ex. p1",
                       'email': "testImportPlayersOne@mlsb.ca",
                       'gender': "M"}
@@ -369,6 +375,7 @@ class TestTeamImportExtracingFunction(TestSetup):
                          "Unexpected wanring when extracting players")
 
     def testExtractColumnIndicesLookup(self):
+        """Test extracting the lookup for fields to columns indices"""
         # simple working example
         header = ["Email", "name", "GeNdEr"]
         lookup = extract_column_indices_lookup(header)
@@ -564,3 +571,120 @@ class TestTeamImportExtractBackground(TestSetup):
         self.assertEqual(result['captain']['player_name'],
                          captain,
                          "Extract wrong captain")
+
+
+class TestTeamImportAddTeam(TestSetup):
+    def testAddTeamAlreadyExists(self):
+        """Import a team that already exists"""
+
+        # the testing lines
+        sponsor = "Test Import Sponsor"
+        color = "Blue"
+        captain = "Test Captain"
+        league = "Test Import League"
+        lines = ["{}:,{},".format(BACKGROUND['sponsor_name'], sponsor),
+                 "{}:,{},".format(BACKGROUND['team_color'], color),
+                 "{}:,{},".format(BACKGROUND['captain_name'], captain),
+                 "{}:,{},".format(BACKGROUND['league_name'], league),
+                 "{},{},{}".format(HEADERS['name'],
+                                   HEADERS['email'],
+                                   HEADERS['gender']),
+                 "Test Captain,testcaptainimport@mlsb.ca,M",
+                 "Test Girl,testgirlimport@mlsb.ca,F",
+                 "Test Boy,testboyimport@mlsb.ca,M"]
+
+        # added the needed background
+        sponsor = self.add_sponsor(sponsor)
+        league = self.add_league(league)
+        team = self.add_team(color, sponsor, league, date.today().year)
+
+        # import the a test team
+        importer = TeamList(lines, session=TestImportMockSession(self))
+        importer.add_team_functional()
+        self.assertEqual(importer.warnings, [], "Importing team gave warnings")
+        team = Team.query.get(team['team_id'])
+        self.assertEqual(len(team.players),
+                         3,
+                         "Importing team players were not created")
+
+    def testAddTeam(self):
+        """Import a team that already exists"""
+
+        # the testing lines
+        sponsor = "Test Import Sponsor"
+        color = "Blue"
+        captain = "Test Captain"
+        league = "Test Import League"
+        lines = ["{}:,{},".format(BACKGROUND['sponsor_name'], sponsor),
+                 "{}:,{},".format(BACKGROUND['team_color'], color),
+                 "{}:,{},".format(BACKGROUND['captain_name'], captain),
+                 "{}:,{},".format(BACKGROUND['league_name'], league),
+                 "{},{},{}".format(HEADERS['name'],
+                                   HEADERS['email'],
+                                   HEADERS['gender']),
+                 "Test Captain,testcaptainimport@mlsb.ca,M",
+                 "Test Girl,testgirlimport@mlsb.ca,F",
+                 "Test Boy,testboyimport@mlsb.ca,M"]
+
+        # added the needed background
+        sponsor = self.add_sponsor(sponsor)
+        league = self.add_league(league)
+
+        # import the a test team
+        importer = TeamList(lines, session=TestImportMockSession(self))
+        importer.add_team_functional()
+        self.assertEqual(importer.warnings, [], "Importing team gave warnings")
+        teams = (Team.query
+                 .filter(func.lower(Team.color) == func.lower(color))
+                 .filter(Team.sponsor_id == sponsor['sponsor_id'])
+                 .filter(Team.year == date.today().year)).all()
+        self.assertTrue(len(teams) > 0, "Import team was not created")
+        team = teams[0]
+        self.assertEqual(len(team.players),
+                         3,
+                         "Importing team players were not created")
+
+    def testAddTeamPlayerAlreadyExists(self):
+        """Import a team where one player already exists"""
+
+        # the testing lines
+        sponsor = "Test Import Sponsor"
+        color = "Blue"
+        captain = "Test Captain"
+        league = "Test Import League"
+        player_email = "testgirlimport@mlsb.ca"
+        player_name = "Test Girl"
+        player_gender = "F"
+        lines = ["{}:,{},".format(BACKGROUND['sponsor_name'], sponsor),
+                 "{}:,{},".format(BACKGROUND['team_color'], color),
+                 "{}:,{},".format(BACKGROUND['captain_name'], captain),
+                 "{}:,{},".format(BACKGROUND['league_name'], league),
+                 "{},{},{}".format(HEADERS['name'],
+                                   HEADERS['email'],
+                                   HEADERS['gender']),
+                 "Test Captain,testcaptainimport@mlsb.ca,M",
+                 "{},{},{}".format(player_name, player_email, player_gender)]
+
+        # added the needed background
+        sponsor = self.add_sponsor(sponsor)
+        league = self.add_league(league)
+        player = self.add_player(player_name,
+                                 player_email,
+                                 gender=player_gender)
+
+        # import the a test team
+        importer = TeamList(lines, session=TestImportMockSession(self))
+        importer.add_team_functional()
+        self.assertEqual(importer.warnings, [], "Importing team gave warnings")
+        teams = (Team.query
+                 .filter(func.lower(Team.color) == func.lower(color))
+                 .filter(Team.sponsor_id == sponsor['sponsor_id'])
+                 .filter(Team.year == date.today().year)).all()
+        self.assertTrue(len(teams) > 0, "Import team was not created")
+        team = teams[0]
+        self.assertEqual(len(team.players),
+                         2,
+                         "Importing team players were not created")
+        player_ids = [p.id for p in team.players]
+        self.assertTrue(player['player_id'] in player_ids,
+                        "Import team existing player not added")
