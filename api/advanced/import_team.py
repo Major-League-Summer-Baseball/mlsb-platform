@@ -24,12 +24,14 @@ LEFT_BACKGROUND_EXAMPLE = "Background example was left: {}"
 LEFT_PLAYER_EXAMPLE = "Player example was left:  {}"
 INVALID_SPONSOR = "Sponsor given was not found: {}"
 INVALID_LEAGUE = "League given was not found: {}"
+INVALID_PLAYER = "Player given {} had the following issue: {}"
 PLAYER_MISMATCH_COLUMNS = "Player mismatched the headers: {}"
 INVALID_ROW = "Unsure what to do with the following row: {}"
 PLAYER_ROW_IDENTIFIER = "player"
+CAPTAIN_NOT_ASSIGNED = "Captain was not assigned"
 
 # a dictionary of the headers needed with their keys
-#and how they appear in csv
+# and how they appear in csv
 HEADERS = {"name": "Player Name",
            "email": "Player Email",
            "gender": "Gender (M/F)"}
@@ -40,6 +42,7 @@ BACKGROUND = {"sponsor_name": "sponsor",
               "team_color": "color",
               "captain_name": "captain",
               "league_name": "league"}
+
 
 class TeamList():
     def __init__(self, lines, logger=None, session=None):
@@ -67,6 +70,66 @@ class TeamList():
         self.session = session
         if session is None:
             self.session = DB.session
+
+    def add_team_functional(self):
+        """ Add a team to the database using functions instead of methods"""
+        # parse out the parts - background, header, players
+        parts = parse_lines(self.lines)
+        self.warnings = parts['warnings']
+
+        # extract the background such a league, sponsor and color
+        background = extract_background(parts['background'])
+
+        # extract the players using the header as lookup
+        lookup = extract_column_indices_lookup(parts['header'])
+        players = extract_players(parts["players"], lookup)
+        self.warnings = self.warnings + players['warnings']
+
+        # add the players
+        player_models = []
+        for player_json in players['player_info']:
+            try:
+                if (player_json['player_id'] is None):
+                    # need to create the player
+                    player = Player(player_json['name'],
+                                    player_json['email'],
+                                    gender=player_json["gender"])
+                    self.session.add(player)
+                    self.session.commit()
+                else:
+                    email = player_json['email']
+                    player = Player.query.filter(func.lower(Player.email) ==
+                                                 func.lower(email)).first()
+                player_models.append(player.json())
+            except Exception as error:
+                player_info = "-".join([player_json["name"],
+                                        player_json["email"]])
+                self.warnings.append(INVALID_PLAYER.format(player_info,
+                                                           str(error)))
+
+        # get the team, create if does not exist
+        if background['team']['team_id'] is None:
+            team = Team(color=background['team']['color'],
+                        sponsor_id=background['sponsor']['sponsor_id'],
+                        league_id=background['league']['league_id'],
+                        year=date.today().year)
+            self.session.add(team)
+        else:
+
+            # get the team and remove all players
+            team = Team.query.get(background['team']['team_id'])
+            team.players = []
+        set_captain = False
+        for player in player_models:
+            if (player["player_name"].lower()
+               == background["captain"]["player_name"].lower()):
+                set_captain = True
+                team.insert_player(player["player_id"], captain=True)
+            else:
+                team.insert_player(player["player_id"], captain=False)
+        if not set_captain:
+            self.warnings.append(CAPTAIN_NOT_ASSIGNED)
+        self.session.commit()
 
     def add_team(self):
         """Adds a team to the database"""
@@ -121,7 +184,7 @@ class TeamList():
         if league is None:
             raise InvalidField(payload={"details": "No league was given"})
         # check no examples were left and actually real info
-        if (league.lower().startswith("ex.")or
+        if (league.lower().startswith("ex.") or
             sponsor.lower().startswith("ex.") or
             color.lower().startswith("ex.") or
             captain.lower().startswith("ex.")):
@@ -248,14 +311,18 @@ def extract_background(background):
     elif captain_name.lower().startswith("ex."):
         error_message = LEFT_BACKGROUND_EXAMPLE.format(captain_name)
         raise InvalidField(payload={"details": error_message})
+
+    # nothing to do with the captain at this point
+    captain = {"player_name": captain_name}
+
+    # try to find sponsor and league
     sponsor = (Sponsor.query.filter(or_(func.lower(Sponsor.name)
-                                           == func.lower(sponsor_name)),
-                                           func.lower(Sponsor.nickname)
-                                           == func.lower(sponsor_name))
+                                        == func.lower(sponsor_name)),
+                                    func.lower(Sponsor.nickname)
+                                    == func.lower(sponsor_name))
                ).first()
     league = League.query.filter(func.lower(League.name)
-                                 == league_name).first()
-    
+                                 == func.lower(league_name)).first()
     if sponsor is None:
         error_message = INVALID_SPONSOR.format(sponsor_name)
         raise SponsorDoesNotExist(payload={'details': error_message})
@@ -265,10 +332,9 @@ def extract_background(background):
 
     # check to see if team was already created
     teams = (Team.query
-             .filter(func.lower(Team.color) == func.lower(team_color)
-             .filter(Team.sponsor_id == sponsor_id)
-             .filter(Team.year == date.today().year)).all())
-    
+             .filter(func.lower(Team.color) == func.lower(team_color))
+             .filter(Team.sponsor_id == sponsor.id)
+             .filter(Team.year == date.today().year)).all()
     if len(teams) > 0:
         team = teams[0].json()
     else:
@@ -278,7 +344,10 @@ def extract_background(background):
                 "league_id": league.id,
                 "captain": None,
                 "year": date.today().year}
-    return {"team": team, "league": league.json(), "sponsor": sponsor.json()}
+    return {"captain": captain,
+            "team": team,
+            "league": league.json(),
+            "sponsor": sponsor.json()}
 
 
 def extract_column_indices_lookup(header):
