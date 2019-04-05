@@ -445,11 +445,13 @@ def parse_lines(lines, delimiter=","):
     header = None
     players = []
     warnings = []
+    headers = ([key.lower() for key in HEADERS.keys()]
+               + [value.lower() for value in HEADERS.values()])
     for line in lines:
         info = line.split(delimiter)
         if clean_cell(info[0]) in BACKGROUND.values():
             background[clean_cell(info[0])] = info[1].strip()
-        elif PLAYER_ROW_IDENTIFIER in info[0].lower().strip():
+        elif info[0].lower().strip() in headers:
             header = info
         elif len(info) >= len(HEADERS.keys()):
             players.append(info)
