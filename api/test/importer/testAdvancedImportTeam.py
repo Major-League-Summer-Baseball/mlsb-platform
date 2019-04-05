@@ -131,7 +131,7 @@ class TestTeamImportParseLines(TestSetup):
                          expected_players,
                          "Players not returned")
 
-    def testParseLinesDelimter(self):
+    def testParseLinesDelimiter(self):
         """Test using a different delimiter"""
         sponsor = "Test Import Sponsor"
         color = "Blue"

@@ -434,6 +434,7 @@ def parse_lines(lines, delimiter=","):
     """Parses the lines and returns a tuple with the three parts
     Parameters:
         lines: a list of lines
+        delimiter: the delimiter for the lines (default = ,)
     Returns:
         a dictionary with background, header, players, warnings where:
             background: dictionary of sponsor, color, captain, league
@@ -445,13 +446,15 @@ def parse_lines(lines, delimiter=","):
     header = None
     players = []
     warnings = []
-    headers = ([key.lower() for key in HEADERS.keys()]
-               + [value.lower() for value in HEADERS.values()])
+    headers_keywords = ([key.lower() for key in HEADERS.keys()]
+                        + [value.lower() for value in HEADERS.values()])
+    background_keywords = ([key.lower() for key in BACKGROUND.keys()]
+                           + [value.lower() for value in BACKGROUND.values()])
     for line in lines:
         info = line.split(delimiter)
-        if clean_cell(info[0]) in BACKGROUND.values():
+        if clean_cell(info[0]).lower() in background_keywords:
             background[clean_cell(info[0])] = info[1].strip()
-        elif info[0].lower().strip() in headers:
+        elif info[0].lower().strip() in headers_keywords:
             header = info
         elif len(info) >= len(HEADERS.keys()):
             players.append(info)
