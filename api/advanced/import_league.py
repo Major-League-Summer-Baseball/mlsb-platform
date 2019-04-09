@@ -5,19 +5,27 @@
 @summary: Holds a class LeagueList that helps imports a League (list of games)
 '''
 # imports
+from sqlalchemy import func
 from api.model import Sponsor, Game, League
 from api import DB
-from api.errors import InvalidField, LeagueDoesNotExist
+from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist
 import logging
 import datetime
+
 # constants
-CREATED = "Created Team (no league was specified)"
-NO_LEAGUE = "Cannot find league, please ensure spelt correctly or create the league"
-INVALID_FILE = "File was not given in right format (use template)"
-EXAMPLE_FOUND = "First entry contain the templates example, just skipped it"
-EMAIL_NAME = "Player {} email was found but had different name"
-INVALID_FIELD = "{} had an invalid field"
+MISSING_BACKGROUND = "Missing background: {}"
+LEFT_BACKGROUND_EXAMPLE = "Background example was left: {}"
 INVALID_TEAM = "{} is not a team in the league"
+INVALID_ROW = "Unsure what to do with the following row: {}"
+INVALID_LEAGUE = "League given was not found: {}"
+INVALID_GAME = "The game was invalid - {} with error {}"
+TEAM_NOT_FOUND = "Did not find team {} - for row {}"
+BACKGROUND = {"league": "League"}
+HEADERS = {"home": "Home Team",
+           "away": "Away Team",
+           "date": "Date",
+           "time": "Time",
+           "field": "Field"}
 
 
 class LeagueList():
@@ -47,175 +55,221 @@ class LeagueList():
         if session is None:
             self.session = DB.session
 
-    def import_league(self):
-        '''
-        a method that imports a bunch of games for a league
-        based on a csv template
-        Parameters:
+    def import_league_functional(self):
+        """ Add a team to the database using functions instead of methods"""
 
-        Updates:
-            success: a boolean if the import was successful (boolean)
-            errors: a list of possible error (list)
-            warnings: a list of possible warnings (list)
-        '''
-        if self.lines is None:
-            raise InvalidField("No lines were provided")
-        if self.check_header(self.lines[0:2]):
-                league, headers = self.parse_header(self.lines[0:2])
-                self.logger.debug("Getting League ID")
-                self.league_id = self.get_league_id(league)
-                self.logger.debug("Got League id {}".format(self.league_id))
-                self.set_columns_indices(headers)
-                self.logger.debug("Got set column indcides")
-                if self.league_id is not None:
-                    self.set_teams()
-                    games = self.lines[2:]
-                    for game in games:
-                        self.logger.debug(game)
-                        self.import_game(game)
-                        self.logger.debug("Done Import")
+        # parse out the parts - background, header, players
+        parts = parse_parts(self.lines)
+        self.warnings = parts['warnings']
+
+        # extract the background such a league, sponsor and color
+        background = extract_background(parts['background'])
+        league = background["league"]
+
+        # extract the players using the header as lookup
+        lookup = extract_column_indices_lookup(parts['header'])
+
+        # get the team map
+        team_lookup = get_team_lookup(league)
+
+        # extract the games
+        games = extract_games(parts["games"], team_lookup, lookup)
+        self.warnings = self.warnings + games['warnings']
+
+        # add the players
+        for game_json in games['games']:
+            try:
+                game = Game(game_json["date"],
+                            game_json["time"],
+                            game_json["home_team_id"],
+                            game_json["away_team_id"],
+                            league["league_id"],
+                            field=game_json["field"])
+                self.session.add(game)
+            except Exception as error:
+                game_list = [str(value) for value in game_json.values()]
+                game_info = "-".join(game_list)
+                self.warnings.append(INVALID_GAME.format(game_info,
+                                                         str(error)))
+        self.session.commit()
+
+
+def get_team_lookup(league, year=datetime.datetime.today().year):
+    '''
+    a method that sets the teams for the league
+    Parameters:
+        league: the json league object
+        year: the year we are importing for
+    Returns:
+        teams: a dictionary object lookup for teams
+    '''
+    teams = {}
+    league = League.query.get(league["league_id"])
+    if league is None:
+        raise LeagueDoesNotExist(payload={'details': league})
+    for team in league.teams:
+        if team.year == year:
+            teams[str(team)] = team.id
+            sponsor = str(Sponsor.query.get(team.sponsor_id))
+            teams[sponsor + " " + team.color] = team.id
+    return teams
+
+
+def extract_column_indices_lookup(header):
+    """ Returns a dictionary used to lookup indices for various fields
+    Parameters:
+        header: the header array
+    Returns:
+        a dictionary {str(field): int(index)}
+    """
+    lookup = {}
+    for i in range(0, len(header)):
+        for key, value in HEADERS.items():
+            if is_entry_a_header(key, value, header[i]):
+                lookup[key.lower()] = i
+
+    # ensure all headers were found
+    for key in HEADERS.keys():
+        if key not in lookup.keys():
+            error_message = "{} header missing".format(key.lower())
+            raise InvalidField(payload={'details': error_message})
+    return lookup
+
+
+def is_entry_a_header(key, value, entry):
+    """Returns whether the given entry in the header is a expected header."""
+    return (key.lower() in entry.lower()
+            or value.lower() in entry.lower())
+
+
+def is_game_row_valid(game, lookup):
+    """Returns whether all columns can be found in the game entry.
+    Parameters"""
+    HEADERS = {"home": "Home Team",
+               "away": "Away Team",
+               "date": "Date",
+               "time": "Time",
+               "field": "Field"}
+    for index in lookup.values():
+        if index > len(game):
+            return False
+    return True
+
+
+def extract_game(game, team_lookup, lookup):
+    """Returns a game json object
+    Parameters:
+        game: the entry for the game
+        team_lookup: a lookup for team names to player ids
+        lookup: a lookup for fields to indexes in columns
+    Returns:
+        a json game object, None if game data not found
+    """
+    if not is_game_row_valid(game, lookup):
+        return None
+    away = game[lookup["away"]].strip()
+    home = game[lookup["home"]].strip()
+    time = game[lookup["time"]].strip()
+    field = game[lookup["field"]].strip()
+    date = game[lookup["date"]].strip()
+    # check if variables meet certain conditions
+    # else should be good to add game
+    away_team = team_lookup.get(away, None)
+    home_team = team_lookup.get(home, None)
+    if away_team is None:
+        error_message = INVALID_TEAM.format(away_team)
+        raise TeamDoesNotExist(payload={'details': error_message})
+    if home_team is None:
+        error_message = INVALID_TEAM.format(home_team)
+        raise TeamDoesNotExist(payload={'details': error_message})
+    return {"away_team_id": away_team,
+            "home_team_id": home_team,
+            "time": time,
+            "field": field,
+            "date": date}
+
+
+def extract_games(games, team_lookup, lookup):
+    """Returns a dictionary with list of games and warnings
+    Parameters:
+        games: the games entry rows
+        team_lookup: a lookup for team names to the team ids
+        lookup: a lookup for column indices
+    Returns:
+        a dictionary with a list of games and a list of warnings
+    """
+    result = []
+    warnings = []
+    for game in games:
+        try:
+            game = extract_game(game, team_lookup, lookup)
+            if game is not None:
+                result.append(game)
+        except TeamDoesNotExist as e:
+            warnings.append(TEAM_NOT_FOUND.format(str(e), ",".join(game)))
+    return {"games": result, "warnings": warnings}
+
+
+def extract_background(background):
+    """Returns a dictionary of the extracted json objects from the background.
+    Parameters:
+        background: dictionary of sponsor, color, captain, league
+    Returns:
+        a dictionary of league model
+    """
+    background_keys = [key.lower() for key in background.keys()]
+    for value in BACKGROUND.values():
+        if value.lower() not in background_keys:
+            errorMessage = MISSING_BACKGROUND.format(value)
+            raise InvalidField(payload={"details": errorMessage})
+    league_name = background['league']
+    if league_name.lower().startswith("ex."):
+        error_message = LEFT_BACKGROUND_EXAMPLE.format(league_name)
+        raise InvalidField(payload={"details": error_message})
+    league = League.query.filter(func.lower(League.name)
+                                 == func.lower(league_name)).first()
+    if league is None:
+        error_message = INVALID_LEAGUE.format(league_name)
+        raise LeagueDoesNotExist(payload={'details': error_message})
+    return {"league": league.json()}
+
+
+def clean_cell(cell):
+    """Returns a clean cell"""
+    return cell.strip().lower().replace(":", "")
+
+
+def parse_parts(lines, delimiter=","):
+    """Parses the lines and returns a dictionary with the three parts
+    Parameters:
+        lines: a list of lines
+        delimiter: the delimiter for the lines (default = ,)
+    Returns:
+        a dictionary with background, header, games, warnings where:
+            background: dictionary of league
+            header: the header row
+            games: a list of games lines
+            warnings: a list of lines that were not recognized
+    """
+    background = {}
+    header = None
+    games = []
+    warnings = []
+    header_keywords = ([key.lower() for key in HEADERS.keys()]
+                       + [value.lower() for value in HEADERS.values()])
+    background_keywords = ([key.lower() for key in BACKGROUND.keys()]
+                           + [value.lower() for value in BACKGROUND.values()])
+    for line in lines:
+        info = line.split(delimiter)
+        if clean_cell(info[0]).lower() in background_keywords:
+            background[clean_cell(info[0])] = info[1].strip()
+        elif info[0].lower().strip() in header_keywords:
+            header = info
+        elif len(info) >= len(HEADERS.keys()):
+            games.append(info)
         else:
-            self.errors.append(INVALID_FILE)
-        if len(self.errors) < 1:
-            self.logger.debug("Committing")
-            # no major errors so commit changes
-            self.session.commit()
-        return
-
-    def get_league_id(self, league):
-        '''
-        a method that gets the league id for the name
-        Parameters:
-            league: the league's name (str)
-        Returns:
-            id: the id of the team (int) None if no league is found
-        '''
-        identification = None
-        league = League.query.filter_by(name=league).first()
-        if league is not None:
-            identification = league.id
-        else:
-            # cant assume some league so return None
-            s = "League does not exist: {}".format(league)
-            raise LeagueDoesNotExist(payload={"details": s})
-        return identification
-
-    def set_teams(self):
-        '''
-        a method that sets the teams for the league
-        Parameters:
-            None
-        Updates:
-            self.teams: a dictionary with {name:id, etc..}
-        '''
-        self.teams = {}
-        league = League.query.get(self.league_id)
-        if league is None:
-            raise LeagueDoesNotExist(payload={'details': league})
-        for team in league.teams:
-            if team.year == self.year:
-                self.teams[str(team)] = team.id
-                sponsor = str(Sponsor.query.get(team.sponsor_id))
-                self.teams[sponsor + " " + team.color] = team.id
-
-    def set_columns_indices(self, headers):
-        '''
-        a method that set the indices for the column headers
-        Parameters:
-            headers: the list of headers (list of str)
-        Returns:
-        '''
-        for i in range(0, len(headers)):
-            if "home team" in headers[i].lower():
-                self.home_index = i
-            elif "away team" in headers[i].lower():
-                self.away_index = i
-            elif "date" in headers[i].lower():
-                self.date_index = i
-            elif "time" in headers[i].lower():
-                self.time_index = i
-            elif "field" in headers[i].lower():
-                self.field_index = i
-        return
-
-    def import_game(self, info):
-        '''
-        a method the imports one game
-        Parameters:
-            info: the string that contains the information of a player (str)
-        Returns:
-        '''
-        info = info.split(",")
-        if (len(info) < self.away_index or
-            len(info) < self.home_index or
-            len(info) < self.time_index or
-            len(info) < self.field_index or
-            len(info) < self.date_index):
-            s = "Game did not have the right number of fields"
-            self.logger.debug(s)
-            return  # probably just an empty line
-        away = info[self.away_index].strip()
-        home = info[self.home_index].strip()
-        time = info[self.time_index].strip()
-        field = info[self.field_index].strip()
-        date = info[self.date_index].strip()
-        # check if variables meet certain conditions
-        # else should be good to add game
-        away_team = self.teams.get(away, None)
-        home_team = self.teams.get(home, None)
-        if away_team is None:
-            self.errors.append(INVALID_TEAM.format(away))
-        if home_team is None:
-            self.errors.append(INVALID_TEAM.format(home))
-        if away_team is not None and home_team is not None:
-            # else should be good to add the game
-            game = Game(
-                        date,
-                        time,
-                        home_team,
-                        away_team,
-                        self.league_id,
-                        field=field)
-            self.session.add(game)
-        return
-
-    def check_header(self, header):
-        '''
-        a method that checks if the header is valid
-        Parameters:
-            header: the header to check (list of str)
-        Returns:
-            valid: True if the header meets the template (boolean)
-        '''
-        valid = True
-        if len(header) < 2:
-            valid = False
-        elif len(header[0].split(",")) < 2 or len(header[1].split(",")) < 5:
-            valid = False
-        else:
-            columns = header[1].lower()
-            if "home team" not in columns:
-                valid = False
-            elif "away team" not in columns:
-                valid = False
-            elif "date" not in columns:
-                valid = False
-            elif "time" not in columns:
-                valid = False
-            elif "field" not in columns:
-                valid = False
-        return valid
-
-    def parse_header(self, header):
-        '''
-        a method that parses the header
-        Parameters:
-            header: the header to check (list of str)
-        Returns:
-            league: the mame of the league (str)
-            headers: the column headers (list)
-        '''
-        first = header[0].split(",")
-        league = first[1]
-        headers = header[1].split(",")
-        return league, headers
+            warnings.append(INVALID_ROW.format(line))
+    return {'background': background,
+            'header': header,
+            'games': games,
+            'warnings': warnings}
