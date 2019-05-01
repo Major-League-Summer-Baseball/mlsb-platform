@@ -330,7 +330,7 @@ def all_time_leaders_page(year):
 
 
 @app.route(Routes["privacy"])
-def rules_fields(year):
+def privacy_policy():
     return render_template("website/privacy-policy.html")
 
 
