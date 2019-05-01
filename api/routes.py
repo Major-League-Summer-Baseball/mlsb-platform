@@ -109,6 +109,7 @@ Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
 Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
 Routes['logo'] = "/logo"
+Routes["privacy"] = "/privacy-policy"
 
 # sponsors pages
 Routes['sponsorspage'] = "/website/sponsor"
@@ -133,6 +134,7 @@ Routes['eventspage'] = "/website/event"
 # posts pages
 Routes['posts'] = "/website/posts"
 Routes['postpicture'] = "/website/post/pictures"
+
 
 # Captain help
 Routes['findunsubscribed'] = "/website/captains/unsubscribed"
