@@ -8,14 +8,14 @@ from sqlalchemy.sql.expression import and_
 from api import app, PICTURES, POSTS, cache
 from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
-                    redirect, request
+    redirect, request
 from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
 from api.variables import UNASSIGNED, EVENTS, NOTFOUND, CACHE_TIMEOUT
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
 from api.advanced.league_leaders import get_leaders,\
-                                        get_leaders_not_grouped_by_team
+    get_leaders_not_grouped_by_team
 from api import DB
 from sqlalchemy.sql import func
 import os.path
@@ -146,6 +146,7 @@ def mlsb_logo():
     fp = os.path.dirname(PICTURES)
     return send_from_directory(fp, filename="banner.png")
 
+
 @app.route(Routes['teampicture'] + "/<int:team>")
 def team_picture(team):
     if isinstance(team, int):
@@ -202,7 +203,6 @@ def sponsor_page(year, sponsor_id):
                                title="Sponsor | " + sponsor['name'],
                                year=year)
     return page
-
 
 
 @app.route(Routes["schedulepage"] + "/<int:year>")
@@ -301,14 +301,15 @@ def leaders_page(year):
                            title="League Leaders",
                            year=year)
 
+
 @app.route(Routes['alltimeleaderspage'] + "/<int:year>")
 @cache.cached(timeout=CACHE_TIMEOUT)
 def all_time_leaders_page(year):
-  hrSingleSeason = get_leaders("hr")
-  ssSingleSeason = get_leaders("ss")
-  hrAllSeason = get_leaders_not_grouped_by_team("hr")
-  ssAllSeason = get_leaders_not_grouped_by_team("ss")
-  return render_template("website/all-time-leaders.html",
+    hrSingleSeason = get_leaders("hr")
+    ssSingleSeason = get_leaders("ss")
+    hrAllSeason = get_leaders_not_grouped_by_team("hr")
+    ssAllSeason = get_leaders_not_grouped_by_team("ss")
+    return render_template("website/all-time-leaders.html",
                            route=Routes,
                            base=base_data(year),
                            hrSingleSeason=hrSingleSeason,
@@ -318,9 +319,8 @@ def all_time_leaders_page(year):
                            title="League Leaders",
                            year=year)
 
-
-  hrSingleSeason = get_leaders("hr")[:10]
-  hrAllSeason = get_leaders("hr")[:10]
+    hrSingleSeason = get_leaders("hr")[:10]
+    hrAllSeason = get_leaders("hr")[:10]
 
 '''
 # -----------------------------------------------------------------------------
@@ -329,29 +329,34 @@ def all_time_leaders_page(year):
 '''
 
 
+@app.route(Routes["privacy"])
+def privacy_policy():
+    return render_template("website/privacy-policy.html")
+
+
 @app.route(Routes['eventspage'] + "/<int:year>" + "/json")
 def events_page_json(year):
-        if year in EVENTS:
-            return json.dumps(EVENTS[year])
-        else:
-            return json.dumps({year: {}})
+    if year in EVENTS:
+        return json.dumps(EVENTS[year])
+    else:
+        return json.dumps({year: {}})
 
 
 @app.route(Routes['eventspage'] + "/<int:year>")
 def events_page(year):
-        if year in EVENTS:
-            return render_template("website/events.html",
-                                   dates=EVENTS[year],
-                                   route=Routes,
-                                   base=base_data(year),
-                                   title="Events",
-                                   year=year)
-        else:
-            return render_template("website/notFound.html",
-                                   year=year,
-                                   route=Routes,
-                                   base=base_data(year),
-                                   title="Not Found")
+    if year in EVENTS:
+        return render_template("website/events.html",
+                               dates=EVENTS[year],
+                               route=Routes,
+                               base=base_data(year),
+                               title="Events",
+                               year=year)
+    else:
+        return render_template("website/notFound.html",
+                               year=year,
+                               route=Routes,
+                               base=base_data(year),
+                               title="Not Found")
 
 
 @app.route(Routes['fieldsrulespage'] + "/<int:year>")
@@ -450,9 +455,10 @@ def get_espys_breakdown(year):
 # -----------------------------------------------------------------------------
 '''
 
+
 @cache.memoize(timeout=CACHE_TIMEOUT)
 def get_leagues():
-  return [league.json() for league in League.query.all()]
+    return [league.json() for league in League.query.all()]
 
 
 @cache.memoize(timeout=CACHE_TIMEOUT)
@@ -477,8 +483,8 @@ def get_espy(year):
              .order_by(espys.desc()).all())
     for team in teams:
         espy.append({
-                     'espys': team[1],
-                     'name': str(team[0])})
+            'espys': team[1],
+            'name': str(team[0])})
     return espy
 
 
@@ -498,23 +504,23 @@ def get_team(year, tid):
         stats = []
         for name in p_:
             sp = (
-                    (
-                      p_[name]["s"] +
-                      p_[name]["ss"] +
-                      p_[name]["d"] * 2 +
-                      p_[name]["hr"] * 4
-                      ) / p_[name]['bats']
-                  )
+                (
+                    p_[name]["s"] +
+                    p_[name]["ss"] +
+                    p_[name]["d"] * 2 +
+                    p_[name]["hr"] * 4
+                ) / p_[name]['bats']
+            )
             stats.append({
-                          'id': p_[name]['id'],
-                          'name': name,
-                          'ss': p_[name]['ss'],
-                          's': p_[name]['s'],
-                          'd': p_[name]['d'],
-                          'hr': p_[name]['hr'],
-                          'bats': p_[name]['bats'],
-                          'ba': "{0:.3f}".format(p_[name]['avg']),
-                          'sp': "{0:.3f}".format(sp)})
+                'id': p_[name]['id'],
+                'name': name,
+                'ss': p_[name]['ss'],
+                's': p_[name]['s'],
+                'd': p_[name]['d'],
+                'hr': p_[name]['hr'],
+                'bats': p_[name]['bats'],
+                'ba': "{0:.3f}".format(p_[name]['avg']),
+                'sp': "{0:.3f}".format(sp)})
 #            players.append(name)
         record = single_team(tid)
         team = {'name': str(result),
@@ -538,9 +544,8 @@ def get_teams(year):
     teams = []
     for team in result:
         teams.append({'id': team[0],
-                     'name': team[2] + " " + team[1]})
+                      'name': team[2] + " " + team[1]})
     return teams
-
 
 
 @cache.memoize(timeout=CACHE_TIMEOUT)
@@ -578,6 +583,8 @@ def get_sponsors():
 
 
 from api.advanced.game_stats import post as game_summary
+
+
 def get_upcoming_games(year):
     return game_summary(year=year, today=True, increment=1)
 

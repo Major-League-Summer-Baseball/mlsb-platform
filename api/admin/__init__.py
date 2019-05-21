@@ -43,18 +43,22 @@ def admin_import_team_list():
         results['errors'].append("Permission denied")
         return dumps(results)
     file = request.files['file']
-    result = None
+    results = {'errors': [], 'success': False, 'warnings': []}
     if file and allowed_file(file.filename):
         content = (file.read()).decode("UTF-8")
         lines = content.replace("\r", "")
         lines = lines.split("\n")
         team = TeamList(lines)
-        team.add_team()
-        result = team.warnings
+        team.add_team_functional()
+        results["warnings"] = team.warnings
+        results["error"] = team.errors
+        results['success'] = True
+        if len(results['errors']) > 0:
+            results['success'] = False
     else:
         s = "File format not accepted (csv)"
         raise InvalidField(payload={'detail': s})
-    return dumps(result)
+    return dumps(results)
 
 
 @app.route(Routes['import_game_list'], methods=["POST"])
@@ -70,7 +74,7 @@ def admin_import_game_list():
         lines = content.replace("\r", "")
         lines = lines.split("\n")
         team = LeagueList(lines)
-        team.import_league()
+        team.import_league_functional()
         results['errors'] = team.errors
         results['warnings'] = team.warnings
         results['success'] = True

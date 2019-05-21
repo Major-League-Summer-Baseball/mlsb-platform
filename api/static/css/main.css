@@ -19,7 +19,7 @@ body {
     border-bottom: 1px solid #dcdcdc;
     white-space: nowrap;
     overflow: hidden;
-    background-color: rgba(132, 176, 220, 0.5);
+    background-color: rgba(0, 100, 0, 0.3);
 }
 
 .sponsor-banner .sponsor-cell {
@@ -48,7 +48,7 @@ body {
 
 .games-container {
     border-bottom: 1px solid #dcdcdc;
-    background-color: rgba(36, 44, 132, 0.61);
+    background-color: rgba(0, 100, 0, 1);
     color: white;
 }
 
@@ -111,7 +111,7 @@ body {
 }
 
 .navbar .icon-bar {
-    background-color: #84b0dc;
+    background-color: #FFE100;
 }
 
 @media screen and (max-width: 992px) {
@@ -163,14 +163,14 @@ body {
 
 .fun-div {
     font-weight: 300;
-    color: #8FBCE6;
+    color: #006400;
     text-align: center;
     margin-bottom: 5px;  
 }
 
 .fun-meter {
     font-weight: 300;
-    color: #8FBCE6;
+    color: #006400;
     text-align: center;
     margin-bottom: 5px;
 }
@@ -248,7 +248,7 @@ p.primary{
 }
 
 p.accent{
-  color:#092C5C;
+  color:#006400;
 }
 
 .mainTitle{
@@ -262,7 +262,7 @@ p.accent{
 }
 
 .leaderTitle{
-  color: #092C5C;
+  color: #006400;
   font-size: 30px;
   font-weight: 800;
   line-height: 36px;
@@ -307,7 +307,7 @@ hr {
 
 .btn-primary {
   padding: 8px 20px;
-  background: #8FBCE6;
+  background: #FFE100;
   color: #fff;
   border-radius: 4px;
   border:none;
@@ -316,7 +316,7 @@ hr {
 
 .btn-primary:hover,
 .btn-primary:focus{
-  background: #8FBCE6;
+  background: #FFE100;
   outline: none;
   box-shadow: none;
 }
@@ -410,23 +410,23 @@ a:focus {
 }
 
 li.presentation a{
-  background-color: #092C5C;
-  color: #8FBCE6;
+  background-color: #006400;
+  color: #FFE100;
 }
 
 li.presentation a:hover{
-  background-color: #8FBCE6;
-  color: #092C5C;
+  background-color: rgba(0, 100, 0, 0.3);
+  color: #FFE100;
 }
 
 .active .presentation a{
-  background-color: #8FBCE6;
-  color: #092C5C;
+  background-color: #FFE100;
+  color: #006400;
 }
 
 #listing>li.active>a{
-  background-color: #8FBCE6;
-  color: #FFF;
+  background-color: #FFE100;
+  color: #696969;
 }
 
 .postImage{
@@ -532,7 +532,7 @@ ul.social_icons li  a i{
 ***********************/
 .footer {
   background: none repeat scroll 0 0 #2E2E2E;
-  border-top: 5px solid #8FBCE6;
+  border-top: 5px solid #FFE100;
   height: 84px;
   margin-top: 110px;
 }
@@ -600,12 +600,12 @@ nav.primary{
 }
 
 nav.accent{
-  background-color: #092C5C;
-  border-color: #092C5C;
+  background-color: #006400;
+  border-color: #006400;
 }
 
 div.accent{
-  background-color:#092C5C;
+  background-color:#006400;
 }
 
 
@@ -618,7 +618,7 @@ div.accent{
 
 
 div.secondary{
-  background-color: #8FBCE6;
+  background-color: #FFE100;
 }
 
 div.neutral{
@@ -626,7 +626,7 @@ div.neutral{
 }
 
 a {
-  color: #8FBCE6;
+  color: #006400;
   -webkit-transition: color 300ms, background-color 300ms;
   -moz-transition: color 300ms, background-color 300ms;
   -o-transition:  color 300ms, background-color 300ms;
@@ -634,7 +634,7 @@ a {
 }
 
 a:hover, a:focus {
-  color: #8FBCE6;
+  color: #006400;
 }
 
 .liquidFillGaugeText { 
@@ -647,7 +647,7 @@ a:hover, a:focus {
 ************************/
 #bottom {
   background: #f5f5f5;
-  border-bottom: 5px solid #092C5C;
+  border-bottom: 5px solid #006400;
   font-size: 14px;
 }
 
@@ -671,7 +671,7 @@ a:hover, a:focus {
 }
 
 #bottom ul li a {
-  color: #8FBCE6  ;
+  color: #FFE100  ;
 }
 
 #bottom ul li a:hover {
@@ -694,7 +694,7 @@ a:hover, a:focus {
 }
 
 #footer a:hover {
-  color: #8FBCE6;
+  color: #FFE100;
 }
 
 #footer ul {
