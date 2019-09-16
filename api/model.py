@@ -10,13 +10,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime, time
 from api.variables import HITS, KIKPOINTS
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
-                        InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-                        NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
-                        BadRequestError
+    InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
+    NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
+    BadRequestError
 from api.validators import rbi_validator, hit_validator, inning_validator,\
-                           string_validator, date_validator, time_validator,\
-                           field_validator, year_validator, gender_validator,\
-                           float_validator, boolean_validator
+    string_validator, date_validator, time_validator,\
+    field_validator, year_validator, gender_validator,\
+    float_validator, boolean_validator
 roster = DB.Table('roster',
                   DB.Column('player_id',
                             DB.Integer,
@@ -172,17 +172,17 @@ class Espys(DB.Model):
             date = self.date.strftime("%Y-%m-%d")
             time = self.date.strftime("%H:%M")
         return {
-                'espy_id': self.id,
-                'team': team,
-                'team_id': self.team_id,
-                'sponsor': sponsor,
-                'sponsor_id': self.sponsor_id,
-                'description': self.description,
-                'points': self.points,
-                'receipt': self.receipt,
-                'date': date,
-                'time': time
-                }
+            'espy_id': self.id,
+            'team': team,
+            'team_id': self.team_id,
+            'sponsor': sponsor,
+            'sponsor_id': self.sponsor_id,
+            'description': self.description,
+            'points': self.points,
+            'receipt': self.receipt,
+            'date': date,
+            'time': time
+        }
 
 
 class Player(DB.Model):
@@ -234,7 +234,7 @@ class Player(DB.Model):
         if gender is not None and not gender_validator(gender):
             raise InvalidField(payload={'details': "Player - gender"})
         self.name = name
-        self.email = email
+        self.email = email.lower().strip()
         if gender is not None:
             gender = gender.lower()
         self.gender = gender
@@ -417,14 +417,14 @@ class Team(DB.Model):
         captain = (None if self.player_id is None
                    else Player.query.get(self.player_id).json())
         return{
-               'team_id': self.id,
-               'team_name': str(self),
-               'color': self.color,
-               'sponsor_id': self.sponsor_id,
-               'league_id': self.league_id,
-               'year': self.year,
-               'espys': self.espys_awarded(),
-               'captain': captain}
+            'team_id': self.id,
+            'team_name': str(self),
+            'color': self.color,
+            'sponsor_id': self.sponsor_id,
+            'league_id': self.league_id,
+            'year': self.year,
+            'espys': self.espys_awarded(),
+            'captain': captain}
 
     def update(self,
                color=None,
@@ -444,7 +444,7 @@ class Team(DB.Model):
         elif color is not None:
             raise InvalidField(payload={'details': "Team - color"})
         if (sponsor_id is not None and
-            Sponsor.query.get(sponsor_id) is not None):
+                Sponsor.query.get(sponsor_id) is not None):
             self.sponsor_id = sponsor_id
         elif sponsor_id is not None:
             raise SponsorDoesNotExist(payload={'details': sponsor_id})
@@ -725,16 +725,16 @@ class Game(DB.Model):
     def json(self):
         """Returns a jsonserializable object."""
         return {
-                'game_id': self.id,
-                'home_team_id': self.home_team_id,
-                'home_team': str(Team.query.get(self.home_team_id)),
-                'away_team_id': self.away_team_id,
-                'away_team': str(Team.query.get(self.away_team_id)),
-                'league_id': self.league_id,
-                'date': self.date.strftime("%Y-%m-%d"),
-                'time': self.date.strftime("%H:%M"),
-                'status': self.status,
-                'field': self.field}
+            'game_id': self.id,
+            'home_team_id': self.home_team_id,
+            'home_team': str(Team.query.get(self.home_team_id)),
+            'away_team_id': self.away_team_id,
+            'away_team': str(Team.query.get(self.away_team_id)),
+            'league_id': self.league_id,
+            'date': self.date.strftime("%Y-%m-%d"),
+            'time': self.date.strftime("%H:%M"),
+            'status': self.status,
+            'field': self.field}
 
     def update(self,
                date=None,
@@ -789,28 +789,28 @@ class Game(DB.Model):
     def summary(self):
         """Returns a game summary."""
         away_score = DB.session.query(
-                                      func.sum(Bat.rbi)
-                                      .filter(Bat.game_id == self.id)
-                                      .filter(Bat.team_id == self.away_team_id)
-                                      ).first()[0]
+            func.sum(Bat.rbi)
+            .filter(Bat.game_id == self.id)
+            .filter(Bat.team_id == self.away_team_id)
+        ).first()[0]
         away_bats = DB.session.query(
-                                     func.count(Bat.classification)
-                                     .filter(Bat.game_id == self.id)
-                                     .filter(Bat.team_id == self.away_team_id)
-                                     .filter(Bat.classification.in_(HITS))
-                                     ).first()[0]
+            func.count(Bat.classification)
+            .filter(Bat.game_id == self.id)
+            .filter(Bat.team_id == self.away_team_id)
+            .filter(Bat.classification.in_(HITS))
+        ).first()[0]
         home_score = DB.session.query(
-                                      func.sum(Bat.rbi)
-                                      .filter(Bat.game_id == self.id)
-                                      .filter(Bat.team_id == self.home_team_id)
-                                      ).first()[0]
+            func.sum(Bat.rbi)
+            .filter(Bat.game_id == self.id)
+            .filter(Bat.team_id == self.home_team_id)
+        ).first()[0]
 
         home_bats = DB.session.query(
-                                     func.count(Bat.classification)
-                                     .filter(Bat.game_id == self.id)
-                                     .filter(Bat.team_id == self.home_team_id)
-                                     .filter(Bat.classification.in_(HITS))
-                                     ).first()[0]
+            func.count(Bat.classification)
+            .filter(Bat.game_id == self.id)
+            .filter(Bat.team_id == self.home_team_id)
+            .filter(Bat.classification.in_(HITS))
+        ).first()[0]
         if away_score is None:
             away_score = 0
         if home_score is None:
@@ -820,11 +820,11 @@ class Game(DB.Model):
         if home_bats is None:
             home_bats = 0
         return {
-                'away_score': away_score,
-                'away_bats': away_bats,
-                'home_score': home_score,
-                'home_bats': home_bats
-                }
+            'away_score': away_score,
+            'away_bats': away_bats,
+            'home_score': home_score,
+            'home_bats': home_bats
+        }
 
 
 class Bat(DB.Model):
@@ -894,16 +894,16 @@ class Bat(DB.Model):
     def json(self):
         """Returns a jsonserializable object."""
         return{
-               'bat_id': self.id,
-               'game_id': self.game_id,
-               'team_id': self.team_id,
-               'team': str(Player.query.get(self.team_id)),
-               'rbi': self.rbi,
-               'hit': self.classification,
-               'inning': self.inning,
-               'player_id': self.player_id,
-               'player': str(Player.query.get(self.player_id))
-               }
+            'bat_id': self.id,
+            'game_id': self.game_id,
+            'team_id': self.team_id,
+            'team': str(Player.query.get(self.team_id)),
+            'rbi': self.rbi,
+            'hit': self.classification,
+            'inning': self.inning,
+            'player_id': self.player_id,
+            'player': str(Player.query.get(self.player_id))
+        }
 
     def update(self,
                player_id=None,
@@ -976,7 +976,7 @@ def subscribe(kik, name, team_id):
         # player is not officially in our db
         # going to add them as a guest
         player = Player(name,
-                        name+"@guest",
+                        name + "@guest",
                         gender="M",
                         password="default",
                         active=False)
