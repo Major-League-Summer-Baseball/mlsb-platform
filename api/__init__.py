@@ -41,9 +41,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # setup caching
 cache.init_app(app)
 DB = SQLAlchemy(app)
-if local:
-    DB.create_all()
-    print("Created Database")
+
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
