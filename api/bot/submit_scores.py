@@ -22,6 +22,7 @@ parser.add_argument('ss', type=int, action="append")
 
 
 class SubmitScoresAPI(Resource):
+
     @requires_admin
     def post(self):
         """
@@ -38,7 +39,8 @@ class SubmitScoresAPI(Resource):
                 mimetype: application/json
                 data: True
         """
-        unassigned_player = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
+        unassigned_player = Player.query.filter_by(
+            email=UNASSIGNED_EMAIL).first()
         unassigned_id = UNASSIGNED
         if unassigned_player is not None:
             unassigned_id = unassigned_player.id
@@ -61,7 +63,7 @@ class SubmitScoresAPI(Resource):
             team = home_team  # captain of the away squad
         else:
             # not a captain of a team
-            raise NotTeamCaptain(payload={'details': kik})
+            raise NotTeamCaptain(payload={'details': player_id})
         homeruns = args['hr']
         ss = args['ss']
         score = args['score']
@@ -109,4 +111,3 @@ class SubmitScoresAPI(Resource):
             score -= 1
         DB.session.commit()  # good to add the submission
         return Response(dumps(True), status=200, mimetype="application/json")
-
