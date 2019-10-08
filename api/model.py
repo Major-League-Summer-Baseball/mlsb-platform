@@ -663,12 +663,14 @@ class Game(DB.Model):
         field: the field the game is to be played on
     """
     id = DB.Column(DB.Integer, primary_key=True)
-    home_team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id',
-                                                       use_alter=True,
-                                                       name='fk_home_team_game'))
-    away_team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id',
-                                                       use_alter=True,
-                                                       name='fk_away_team_game'))
+    home_team_id = DB.Column(DB.Integer,
+                             DB.ForeignKey('team.id',
+                                           use_alter=True,
+                                           name='fk_home_team_game'))
+    away_team_id = DB.Column(DB.Integer,
+                             DB.ForeignKey('team.id',
+                                           use_alter=True,
+                                           name='fk_away_team_game'))
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     bats = DB.relationship("Bat", backref="game", lazy='dynamic')
     date = DB.Column(DB.DateTime)
@@ -702,8 +704,8 @@ class Game(DB.Model):
             raise TeamDoesNotExist(payload={'details': away_team_id})
         if League.query.get(league_id) is None:
             raise LeagueDoesNotExist(payload={'details': league_id})
-        if ((status != "" and not string_validator(status))
-                or (field != "" and not field_validator(field))):
+        if ((status != "" and not string_validator(status)) or
+                (field != "" and not field_validator(field))):
             raise InvalidField(payload={'details': "Game - field/status"})
         # must be good now
         self.home_team_id = home_team_id

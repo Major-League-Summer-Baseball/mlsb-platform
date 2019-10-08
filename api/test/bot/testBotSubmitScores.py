@@ -9,16 +9,18 @@ from api.routes import Routes
 from api.model import Team
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-                              addGame
+    addGame
 from api.errors import PlayerNotSubscribed, GameDoesNotExist,\
-                       InvalidField
+    InvalidField
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
                                             ).decode("ascii")
 }
 
+
 class testSubmitScores(TestSetup):
+
     def testMain(self):
         # add some background
         game = addGame(self)

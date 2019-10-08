@@ -44,6 +44,7 @@ VALID_YEAR = date.today().year
 
 
 class TestSetup(unittest.TestCase):
+
     def setUp(self):
         self.show_results = False
         self.pp = PrettyPrinter(indent=4)

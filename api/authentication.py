@@ -8,12 +8,13 @@ from functools import wraps
 from flask import request, Response
 from flask import session
 import os
-from api.model import Team, Player
+from api.model import Player
 
 ADMIN = os.environ['ADMIN']
 PASSWORD = os.environ['PASSWORD']
 KIK = os.environ['KIK']
 KIKPW = os.environ['KIKPW']
+
 
 def check_auth(username, password):
     """This function is called to check if a username /
@@ -47,9 +48,9 @@ def check_captain(player, password):
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
-    'Could not verify your access level for that URL.\n'
-    'You have to login with proper credentials', 401,
-    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 def requires_admin(f):

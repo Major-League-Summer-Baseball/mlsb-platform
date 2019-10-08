@@ -15,6 +15,7 @@ parser.add_argument("active", type=int)
 
 
 class PlayerLookupAPI(Resource):
+
     def post(self):
         """
             POST request to lookup Player

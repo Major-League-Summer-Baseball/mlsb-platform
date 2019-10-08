@@ -4,9 +4,7 @@ Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds the routes for the documentation
 '''
-from flask_restful import Resource, reqparse
-from flask import Response, render_template, make_response
-from json import dumps
+from flask import render_template
 from api.routes import Routes
 from api import app
 from api.errors import ERRORS
@@ -77,9 +75,9 @@ def fun_object_doc():
 
 @app.route(Routes['dopagination'])
 def pagination_object_doc():
-  return render_template('documentation/paginationObject.html',
-                         route=Routes,
-                         errors=ERRORS)
+    return render_template('documentation/paginationObject.html',
+                           route=Routes,
+                           errors=ERRORS)
 
 
 @app.route(Routes["doteamroster"])
@@ -193,11 +191,12 @@ def league_leaders_view_doc():
                            route=Routes,
                            errors=ERRORS)
 
+
 @app.route(Routes['dvschedule'])
 def schedule_view_doc():
-  return render_template('documentation/scheduleView.html',
-                         route=Routes,
-                         errors=ERRORS)
+    return render_template('documentation/scheduleView.html',
+                           route=Routes,
+                           errors=ERRORS)
 
 # -----------------------------------------------------------------------------
 # KIK documentation

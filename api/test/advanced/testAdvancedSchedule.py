@@ -4,7 +4,6 @@
 @organization: MLSB API
 @summary: Tests the schedule view api
 '''
-
 from api.helper import loads
 from api.routes import Routes
 from api.errors import LeagueDoesNotExist
@@ -14,6 +13,7 @@ import datetime
 
 
 class TestSchedule(TestSetup):
+
     def testEmptyYear(self):
         """Test schedule view for empty league"""
         rv = self.app.get(Routes['vschedule'] + "/2012" + "/1")

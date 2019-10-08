@@ -46,16 +46,16 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
         aid = game.away_team_id
         hid = game.home_team_id
         g = {
-             'status': game.status,
-             'game_id': game.id,
-             'home_score': 0,
-             'away_score': 0,
-             'home_bats': [],
-             'away_bats': [],
-             'home_team': None,
-             'away_team': None,
-             'date': game.date.strftime("%Y-%m-%d %H:%M"),
-             'league': League.query.get(game.league_id).json()}
+            'status': game.status,
+            'game_id': game.id,
+            'home_score': 0,
+            'away_score': 0,
+            'home_bats': [],
+            'away_bats': [],
+            'home_team': None,
+            'away_team': None,
+            'date': game.date.strftime("%Y-%m-%d %H:%M"),
+            'league': League.query.get(game.league_id).json()}
         g['home_team'] = Team.query.get(hid).json()
         g['away_team'] = Team.query.get(aid).json()
         away_bats = (DB.session.query(Bat,
@@ -72,16 +72,16 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
                      ).all()
         for bat in away_bats:
             g['away_bats'].append({'name': bat[1].name,
-                                   'hit':  bat[0].classification,
+                                   'hit': bat[0].classification,
                                    'inning': bat[0].inning,
-                                   'rbi':  bat[0].rbi,
+                                   'rbi': bat[0].rbi,
                                    'bat_id': bat[0].id})
             g['away_score'] += bat[0].rbi
         for bat in home_bats:
             g['home_bats'].append({'name': bat[1].name,
-                                   'hit':  bat[0].classification,
+                                   'hit': bat[0].classification,
                                    'inning': bat[0].inning,
-                                   'rbi':  bat[0].rbi,
+                                   'rbi': bat[0].rbi,
                                    'bat_id': bat[0].id})
             g['home_score'] += bat[0].rbi
         if g['away_bats'] == 0:
@@ -93,6 +93,7 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
 
 
 class GameStatsAPI(Resource):
+
     def post(self):
         """
             POST request for Game Stats

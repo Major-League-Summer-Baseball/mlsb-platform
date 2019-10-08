@@ -7,12 +7,13 @@
 import unittest
 from api.model import Player, Team, Bat, Sponsor, League, Game
 from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
-                       LeagueDoesNotExist, SponsorDoesNotExist,\
-                       NonUniqueEmail, GameDoesNotExist
+    LeagueDoesNotExist, SponsorDoesNotExist,\
+    NonUniqueEmail, GameDoesNotExist
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
 
 
 class SponsorModelTest(TestSetup):
+
     def testSponsorInit(self):
         # valid data
         Sponsor("Good Sponsor")
@@ -66,6 +67,7 @@ class SponsorModelTest(TestSetup):
 
 
 class PlayerModelTest(TestSetup):
+
     def testPlayerInit(self):
         Player("Good Player", "good@mlsb.ca")
         Player("Good Player",
@@ -126,6 +128,7 @@ class PlayerModelTest(TestSetup):
 
 
 class LeagueModelTest(TestSetup):
+
     def testLeagueInit(self):
         League("Monday & Wednesday")
         # now bad stuff
@@ -146,6 +149,7 @@ class LeagueModelTest(TestSetup):
 
 
 class TeamModelTest(TestSetup):
+
     def testTeamInit(self):
         league = self.add_league("TestModelLeague")
         sponsor = self.add_sponsor("TestModelSponsor")
@@ -236,6 +240,7 @@ class TeamModelTest(TestSetup):
 
 
 class GameModelTest(TestSetup):
+
     def testGameInit(self):
         sponsor = self.add_sponsor("TestModelSponsor")
         league = self.add_league("TestModelLeague")
@@ -355,6 +360,7 @@ class GameModelTest(TestSetup):
 
 
 class BatModelTest(TestSetup):
+
     def testBatInit(self):
         player = self.add_player("ModelTestPlayer", "ModelTestPlayer@mlsb.ca")
         player_id = player['player_id']

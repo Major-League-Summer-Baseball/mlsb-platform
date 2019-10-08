@@ -18,6 +18,7 @@ parser.add_argument('name', type=str, required=True)
 
 
 class UpcomingGamesAPI(Resource):
+
     @requires_kik
     def post(self):
         """
@@ -33,7 +34,7 @@ class UpcomingGamesAPI(Resource):
         args = parser.parse_args()
         name = args['name']
         players = (DB.session.query(Player)
-                   .filter(Player.name.like("%"+name+"%"))).all()
+                   .filter(Player.name.like("%" + name + "%"))).all()
         if players is None or len(players) == 0:
             raise PlayerDoesNotExist(payload={'details': name})
         teams = []
@@ -43,7 +44,7 @@ class UpcomingGamesAPI(Resource):
             for team in player.teams:
                 teams.append(team.id)
         games = DB.session.query(Game).filter(or_(Game.away_team_id.in_(teams),
-                                              (Game.home_team_id.in_(teams))))
+                                                  (Game.home_team_id.in_(teams))))
         games = games.filter(Game.date.between(today, next_two_weeks))
         result = []
         for game in games:

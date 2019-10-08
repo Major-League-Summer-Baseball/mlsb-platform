@@ -19,6 +19,7 @@ parser.add_argument('kik', type=str, required=True)
 
 
 class AuthenticateCaptainAPI(Resource):
+
     @requires_kik
     def post(self):
         """

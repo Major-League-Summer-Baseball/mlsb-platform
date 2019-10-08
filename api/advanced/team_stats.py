@@ -123,6 +123,7 @@ def team_stats(year, league_id):
 
 
 class TeamStatsAPI(Resource):
+
     def post(self):
         """
             GET request for Team Stats List

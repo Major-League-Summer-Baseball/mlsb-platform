@@ -25,6 +25,7 @@ INVALID_YEAR = 100
 
 
 class TestFun(TestSetup):
+
     def testPost(self):
         """Test fun view"""
         params = {'year': 2002}

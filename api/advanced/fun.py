@@ -14,6 +14,7 @@ parser.add_argument('year', type=int)
 
 
 class AdvancedFunAPI(Resource):
+
     def post(self):
         """
             POST request for Game Stats
@@ -21,7 +22,7 @@ class AdvancedFunAPI(Resource):
             Parameters:
                 year: the year (int)
             Returns:
-                status: 200 
+                status: 200
                 mimetype: application/json
                 data: list of Fun
         """

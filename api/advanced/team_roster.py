@@ -17,6 +17,7 @@ parser.add_argument('captain', type=int)
 
 
 class TeamRosterAPI(Resource):
+
     def get(self, team_id):
         """
             GET request for Team Roster List

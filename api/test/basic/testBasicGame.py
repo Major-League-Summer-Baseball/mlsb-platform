@@ -8,12 +8,12 @@ from api.helper import loads
 from api.routes import Routes
 from api.errors import \
     InvalidField, TeamDoesNotExist,\
-     LeagueDoesNotExist, GameDoesNotExist
-    
+    LeagueDoesNotExist, GameDoesNotExist
+
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE, addGame,\
-                              VALID_YEAR
+    INVALID_ID, SUCCESSFUL_PUT_CODE, addGame,\
+    VALID_YEAR
 
 
 headers = {
@@ -26,16 +26,17 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestGame(TestSetup):
+
     def testGameInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_game
         # missing parameters
         params = {}
         expect = {'message': {
-                              'away_team_id': MISSING_PARAMETER,
-                              'date': MISSING_PARAMETER,
-                              'home_team_id': MISSING_PARAMETER,
-                              'league_id': MISSING_PARAMETER,
-                              'time': MISSING_PARAMETER}}
+            'away_team_id': MISSING_PARAMETER,
+            'date': MISSING_PARAMETER,
+            'home_team_id': MISSING_PARAMETER,
+            'league_id': MISSING_PARAMETER,
+            'time': MISSING_PARAMETER}}
         error_message = (Routes['game'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['game'],
@@ -53,12 +54,12 @@ class TestGame(TestSetup):
 
         # testing invalid date
         params = {
-                  'home_team_id': home_team['team_id'],
-                  'away_team_id': away_team['team_id'],
-                  'date': "2014-02-2014",
-                  'time': "22:40",
-                  'league_id': league['league_id']
-                              }
+            'home_team_id': home_team['team_id'],
+            'away_team_id': away_team['team_id'],
+            'date': "2014-02-2014",
+            'time': "22:40",
+            'league_id': league['league_id']
+        }
         expect = {'details': 'Game - date', 'message': InvalidField.message}
         error_message = (Routes['game'] +
                          " POST: request with invalid date")
@@ -71,12 +72,12 @@ class TestGame(TestSetup):
 
         # testing invalid time
         params = {
-                  'home_team_id': home_team['team_id'],
-                  'away_team_id': away_team['team_id'],
-                  'date': "2014-02-10",
-                  'time': "22:66",
-                  'league_id': league['league_id']
-                              }
+            'home_team_id': home_team['team_id'],
+            'away_team_id': away_team['team_id'],
+            'date': "2014-02-10",
+            'time': "22:66",
+            'league_id': league['league_id']
+        }
         expect = {'details': 'Game - time', 'message': InvalidField.message}
         error_message = (Routes['game'] +
                          " POST: request with invalid time")
@@ -89,12 +90,12 @@ class TestGame(TestSetup):
 
         # testing invalid home team id
         params = {
-                  'home_team_id': INVALID_ID,
-                  'away_team_id': away_team['team_id'],
-                  'date': "2014-02-10",
-                  'time': "22:40",
-                  'league_id': league['league_id']
-                              }
+            'home_team_id': INVALID_ID,
+            'away_team_id': away_team['team_id'],
+            'date': "2014-02-10",
+            'time': "22:40",
+            'league_id': league['league_id']
+        }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['game'] +
                          " POST: request with invalid home team id")
@@ -107,12 +108,12 @@ class TestGame(TestSetup):
 
         # testing invalid away team id
         params = {
-                  'home_team_id': home_team['team_id'],
-                  'away_team_id': INVALID_ID,
-                  'date': "2014-02-10",
-                  'time': "22:40",
-                  'league_id': league['league_id']
-                              }
+            'home_team_id': home_team['team_id'],
+            'away_team_id': INVALID_ID,
+            'date': "2014-02-10",
+            'time': "22:40",
+            'league_id': league['league_id']
+        }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['game'] +
                          " POST: request with invalid away team id")
@@ -197,14 +198,14 @@ class TestGame(TestSetup):
 
         # invalid game id
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "2014-08-22",
-                  'time': "11:37",
-                  'league_id': game['league_id'],
-                  'status': "Championship",
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': "WP1"
+        }
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
         error_message = Routes['game'] + " PUT: invalid game id"
         self.putTest(invalid_route,
@@ -216,13 +217,13 @@ class TestGame(TestSetup):
 
         # invalid home team
         params = {
-          'home_team_id': INVALID_ID,
-          'away_team_id': game['away_team_id'],
-          'date': "2014-08-22",
-          'time': "11:37",
-          'league_id': game['league_id'],
-          'status': "Championship",
-          'field': "WP1"
+            'home_team_id': INVALID_ID,
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': "WP1"
         }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = Routes['game'] + " PUT: invalid home team"
@@ -235,14 +236,14 @@ class TestGame(TestSetup):
 
         # invalid away team
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': INVALID_ID,
-                  'date': "2014-08-22",
-                  'time': "11:37",
-                  'league_id': game['league_id'],
-                  'status': "Championship",
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': INVALID_ID,
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': "WP1"
+        }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = Routes['game'] + " PUT: invalid away team"
         self.putTest(valid_route,
@@ -254,14 +255,14 @@ class TestGame(TestSetup):
 
         # invalid league
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "2014-08-22",
-                  'time': "11:37",
-                  'league_id': INVALID_ID,
-                  'status': "Championship",
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': INVALID_ID,
+            'status': "Championship",
+            'field': "WP1"
+        }
         expect = {'details': INVALID_ID, 'message': LeagueDoesNotExist.message}
         error_message = Routes['game'] + " PUT: invalid league"
         self.putTest(valid_route,
@@ -273,14 +274,14 @@ class TestGame(TestSetup):
 
         # invalid date
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "xx-08-22",
-                  'time': "11:37",
-                  'league_id': game['league_id'],
-                  'status': "Championship",
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "xx-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': "WP1"
+        }
         expect = {'details': 'Game - date', 'message': InvalidField.message}
         error_message = Routes['game'] + " PUT: invalid date"
         self.putTest(valid_route,
@@ -292,14 +293,14 @@ class TestGame(TestSetup):
 
         # invalid time
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "2014-08-22",
-                  'time': "XX:37",
-                  'league_id': game['league_id'],
-                  'status': "Championship",
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "XX:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': "WP1"
+        }
         expect = {'details': 'Game - time', 'message': InvalidField.message}
         error_message = Routes['game'] + " PUT: invalid time"
         self.putTest(valid_route,
@@ -311,14 +312,14 @@ class TestGame(TestSetup):
 
         # invalid status
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "2014-08-22",
-                  'time': "11:37",
-                  'league_id': game['league_id'],
-                  'status': 1,
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': 1,
+            'field': "WP1"
+        }
         expect = {'details': 'Game - status', 'message': InvalidField.message}
         error_message = Routes['game'] + " PUT: invalid status"
         self.putTest(valid_route,
@@ -330,14 +331,14 @@ class TestGame(TestSetup):
 
         # invalid field
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "2014-08-22",
-                  'time': "11:37",
-                  'league_id': game['league_id'],
-                  'status': "Championship",
-                  'field': 1
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': 1
+        }
         expect = {'details': 'Game - field', 'message': InvalidField.message}
         error_message = Routes['game'] + " PUT: invalid field"
         self.putTest(valid_route,
@@ -349,14 +350,14 @@ class TestGame(TestSetup):
 
         # valid update parameters
         params = {
-                  'home_team_id': game['home_team_id'],
-                  'away_team_id': game['away_team_id'],
-                  'date': "2014-08-22",
-                  'time': "11:37",
-                  'league_id': game['league_id'],
-                  'status': "Championship",
-                  'field': "WP1"
-                 }
+            'home_team_id': game['home_team_id'],
+            'away_team_id': game['away_team_id'],
+            'date': "2014-08-22",
+            'time': "11:37",
+            'league_id': game['league_id'],
+            'status': "Championship",
+            'field': "WP1"
+        }
         game['home_team_id'] = params['home_team_id']
         game['away_team_id'] = params['away_team_id']
         game['date'] = params['date']

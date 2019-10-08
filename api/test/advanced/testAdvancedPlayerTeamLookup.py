@@ -26,6 +26,7 @@ INVALID_YEAR = 100
 
 
 class TestPlayerTeamLookup(TestSetup):
+
     def testEmail(self):
         """Tests using a player email as a parameter"""
         mocker = MockLeague(self)

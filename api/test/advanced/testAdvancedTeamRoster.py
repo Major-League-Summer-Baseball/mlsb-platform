@@ -12,7 +12,7 @@ from api.model import Team, Player
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, PlayerDoesNotExist
 from api.test.advanced.mock_league import MockLeague
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW,\
-                         INVALID_ID, SUCCESSFUL_DELETE_CODE
+    INVALID_ID, SUCCESSFUL_DELETE_CODE
 
 
 headers = {
@@ -30,6 +30,7 @@ INVALID_YEAR = 100
 
 
 class TeamRosterTest(TestSetup):
+
     def testPost(self):
         """Test adding an invalid player to a team"""
         # mock leagues tests a valid post
@@ -161,18 +162,18 @@ class TeamRosterTest(TestSetup):
         # get one team
         rv = self.app.get(Routes['team_roster'] + "/" + str(team_id))
         expect = {
-                  'captain': captain,
-                  'color': team['color'],
-                  'espys': 0,
-                  'league_id': league['league_id'],
-                  'players': [
-                              captain,
-                              player
-                              ],
-                  'sponsor_id': team['sponsor_id'],
-                  'team_id': team['team_id'],
-                  'team_name': team['team_name'],
-                  'year': date.today().year}
+            'captain': captain,
+            'color': team['color'],
+            'espys': 0,
+            'league_id': league['league_id'],
+            'players': [
+                captain,
+                player
+            ],
+            'sponsor_id': team['sponsor_id'],
+            'team_id': team['team_id'],
+            'team_name': team['team_name'],
+            'year': date.today().year}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['team_roster'] +

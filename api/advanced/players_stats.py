@@ -53,18 +53,18 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
         # format the results
         if player[0] not in result.keys():
             result[player[0]] = {
-                                 's': 0,
-                                 'd': 0,
-                                 'hr': 0,
-                                 'ss': 0,
-                                 'k': 0,
-                                 'fo': 0,
-                                 'fc': 0,
-                                 'e': 0,
-                                 'go': 0,
-                                 'id': player[3],
-                                 'rbi': 0
-                                 }
+                's': 0,
+                'd': 0,
+                'hr': 0,
+                'ss': 0,
+                'k': 0,
+                'fo': 0,
+                'fc': 0,
+                'e': 0,
+                'go': 0,
+                'id': player[3],
+                'rbi': 0
+            }
         result[player[0]][player[1]] = player[2]
         result[player[0]]['rbi'] += player[4]
     for player in result:
@@ -88,6 +88,7 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
 
 
 class PlayerStatsAPI(Resource):
+
     def post(self):
         """
             POST request for Players Stats List

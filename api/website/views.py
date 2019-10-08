@@ -4,13 +4,12 @@
 @organization: MLSB API
 @summary: Holds the the views for the website
 '''
-from sqlalchemy.sql.expression import and_
 from api import app, PICTURES, POSTS, cache
 from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
-    redirect, request
-from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
-from api.variables import UNASSIGNED, EVENTS, NOTFOUND, CACHE_TIMEOUT
+    redirect
+from api.model import Team, Player, Sponsor, League, Espys, Fun
+from api.variables import EVENTS, NOTFOUND, CACHE_TIMEOUT
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
@@ -133,7 +132,7 @@ def sponsor_picture(name):
         else:
             name = str(name)
     name = name.lower().replace(" ", "_") + ".png"
-    f = os.path.join(PICTURES, "sponsors",  name)
+    f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
         return send_from_directory(fp, filename=name)
@@ -159,7 +158,7 @@ def team_picture(team):
             else:
                 name = str(name)
     name = name.lower().replace(" ", "_") + ".png"
-    f = os.path.join(PICTURES, "sponsors",  name)
+    f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
         return send_from_directory(fp, filename=name)
@@ -321,6 +320,7 @@ def all_time_leaders_page(year):
 
     hrSingleSeason = get_leaders("hr")[:10]
     hrAllSeason = get_leaders("hr")[:10]
+
 
 '''
 # -----------------------------------------------------------------------------

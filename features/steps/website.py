@@ -56,9 +56,11 @@ def assert_sample_text(context, text_sample):
     xpath = "//p[contains(text(), '" + text_sample + "')]"
     context.browser.find_element_by_xpath(xpath)
 
+
 @then("I see a table cell containing today's date")
 def assert_table_today(context):
     assert_table_text(context, datetime.date.today().strftime("%Y-%m-%d"))
+
 
 @then('I see a table cell containing "{text_sample}"')
 def assert_table_text(context, text_sample):
@@ -67,15 +69,18 @@ def assert_table_text(context, text_sample):
     element = (By.XPATH, xpath)
     wait_until_loaded(context.browser, element)
 
+
 @then('I see a game score in the banner')
 def assert_game_present(context):
     xpath = "//div[contains(@class, 'game-date')]"
     context.browser.find_element_by_xpath(xpath)
 
+
 @then('I see some league leaders')
 def assert_league_leaers(context):
     xpath = "(//ul[contains(@class, 'sleemanList')]/li/span)[1]"
     context.browser.find_element_by_xpath(xpath)
+
 
 @then('the top leaders has more than bottom')
 def assert_top_leader_more_than_bottom(context):
@@ -85,12 +90,13 @@ def assert_top_leader_more_than_bottom(context):
     bottom_leader = context.browser.find_element_by_xpath(bottom)
     print(top_leader.text)
     print(bottom_leader.text)
-    assert(parse_leader_int(top_leader.text)
-           >= parse_leader_int(bottom_leader.text))
+    assert(parse_leader_int(top_leader.text) >=
+           parse_leader_int(bottom_leader.text))
+
 
 @then('I see some sponsor score in the top')
 def assert_sponsors_in_top(context):
-    some_sponsor = ("(//div[contains(@class, 'flickity-slider')]"+
+    some_sponsor = ("(//div[contains(@class, 'flickity-slider')]" +
                     "/div[contains(@class, 'sponsor-cell')]/a)[1]")
     context.browser.find_element_by_xpath(some_sponsor)
 
@@ -100,4 +106,3 @@ def wait_for_element(driver, element, TIMEOUT=10):
     wait = WebDriverWait(driver, TIMEOUT)
     men_menu = wait.until(ec.visibility_of_element_located(element))
     ActionChains(driver).move_to_element(men_menu).perform()
-

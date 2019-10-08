@@ -15,6 +15,7 @@ parser.add_argument("player_id", type=int)
 
 
 class PlayerTeamLookupAPI(Resource):
+
     def post(self):
         """
             POST request to lookup a Player's teams

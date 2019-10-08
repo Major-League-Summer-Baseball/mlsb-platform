@@ -7,7 +7,6 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from environment import DELAY
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
 
@@ -19,6 +18,6 @@ def wait_until_loaded(browser, element, delay=DELAY):
         print("Timeout Exception has been raised")
         raise TimeoutException()
 
+
 def parse_leader_int(leader_entry):
     return int(leader_entry.split("-")[-1].strip())
-    

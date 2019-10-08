@@ -30,6 +30,7 @@ post_parser.add_argument("active", type=int)
 
 
 class PlayerAPI(Resource):
+
     def get(self, player_id):
         """
             GET request for Player List
@@ -121,7 +122,7 @@ class PlayerAPI(Resource):
         if args['email']:
             email = args['email']
         if args['active']:
-            active = args['active'] == 1 if True else False 
+            active = args['active'] == 1 if True else False
         player.update(name=player_name,
                       gender=gender,
                       email=email,
@@ -138,6 +139,7 @@ class PlayerAPI(Resource):
 
 
 class PlayerListAPI(Resource):
+
     def get(self):
         """
             GET request for Player List
@@ -205,7 +207,7 @@ class PlayerListAPI(Resource):
         if args['password']:
             password = args['password']
         if args['active']:
-            active = args['active'] == 1 if True else False 
+            active = args['active'] == 1 if True else False
         player = Player(player_name, email, gender, password, active=active)
         DB.session.add(player)
         DB.session.commit()

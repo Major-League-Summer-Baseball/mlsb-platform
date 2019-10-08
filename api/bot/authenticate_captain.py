@@ -7,7 +7,6 @@
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api import DB
 from api.model import Player, Team
 from api.errors import TeamDoesNotExist, NotTeamCaptain
 from api.authentication import requires_admin
@@ -17,6 +16,7 @@ parser.add_argument('player_id', type=int, required=True)
 
 
 class AuthenticateCaptainAPI(Resource):
+
     @requires_admin
     def post(self):
         """

@@ -9,8 +9,8 @@ from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE,\
-                              addEspy, VALID_YEAR
+    INVALID_ID, SUCCESSFUL_PUT_CODE,\
+    addEspy, VALID_YEAR
 
 
 headers = {
@@ -23,6 +23,7 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestEspys(TestSetup):
+
     def testEspysApiGet(self):
         # proper insertion
         points = 10
@@ -158,10 +159,10 @@ class TestEspys(TestSetup):
                              VALID_YEAR)
         params = {}
         result = {'message': {
-                              'points': MISSING_PARAMETER,
-                              'team_id': MISSING_PARAMETER
-                              }
-                  }
+            'points': MISSING_PARAMETER,
+            'team_id': MISSING_PARAMETER
+        }
+        }
         error_message = (Routes['espy'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['espy'],

@@ -16,6 +16,7 @@ parser.add_argument('name', type=str, required=True)
 
 
 class SubscribeToTeamAPI(Resource):
+
     @requires_kik
     def post(self):
         """

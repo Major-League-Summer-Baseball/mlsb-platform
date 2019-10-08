@@ -7,10 +7,11 @@
 import unittest
 from pprint import PrettyPrinter
 from api.validators import gender_validator, boolean_validator,\
-                           int_validator, string_validator,\
-                           date_validator, time_validator,\
-                           rbi_validator, hit_validator,\
-                           field_validator
+    int_validator, string_validator,\
+    date_validator, time_validator,\
+    rbi_validator, hit_validator,\
+    field_validator
+
 
 class Test(unittest.TestCase):
 

@@ -22,6 +22,7 @@ parser.add_argument('ss', type=int, action="append")
 
 
 class SubmitScoresAPI(Resource):
+
     @requires_kik
     def post(self):
         """
@@ -32,13 +33,15 @@ class SubmitScoresAPI(Resource):
                 kik: the kik user name of the captain (str)
                 score: the score of the captains team (int)
                 hr: a list of player's name who hit homeruns(List of str)
-                ss: a list of player's name who hit sentry singles (List of str)
+                ss: a list of player's name who hit sentry singles
+                    (List of str)
             Returns:
                 status: 200
                 mimetype: application/json
                 data: True
         """
-        unassigned_player = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
+        unassigned_player = Player.query.filter_by(
+            email=UNASSIGNED_EMAIL).first()
         unassigned_id = UNASSIGNED
         if unassigned_player is not None:
             unassigned_id = unassigned_player.id
@@ -109,4 +112,3 @@ class SubmitScoresAPI(Resource):
             score -= 1
         DB.session.commit()  # good to add the submission
         return Response(dumps(True), status=200, mimetype="application/json")
-

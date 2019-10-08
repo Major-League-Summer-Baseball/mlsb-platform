@@ -7,12 +7,12 @@
 
 from api import app
 from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
-                        PlayerDoesNotExist, GameDoesNotExist,\
-                        LeagueDoesNotExist, SponsorDoesNotExist,\
-                        PlayerNotOnTeam, FunDoesNotExist,\
-                        EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
-                        TeamAlreadyHasCaptain, PlayerNotSubscribed,\
-                        BadRequestError
+    PlayerDoesNotExist, GameDoesNotExist,\
+    LeagueDoesNotExist, SponsorDoesNotExist,\
+    PlayerNotOnTeam, FunDoesNotExist,\
+    EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
+    TeamAlreadyHasCaptain, PlayerNotSubscribed,\
+    BadRequestError
 from flask import Response
 from json import dumps
 

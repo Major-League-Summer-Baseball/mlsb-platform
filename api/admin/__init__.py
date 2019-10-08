@@ -8,16 +8,15 @@ Purpose: Holds the routes for the admin side
 # Imports
 # -----------------------------------------------------------------------------
 from os.path import join
-from flask_restful import Resource, reqparse
-from flask import Response, render_template, make_response, send_file, url_for,\
-                  send_from_directory, redirect, session, request
-from json import dumps, loads
+from flask import render_template, make_response, url_for,\
+    redirect, session, request
+from json import dumps
 from api.routes import Routes
-from api import app, PICTURES
+from api import app
 from api import DB
 from api.errors import InvalidField
-from api.model import Team, Player, Sponsor, League, Game, Bat, Espys, Fun
-from api.variables import SPONSORS, BATS
+from api.model import Team, Player, Sponsor, League, Game, Espys, Fun
+from api.variables import BATS
 from api.authentication import check_auth
 from datetime import date, time, datetime
 from api.advanced.import_team import TeamList
@@ -224,7 +223,7 @@ def quick_sort(array):
                 greater.append(x)
         # Don't forget to return something!
         # Just use the + operator to join lists
-        return quick_sort(less) + equal+quick_sort(greater)
+        return quick_sort(less) + equal + quick_sort(greater)
     # Note that you want equal ^^^^^ not pivot
     else:
         # You need to hande the part at the end of the recursion
@@ -241,6 +240,7 @@ def admin_edit_fun(year):
                            route=Routes,
                            funs=get_funs(),
                            title="Edit Fun")
+
 
 @app.route(Routes['editleague'] + "/<int:year>")
 def admin_edit_league(year):

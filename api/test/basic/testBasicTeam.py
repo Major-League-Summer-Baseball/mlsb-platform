@@ -9,7 +9,7 @@ from api.errors import \
     SponsorDoesNotExist, InvalidField, TeamDoesNotExist, LeagueDoesNotExist
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE, VALID_YEAR
+    INVALID_ID, SUCCESSFUL_PUT_CODE, VALID_YEAR
 
 
 headers = {
@@ -22,16 +22,17 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestTeam(TestSetup):
+
     def testTeamInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_team
         # missing parameters
         params = {}
         result = {'message': {
-                              'color': MISSING_PARAMETER,
-                              'league_id': MISSING_PARAMETER,
-                              'sponsor_id': MISSING_PARAMETER,
-                              'year': MISSING_PARAMETER}
-                  }
+            'color': MISSING_PARAMETER,
+            'league_id': MISSING_PARAMETER,
+            'sponsor_id': MISSING_PARAMETER,
+            'year': MISSING_PARAMETER}
+        }
         error_message = (Routes['team'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['team'],
@@ -245,9 +246,9 @@ class TestTeam(TestSetup):
 
         # valid update
         params = {
-                  'sponsor_id': sponsor_two['sponsor_id'],
-                  'league_id': league_two['league_id'],
-                  'color': "Black"}
+            'sponsor_id': sponsor_two['sponsor_id'],
+            'league_id': league_two['league_id'],
+            'color': "Black"}
         team['sponsor_id'] = sponsor_two['sponsor_id']
         team['league_id'] = league_two['league_id']
         error_message = Routes['team'] + " PUT: Failed to update a team"

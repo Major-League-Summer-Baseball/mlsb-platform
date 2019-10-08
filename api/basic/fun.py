@@ -28,6 +28,7 @@ HEADERS = [{'header': 'sponsor_name', 'required': True,
 
 
 class FunAPI(Resource):
+
     def get(self, year):
         """
             GET request for Fun Object matching given year
@@ -119,6 +120,7 @@ class FunAPI(Resource):
 
 
 class FunListAPI(Resource):
+
     def get(self):
         """
             GET request for Fun List
@@ -180,4 +182,3 @@ class FunListAPI(Resource):
         return {'Allow': 'PUT'}, 200, \
                {'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'PUT,GET'}
-

@@ -9,7 +9,7 @@ from api.routes import Routes
 from api.model import Team
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              addGame
+    addGame
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -18,6 +18,7 @@ headers = {
 
 
 class testCaptainGames(TestSetup):
+
     def testMain(self):
 
         # add some background

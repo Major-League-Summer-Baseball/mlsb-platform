@@ -10,8 +10,8 @@ from api.errors import \
     GameDoesNotExist, BatDoesNotExist
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE, addBat,\
-                              addGame
+    INVALID_ID, SUCCESSFUL_PUT_CODE, addBat,\
+    addGame
 
 
 headers = {
@@ -24,6 +24,7 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestBat(TestSetup):
+
     def testBateInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_bat
         # missing parameters
@@ -33,13 +34,13 @@ class TestBat(TestSetup):
                                  gender="M")
         params = {}
         expect = {
-                  'message': {
-                              'game_id': MISSING_PARAMETER,
-                              'hit': MISSING_PARAMETER,
-                              'player_id': MISSING_PARAMETER,
-                              'team_id': MISSING_PARAMETER
-                              }
-                  }
+            'message': {
+                'game_id': MISSING_PARAMETER,
+                'hit': MISSING_PARAMETER,
+                'player_id': MISSING_PARAMETER,
+                'team_id': MISSING_PARAMETER
+            }
+        }
         error_message = (Routes['bat'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['bat'],
@@ -51,13 +52,13 @@ class TestBat(TestSetup):
 
         # testing invalid player
         params = {
-                  'game_id': game['game_id'],
-                  'player_id': INVALID_ID,
-                  'team_id': game['home_team_id'],
-                  'rbi': 2,
-                  'hit': "hr",
-                  'inning': 1
-                              }
+            'game_id': game['game_id'],
+            'player_id': INVALID_ID,
+            'team_id': game['home_team_id'],
+            'rbi': 2,
+            'hit': "hr",
+            'inning': 1
+        }
         expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
         error_message = (Routes['bat'] +
                          " POST: request with invalid player id")
@@ -70,13 +71,13 @@ class TestBat(TestSetup):
 
         # testing invalid game
         params = {
-                  'game_id': INVALID_ID,
-                  'player_id': player['player_id'],
-                  'team_id': game['home_team_id'],
-                  'rbi': 2,
-                  'hit': "hr",
-                  'inning': 1
-                              }
+            'game_id': INVALID_ID,
+            'player_id': player['player_id'],
+            'team_id': game['home_team_id'],
+            'rbi': 2,
+            'hit': "hr",
+            'inning': 1
+        }
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
         error_message = (Routes['bat'] +
                          " POST: request with invalid game id")
@@ -89,13 +90,13 @@ class TestBat(TestSetup):
 
         # testing invalid team
         params = {
-                  'game_id': game['game_id'],
-                  'player_id': player['player_id'],
-                  'team_id': INVALID_ID,
-                  'rbi': 2,
-                  'hit': "hr",
-                  'inning': 1
-                              }
+            'game_id': game['game_id'],
+            'player_id': player['player_id'],
+            'team_id': INVALID_ID,
+            'rbi': 2,
+            'hit': "hr",
+            'inning': 1
+        }
         expect = {'details': str(INVALID_ID),
                   'message': TeamDoesNotExist.message}
         error_message = (Routes['bat'] +
@@ -109,13 +110,13 @@ class TestBat(TestSetup):
 
         # testing invalid rbi
         params = {
-                  'game_id': INVALID_ID,
-                  'player_id': player['player_id'],
-                  'team_id': game['home_team_id'],
-                  'rbi': 100,
-                  'hit': "hr",
-                  'inning': 1
-                              }
+            'game_id': INVALID_ID,
+            'player_id': player['player_id'],
+            'team_id': game['home_team_id'],
+            'rbi': 100,
+            'hit': "hr",
+            'inning': 1
+        }
         expect = {'details': 'Bat - rbi', 'message': InvalidField.message}
         error_message = (Routes['bat'] +
                          " POST: request with invalid rbi")
@@ -128,13 +129,13 @@ class TestBat(TestSetup):
 
         # testing invalid inning
         params = {
-                  'game_id': INVALID_ID,
-                  'player_id': player['player_id'],
-                  'team_id': game['home_team_id'],
-                  'rbi': 1,
-                  'hit': "hr",
-                  'inning': -1
-                              }
+            'game_id': INVALID_ID,
+            'player_id': player['player_id'],
+            'team_id': game['home_team_id'],
+            'rbi': 1,
+            'hit': "hr",
+            'inning': -1
+        }
         expect = {'details': 'Bat - inning', 'message': InvalidField.message}
         error_message = (Routes['bat'] +
                          " POST: request with invalid inning")
@@ -147,13 +148,13 @@ class TestBat(TestSetup):
 
         # testing invalid hit
         params = {
-                  'game_id': INVALID_ID,
-                  'player_id': player['player_id'],
-                  'team_id': game['home_team_id'],
-                  'rbi': 1,
-                  'hit': "xx",
-                  'inning': 1
-                              }
+            'game_id': INVALID_ID,
+            'player_id': player['player_id'],
+            'team_id': game['home_team_id'],
+            'rbi': 1,
+            'hit': "xx",
+            'inning': 1
+        }
         expect = {'details': 'Bat - hit', 'message': InvalidField.message}
         error_message = (Routes['bat'] +
                          " POST: request with invalid hit")
@@ -217,12 +218,12 @@ class TestBat(TestSetup):
         valid_route = Routes['bat'] + "/" + str(bat['bat_id'])
         # invalid bat ID
         params = {
-                  'game_id': bat['game_id'],
-                  'player_id': bat['player_id'],
-                  'team_id': bat['team_id'],
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1}
+            'game_id': bat['game_id'],
+            'player_id': bat['player_id'],
+            'team_id': bat['team_id'],
+            'rbi': 4,
+            'hit': "HR",
+            'inning': 1}
         expect = {'details': INVALID_ID, 'message': BatDoesNotExist.message}
         error_message = Routes['bat'] + " PUT: invalid Bat id"
         self.putTest(invalid_route,
@@ -234,12 +235,12 @@ class TestBat(TestSetup):
 
         # test invalid game_id
         params = {
-                  'game_id': INVALID_ID,
-                  'player_id': bat['player_id'],
-                  'team_id': bat['team_id'],
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1}
+            'game_id': INVALID_ID,
+            'player_id': bat['player_id'],
+            'team_id': bat['team_id'],
+            'rbi': 4,
+            'hit': "HR",
+            'inning': 1}
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
         error_message = Routes['bat'] + " PUT: invalid game"
         self.putTest(valid_route,
@@ -251,12 +252,12 @@ class TestBat(TestSetup):
 
         # test invalid player_id
         params = {
-                  'game_id': bat['game_id'],
-                  'player_id': INVALID_ID,
-                  'team_id': bat['team_id'],
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1}
+            'game_id': bat['game_id'],
+            'player_id': INVALID_ID,
+            'team_id': bat['team_id'],
+            'rbi': 4,
+            'hit': "HR",
+            'inning': 1}
         expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
         error_message = Routes['bat'] + " PUT: invalid player"
         self.putTest(valid_route,
@@ -268,12 +269,12 @@ class TestBat(TestSetup):
 
         # test invalid team_id
         params = {
-                  'game_id': bat['game_id'],
-                  'player_id': bat['player_id'],
-                  'team_id': INVALID_ID,
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1}
+            'game_id': bat['game_id'],
+            'player_id': bat['player_id'],
+            'team_id': INVALID_ID,
+            'rbi': 4,
+            'hit': "HR",
+            'inning': 1}
         expect = {'details': str(INVALID_ID),
                   'message': TeamDoesNotExist.message}
         error_message = Routes['bat'] + " PUT: invalid team"
@@ -286,12 +287,12 @@ class TestBat(TestSetup):
 
         # test invalid rbi
         params = {
-                  'game_id': bat['game_id'],
-                  'player_id': bat['player_id'],
-                  'team_id': bat['team_id'],
-                  'rbi': 10,
-                  'hit': "HR",
-                  'inning': 1}
+            'game_id': bat['game_id'],
+            'player_id': bat['player_id'],
+            'team_id': bat['team_id'],
+            'rbi': 10,
+            'hit': "HR",
+            'inning': 1}
         expect = {'details': 'Bat - rbi', 'message': InvalidField.message}
         error_message = Routes['bat'] + " PUT: invalid rbi"
         self.putTest(valid_route,
@@ -303,12 +304,12 @@ class TestBat(TestSetup):
 
         # test invalid hit
         params = {
-                  'game_id': bat['game_id'],
-                  'player_id': bat['player_id'],
-                  'team_id': bat['team_id'],
-                  'rbi': 1,
-                  'hit': "XX",
-                  'inning': 1}
+            'game_id': bat['game_id'],
+            'player_id': bat['player_id'],
+            'team_id': bat['team_id'],
+            'rbi': 1,
+            'hit': "XX",
+            'inning': 1}
         expect = {'details': 'Bat - hit', 'message': InvalidField.message}
         error_message = Routes['bat'] + " PUT: invalid hit"
         self.putTest(valid_route,
@@ -320,12 +321,12 @@ class TestBat(TestSetup):
 
         # test invalid inning
         params = {
-                  'game_id': bat['game_id'],
-                  'player_id': bat['player_id'],
-                  'team_id': bat['team_id'],
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': -1}
+            'game_id': bat['game_id'],
+            'player_id': bat['player_id'],
+            'team_id': bat['team_id'],
+            'rbi': 4,
+            'hit': "HR",
+            'inning': -1}
         expect = {'details': 'Bat - inning', 'message': InvalidField.message}
         error_message = Routes['bat'] + " PUT: invalid inning"
         self.putTest(valid_route,
@@ -346,13 +347,13 @@ class TestBat(TestSetup):
                                         "testPlayerTwo@mlsb.ca",
                                         "M")
         params = {
-                  'game_id': second_game['game_id'],
-                  'player_id': second_player['player_id'],
-                  'team_id': second_team['team_id'],
-                  'rbi': 4,
-                  'hit': "HR",
-                  'inning': 1
-                              }
+            'game_id': second_game['game_id'],
+            'player_id': second_player['player_id'],
+            'team_id': second_team['team_id'],
+            'rbi': 4,
+            'hit': "HR",
+            'inning': 1
+        }
         bat['game_id'] = params['game_id']
         bat['player_id'] = params['player_id']
         bat['team_id'] = params['team_id']
