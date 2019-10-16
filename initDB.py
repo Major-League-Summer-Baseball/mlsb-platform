@@ -472,6 +472,7 @@ def init_database(mock, copy_locally, url, create_db):
     if (create_db):
         create_fresh_tables()
         DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
+        DB.session.commit()
         pull_fun_count(url)
         sponsor_lookup = pull_sponsors(url)
     if (mock):
