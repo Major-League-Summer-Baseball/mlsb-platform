@@ -190,7 +190,7 @@ class TestPlayer(TestSetup):
 
         # try to update the first player to have the same email as the second
         params = {'email': player_two_email}
-        result = {'details': player_two_email,
+        result = {'details': player_two_email.strip().lower(),
                   'message': NonUniqueEmail.message}
         error_message = Routes['player'] + ' PUT: Valid player update'
         self.putTest(Routes['player'] + "/" + str(player_one['player_id']),
