@@ -4,18 +4,16 @@
 @organization: MLSB API
 @summary: A base test class for testing API
 '''
-from api import app
-from api import DB
+from api import app, DB
 from pprint import PrettyPrinter
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
 from base64 import b64encode
 from datetime import date
 from api.helper import loads
 from api.routes import Routes
-import unittest
-import tempfile
-import os
 from api.variables import PAGE_SIZE
+import os
+import unittest
 
 
 # environment variables
@@ -46,13 +44,11 @@ VALID_YEAR = date.today().year
 class TestSetup(unittest.TestCase):
 
     def setUp(self):
+        app.config['SQLALCHEMEY_DATABASE_URI'] = "sqlite://"
+        app.config['TESTING'] = True
         self.show_results = False
         self.pp = PrettyPrinter(indent=4)
-        self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-        self.d = "2014-8-23"
-        self.t = "11:37"
         self.counter = 1
-        app.config['TESTING'] = True
         self.app = app.test_client()
         self.to_delete = []
         self.bats_to_delete = []
