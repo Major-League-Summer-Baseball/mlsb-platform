@@ -10,6 +10,7 @@ from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
     LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, GameDoesNotExist
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
+from datetime import datetime
 
 
 class SponsorModelTest(TestSetup):
@@ -254,15 +255,16 @@ class GameModelTest(TestSetup):
                                      league,
                                      VALID_YEAR)['team_id']
         # good game
-        Game(self.d, self.t, home_team_id, away_team_id, league_id)
+        Game(getDateString(), getTimeString(),
+             home_team_id, away_team_id, league_id)
         try:
-            Game("x", self.t, home_team_id, away_team_id, league_id)
+            Game("x", getTimeString(), home_team_id, away_team_id, league_id)
             self.assertEqual(True, False, "should raise invalid field")
         except InvalidField:
             pass
         try:
-            Game(self.d,
-                 self.t,
+            Game(getDateString(),
+                 getTimeString(),
                  home_team_id,
                  away_team_id,
                  league_id,
@@ -271,8 +273,8 @@ class GameModelTest(TestSetup):
         except InvalidField:
             pass
         try:
-            Game(self.d,
-                 self.t,
+            Game(getDateString(),
+                 getTimeString(),
                  home_team_id,
                  away_team_id,
                  league_id,
@@ -281,17 +283,20 @@ class GameModelTest(TestSetup):
         except InvalidField:
             pass
         try:
-            Game(self.d, self.t, INVALID_ID, away_team_id, league_id)
+            Game(getDateString(), getTimeString(),
+                 INVALID_ID, away_team_id, league_id)
             self.assertEqual(True, False, "should raise no team")
         except TeamDoesNotExist:
             pass
         try:
-            Game(self.d, self.t, home_team_id, INVALID_ID, league_id)
+            Game(getDateString(), getTimeString(),
+                 home_team_id, INVALID_ID, league_id)
             self.assertEqual(True, False, "should raise no team")
         except TeamDoesNotExist:
             pass
         try:
-            Game(self.d, self.t, home_team_id, away_team_id, INVALID_ID)
+            Game(getDateString(),
+                 getTimeString(), home_team_id, away_team_id, INVALID_ID)
             self.assertEqual(True, False, "should raise no league")
         except LeagueDoesNotExist:
             pass
@@ -309,10 +314,11 @@ class GameModelTest(TestSetup):
                                      league,
                                      VALID_YEAR)['team_id']
         # good game
-        g = Game(self.d, self.t, home_team_id, away_team_id, league_id)
+        g = Game(getDateString(),
+                 getTimeString(), home_team_id, away_team_id, league_id)
         try:
-            g.update(self.d,
-                     self.t,
+            g.update(getDateString(),
+                     getTimeString(),
                      home_team_id,
                      away_team_id,
                      league_id,
@@ -321,8 +327,8 @@ class GameModelTest(TestSetup):
         except InvalidField:
             pass
         try:
-            g.update(self.d,
-                     self.t,
+            g.update(getDateString(),
+                     getTimeString(),
                      home_team_id,
                      away_team_id,
                      league_id,
@@ -331,8 +337,8 @@ class GameModelTest(TestSetup):
         except InvalidField:
             pass
         try:
-            g.update(self.d,
-                     self.t,
+            g.update(getDateString(),
+                     getTimeString(),
                      INVALID_ID,
                      away_team_id,
                      league_id)
@@ -340,8 +346,8 @@ class GameModelTest(TestSetup):
         except TeamDoesNotExist:
             pass
         try:
-            g.update(self.d,
-                     self.t,
+            g.update(getDateString(),
+                     getTimeString(),
                      home_team_id,
                      INVALID_ID,
                      league_id)
@@ -349,8 +355,8 @@ class GameModelTest(TestSetup):
         except TeamDoesNotExist:
             pass
         try:
-            g.update(self.d,
-                     self.t,
+            g.update(getDateString(),
+                     getTimeString(),
                      home_team_id,
                      away_team_id,
                      INVALID_ID)
@@ -375,7 +381,8 @@ class BatModelTest(TestSetup):
                                   sponsor,
                                   league,
                                   VALID_YEAR)
-        game = self.add_game(self.d, self.t, home_team, away_team, league)
+        game = self.add_game(getDateString(),
+                             getTimeString(), home_team, away_team, league)
         game_id = game['game_id']
 
         # good bat
@@ -427,7 +434,8 @@ class BatModelTest(TestSetup):
                                   sponsor,
                                   league,
                                   VALID_YEAR)
-        game = self.add_game(self.d, self.t, home_team, away_team, league)
+        game = self.add_game(getDateString(),
+                             getTimeString(), home_team, away_team, league)
         game_id = game['game_id']
         # good bat
         b = Bat(player_id, home_team_id, game_id, "s", inning=1, rbi=1)
@@ -492,6 +500,16 @@ class BatModelTest(TestSetup):
             self.assertEqual(True, False, "should raise no league")
         except GameDoesNotExist:
             pass
+
+
+def getDateString():
+    """Returns the current date string"""
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def getTimeString():
+    """Returns the current time string"""
+    return datetime.now().strftime("%H:%M")
 
 
 if __name__ == "__main__":
