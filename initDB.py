@@ -326,9 +326,9 @@ def pull_players(url):
 def is_player_captain(player, team):
     """Returns whether the given player is the captain of the team."""
     captain = False
-    if (team['captain'] is not None
-       and 'player_id' in team['captain']
-       and (player['player_id'] == team['captain']['player_id'])):
+    if (team['captain'] is not None and
+            'player_id' in team['captain'] and
+            (player['player_id'] == team['captain']['player_id'])):
         captain = True
     return captain
 
@@ -503,42 +503,41 @@ if __name__ == "__main__":
             to create a local copy
             Author: Dallas Fraser (dallas.fraser.waterloo@gmail.com)
             """
-    if ("FLASK_ENV" not in os.environ
-            or os.environ.get("FLASK_ENV").lower() != "docker"):
+    if ("FLASK_ENV" not in os.environ or
+            os.environ.get("FLASK_ENV").lower() != "docker"):
         print("No FLASK_ENV set or not running on docker")
         print("Just exiting")
         exit
 
-    if ("FLASK_ENV" not in os.environ
-            or os.environ.get("FLASK_ENV").lower() == "production"):
+    if ("FLASK_ENV" not in os.environ or
+            os.environ.get("FLASK_ENV").lower() == "production"):
         print("Running on Production")
         exit
     parser = argparse.ArgumentParser(description=descp)
+
+    # use the development serve (just so not touching production)
+    default_url = "https://mlsb-platform-development.herokuapp.com"
     parser.add_argument("-url",
                         dest="url",
                         action="store",
                         help="The main platform URL",
-                        default="http:www.mlsb.ca"
-                        )
+                        default=default_url)
     prompt = "Set if one wants to mock some data for this year"
     parser.add_argument("-mock",
                         dest="mock",
                         action="store_true",
                         help=prompt,
-                        default=False
-                        )
+                        default=False)
     parser.add_argument("-localCopy",
                         dest="localCopy",
                         action="store_true",
                         help="Set if one wants to pull all data from url",
-                        default=False
-                        )
+                        default=False)
     parser.add_argument("-createDB",
                         dest="createDB",
                         action="store_true",
                         help="Set if want to create DB (delete if exists)",
-                        default=False
-                        )
+                        default=False)
     args = parser.parse_args()
     print(args)
     init_database(args.mock, args.localCopy, args.url, args.createDB)
