@@ -304,6 +304,7 @@ class Player(DB.Model):
             # check if email is unique
             if not string_validator(email):
                 raise InvalidField(payload="Player - email")
+            email = email.strip().lower()
             player = Player.query.filter_by(email=email).first()
             if player is not None:
                 raise NonUniqueEmail(payload={'details': email})
