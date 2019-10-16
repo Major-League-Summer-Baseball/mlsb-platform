@@ -38,7 +38,8 @@ class PlayerTeamLookupAPI(Resource):
             players = [Player.query.get(args['player_id'])]
         elif args['email']:
             # guaranteed to find player
-            players = Player.query.filter(Player.email == args['email']).all()
+            email = args['email'].strip().lower()
+            players = Player.query.filter(Player.email == email).all()
         elif args['player_name']:
             # maybe overlap
             pn = args['player_name']
