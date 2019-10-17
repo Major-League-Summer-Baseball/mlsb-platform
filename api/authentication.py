@@ -7,13 +7,13 @@
 from functools import wraps
 from flask import request, Response
 from flask import session
-import os
 from api.model import Player
+import os
 
-ADMIN = os.environ['ADMIN']
-PASSWORD = os.environ['PASSWORD']
-KIK = os.environ['KIK']
-KIKPW = os.environ['KIKPW']
+ADMIN = os.environ.get('ADMIN', 'admin')
+PASSWORD = os.environ.get('PASSWORD', 'password')
+KIK = os.environ.get('KIK', 'kik')
+KIKPW = os.environ.get('KIKPW', 'password')
 
 
 def check_auth(username, password):
