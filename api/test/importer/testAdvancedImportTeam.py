@@ -9,10 +9,10 @@ from datetime import date
 from base64 import b64encode
 from api.model import Team
 from api.advanced.import_team import parse_lines, BACKGROUND, HEADERS,\
-                                     INVALID_ROW, extract_player_information,\
-                                     extract_players,\
-                                     extract_column_indices_lookup,\
-                                     extract_background, TeamList
+    INVALID_ROW, extract_player_information,\
+    extract_players,\
+    extract_column_indices_lookup,\
+    extract_background, TeamList
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
 from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 from api.test.importer.testImportMockSession import TestImportMockSession
@@ -87,17 +87,17 @@ class TestTeamImportParseLines(TestSetup):
         captain = "Test Captain"
         league = "Test Import League"
         lines = [
-                 "{},{},{}".format(HEADERS['name'],
-                                   HEADERS['email'],
-                                   HEADERS['gender']),
-                 "{}:,{},".format(BACKGROUND['league_name'], league),
-                 "Test Captain,testcaptainimport@mlsb.ca,M",
-                 "{}:,{},".format(BACKGROUND['captain_name'], captain),
-                 "Test Girl,testgirlimport@mlsb.ca,F",
-                 "{}:,{},".format(BACKGROUND['team_color'], color),
-                 "Test Boy,testboyimport@mlsb.ca,M",
-                 "{}:,{},".format(BACKGROUND['sponsor_name'], sponsor)
-                 ]
+            "{},{},{}".format(HEADERS['name'],
+                              HEADERS['email'],
+                              HEADERS['gender']),
+            "{}:,{},".format(BACKGROUND['league_name'], league),
+            "Test Captain,testcaptainimport@mlsb.ca,M",
+            "{}:,{},".format(BACKGROUND['captain_name'], captain),
+            "Test Girl,testgirlimport@mlsb.ca,F",
+            "{}:,{},".format(BACKGROUND['team_color'], color),
+            "Test Boy,testboyimport@mlsb.ca,M",
+            "{}:,{},".format(BACKGROUND['sponsor_name'], sponsor)
+        ]
         # parse the lines
         result = parse_lines(lines)
 
@@ -241,6 +241,7 @@ class TestTeamImportParseLines(TestSetup):
 
 
 class TestTeamImportExtracingFunction(TestSetup):
+
     def testExtractPlayerInformation(self):
         """Test extract player information"""
         # the test date
@@ -406,6 +407,7 @@ class TestTeamImportExtracingFunction(TestSetup):
 
 
 class TestTeamImportExtractBackground(TestSetup):
+
     def testExtractBackgroundErrors(self):
         """Test that errors are raised for incomplete background """
 
@@ -574,6 +576,7 @@ class TestTeamImportExtractBackground(TestSetup):
 
 
 class TestTeamImportAddTeam(TestSetup):
+
     def testAddTeamAlreadyExists(self):
         """Import a team that already exists"""
 

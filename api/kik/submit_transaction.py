@@ -18,6 +18,7 @@ parser.add_argument('sponsor', type=str, required=True)
 
 
 class SubmitTransactionAPI(Resource):
+
     @requires_kik
     def post(self):
         """

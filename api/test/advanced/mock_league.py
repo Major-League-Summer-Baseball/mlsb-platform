@@ -8,6 +8,7 @@ import datetime
 
 
 class MockLeague():
+
     def __init__(self, tester):
         # add a league
         self.league = tester.add_league("Advanced Test League")

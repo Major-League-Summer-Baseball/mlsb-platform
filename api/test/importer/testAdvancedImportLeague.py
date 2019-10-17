@@ -8,16 +8,17 @@
 from api.model import League
 from api.test.BaseTest import TestSetup
 from api.advanced.import_league import LeagueList, parse_parts, BACKGROUND,\
-                                       HEADERS, INVALID_ROW,\
-                                       extract_column_indices_lookup,\
-                                       extract_background,\
-                                       extract_game, extract_games
+    HEADERS, INVALID_ROW,\
+    extract_column_indices_lookup,\
+    extract_background,\
+    extract_game, extract_games
 from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist
 from api.test.importer.testImportMockSession import TestImportMockSession
 import datetime
 
 
 class testAdvancedImportLeagueParsing(TestSetup):
+
     def testParseLines(self):
         """Test a a valid file in the standard format"""
         league = "Test Import League"
@@ -199,14 +200,10 @@ class testAdvancedImportLeagueParsing(TestSetup):
 
 
 class testAdvancedImpotLeagueExtractFunctions(TestSetup):
+
     def testExtractColumnIndicesLookup(self):
         """Test extracting the lookup for fields to columns indices"""
         # simple working example
-        HEADERS = {"home": "Home Team",
-                   "away": "Away Team",
-                   "date": "Date",
-                   "time": "Time",
-                   "field": "Field"}
         header = ["Home Team", "AwAy Team", "Date", "time", "Field"]
         lookup = extract_column_indices_lookup(header)
         self.assertEqual(0, lookup['home'], "Did not extract home team header")
@@ -363,6 +360,7 @@ class testAdvancedImpotLeagueExtractFunctions(TestSetup):
 
 
 class testAdvancedImportLeague(TestSetup):
+
     def testImportLeague(self):
         """Import a league with no warnings"""
         sponsor_name = "Test Import Sponsor"

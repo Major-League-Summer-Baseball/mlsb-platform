@@ -10,7 +10,7 @@ from api.routes import Routes
 from base64 import b64encode
 from api.test.advanced.mock_league import MockLeague
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW,\
-                         INVALID_ID
+    INVALID_ID
 
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +

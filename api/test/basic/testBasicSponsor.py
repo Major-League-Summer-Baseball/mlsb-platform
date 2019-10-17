@@ -8,7 +8,7 @@ from api.routes import Routes
 from api.errors import SponsorDoesNotExist, InvalidField
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE
+    INVALID_ID, SUCCESSFUL_PUT_CODE
 
 
 headers = {
@@ -21,6 +21,7 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestSponsor(TestSetup):
+
     def testSponsorInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_sponsor
         # missing parameters

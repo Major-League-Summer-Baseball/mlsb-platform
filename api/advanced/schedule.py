@@ -18,6 +18,7 @@ from api.helper import pagination_response_items
 
 
 class ScheduleAPI(Resource):
+
     @cache.memoize(timeout=CACHE_TIMEOUT)
     def get(self, year, league_id):
         """
@@ -45,7 +46,6 @@ class ScheduleAPI(Resource):
                     ]
         """
         page = request.args.get('page', 1, type=int)
-        g = (Game.query.filter)
         league = League.query.get(league_id)
         start = datetime.combine(date(year, 1, 1), time(0, 0))
         end = datetime.combine(date(year, 12, 30), time(0, 0))
@@ -64,5 +64,6 @@ class ScheduleAPI(Resource):
             else:
                 result['score'] = ""
             data.append(result)
-        url_route = Routes['vschedule'] + "/" + str(year) + "/" + str(league_id)
+        url_route = (Routes['vschedule'] + "/" + str(year) + "/" +
+                     str(league_id))
         return pagination_response_items(games, url_route, data)

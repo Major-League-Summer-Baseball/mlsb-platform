@@ -6,10 +6,10 @@
 '''
 
 from api.routes import Routes
-from api.errors import  InvalidField, FunDoesNotExist
+from api.errors import InvalidField, FunDoesNotExist
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE
+    INVALID_ID, SUCCESSFUL_PUT_CODE
 
 
 headers = {
@@ -22,6 +22,7 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestBasicFun(TestSetup):
+
     def testFunInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_fun
 

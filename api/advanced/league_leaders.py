@@ -144,6 +144,7 @@ def get_leaders_not_grouped_by_team(hit, year=None):
 
 
 class LeagueLeadersAPI(Resource):
+
     def post(self):
         """
             POST request for League Leaders
@@ -164,8 +165,8 @@ class LeagueLeadersAPI(Resource):
         args = parser.parse_args()
         if args['year']:
             year = args['year']
-        if args['stat'] and hit_validator(args['stat']):
-            stat = args['stat']
+        if args['stat'] and hit_validator(args['stat'], gender="f"):
+            stat = args['stat'].lower()
         else:
             raise InvalidField(payload={'details': 'Invalid stat'})
         if args['group_by_team'] == 0:

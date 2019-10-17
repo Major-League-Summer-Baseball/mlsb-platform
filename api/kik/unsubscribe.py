@@ -15,6 +15,7 @@ parser.add_argument('kik', type=str, required=True)
 
 
 class UnSubscribeToTeamAPI(Resource):
+
     @requires_kik
     def post(self):
         """

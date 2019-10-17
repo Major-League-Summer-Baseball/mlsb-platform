@@ -11,7 +11,7 @@ from json import loads as loader
 def loads(data):
     try:
         data = loader(data)
-    except Exception as __:
+    except Exception:
         data = loader(data.decode('utf-8'))
     return data
 

@@ -10,7 +10,7 @@ from json import dumps
 from api import DB
 from api.model import Player, Team, Game, Bat
 from api.errors import TeamDoesNotExist, NotTeamCaptain, PlayerDoesNotExist,\
-                        InvalidField
+    InvalidField
 from api.authentication import requires_kik
 from datetime import datetime
 from sqlalchemy import or_
@@ -20,6 +20,7 @@ parser.add_argument('kik', type=str, required=True)
 
 
 class CaptainGamesAPI(Resource):
+
     @requires_kik
     def post(self):
         """

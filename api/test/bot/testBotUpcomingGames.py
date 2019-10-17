@@ -9,7 +9,7 @@ from api.routes import Routes
 from api.model import Team
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-                              addGame, SUCCESSFUL_GET_CODE
+    addGame, SUCCESSFUL_GET_CODE
 from api.errors import PlayerDoesNotExist
 import datetime
 headers = {
@@ -20,6 +20,7 @@ headers = {
 
 
 class testUpcomingGames(TestSetup):
+
     def testMain(self):
         # non-subscribed player
         day = datetime.date.today() + datetime.timedelta(days=1)

@@ -29,6 +29,7 @@ HEADERS = {"home": "Home Team",
 
 
 class LeagueList():
+
     def __init__(self,
                  lines,
                  year=datetime.datetime.now().year,
@@ -138,18 +139,18 @@ def extract_column_indices_lookup(header):
 
 def is_entry_a_header(key, value, entry):
     """Returns whether the given entry in the header is a expected header."""
-    return (key.lower() in entry.lower()
-            or value.lower() in entry.lower())
+    return (key.lower() in entry.lower() or
+            value.lower() in entry.lower())
 
 
 def is_game_row_valid(game, lookup):
     """Returns whether all columns can be found in the game entry.
-    Parameters"""
-    HEADERS = {"home": "Home Team",
-               "away": "Away Team",
-               "date": "Date",
-               "time": "Time",
-               "field": "Field"}
+    Parameters:
+        game: the entry for the game
+        lookup: a lookup for fields to indexes in columns
+    Returns:
+        true if valid row otherwise False
+    """
     for index in lookup.values():
         if index > len(game):
             return False
@@ -226,8 +227,8 @@ def extract_background(background):
     if league_name.lower().startswith("ex."):
         error_message = LEFT_BACKGROUND_EXAMPLE.format(league_name)
         raise InvalidField(payload={"details": error_message})
-    league = League.query.filter(func.lower(League.name)
-                                 == func.lower(league_name)).first()
+    league = League.query.filter(func.lower(League.name) ==
+                                 func.lower(league_name)).first()
     if league is None:
         error_message = INVALID_LEAGUE.format(league_name)
         raise LeagueDoesNotExist(payload={'details': error_message})
@@ -255,10 +256,10 @@ def parse_parts(lines, delimiter=","):
     header = None
     games = []
     warnings = []
-    header_keywords = ([key.lower() for key in HEADERS.keys()]
-                       + [value.lower() for value in HEADERS.values()])
-    background_keywords = ([key.lower() for key in BACKGROUND.keys()]
-                           + [value.lower() for value in BACKGROUND.values()])
+    header_keywords = ([key.lower() for key in HEADERS.keys()] +
+                       [value.lower() for value in HEADERS.values()])
+    background_keywords = ([key.lower() for key in BACKGROUND.keys()] +
+                           [value.lower() for value in BACKGROUND.values()])
     for line in lines:
         info = line.split(delimiter)
         if clean_cell(info[0]).lower() in background_keywords:

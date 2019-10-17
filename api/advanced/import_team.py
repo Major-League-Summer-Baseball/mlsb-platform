@@ -39,6 +39,7 @@ BACKGROUND = {"sponsor_name": "sponsor",
 
 
 class TeamList():
+
     def __init__(self, lines, logger=None, session=None):
         """The constructor
 
@@ -116,7 +117,7 @@ class TeamList():
         set_captain = False
         for player in player_models:
             if (player["player_name"].lower()
-               == background["captain"]["player_name"].lower()):
+                    == background["captain"]["player_name"].lower()):
                 set_captain = True
                 team.insert_player(player["player_id"], captain=True)
             else:

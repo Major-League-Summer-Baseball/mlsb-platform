@@ -9,12 +9,12 @@ from api.routes import Routes
 from api.model import Espys, Team
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-                              VALID_YEAR, SUCCESSFUL_GET_CODE, UNAUTHORIZED,\
-                              KIK, KIKPW, addGame
+    VALID_YEAR, SUCCESSFUL_GET_CODE, UNAUTHORIZED,\
+    KIK, KIKPW, addGame
 from api.errors import TeamDoesNotExist, NotTeamCaptain,\
-                       TeamAlreadyHasCaptain, PlayerNotSubscribed,\
-                       GameDoesNotExist, InvalidField,\
-                       SponsorDoesNotExist, PlayerDoesNotExist
+    TeamAlreadyHasCaptain, PlayerNotSubscribed,\
+    GameDoesNotExist, InvalidField,\
+    SponsorDoesNotExist, PlayerDoesNotExist
 import unittest
 import datetime
 headers = {
@@ -31,6 +31,7 @@ KIK_HEADER = {
 
 
 class testAuthenticateCaptain(TestSetup):
+
     def testMain(self):
         # add some background
         league = self.add_league("Test Kik Bot League")
@@ -102,6 +103,7 @@ class testAuthenticateCaptain(TestSetup):
 
 
 class testSubscribe(TestSetup):
+
     def testMain(self):
 
         # add some background
@@ -179,6 +181,7 @@ class testSubscribe(TestSetup):
 
 
 class testUnSubscribe(TestSetup):
+
     def testMain(self):
         # add some background
         league = self.add_league("Test Kik Bot League")
@@ -215,6 +218,7 @@ class testUnSubscribe(TestSetup):
 
 
 class testSubmitScores(TestSetup):
+
     def testMain(self):
         # add some background
         game = addGame(self)
@@ -279,6 +283,7 @@ class testSubmitScores(TestSetup):
 
 
 class testSubmitTransaction(TestSetup):
+
     def testMain(self):
         # this api was not used so testing is not complete
 
@@ -312,10 +317,10 @@ class testSubmitTransaction(TestSetup):
 
         # sponsor does not exist
         data = {
-                'kik': kik,
-                "sponsor": "FUCKINGDOESNOTEXIST",
-                "amount": 1
-                }
+            'kik': kik,
+            "sponsor": "FUCKINGDOESNOTEXIST",
+            "amount": 1
+        }
         expect = {'details': 'FUCKINGDOESNOTEXIST',
                   'message': SponsorDoesNotExist.message}
         rv = self.app.post(route, data=data, headers=KIK_HEADER)
@@ -327,6 +332,7 @@ class testSubmitTransaction(TestSetup):
 
 
 class testCaptainGames(TestSetup):
+
     def testMain(self):
         # add some background
         day = datetime.date.today() - datetime.timedelta(days=1)
@@ -381,6 +387,7 @@ class testCaptainGames(TestSetup):
 
 
 class testUpcomingGames(TestSetup):
+
     def testMain(self):
         # add some background
         day = datetime.date.today() + datetime.timedelta(days=1)

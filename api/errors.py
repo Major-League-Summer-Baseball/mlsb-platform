@@ -278,65 +278,66 @@ class BadRequestError(Exception):
         rv['message'] = self.message
         return rv
 
+
 ERRORS = {
-            'InvalidField': {
-                'message': InvalidField.message,
-                'status_code': InvalidField.status_code,
-            },
-            'PlayerDoesNotExist': {
-                'message': PlayerDoesNotExist.message,
-                'status_code': PlayerDoesNotExist.status_code,
-            },
-            'TeamDoesNotExist': {
-                'message': TeamDoesNotExist.message,
-                'status_code': TeamDoesNotExist.status_code,
-            },
-            'LeagueDoesNotExist': {
-                'message': LeagueDoesNotExist.message,
-                'status_code': LeagueDoesNotExist.status_code,
-            },
-            'SponsorDoesNotExist': {
-                'message': SponsorDoesNotExist.message,
-                'status_code': SponsorDoesNotExist.status_code,
-            },
-            'GameDoesNotExist': {
-                'message': GameDoesNotExist.message,
-                'status_code': GameDoesNotExist.status_code,
-            },
-            'FunDoesNotExist': {
-                'message': FunDoesNotExist.message,
-                'status_code': FunDoesNotExist.status_code,
-            },
-            'NonUniqueEmail': {
-                'message': NonUniqueEmail.message,
-                'status_code': NonUniqueEmail.status_code,
-            },
-            'NotTeamCaptain': {
-                              'message': NotTeamCaptain.message,
-                              'status_code': NotTeamCaptain.status_code
-                              },
-            'PlayerNotSubscribed': {
-                              'message': PlayerNotSubscribed.message,
-                              'status_code': PlayerNotSubscribed.status_code
-                              },
-            'PlayerNotOnTeam': {
-                              'message': PlayerNotOnTeam.message,
-                              'status_code': PlayerNotOnTeam.status_code
-                              },
-            'EspysDoesNotExist': {
-                              'message': EspysDoesNotExist.message,
-                              'status_code': EspysDoesNotExist.status_code
-                              },
-            'BatDoesNotExist': {
-                              'message': BatDoesNotExist.message,
-                              'status_code': BatDoesNotExist.status_code
-                              },
-            'TeamAlreadyHasCaptain': {
-                              'message': TeamAlreadyHasCaptain.message,
-                              'status_code': TeamAlreadyHasCaptain.status_code
-                              },
-            'BadRequestError': {
-                          'message': BadRequestError.message,
-                          'status_code': BadRequestError.status_code
-                          }
-          }
+    'InvalidField': {
+        'message': InvalidField.message,
+        'status_code': InvalidField.status_code,
+    },
+    'PlayerDoesNotExist': {
+        'message': PlayerDoesNotExist.message,
+        'status_code': PlayerDoesNotExist.status_code,
+    },
+    'TeamDoesNotExist': {
+        'message': TeamDoesNotExist.message,
+        'status_code': TeamDoesNotExist.status_code,
+    },
+    'LeagueDoesNotExist': {
+        'message': LeagueDoesNotExist.message,
+        'status_code': LeagueDoesNotExist.status_code,
+    },
+    'SponsorDoesNotExist': {
+        'message': SponsorDoesNotExist.message,
+        'status_code': SponsorDoesNotExist.status_code,
+    },
+    'GameDoesNotExist': {
+        'message': GameDoesNotExist.message,
+        'status_code': GameDoesNotExist.status_code,
+    },
+    'FunDoesNotExist': {
+        'message': FunDoesNotExist.message,
+        'status_code': FunDoesNotExist.status_code,
+    },
+    'NonUniqueEmail': {
+        'message': NonUniqueEmail.message,
+        'status_code': NonUniqueEmail.status_code,
+    },
+    'NotTeamCaptain': {
+        'message': NotTeamCaptain.message,
+        'status_code': NotTeamCaptain.status_code
+    },
+    'PlayerNotSubscribed': {
+        'message': PlayerNotSubscribed.message,
+        'status_code': PlayerNotSubscribed.status_code
+    },
+    'PlayerNotOnTeam': {
+        'message': PlayerNotOnTeam.message,
+        'status_code': PlayerNotOnTeam.status_code
+    },
+    'EspysDoesNotExist': {
+        'message': EspysDoesNotExist.message,
+        'status_code': EspysDoesNotExist.status_code
+    },
+    'BatDoesNotExist': {
+        'message': BatDoesNotExist.message,
+        'status_code': BatDoesNotExist.status_code
+    },
+    'TeamAlreadyHasCaptain': {
+        'message': TeamAlreadyHasCaptain.message,
+        'status_code': TeamAlreadyHasCaptain.status_code
+    },
+    'BadRequestError': {
+        'message': BadRequestError.message,
+        'status_code': BadRequestError.status_code
+    }
+}

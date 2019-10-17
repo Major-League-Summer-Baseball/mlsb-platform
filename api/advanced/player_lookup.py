@@ -15,6 +15,7 @@ parser.add_argument("active", type=int)
 
 
 class PlayerLookupAPI(Resource):
+
     def post(self):
         """
             POST request to lookup Player
@@ -35,12 +36,13 @@ class PlayerLookupAPI(Resource):
             active = True
         if args['email']:
             # guaranteed to find player
+            email = args['email'].strip().lower()
             if not active:
                 players = (Player.query
-                           .filter(Player.email == args['email']).all())
+                           .filter(Player.email == email).all())
             else:
                 players = (Player.query
-                           .filter(Player.email == args['email'])
+                           .filter(Player.email == email)
                            .filter(Player.active == active).all())
         elif args['player_name']:
             # maybe overlap

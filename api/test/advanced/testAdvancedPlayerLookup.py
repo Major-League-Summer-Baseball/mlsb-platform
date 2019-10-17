@@ -11,7 +11,6 @@ from base64 import b64encode
 from api.test.advanced.mock_league import MockLeague
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
 
-
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
@@ -27,6 +26,7 @@ INVALID_YEAR = 100
 
 
 class PlayerLookupTest(TestSetup):
+
     def testPlayerName(self):
         """Test player name parameter"""
         mocker = MockLeague(self)

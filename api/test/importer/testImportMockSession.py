@@ -9,6 +9,7 @@ from api import DB
 
 
 class TestImportMockSession():
+
     def __init__(self, tester):
         """Constructor given a testing object"""
         self.tester = tester

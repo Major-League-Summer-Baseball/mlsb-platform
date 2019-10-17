@@ -8,7 +8,7 @@ from api.routes import Routes
 from api.errors import InvalidField, PlayerDoesNotExist, NonUniqueEmail
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE
+    INVALID_ID, SUCCESSFUL_PUT_CODE
 
 
 headers = {
@@ -21,15 +21,16 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
 
 
 class TestPlayer(TestSetup):
+
     def testPlayerInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_player
         # missing parameters
         params = {}
         result = {'message': {
-                              'player_name': MISSING_PARAMETER,
-                              'email': MISSING_PARAMETER
-                              }
-                  }
+            'player_name': MISSING_PARAMETER,
+            'email': MISSING_PARAMETER
+        }
+        }
         error_message = (Routes['player'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['player'],
@@ -189,7 +190,7 @@ class TestPlayer(TestSetup):
 
         # try to update the first player to have the same email as the second
         params = {'email': player_two_email}
-        result = {'details': player_two_email,
+        result = {'details': player_two_email.strip().lower(),
                   'message': NonUniqueEmail.message}
         error_message = Routes['player'] + ' PUT: Valid player update'
         self.putTest(Routes['player'] + "/" + str(player_one['player_id']),

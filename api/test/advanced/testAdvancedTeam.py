@@ -10,7 +10,7 @@ from api.routes import Routes
 from base64 import b64encode
 from api.test.advanced.mock_league import MockLeague
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW,\
-                         INVALID_ID
+    INVALID_ID
 
 
 headers = {
@@ -28,6 +28,7 @@ INVALID_YEAR = 100
 
 
 class TeamTest(TestSetup):
+
     def testPostTeamId(self):
         """Test team id parameter"""
         mocker = MockLeague(self)

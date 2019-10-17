@@ -8,7 +8,7 @@ from api.routes import Routes
 from api.errors import InvalidField, LeagueDoesNotExist
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-                              INVALID_ID, SUCCESSFUL_PUT_CODE
+    INVALID_ID, SUCCESSFUL_PUT_CODE
 
 
 headers = {
@@ -20,16 +20,16 @@ MISSING_PARAMETER = ('Missing required parameter in the JSON body ' +
                      'or the post body or the query string')
 
 
-
 class TestLeague(TestSetup):
+
     def testLeagueInvalidPost(self):
         # Note Valid Requests are tested in BaseTest method add_league
         # missing parameters
         params = {}
         result = {'message': {
-                              'league_name': MISSING_PARAMETER
-                              }
-                  }
+            'league_name': MISSING_PARAMETER
+        }
+        }
         error_message = (Routes['league'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['league'],

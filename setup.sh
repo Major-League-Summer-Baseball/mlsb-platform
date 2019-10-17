@@ -53,5 +53,5 @@ echo "App is up and runnning"
 
 # sleep to ensure the database is up and running before calling init
 sleep 5s
-winpty docker-compose exec mlsb python initDB.py -createDB -mock -url http://www.mlsb.ca 
+winpty docker-compose exec mlsb python initDB.py -createDB -mock -url https://mlsb-platform-development.herokuapp.com
 echo "Finished initializing database"
