@@ -281,6 +281,16 @@ class TeamModelTest(TestSetup):
         self.assertTrue(team_model.is_player_on_team(
             captain_model), "Captain of team should be on team")
 
+    def testIsNoneOnTeam(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        team_model = Team.query.get(team['team_id'])
+        self.assertFalse(team_model.is_player_on_team(
+            None), "None should not be on team")
+
     def testInsertingPlayer(self):
         league = self.add_league("TestModelLeague")
         sponsor = self.add_sponsor("TestModelSponsor")

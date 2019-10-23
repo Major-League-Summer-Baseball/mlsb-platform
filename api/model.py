@@ -5,14 +5,12 @@
 @summary: Holds the model for the database
 """
 from api import DB
-from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date, datetime, time
-from api.variables import HITS, KIKPOINTS
+from datetime import date, datetime
+from api.variables import HITS
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-    NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
-    BadRequestError
+    NonUniqueEmail, PlayerNotOnTeam
 from api.validators import rbi_validator, hit_validator, inning_validator,\
     string_validator, date_validator, time_validator,\
     field_validator, year_validator, gender_validator,\
@@ -501,6 +499,8 @@ class Team(DB.Model):
         Returns:
             True if player on team otherwise False (boolean)
         """
+        if player is None:
+            return False
         return player.id in [p.id for p in self.players]
 
     def check_captain(self, player_name, password):
