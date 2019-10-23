@@ -474,13 +474,10 @@ class Team(DB.Model):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+        if not self.is_player_on_team(player):
+            self.players.append(player)
         if captain:
             self.player_id = player_id
-            if player not in self.players:
-                self.players.append(player)
-        else:
-            if player not in self.players:
-                self.players.append(player)
         return valid
 
     def remove_player(self, player_id):
@@ -492,9 +489,19 @@ class Team(DB.Model):
             MissingPlayer
         """
         player = Player.query.get(player_id)
-        if player not in self.players:
+        if not self.is_player_on_team(player):
             raise PlayerNotOnTeam(payload={'details': player_id})
         self.players.remove(player)
+
+    def is_player_on_team(self, player):
+        """Returns whether the given player is on the team
+
+        Parameter:
+            player: the player model
+        Returns:
+            True if player on team otherwise False (boolean)
+        """
+        return player.id in [p.id for p in self.players]
 
     def check_captain(self, player_name, password):
         """Checks if the player is the captain of the team.
