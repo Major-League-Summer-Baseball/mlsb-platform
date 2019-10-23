@@ -14,16 +14,22 @@ from flask_caching import Cache
 from os import getcwd
 from os.path import join
 from api.routes import Routes
+import uuid
 import logging
 import sys
 import os
 
-URL = os.environ['DATABASE_URL']
-SECRET_KEY = os.environ['SECRET_KEY']
-local = False
+if "SECRET_KEY" not in os.environ:
+    SECRET_KEY = str(uuid.uuid1())
+else:
+    SECRET_KEY = os.environ['SECRET_KEY']
+if 'DATABASE_URL' not in os.environ:
+    URL = "sqlite://"
+else:
+    URL = os.environ['DATABASE_URL']
+
 if "REDIS_URL" not in os.environ:
     cache = Cache(config={'CACHE_TYPE': 'simple'})
-    local = True
     print("Using a simple cache")
 else:
     # on a machine use a real cache
@@ -41,6 +47,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # setup caching
 cache.init_app(app)
 DB = SQLAlchemy(app)
+
+if 'DATABASE_URL' not in os.environ:
+    from initDB import init_database
+    init_database(True, False, "", True)
 
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
