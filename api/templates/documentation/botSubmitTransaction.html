@@ -1,0 +1,81 @@
+{% extends "documentation/documentation_base.html" %}
+{% block content %}
+<h1>Bot - Submit ESPY transaction</h1>
+<p>Submit any transaction that has been recorded by a bot</p>
+<h4>POST</h4>
+<code>{{route.bottransaction}}</code>
+<p style="color:#808080">
+    Permission: Admin
+</p>
+<strong>Parameter</strong>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Field</th>
+                <th class="col-md-3">Type</th>
+                <th class="col-md-3">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">amount</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The amount of the transaction</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">player_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The player's id</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">sponsor</td>
+                <td class="col-md-3">str</td>
+                <td class="col-md-3">The name of the sponsor for the transaction</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">team_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The team's id</td>
+            </tr>
+        </tbody>
+    </table>
+
+<strong>Responses</strong>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-md-3">Status Code</th>
+                <th class="col-md-3">Response Object</th>
+                <th class="col-md-3">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-md-3">200</td>
+                <td class="col-md-3">True</td>
+                <td class="col-md-3">Successful</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.PlayerDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">{{errors.PlayerDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.TeamDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">{{errors.TeamDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">{{errors.SponsorDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.PlayerNotOnTeam.status_code}}</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">{{errors.PlayerNotOnTeam.message}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+{% endblock %}

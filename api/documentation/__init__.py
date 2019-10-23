@@ -282,3 +282,10 @@ def captain_games_bot_doc():
     return render_template('documentation/botCaptainGames.html',
                            route=Routes,
                            errors=ERRORS)
+
+
+@app.route(Routes['dbottransaction'])
+def submit_transaction_bot_doc():
+    return render_template('documentation/botSubmitTransaction.html',
+                           route=Routes,
+                           errors=ERRORS)
