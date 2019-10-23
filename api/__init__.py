@@ -99,6 +99,7 @@ from api.bot.authenticate_captain import \
     AuthenticateCaptainAPI as BotAuthenticateCaptainAPI
 from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
 from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
+from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
 
 # imports for kik apis
 from api.kik.submit_scores import SubmitScoresAPI
@@ -233,3 +234,6 @@ api.add_resource(BotCaptainGamesAPI,
 api.add_resource(BotUpcomingGamesAPI,
                  Routes['botupcominggames'],
                  endpoint="botupcominggames")
+api.add_resource(BotSubmitTransactionAPI,
+                 Routes['bottransaction'],
+                 endpoint="bottransaction")
