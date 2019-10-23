@@ -791,37 +791,17 @@ class Game(DB.Model):
 
     def summary(self):
         """Returns a game summary."""
-        away_score = DB.session.query(
-            func.sum(Bat.rbi)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.away_team_id)
-        ).first()[0]
-        away_bats = DB.session.query(
-            func.count(Bat.classification)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.away_team_id)
-            .filter(Bat.classification.in_(HITS))
-        ).first()[0]
-        home_score = DB.session.query(
-            func.sum(Bat.rbi)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.home_team_id)
-        ).first()[0]
-
-        home_bats = DB.session.query(
-            func.count(Bat.classification)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.home_team_id)
-            .filter(Bat.classification.in_(HITS))
-        ).first()[0]
-        if away_score is None:
-            away_score = 0
-        if home_score is None:
-            home_score = 0
-        if away_bats is None:
-            away_bats = 0
-        if home_bats is None:
-            home_bats = 0
+        away_bats = 0
+        home_bats = 0
+        away_score = 0
+        home_score = 0
+        for bat in self.bats:
+            if bat.team_id == self.home_team_id:
+                home_score += bat.rbi
+                home_bats += 1 if bat.classification in HITS else 0
+            elif bat.team_id == self.away_team_id:
+                away_score += bat.rbi
+                away_bats += 1 if bat.classification in HITS else 0
         return {
             'away_score': away_score,
             'away_bats': away_bats,
