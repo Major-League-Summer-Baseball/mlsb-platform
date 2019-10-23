@@ -8,7 +8,7 @@ from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Player, Espys, Sponsor, find_team_subscribed, Team
+from api.model import Player, Espys, Sponsor, Team
 from api.authentication import requires_admin
 from api.errors import PlayerNotOnTeam, SponsorDoesNotExist,\
     PlayerDoesNotExist, TeamDoesNotExist

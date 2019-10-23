@@ -199,59 +199,6 @@ def schedule_view_doc():
                            errors=ERRORS)
 
 # -----------------------------------------------------------------------------
-# KIK documentation
-# -----------------------------------------------------------------------------
-
-
-@app.route(Routes['dkiksubscribe'])
-def subscribe_kik_doc():
-    return render_template('documentation/kikSubscribe.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-
-@app.route(Routes['dkikunsubscribe'])
-def unsubscribe_kik_doc():
-    return render_template('documentation/kikUnsubscribe.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-
-@app.route(Routes['dkikcaptain'])
-def authenticate_kik_doc():
-    return render_template('documentation/kikAuthenticateCaptain.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-
-@app.route(Routes['dkiksubmitscore'])
-def submit_score_kik_doc():
-    return render_template('documentation/kikSubmitScore.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-
-@app.route(Routes['dkiktransaction'])
-def submit_transaction_kik_doc():
-    return render_template('documentation/kikSubmitTransaction.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-
-@app.route(Routes['dkikupcominggames'])
-def upcoming_games_kik_doc():
-    return render_template('documentation/kikUpcomingGames.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-
-@app.route(Routes['dkikcaptaingames'])
-def captain_games_kik_doc():
-    return render_template('documentation/kikCaptainGames.html',
-                           route=Routes,
-                           errors=ERRORS)
-
-# -----------------------------------------------------------------------------
 # Bot documentation
 # -----------------------------------------------------------------------------
 

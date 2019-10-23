@@ -101,15 +101,6 @@ from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
 from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
 
-# imports for kik apis
-from api.kik.submit_scores import SubmitScoresAPI
-from api.kik.authenticate_captain import AuthenticateCaptainAPI
-from api.kik.subscribe import SubscribeToTeamAPI
-from api.kik.submit_transaction import SubmitTransactionAPI
-from api.kik.get_captain_games import CaptainGamesAPI
-from api.kik.get_upcoming_games import UpcomingGamesAPI
-from api.kik.unsubscribe import UnSubscribeToTeamAPI
-
 
 @app.after_request
 def add_cors(resp):
@@ -197,29 +188,6 @@ api.add_resource(LeagueLeadersAPI, Routes['vleagueleaders'],
 api.add_resource(ScheduleAPI,
                  Routes['vschedule'] + "/<int:year>" + "/<int:league_id>",
                  endpoint='vSchedule')
-
-# add kik routes
-api.add_resource(AuthenticateCaptainAPI,
-                 Routes['kikcaptain'],
-                 endpoint="kikcaptain")
-api.add_resource(SubscribeToTeamAPI,
-                 Routes['kiksubscribe'],
-                 endpoint="kiksubscribe")
-api.add_resource(SubmitScoresAPI,
-                 Routes['kiksubmitscore'],
-                 endpoint="kiksubmitscore")
-api.add_resource(SubmitTransactionAPI,
-                 Routes['kiktransaction'],
-                 endpoint="kiktransaction")
-api.add_resource(CaptainGamesAPI,
-                 Routes['kikcaptaingames'],
-                 endpoint="kikcaptaingames")
-api.add_resource(UpcomingGamesAPI,
-                 Routes['kikupcominggames'],
-                 endpoint="kikupcominggames")
-api.add_resource(UnSubscribeToTeamAPI,
-                 Routes['kikunsubscribe'],
-                 endpoint="kikunsubscribe")
 
 # add bot routes
 api.add_resource(BotAuthenticateCaptainAPI,
