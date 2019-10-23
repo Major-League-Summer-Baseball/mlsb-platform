@@ -19,6 +19,7 @@ parser.add_argument('player_id', type=int, required=True)
 
 
 class CaptainGamesAPI(Resource):
+
     @requires_admin
     def post(self):
         """
@@ -53,8 +54,10 @@ class CaptainGamesAPI(Resource):
             games = (DB.session.query(Game)
                      .filter(or_(Game.away_team_id == team_id,
                                  Game.home_team_id == team_id))
-                     .filter(Game.date <= datetime.today())
-                     .filter(~Game.id.in_(bats))).all()
+                     .filter(Game.date <= datetime.today()))
+            for bat in bats:
+                games = games.filter(Game.id != bat.game_id)
+            games = games.all()
         else:
             games = (DB.session.query(Game)
                      .filter(or_(Game.away_team_id == team_id,
