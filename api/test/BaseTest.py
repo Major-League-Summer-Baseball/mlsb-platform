@@ -12,15 +12,10 @@ from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from api.variables import PAGE_SIZE
+from api.authentication import ADMIN, PASSWORD, KIK, KIKPW
 import os
 import unittest
 
-
-# environment variables
-ADMIN = os.environ['ADMIN']
-PASSWORD = os.environ['PASSWORD']
-KIK = os.environ['KIK']
-KIKPW = os.environ['KIKPW']
 
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' + PASSWORD,
