@@ -44,7 +44,7 @@ Routes['botsubmitscore'] = "/api/bot/submit_score"
 Routes['botcaptain'] = "/api/bot/captain"
 Routes['botupcominggames'] = "/api/bot/upcoming_games"
 Routes['botcaptaingames'] = "/api/bot/captain/games"
-
+Routes['bottransaction'] = "/api/bot/transaction"
 
 # -----------------------------------------------------------------------------
 # documentation routes
@@ -100,7 +100,7 @@ Routes['dbotupcominggames'] = "/documentation/bot/upcoming_games"
 Routes['dbottransaction'] = "/documentation/bot/transaction"
 Routes['dbotcaptaingames'] = "/documentation/bot/captain/games"
 Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
-
+Routes['dbottransaction'] = "/documentation/bot/transaction"
 
 # -----------------------------------------------------------------------------
 # Website
