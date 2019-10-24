@@ -13,17 +13,12 @@ from api.advanced.import_team import parse_lines, BACKGROUND, HEADERS,\
     extract_players,\
     extract_column_indices_lookup,\
     extract_background, TeamList
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD
 from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 from api.test.importer.testImportMockSession import TestImportMockSession
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
-                                            ).decode("ascii")
-}
-kik = {
-    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' +
-                                                  KIKPW, "utf-8")
                                             ).decode("ascii")
 }
 VALID_YEAR = date.today().year

@@ -11,18 +11,11 @@ from base64 import b64encode
 from api.model import Team, Player
 from api.errors import TeamDoesNotExist, PlayerNotOnTeam, PlayerDoesNotExist
 from api.test.advanced.mock_league import MockLeague
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW,\
-    INVALID_ID, SUCCESSFUL_DELETE_CODE
-
-
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
+    SUCCESSFUL_DELETE_CODE
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
-                                            ).decode("ascii")
-}
-kik = {
-    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' +
-                                                  KIKPW, "utf-8")
                                             ).decode("ascii")
 }
 VALID_YEAR = date.today().year

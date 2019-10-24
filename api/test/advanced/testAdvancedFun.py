@@ -4,20 +4,14 @@
 @organization: MLSB API
 @summary: Tests all the advanced fun APIs
 '''
-from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD
 
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
-                                            ).decode("ascii")
-}
-kik = {
-    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' +
-                                                  KIKPW, "utf-8")
                                             ).decode("ascii")
 }
 SOME_YEAR = 100
