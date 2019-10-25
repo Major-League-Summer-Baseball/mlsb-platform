@@ -5,14 +5,12 @@
 @summary: Holds the model for the database
 """
 from api import DB
-from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date, datetime, time
-from api.variables import HITS, KIKPOINTS
+from datetime import date, datetime
+from api.variables import HITS
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-    NonUniqueEmail, PlayerNotOnTeam, PlayerNotSubscribed,\
-    BadRequestError
+    NonUniqueEmail, PlayerNotOnTeam
 from api.validators import rbi_validator, hit_validator, inning_validator,\
     string_validator, date_validator, time_validator,\
     field_validator, year_validator, gender_validator,\
@@ -474,13 +472,10 @@ class Team(DB.Model):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+        if not self.is_player_on_team(player):
+            self.players.append(player)
         if captain:
             self.player_id = player_id
-            if player not in self.players:
-                self.players.append(player)
-        else:
-            if player not in self.players:
-                self.players.append(player)
         return valid
 
     def remove_player(self, player_id):
@@ -492,9 +487,21 @@ class Team(DB.Model):
             MissingPlayer
         """
         player = Player.query.get(player_id)
-        if player not in self.players:
+        if not self.is_player_on_team(player):
             raise PlayerNotOnTeam(payload={'details': player_id})
         self.players.remove(player)
+
+    def is_player_on_team(self, player):
+        """Returns whether the given player is on the team
+
+        Parameter:
+            player: the player model
+        Returns:
+            True if player on team otherwise False (boolean)
+        """
+        if player is None:
+            return False
+        return player.id in [p.id for p in self.players]
 
     def check_captain(self, player_name, password):
         """Checks if the player is the captain of the team.
@@ -791,37 +798,17 @@ class Game(DB.Model):
 
     def summary(self):
         """Returns a game summary."""
-        away_score = DB.session.query(
-            func.sum(Bat.rbi)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.away_team_id)
-        ).first()[0]
-        away_bats = DB.session.query(
-            func.count(Bat.classification)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.away_team_id)
-            .filter(Bat.classification.in_(HITS))
-        ).first()[0]
-        home_score = DB.session.query(
-            func.sum(Bat.rbi)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.home_team_id)
-        ).first()[0]
-
-        home_bats = DB.session.query(
-            func.count(Bat.classification)
-            .filter(Bat.game_id == self.id)
-            .filter(Bat.team_id == self.home_team_id)
-            .filter(Bat.classification.in_(HITS))
-        ).first()[0]
-        if away_score is None:
-            away_score = 0
-        if home_score is None:
-            home_score = 0
-        if away_bats is None:
-            away_bats = 0
-        if home_bats is None:
-            home_bats = 0
+        away_bats = 0
+        home_bats = 0
+        away_score = 0
+        home_score = 0
+        for bat in self.bats:
+            if bat.team_id == self.home_team_id:
+                home_score += bat.rbi
+                home_bats += 1 if bat.classification in HITS else 0
+            elif bat.team_id == self.away_team_id:
+                away_score += bat.rbi
+                away_bats += 1 if bat.classification in HITS else 0
         return {
             'away_score': away_score,
             'away_bats': away_bats,
@@ -947,123 +934,3 @@ class Bat(DB.Model):
             self.inning = inning
         elif inning is not None:
             raise InvalidField(payload={'details': "Bat - inning"})
-
-
-def subscribe(kik, name, team_id):
-    """A function used to subscribe a kik user name to a player.
-
-    Parameters:
-        kik: the kik user name
-        name: the name of the player
-        team_id: the id of the team the player belongs to
-    Returns:
-        True
-    Raises:
-        TeamDoesNotExist
-        PlayerNotOnTeam
-    """
-    # dont care if they are on the team
-    # check for some goof
-    player = Player.query.filter_by(kik=kik).filter_by(active=True).all()
-    if len(player) > 1 and player[0].name != name:
-        s = "Kik user subscribing as two different people"
-        raise BadRequestError(payload={'details': s})
-    team = Team.query.get(team_id)
-    if team is None:
-        raise TeamDoesNotExist(payload={'details': team_id})
-    player = Player.query.filter_by(name=name).filter_by(active=True).all()
-    if len(player) > 1:
-        # fuck i dont know
-        raise InvalidField("Two people with exact name, email the convenors")
-    elif player is None or len(player) == 0:
-        # player is not officially in our db
-        # going to add them as a guest
-        player = Player(name,
-                        name + "@guest",
-                        gender="M",
-                        password="default",
-                        active=False)
-        DB.session.add(player)
-        DB.session.commit()
-    else:
-        player = player[0]
-    if player.kik is None:
-        # give them the two points
-        player.kik = kik
-        points_awarded = Espys(team_id,
-                               description=AWARD_POINTS.format(str(player),
-                                                               KIKPOINTS),
-                               points=KIKPOINTS)
-        DB.session.add(points_awarded)
-    elif player.kik != kik:
-        # the player is subscribing under a new kik name
-        player.kik = kik
-    subscribed = (Espys.query
-                  .filter_by(team_id=team_id)
-                  .filter_by(description=SUBSCRIBED.format(str(player)))
-                  ).first()
-    if subscribed is None:
-        # player is not subscribed
-        subscribed = Espys(team_id,
-                           description=SUBSCRIBED.format(str(player)),
-                           points=0)
-        DB.session.add(subscribed)
-    DB.session.commit()
-    return True
-
-
-def unsubscribe(kik, team_id):
-    """A function used to unsubscribe a kik user name to a player.
-
-    Parameters:
-        kik: the kik user name
-        team_id: the id of the team the player belongs to
-    Returns:
-        True
-    Raises:
-        TeamDoesNotExist
-        PlayerNotSubscribed
-    """
-    player = Player.query.filter_by(kik=kik).first()
-    if player is None:
-        raise PlayerNotSubscribed(payload={'details':
-                                           "Player is not subscribed"})
-    team = Team.query.get(team_id)
-    if team is None:
-        raise TeamDoesNotExist(payload={"details": team_id})
-    subscribed = (Espys.query
-                  .filter_by(team_id=team_id)
-                  .filter_by(description=SUBSCRIBED.format(str(player)))
-                  ).first()
-    if subscribed is not None:
-        # delete the subscription entry
-        DB.session.delete(subscribed)
-        DB.session.commit()
-    # else dont care
-    return True
-
-
-def find_team_subscribed(kik):
-    """A function to find the team the kik user name is subscribed to.
-
-    Parameters:
-        kik: the kik user name
-    Returns:
-        result: a list of team's id
-    """
-    result = []
-    t1 = time(0, 0)
-    t2 = time(0, 0)
-    d1 = date(date.today().year, 1, 1)
-    d2 = date(date.today().year, 12, 30)
-    start = datetime.combine(d1, t1)
-    end = datetime.combine(d2, t2)
-    player = Player.query.filter_by(kik=kik).one()
-    if player is not None:
-        teams = DB.session.query(Espys).filter(Espys.date.between(start, end))
-        teams = (teams
-                 .filter_by(description=SUBSCRIBED.format(str(player)))
-                 .order_by("date")).all()
-        for team in teams:
-            result.append(team.team_id)
-    return result

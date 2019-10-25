@@ -30,21 +30,12 @@ Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
 Routes['vleagueleaders'] = "/api/view/league_leaders"
 Routes['vschedule'] = "/api/view/schedule"
 
-# Kik APIS
-Routes['kiksubscribe'] = "/api/kik/subscribe"
-Routes['kiksubmitscore'] = "/api/kik/submit_score"
-Routes['kikcaptain'] = "/api/kik/captain"
-Routes['kikupcominggames'] = "/api/kik/upcoming_games"
-Routes['kiktransaction'] = "/api/kik/transaction"
-Routes['kikcaptaingames'] = "/api/kik/captain/games"
-Routes['kikunsubscribe'] = "/api/kik/unsubscribe"
-
 # Bot APIS
 Routes['botsubmitscore'] = "/api/bot/submit_score"
 Routes['botcaptain'] = "/api/bot/captain"
 Routes['botupcominggames'] = "/api/bot/upcoming_games"
 Routes['botcaptaingames'] = "/api/bot/captain/games"
-
+Routes['bottransaction'] = "/api/bot/transaction"
 
 # -----------------------------------------------------------------------------
 # documentation routes
@@ -83,15 +74,6 @@ Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 Routes['dvschedule'] = "/documentation/views/schedule"
 
-# kik documentation
-Routes['dkiksubscribe'] = "/documentation/kik/subscribe"
-Routes['dkiksubmitscore'] = "/documentation/kik/submit_score"
-Routes['dkikcaptain'] = "/documentation/kik/captain"
-Routes['dkikupcominggames'] = "/documentation/kik/upcoming_games"
-Routes['dkiktransaction'] = "/documentation/kik/transaction"
-Routes['dkikcaptaingames'] = "/documentation/kik/captain/games"
-Routes['dkikunsubscribe'] = "/documentation/kik/unsubscribe"
-
 # bot documentation
 Routes['dbotsubscribe'] = "/documentation/bot/subscribe"
 Routes['dbotsubmitscore'] = "/documentation/bot/submit_score"
@@ -100,7 +82,7 @@ Routes['dbotupcominggames'] = "/documentation/bot/upcoming_games"
 Routes['dbottransaction'] = "/documentation/bot/transaction"
 Routes['dbotcaptaingames'] = "/documentation/bot/captain/games"
 Routes['dbotunsubscribe'] = "/documentation/bot/unsubscribe"
-
+Routes['dbottransaction'] = "/documentation/bot/transaction"
 
 # -----------------------------------------------------------------------------
 # Website

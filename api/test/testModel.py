@@ -4,13 +4,14 @@
 @organization: MLSB API
 @summary: Holds the tests for the model
 '''
-import unittest
 from api.model import Player, Team, Bat, Sponsor, League, Game
 from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
     LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, GameDoesNotExist
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
 from datetime import datetime
+import unittest
+import uuid
 
 
 class SponsorModelTest(TestSetup):
@@ -238,6 +239,84 @@ class TeamModelTest(TestSetup):
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
+
+    def testIsPlayerNotOnTeam(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        player = self.add_player(
+            str(uuid.uuid1()), str(uuid.uuid1()) + "@mlsb.ca", gender="m")
+        team_model = Team.query.get(team['team_id'])
+        player_model = Player.query.get(player['player_id'])
+        self.assertFalse(team_model.is_player_on_team(
+            player_model), "New player should not be on team")
+
+    def testIsPlayerOnTeam(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        player = self.add_player(
+            str(uuid.uuid1()), str(uuid.uuid1()) + "@mlsb.ca", gender="m")
+        self.add_player_to_team(team, player)
+        team_model = Team.query.get(team['team_id'])
+        player_model = Player.query.get(player['player_id'])
+        self.assertTrue(team_model.is_player_on_team(
+            player_model), "New player added to team should be on team")
+
+    def testIsCaptainOnTeam(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        captain = self.add_player(
+            str(uuid.uuid1()), str(uuid.uuid1()) + "@mlsb.ca", gender="m")
+        self.add_player_to_team(team, captain, captain=True)
+        team_model = Team.query.get(team['team_id'])
+        captain_model = Player.query.get(captain['player_id'])
+        self.assertTrue(team_model.is_player_on_team(
+            captain_model), "Captain of team should be on team")
+
+    def testIsNoneOnTeam(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        team_model = Team.query.get(team['team_id'])
+        self.assertFalse(team_model.is_player_on_team(
+            None), "None should not be on team")
+
+    def testInsertingPlayer(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        player = self.add_player(str(uuid.uuid1()), str(
+            uuid.uuid1()) + "@mlsb.ca", gender="m")
+        team_model = Team.query.get(team['team_id'])
+        team_model.insert_player(player['player_id'])
+        self.assertTrue(team_model.is_player_on_team(Player.query.get(
+            player['player_id'])), "Expecting player to be added to team")
+
+    def testRemovePlayer(self):
+        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor("TestModelSponsor")
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+        player = self.add_player(str(uuid.uuid1()), str(
+            uuid.uuid1()) + "@mlsb.ca", gender="m")
+        self.add_player_to_team(team, player, captain=True)
+        team_model = Team.query.get(team['team_id'])
+        team_model.remove_player(player['player_id'])
+        self.assertFalse(team_model.is_player_on_team(Player.query.get(
+            player['player_id'])), "Expecting player to be removed from team")
 
 
 class GameModelTest(TestSetup):

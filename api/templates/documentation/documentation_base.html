@@ -194,50 +194,11 @@
                       Players' upcoming games
                     </a>
                 </li>
-
-                
-                
-                <li>
-                    <a onclick="toggleKik();">
-                      Deprecated Kik APIs
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkikcaptain}}">
-                      Authenticate Captain
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkikcaptaingames}}">
-                      Captains' available games
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkiksubmitscore}}">
-                      Captain Submit Score
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkiksubscribe}}">
-                      Player Subscription
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkikunsubscribe}}">
-                      Player Unsubscribe
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkikupcominggames}}">
-                      Players' upcoming games
-                    </a>
-                </li>
-                <li class="indent-nav kikSidebar" style="display: none">
-                    <a href="{{route.dkiktransaction}}">
+                <li class="indent-nav botSidebar" style="display: none">
+                    <a href="{{route.dbottransaction}}">
                       Submit Transaction
                     </a>
                 </li>
-            </ul>
         </div><!-- /#sidebar-wrapper -->
         <!-- Page Content -->
         <div id="page-content-wrapper">
@@ -287,10 +248,6 @@
 
       function toggleObjects(){
         $(".objectsSidebar").toggle();
-      }
-
-      function toggleKik(){
-        $(".kikSidebar").toggle();
       }
 
       function toggleBot(){

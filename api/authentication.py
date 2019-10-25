@@ -7,13 +7,11 @@
 from functools import wraps
 from flask import request, Response
 from flask import session
-import os
 from api.model import Player
+import os
 
-ADMIN = os.environ['ADMIN']
-PASSWORD = os.environ['PASSWORD']
-KIK = os.environ['KIK']
-KIKPW = os.environ['KIKPW']
+ADMIN = os.environ.get('ADMIN', 'admin')
+PASSWORD = os.environ.get('PASSWORD', 'password')
 
 
 def check_auth(username, password):
@@ -21,13 +19,6 @@ def check_auth(username, password):
     password combination is valid.
     """
     return username == ADMIN and password == PASSWORD
-
-
-def check_kik(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    return username == KIK and password == KIKPW
 
 
 def check_captain(player, password):
@@ -64,16 +55,6 @@ def requires_admin(f):
             logged = check_auth(session['admin'], session['password'])
             if not logged:
                 return authenticate()
-        return f(*args, **kwargs)
-    return decorated
-
-
-def requires_kik(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_kik(auth.username, auth.password):
-            return authenticate()
         return f(*args, **kwargs)
     return decorated
 
