@@ -62,6 +62,7 @@ class TestSetup(unittest.TestCase):
             DB.create_all()
 
     def tearDown(self):
+        DB.session.rollback()
         espy_query = Espys.query.get
         bats_query = Bat.query.get
         games_query = Game.query.get

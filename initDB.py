@@ -26,8 +26,10 @@ def mock_fun_count():
 def mock_sponsors():
     """Mock the sponsors"""
     sponsor_lookup = {}
-    for index, name in enumerate(["beer", "pizza", "wings", "leafs", "bolts",
-                                  "wilfs"]):
+    for index, name in enumerate(["Beertown", "Kik", "Pabst", "Spitz", "Tilt",
+                                  "Sportszone", "Sleeman", "Ripshot",
+                                  "Night School", "Heaven", "GE", "Gatorade",
+                                  "Chef on Call"]):
         sponsor = Sponsor(name)
         DB.session.add(sponsor)
         sponsor_lookup[index + 1] = sponsor
