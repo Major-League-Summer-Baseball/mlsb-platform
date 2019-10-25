@@ -9,17 +9,11 @@ from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
 from api.test.advanced.mock_league import MockLeague
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW,\
-    INVALID_ID
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID
 
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
-                                            ).decode("ascii")
-}
-kik = {
-    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' +
-                                                  KIKPW, "utf-8")
                                             ).decode("ascii")
 }
 VALID_YEAR = date.today().year

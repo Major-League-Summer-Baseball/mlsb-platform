@@ -4,43 +4,53 @@
 @organization: MLSB API
 @summary: Tests all the advanced fun APIs
 '''
-from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, KIK, KIKPW
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD
 
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")
                                             ).decode("ascii")
 }
-kik = {
-    'Authorization': 'Basic %s' % b64encode(bytes(KIK + ':' +
-                                                  KIKPW, "utf-8")
-                                            ).decode("ascii")
-}
-VALID_YEAR = date.today().year
-INVALID_YEAR = 100
+SOME_YEAR = 100
 
 
 class TestFun(TestSetup):
 
+    def dataContainFun(self, fun, data):
+        """Returns whether the given data contains the expected fun object"""
+        for check in data:
+            if (check['year'] == fun['year'] and
+                    check['count'] == fun['count']):
+                return True
+        return False
+
     def testPost(self):
         """Test fun view"""
-        params = {'year': 2002}
-        rv = self.app.post(Routes['vfun'], data=params)
-        expect = [{'count': 89, 'year': 2002}]
-        self.output(loads(rv.data))
+        fun_count = 100
+        self.add_fun(fun_count, year=SOME_YEAR)
+        params = {'year': SOME_YEAR}
+        first = self.app.post(Routes['vfun'], data=params)
+        expect = {'count': fun_count, 'year': SOME_YEAR}
+        self.output(loads(first.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data), Routes['vfun'] +
-                         " View: on 2012 year")
+        self.assertTrue(self.dataContainFun(expect, loads(first.data)),
+                        Routes['vfun'] +
+                        " View: did not have the expected fun")
 
         # get all the years
         params = {}
-        rv = self.app.post(Routes['vfun'], data=params)
-        expect = {'count': 89, 'year': 2002}
-        self.output(loads(rv.data))
+        second = self.app.post(Routes['vfun'], data=params)
+        expect = {'count': fun_count, 'year': SOME_YEAR}
+        self.output(loads(second.data))
         self.output(expect)
-        self.assertEqual(expect, loads(rv.data)[0], Routes['vfun'] +
-                         " View: on 2012 year")
+        self.assertTrue(len(loads(second.data)) > 0,
+                        "Some fun should have been returned")
+        self.assertTrue(self.dataContainFun(expect, loads(second.data)),
+                        Routes['vfun'] +
+                        " View: did not have the expected fun")
+        self.assertTrue(len(loads(first.data)) <= len(loads(second.data)),
+                        Routes['vfun'] +
+                        " View: filters fun should have less fun")

@@ -15,6 +15,26 @@ import random
 import argparse
 
 
+def mock_fun_count():
+    """Mock the fun count"""
+    current_year = datetime.datetime.now().year
+    for year in range(2016, current_year):
+        DB.session.add(Fun(year=year, count=random.randint(300, 500)))
+    DB.session.commit()
+
+
+def mock_sponsors():
+    """Mock the sponsors"""
+    sponsor_lookup = {}
+    for index, name in enumerate(["beer", "pizza", "wings", "leafs", "bolts",
+                                  "wilfs"]):
+        sponsor = Sponsor(name)
+        DB.session.add(sponsor)
+        sponsor_lookup[index + 1] = sponsor
+    DB.session.commit()
+    return sponsor_lookup
+
+
 def mock_teams_games(league, sponsor_lookup):
     """
     mock_team_games
@@ -164,17 +184,13 @@ def create_fresh_tables():
     """Creates fresh tables and deletes any previous information."""
     # delete old information
     DB.session.commit()
-    DB.engine.execute('''
-                         DROP TABLE IF EXISTS fun;
-                         DROP TABLE IF EXISTS roster;
-                         DROP TABLE IF EXISTS bat;
-                         DROP TABLE IF EXISTS espys;
-                         DROP TABLE IF EXISTS game;
-                         DROP TABLE IF EXISTS team;
-                         DROP TABLE IF EXISTS player;
-                         DROP TABLE IF EXISTS sponsor;
-                         DROP TABLE IF EXISTS league;
-                    ''')
+    DB.engine.execute("DROP TABLE IF EXISTS fun;")
+    DB.engine.execute("DROP TABLE IF EXISTS roster;")
+    DB.engine.execute("DROP TABLE IF EXISTS bat;")
+    DB.engine.execute("DROP TABLE IF EXISTS espys;")
+    DB.engine.execute("DROP TABLE IF EXISTS team;")
+    DB.engine.execute("DROP TABLE IF EXISTS sponsor;")
+    DB.engine.execute("DROP TABLE IF EXISTS league;")
     DB.create_all()
 
 
@@ -473,11 +489,11 @@ def init_database(mock, copy_locally, url, create_db):
         create_fresh_tables()
         DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
         DB.session.commit()
-        pull_fun_count(url)
-        sponsor_lookup = pull_sponsors(url)
     if (mock):
         print("Adding mock data ...")
         # add the unassigned bats player
+        mock_fun_count()
+        sponsor_lookup = mock_sponsors()
         league = mock_league()
         mock_teams_games(league, sponsor_lookup)
         league_2 = mock_league(league_name="Mock League 2")
@@ -485,6 +501,8 @@ def init_database(mock, copy_locally, url, create_db):
     else:
         if(copy_locally):
             print("Pulling a local copy of the given website")
+            pull_fun_count(url)
+            sponsor_lookup = pull_sponsors(url)
             player_lookup = pull_players(url)
             league_lookup = pull_leagues(url)
             team_lookup = pull_teams(url,

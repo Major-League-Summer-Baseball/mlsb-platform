@@ -27,7 +27,7 @@ class SubmitScoresAPI(Resource):
     def post(self):
         """
             POST request for submitting Score Summaries
-            Route: Route['kiksubmitscore']
+            Route: Route['botsubmitscore']
             Parameters:
                 game_id: the game_id (int)
                 player_id: the player_id of the captain (str)
