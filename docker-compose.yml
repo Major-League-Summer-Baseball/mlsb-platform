@@ -1,0 +1,53 @@
+version: "3"
+services:
+    mlsb:
+        environment:
+            - ADMIN=${ADMIN:-admin}
+            - PASSWORD=${PASSWORD:-password}
+            - DATABASE_URL=${DATABASE_URL:-postgresql://admin:password@postgres:5432/mlsb}
+            - SECRET_KEY=${SECRET_KEY:-secret}
+            - REDIS_URL=${REDIS_URL:-redis://redis:6379/1}
+        restart: always
+        build: .
+        ports:
+            - 8080:8080
+        volumes:
+            - .:/mlsb-platform
+        depends_on:
+            - postgres
+            - redis
+        command: >
+            gunicorn -b 0.0.0.0:8080
+                --access-logfile -
+                --reload
+                "runserver:app"
+
+    postgres:
+        restart: always
+        image: postgres:10
+        environment:
+            - POSTGRES_USER=${ADMIN:-admin}
+            - POSTGRES_PASSWORD=${PASSWORD:-password}
+            - POSTGRES_DB=mlsb
+        volumes:
+            - "postgres:/data"
+        ports:
+            - 5436:5432
+        expose:
+            - 5436
+            - 5432
+
+    redis:
+        image: "redis:alpine"
+        command: redis-server
+        volumes:
+            - 'redis:/data'
+        ports:
+            - 6380:6379
+        expose:
+            - 6380
+            - 6379
+
+volumes:
+    redis:
+    postgres:
