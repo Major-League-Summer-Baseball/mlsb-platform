@@ -17,6 +17,7 @@ from api.advanced.league_leaders import get_leaders,\
     get_leaders_not_grouped_by_team
 from api import DB
 from sqlalchemy.sql import func
+from api.advanced.game_stats import post as game_summary
 import os.path
 import json
 
@@ -582,9 +583,6 @@ def get_sponsors():
     return sponsors
 
 
-from api.advanced.game_stats import post as game_summary
-
-
 def get_upcoming_games(year):
     return game_summary(year=year, today=True, increment=1)
 
@@ -635,7 +633,7 @@ def rip_summary(f, year):
     description = "_".join(f.split("_")[1:])
     result = {"summary": [],
               "image": None,
-              "title":  None,
+              "title": None,
               "name": description,
               "date": post_date}
     f = os.path.join(POSTS, str(year), f)
