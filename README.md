@@ -59,6 +59,16 @@ docker-compose down
 docker system prune --volumes --force
 ```
 
+## Running unit tests in docker
+To run the whole suite of tests use:
+```
+docker-compose exec mlsb python -m unittest discover -s api/test -p test*.py
+```
+To run a particular test suite use:
+```
+docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>.py
+```
+
 # Documentation/Style
 All APIs are document in html and can be found by going to
 "http://localhost:5000/documentation". If one is to add an API then it
