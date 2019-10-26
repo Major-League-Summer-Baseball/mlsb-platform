@@ -15,8 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mlsbca/mlsb-platform:$GITHUB_REF
+      run: |
+        docker build . --file Dockerfile --tag mlsbca/mlsb-platform:${GITHUB_REF##*/}
     - name: Login into Docker hub
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
     - name: Publish Docker image
-      run: docker push mlsbca/mlsb-platform:$GITHUB_REF
+      run: docker push mlsbca/mlsb-platform:${GITHUB_REF##*/}
