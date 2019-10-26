@@ -90,5 +90,7 @@ on PRs to Development and Master. Additionally, might work on a Cypress project
 for ensuring checkin whether development server on Heroku is working as
 expected.
 
+Docker images are push for commits to master and development
+
 # Additional Sources
 TODO
