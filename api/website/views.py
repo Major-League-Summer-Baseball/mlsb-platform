@@ -152,12 +152,14 @@ def team_picture(team):
     if isinstance(team, int):
         team = Team.query.get(team)
         name = "notFound"
-        if team.sponsor_id is not None:
+        if team is not None and team.sponsor_id is not None:
             name = Sponsor.query.get(team.sponsor_id)
             if name is None:
                 name = "notFound"
             else:
                 name = str(name)
+        else:
+            name = "notFound"
     name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
@@ -263,6 +265,12 @@ def team_page(year, team_id):
 @app.route(Routes['playerpage'] + "/<int:year>/<int:player_id>")
 def player_page(year, player_id):
     player = Player.query.get(player_id)
+    if player is None:
+        return render_template("website/notFound.html",
+                               route=Routes,
+                               base=base_data(year),
+                               title="Player not found",
+                               year=year)
     name = player.name
     years = []
     for team in player.teams:
