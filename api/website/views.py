@@ -697,7 +697,7 @@ def post_json(f, year):
             if "<p" in lines:
                 # read the second p tag
                 while "</p>" not in lines:
-                    lines = lines + fn.readline.strip()
+                    lines = lines + fn.readline().strip()
                 lines = lines.replace("<p>", "")
                 lines = lines.replace("</p>", "")
                 result.append(lines)
