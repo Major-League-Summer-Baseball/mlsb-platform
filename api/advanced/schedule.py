@@ -57,7 +57,7 @@ class ScheduleAPI(Resource):
         data = []
         for game in games.items:
             result = game.json()
-            if game.date < datetime.today():
+            if game.date.date() <= datetime.today().date():
                 scores = game.summary()
                 result['score'] = (str(scores['home_score']) + '-' +
                                    str(scores['away_score']))
