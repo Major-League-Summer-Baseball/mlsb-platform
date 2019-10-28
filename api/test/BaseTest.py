@@ -26,6 +26,7 @@ SUCCESSFUL_POST_CODE = 201
 INVALID_ID = 10000000
 UNAUTHORIZED = 401
 VALID_YEAR = date.today().year
+NOT_FOUND_CODE = 404
 
 
 class TestSetup(unittest.TestCase):
