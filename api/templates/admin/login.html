@@ -1,7 +1,7 @@
 {% extends "documentation/documentation_base.html" %}
 {% block content %}
 {% if error %}
-  <div class="alert alert-error show" id="submit-errors">
+  <div data-cy='errors' class="alert alert-error show" id="submit-errors">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <h4>Error! {{error}} </h4>
     
