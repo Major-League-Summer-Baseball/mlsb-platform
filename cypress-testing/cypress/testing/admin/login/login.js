@@ -5,7 +5,7 @@
  * @module admin/login
  */
 
-import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
+import {When, Then} from 'cypress-cucumber-preprocessor/steps';
 import {randomName} from '../../common/helper.js';
 
 /**
