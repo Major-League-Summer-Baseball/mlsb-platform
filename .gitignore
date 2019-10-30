@@ -67,6 +67,5 @@ target/
 # ignore for the cypress project
 cypress-testing/node_modules/
 cypress-testing/docs/
-cypress/videos/admin/
-cypress/videos/website/
-cypress/screenshots/**
+cypress-testing/cypress/videos/**
+cypress-testing/cypress/screenshots/**
