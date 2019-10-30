@@ -1,0 +1,8 @@
+{
+  "projectId": "vt28o3",
+  "ignoreTestFiles": "*.js",
+  "testFiles": "**/*.{feature,features}",
+  "baseUrl": "http://localhost:5000/",
+  "integrationFolder": "cypress/testing",
+  "commonPath": "cypress/testing/common"
+}
