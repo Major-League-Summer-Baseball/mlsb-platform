@@ -33,3 +33,9 @@ jobs:
         pip install coverage
         coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py -m unittest discover -s api/test
         coverage report --fail-under=80
+        coverage html
+    - name: Upload Coverage report
+      uses: actions/upload-artifact@v1
+      with:
+        name: coverage-report
+        path: htmlcov
