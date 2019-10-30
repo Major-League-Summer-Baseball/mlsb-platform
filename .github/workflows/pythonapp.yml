@@ -39,7 +39,6 @@ jobs:
       with:
         name: coverage-report
         path: htmlcov
-
     - name: Set up npm
       uses: actions/setup-node@v1
       with:
@@ -47,7 +46,7 @@ jobs:
     - name: UI Test with cypress
       run: |
         export ADMIN="admin"
-        export PASSWORd="password"
+        export PASSWORD="password"
         # run the server just in-memory
         nohup python runserver.py  2>&1 &
         # now run the cypres tests against it
