@@ -56,6 +56,16 @@ EVENTS = {
     },
     2019: {
         "Beerlympics": "TBD",
+        "Jays_Game": "Cancelled",
+        "Summerween": "June 21st",
+        "Mystery_Bus": "March 22nd",
+        "Rafting": "July 5th-7th",
+        "Grand Bender": "July 29th",
+        "Tournaments": "June 28th, July 12th, July 19th",
+        "Chainsaw Idol": "???"
+    },
+    2020: {
+        "Beerlympics": "TBD",
         "Jays_Game": "TBD",
         "Summerween": "TBD",
         "Mystery_Bus": "TBD",
