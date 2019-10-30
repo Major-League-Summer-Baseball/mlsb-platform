@@ -6,7 +6,8 @@
 /**
  * A hook that runs once after each test.
  */
-const globalAfter = () => {
+const globalAfterEach = () => {
+  cy.visit({url: 'admin/logout', method: 'GET'});
 };
 
-afterEach(globalAfter);
+afterEach(globalAfterEach);
