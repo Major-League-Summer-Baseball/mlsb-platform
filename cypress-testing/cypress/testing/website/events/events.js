@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Given", "When", "Then"]}]*/
 
 /**
- * Holds steps related to the login feature.
+ * Holds steps related to the events feature.
  * @module website/events
  */
 
