@@ -128,7 +128,7 @@ def index(year):
 def sponsor_picture(name):
     if isinstance(name, int):
         name = Sponsor.query.get(name)
-        if name is None:
+        if name is None or name == "None":
             name = "notFound"
         else:
             name = str(name)
@@ -148,18 +148,15 @@ def mlsb_logo():
 
 
 @app.route(Routes['teampicture'] + "/<int:team>")
+@app.route(Routes['teampicture'] + "/<team>")
 def team_picture(team):
+    name = team if team is not None and team != "None" else "notFound"
     if isinstance(team, int):
         team = Team.query.get(team)
-        name = "notFound"
         if team is not None and team.sponsor_id is not None:
             name = Sponsor.query.get(team.sponsor_id)
-            if name is None:
-                name = "notFound"
-            else:
+            if name is not None:
                 name = str(name)
-        else:
-            name = "notFound"
     name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
