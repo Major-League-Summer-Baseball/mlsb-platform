@@ -7,6 +7,11 @@
 
 import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
 
+/**
+ * The URL for the events page.
+ * @private
+ */
+const EVENTS_PAGE = 'website/event/';
 
 /**
  * A step to navigate to the events page.
@@ -14,7 +19,8 @@ import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
  * Given I navigate to the events page
  */
 const navigateToEventsPage = () => {
-  cy.visit({url: 'website/event/2016', method: 'GET'});
+  // using 2016 since guaranteed about its events
+  cy.visit({url: EVENTS_PAGE + 2016, method: 'GET'});
 };
 Given(`I navigate to the events page`, navigateToEventsPage);
 
