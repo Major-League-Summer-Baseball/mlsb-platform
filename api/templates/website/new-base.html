@@ -30,7 +30,7 @@
         <header id="header">
            <div class="sponsor-banner js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false, "autoPlay": true}'>
                {% for sponsor in base.sponsors %}
-                <div class="sponsor-cell">
+                <div class="sponsor-cell" data-cy="sponsor-cell">
                   <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}" target="_blank">
                     <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
                   </a>
@@ -39,10 +39,10 @@
            </div>
            <div class="games-container">
                <div class="container">
-                   <div class="games">
+                   <div class="games" data-cy="games">
                        {% for game in base.games %}
-                       <div class="game">
-                           <div class="game-date">
+                       <div class="game" data-cy="game">
+                           <div class="game-date" >
                                {{game.date}}
                            </div>
                            <div class="team away-team">

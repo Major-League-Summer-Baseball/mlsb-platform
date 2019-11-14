@@ -654,7 +654,7 @@ def rip_summary(f, year):
                 line = line.replace("<h4>", "")
                 line = line.replace("</h4>", "")
                 if result['title'] is None:
-                    result['title'] = line
+                    result['title'] = line.strip()
             elif "<img" in line:
                 image = line.split('filename="')[1]
                 image = image.split('"')[0]

@@ -8,7 +8,6 @@
 import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
 
 
-
 /**
  * A step to navigate to system homepage.
  * @example
@@ -29,26 +28,69 @@ const navigateToSpecificYearHomepage = (year) => {
 };
 When(`I navigate to {string} home page`, navigateToSpecificYearHomepage);
 
+/**
+ * A step to view the given news item.
+ * @param {string} itemTitle - the title of the news item
+ * @example
+ * When I click on "Launch" news item
+ */
+const viewNewsItem = (itemTitle) => {
+  cy.get('[data-cy="' + itemTitle + '"]').click()
+}
+When(`I click on {string} news item`, viewNewsItem);
 
 /**
- * A step to view a given event.
- * @param {string} event - the name of event to view
+ * A step to assert the current page contains a list of recent game scores.
  * @example
- * When viewing the event "Mystery Bus"
+ * Then there is a list of recent game scores
  */
-const viewGivenEvent = (event) => {
-  cy.get('a').contains(event).click();
+const assertListOfGameScores = () => {
+  cy
+      .get('[data-cy="games"]')
+      .find('[data-cy="game"]')
+      .its('length')
+      .should('be.gte', 1);
 };
-When(`viewing the event {string}`, viewGivenEvent);
+Then(`there is a list of recent game scores`, assertListOfGameScores);
+
+/**
+ * A step to assert the current page contains a list of sponsors.
+ * @example
+ * Then there is a list of sponsors
+ */
+const assertListOfSponsors = () => {
+  cy.get('.flickity-slider').find('.sponsor-cell').its('length').should('be.gte', 1);
+};
+Then(`there is a list of sponsors`, assertListOfSponsors);
+
+/**
+ * A step to assert homepage has a list of news items.
+ * @example
+ * Then there is a list of news items
+ */
+const assertListOfNewsItems = () => {
+  cy.get('.flickity-slider').find('[data-cy="sponsor-cell"]').its('length').should('be.gte', 1);
+};
+Then(`there is a list of news items`, assertListOfNewsItems);
 
 
 /**
- * A step to assert the event contains the given details.
- * @param {string} expectedDetails - the expected details of the event
+ * Navigate through the list of sponsors.
  * @example
- * Then I see details relating to "school buses"
+ * Then I can navigate through the list of sponsors
  */
-const assertEventDetails = (expectedDetails) => {
-  cy.get('p').contains(expectedDetails).should('be.visible');
-};
-Then(`I see details relating to {string}`, assertEventDetails);
+const navigateSponsorsList = () => {
+  cy.get('.next').click();
+  cy.get('.previous').click();
+}
+Then(`I can navigate through the list of sponsors`, navigateSponsorsList);
+
+/**
+ * Assert that current page is a post about the launch of the website.
+ * @example
+ * Then I see details about website launch
+ */
+const assertLaunchNews = () => {
+  cy.get('h4').contains('Launch');
+}
+Then(`I see details about website launch`, assertLaunchNews);
