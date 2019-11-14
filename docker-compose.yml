@@ -2,17 +2,15 @@ version: "3"
 services:
     mlsb:
         environment:
-            - ADMIN=$ADMIN
-            - PASSWORD=$PASSWORD
-            - KIK=$KIK
-            - KIKPW=$KIKPW
-            - DATABASE_URL=$DATABASE_URL
-            - SECRET_KEY=$SECRET_KEY
-            - REDIS_URL=$REDIS_URL
+            - ADMIN=${ADMIN:-admin}
+            - PASSWORD=${PASSWORD:-password}
+            - DATABASE_URL=${DATABASE_URL:-postgresql://admin:password@postgres:5432/mlsb}
+            - SECRET_KEY=${SECRET_KEY:-secret}
+            - REDIS_URL=${REDIS_URL:-redis://redis:6379/1}
         restart: always
         build: .
         ports:
-            - 8081:8080
+            - 8080:8080
         volumes:
             - .:/mlsb-platform
         depends_on:
@@ -28,8 +26,8 @@ services:
         restart: always
         image: postgres:10
         environment:
-            - POSTGRES_USER=$ADMIN
-            - POSTGRES_PASSWORD=$PASSWORD
+            - POSTGRES_USER=${ADMIN:-admin}
+            - POSTGRES_PASSWORD=${PASSWORD:-password}
             - POSTGRES_DB=mlsb
         volumes:
             - "postgres:/data"

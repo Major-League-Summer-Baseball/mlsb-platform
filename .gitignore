@@ -63,3 +63,9 @@ target/
 /.project
 /.pydevproject
 /failed_scenarios_screenshots/*
+
+# ignore for the cypress project
+cypress-testing/node_modules/
+cypress-testing/docs/
+cypress-testing/cypress/videos/**
+cypress-testing/cypress/screenshots/**

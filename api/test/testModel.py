@@ -18,8 +18,9 @@ class SponsorModelTest(TestSetup):
 
     def testSponsorInit(self):
         # valid data
-        Sponsor("Good Sponsor")
-        Sponsor("Good Sponsor",
+        sponsor_name = str(uuid.uuid1())
+        Sponsor(sponsor_name)
+        Sponsor(sponsor_name,
                 link="http://good-sponsor.ca",
                 description="Good Descript")
         # now bad stuff
@@ -29,13 +30,13 @@ class SponsorModelTest(TestSetup):
         except InvalidField:
             pass
         try:
-            Sponsor("Good Sponsor",
+            Sponsor(sponsor_name,
                     link=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            Sponsor("Good Sponsor",
+            Sponsor(sponsor_name,
                     link="http://good-sponsor.ca",
                     description=1)
             self.assertEqual(False, True, "Should raise invalid field")
@@ -44,9 +45,11 @@ class SponsorModelTest(TestSetup):
 
     def testSponsorUpdate(self):
         # valid sponsor
-        s = Sponsor("Good Sponsor")
+        sponsor_name = str(uuid.uuid1())
+        new_sponsor_name = str(uuid.uuid1())
+        s = Sponsor(sponsor_name)
         # valid update
-        s.update(name="New Sponsor", link="New Link", description="new")
+        s.update(name=new_sponsor_name, link="New Link", description="new")
         # now bad stuff
         try:
             s.update(name=1)
@@ -54,13 +57,13 @@ class SponsorModelTest(TestSetup):
         except InvalidField:
             pass
         try:
-            s.update("Good Sponsor",
+            s.update(sponsor_name,
                      link=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            s.update("Good Sponsor",
+            s.update(sponsor_name,
                      link="http://good-sponsor.ca",
                      description=1)
             self.assertEqual(False, True, "Should raise invalid field")
@@ -71,59 +74,67 @@ class SponsorModelTest(TestSetup):
 class PlayerModelTest(TestSetup):
 
     def testPlayerInit(self):
-        Player("Good Player", "good@mlsb.ca")
-        Player("Good Player",
-               "good@mlsb.ca",
+        player_name = str(uuid.uuid1())
+        email = player_name + "@mlsb.ca"
+        Player(player_name, email)
+        Player(player_name,
+               email,
                gender="m",
                password="Good password")
         # now bad stuff
         try:
-            Player(1, "good@mlsb.ca")
+            Player(1, email)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            Player("Good Player", 1)
+            Player(player_name, 1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            self.add_player("first player", "fras2560@mlsb.ca")
-            Player("second player", "fras2560@mlsb.ca")
+            some_email = str(uuid.uuid1()) + "@mlsb.ca"
+            self.add_player(str(uuid.uuid1()), some_email)
+            Player(str(uuid.uuid1()), some_email)
             self.assertEqual(False, True, "Should raise email exception")
         except NonUniqueEmail:
             pass
         try:
-            Player("Good Player", "good@mlsb.ca", gender="XX")
+            Player(player_name, email, gender="XX")
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
 
     def testPlayerUpdate(self):
-        p1 = Player("Good Player", "good@mlsb.ca")
-        p1.update(name="new name",
-                  email="new@mlsb.ca",
+        player_name = str(uuid.uuid1())
+        email = player_name + "@mlsb.ca"
+        new_player_name = str(uuid.uuid1())
+        new_email = new_player_name + "@mlsb.ca"
+        p1 = Player(player_name, email)
+        p1.update(name=new_player_name,
+                  email=new_email,
                   gender="f",
                   password="n")
         # now bad stuff
         try:
-            p1.update(name=1, email="good@mlsb.ca")
+            p1.update(name=1, email=email)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            p1.update(name="Good Player", email=1)
+            p1.update(name=player_name, email=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
         try:
-            self.add_player("first player", "fras2560@mlsb.ca")
-            p1.update(name="second player", email="fras2560@mlsb.ca")
+            some_email = str(uuid.uuid1()) + "@mlsb.ca"
+            self.add_player(str(uuid.uuid1()), some_email)
+            p1.update(name=str(uuid.uuid1()), email=some_email)
             self.assertEqual(False, True, "Should raise email exception")
         except NonUniqueEmail:
             pass
         try:
-            p1.update(name="Good Player", email="good@mlsb.ca", gender="XX")
+            p1.update(name=player_name, email=email, gender="XX")
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
@@ -153,8 +164,8 @@ class LeagueModelTest(TestSetup):
 class TeamModelTest(TestSetup):
 
     def testTeamInit(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
 
         # good Teams
         Team(color="Black",
@@ -197,8 +208,8 @@ class TeamModelTest(TestSetup):
             pass
 
     def testTeamUpdate(self):
-        league_id = self.add_league("TestModelLeague")['league_id']
-        sponsor_id = self.add_sponsor("TestModelSponsor")['sponsor_id']
+        league_id = self.add_league(str(uuid.uuid1()))['league_id']
+        sponsor_id = self.add_sponsor(str(uuid.uuid1()))['sponsor_id']
 
         # good Teams
         team = Team(color="Black",
@@ -241,9 +252,9 @@ class TeamModelTest(TestSetup):
             pass
 
     def testIsPlayerNotOnTeam(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
-        team = self.add_team(color="Blacl",
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team = self.add_team(color="Black",
                              sponsor=sponsor,
                              league=league)
         player = self.add_player(
@@ -254,9 +265,9 @@ class TeamModelTest(TestSetup):
             player_model), "New player should not be on team")
 
     def testIsPlayerOnTeam(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
-        team = self.add_team(color="Blacl",
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team = self.add_team(color="Black",
                              sponsor=sponsor,
                              league=league)
         player = self.add_player(
@@ -268,9 +279,9 @@ class TeamModelTest(TestSetup):
             player_model), "New player added to team should be on team")
 
     def testIsCaptainOnTeam(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
-        team = self.add_team(color="Blacl",
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team = self.add_team(color="Black",
                              sponsor=sponsor,
                              league=league)
         captain = self.add_player(
@@ -282,9 +293,9 @@ class TeamModelTest(TestSetup):
             captain_model), "Captain of team should be on team")
 
     def testIsNoneOnTeam(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
-        team = self.add_team(color="Blacl",
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team = self.add_team(color="Black",
                              sponsor=sponsor,
                              league=league)
         team_model = Team.query.get(team['team_id'])
@@ -292,9 +303,9 @@ class TeamModelTest(TestSetup):
             None), "None should not be on team")
 
     def testInsertingPlayer(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
-        team = self.add_team(color="Blacl",
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team = self.add_team(color="Black",
                              sponsor=sponsor,
                              league=league)
         player = self.add_player(str(uuid.uuid1()), str(
@@ -305,8 +316,8 @@ class TeamModelTest(TestSetup):
             player['player_id'])), "Expecting player to be added to team")
 
     def testRemovePlayer(self):
-        league = self.add_league("TestModelLeague")
-        sponsor = self.add_sponsor("TestModelSponsor")
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
         team = self.add_team(color="Blacl",
                              sponsor=sponsor,
                              league=league)
@@ -322,14 +333,14 @@ class TeamModelTest(TestSetup):
 class GameModelTest(TestSetup):
 
     def testGameInit(self):
-        sponsor = self.add_sponsor("TestModelSponsor")
-        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        league = self.add_league(str(uuid.uuid1()))
         league_id = league['league_id']
-        home_team_id = self.add_team("TestModelHomeTeam",
+        home_team_id = self.add_team(str(uuid.uuid1()),
                                      sponsor,
                                      league,
                                      VALID_YEAR)['team_id']
-        away_team_id = self.add_team("TestModelAwayTeam",
+        away_team_id = self.add_team(str(uuid.uuid1()),
                                      sponsor,
                                      league,
                                      VALID_YEAR)['team_id']
@@ -381,14 +392,14 @@ class GameModelTest(TestSetup):
             pass
 
     def testGameUpdate(self):
-        sponsor = self.add_sponsor("TestModelSponsor")
-        league = self.add_league("TestModelLeague")
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        league = self.add_league(str(uuid.uuid1()))
         league_id = league['league_id']
-        home_team_id = self.add_team("TestModelHomeTeam",
+        home_team_id = self.add_team(str(uuid.uuid1()),
                                      sponsor,
                                      league,
                                      VALID_YEAR)['team_id']
-        away_team_id = self.add_team("TestModelAwayTeam",
+        away_team_id = self.add_team(str(uuid.uuid1()),
                                      sponsor,
                                      league,
                                      VALID_YEAR)['team_id']
@@ -447,16 +458,18 @@ class GameModelTest(TestSetup):
 class BatModelTest(TestSetup):
 
     def testBatInit(self):
-        player = self.add_player("ModelTestPlayer", "ModelTestPlayer@mlsb.ca")
+        player_name = str(uuid.uuid1())
+        email = player_name + "@mlsb.ca"
+        player = self.add_player(player_name, email)
         player_id = player['player_id']
-        sponsor = self.add_sponsor("TestModelSponsor")
-        league = self.add_league("TestModelLeague")
-        home_team = self.add_team("TestModelHomeTeam",
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        league = self.add_league(str(uuid.uuid1()))
+        home_team = self.add_team(str(uuid.uuid1()),
                                   sponsor,
                                   league,
                                   VALID_YEAR)
         home_team_id = home_team['team_id']
-        away_team = self.add_team("TestModelAwayTeam",
+        away_team = self.add_team(str(uuid.uuid1()),
                                   sponsor,
                                   league,
                                   VALID_YEAR)
@@ -500,16 +513,18 @@ class BatModelTest(TestSetup):
             pass
 
     def testBatUpdate(self):
-        player = self.add_player("ModelTestPlayer", "ModelTestPlayer@mlsb.ca")
+        player_name = str(uuid.uuid1())
+        email = player_name + "@mlsb.ca"
+        player = self.add_player(player_name, email)
         player_id = player['player_id']
-        sponsor = self.add_sponsor("TestModelSponsor")
-        league = self.add_league("TestModelLeague")
-        home_team = self.add_team("TestModelHomeTeam",
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        league = self.add_league(str(uuid.uuid1()))
+        home_team = self.add_team(str(uuid.uuid1()),
                                   sponsor,
                                   league,
                                   VALID_YEAR)
         home_team_id = home_team['team_id']
-        away_team = self.add_team("TestModelAwayTeam",
+        away_team = self.add_team(str(uuid.uuid1()),
                                   sponsor,
                                   league,
                                   VALID_YEAR)

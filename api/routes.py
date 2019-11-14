@@ -94,7 +94,6 @@ Routes['logo'] = "/logo"
 Routes["privacy"] = "/privacy-policy"
 
 # sponsors pages
-Routes['sponsorspage'] = "/website/sponsor"
 Routes['sponsorspicture'] = "/website/sponsor/picture"
 Routes['sponsorspage'] = "/website/sponsors_list"
 Routes['teampicture'] = "/website/team/picture"
@@ -119,7 +118,6 @@ Routes['postpicture'] = "/website/post/pictures"
 
 
 # Captain help
-Routes['findunsubscribed'] = "/website/captains/unsubscribed"
 Routes['espysbreakdown'] = "/website/espysbreakdown"
 Routes['sponsorbreakdown'] = "/website/sponsorbreakdown"
 

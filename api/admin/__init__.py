@@ -476,7 +476,7 @@ def admin_edit_bat(year, game_id):
 @app.route(Routes['alogout'])
 def admin_logout():
     logout()
-    return redirect(url_for('index'))
+    return redirect(url_for('reroute'))
 
 
 @app.route(Routes['aportal'], methods=['POST'])

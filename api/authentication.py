@@ -7,7 +7,6 @@
 from functools import wraps
 from flask import request, Response
 from flask import session
-from api.model import Player
 import os
 
 ADMIN = os.environ.get('ADMIN', 'admin')
@@ -19,21 +18,6 @@ def check_auth(username, password):
     password combination is valid.
     """
     return username == ADMIN and password == PASSWORD
-
-
-def check_captain(player, password):
-    '''
-    check a if a player is the captain of a team
-    '''
-    players = Player.query.filter_by(name=player).all()
-    player = None
-    for p in players:
-        if p.check_password(password):  # correct password
-            player = p
-    if player is None:
-        return authenticate()
-    session['captain'] = player.id
-    return True
 
 
 def authenticate():
@@ -55,15 +39,5 @@ def requires_admin(f):
             logged = check_auth(session['admin'], session['password'])
             if not logged:
                 return authenticate()
-        return f(*args, **kwargs)
-    return decorated
-
-
-def requires_captain(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_captain(auth.name, auth.password):
-            return authenticate()
         return f(*args, **kwargs)
     return decorated

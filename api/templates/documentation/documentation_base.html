@@ -228,9 +228,9 @@
     <script>
       $(document).ready(function () {
           prettyPrint();
-          if (ready !== undefined){
-              ready();
-          }
+          try{
+            ready();
+          } catch(err){}
       });
 
       $("#menu-toggle").click(function(e) {

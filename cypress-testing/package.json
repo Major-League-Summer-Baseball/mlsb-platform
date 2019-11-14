@@ -1,0 +1,36 @@
+{
+  "name": "cypress-testing",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run --spec \"**/*.feature\"",
+    "test:all": "cypress run --spec \"**/*.features\"",
+    "docs": "jsdoc -r . -d docs -c jsdoc.conf README.md",
+    "full-docs": "jsdoc -p -r . -d docs -c jsdoc.conf README.md",
+    "open": "cypress open"
+  },
+  "keywords": [
+    "mlsb",
+    "testing",
+    "softball",
+    "cypress",
+    "cucumber"
+  ],
+  "author": "Dallas Fraser",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^3.4.1",
+    "cypress-cucumber-preprocessor": "^1.16.0",
+    "cypress-pipe": "^1.5.0",
+    "docdash": "^1.1.1",
+    "jsdoc": "^3.6.3"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepDefinitions": true
+  },
+  "dependencies": {
+    "install": "^0.13.0",
+    "npm": "^6.11.3"
+  }
+}

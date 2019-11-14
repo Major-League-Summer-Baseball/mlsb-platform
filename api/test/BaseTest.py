@@ -26,6 +26,7 @@ SUCCESSFUL_POST_CODE = 201
 INVALID_ID = 10000000
 UNAUTHORIZED = 401
 VALID_YEAR = date.today().year
+NOT_FOUND_CODE = 404
 
 
 class TestSetup(unittest.TestCase):
@@ -62,6 +63,7 @@ class TestSetup(unittest.TestCase):
             DB.create_all()
 
     def tearDown(self):
+        DB.session.rollback()
         espy_query = Espys.query.get
         bats_query = Bat.query.get
         games_query = Game.query.get
