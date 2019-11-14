@@ -2,7 +2,7 @@
 
 /**
  * Holds steps related to the homepage feature.
- * @module homepage/events
+ * @module website/homepage
  */
 
 import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
