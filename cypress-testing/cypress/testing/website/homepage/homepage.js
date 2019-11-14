@@ -5,7 +5,7 @@
  * @module website/homepage
  */
 
-import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
+import {When, Then} from 'cypress-cucumber-preprocessor/steps';
 
 
 /**
@@ -20,6 +20,7 @@ When(`I navigate to the home page`, navigateToHomepage);
 
 /**
  * A step to navigate to system homepage for a specific year.
+ * @param {number} year - the year to navigate to
  * @example
  * When I navigate to 2016 home page
  */
@@ -35,8 +36,8 @@ When(`I navigate to {string} home page`, navigateToSpecificYearHomepage);
  * When I click on "Launch" news item
  */
 const viewNewsItem = (itemTitle) => {
-  cy.get('[data-cy="' + itemTitle + '"]').click()
-}
+  cy.get('[data-cy="' + itemTitle + '"]').click();
+};
 When(`I click on {string} news item`, viewNewsItem);
 
 /**
@@ -59,7 +60,11 @@ Then(`there is a list of recent game scores`, assertListOfGameScores);
  * Then there is a list of sponsors
  */
 const assertListOfSponsors = () => {
-  cy.get('.flickity-slider').find('.sponsor-cell').its('length').should('be.gte', 1);
+  cy
+      .get('.flickity-slider')
+      .find('.sponsor-cell')
+      .its('length')
+      .should('be.gte', 1);
 };
 Then(`there is a list of sponsors`, assertListOfSponsors);
 
@@ -69,7 +74,11 @@ Then(`there is a list of sponsors`, assertListOfSponsors);
  * Then there is a list of news items
  */
 const assertListOfNewsItems = () => {
-  cy.get('.flickity-slider').find('[data-cy="sponsor-cell"]').its('length').should('be.gte', 1);
+  cy
+      .get('.flickity-slider')
+      .find('[data-cy="sponsor-cell"]')
+      .its('length')
+      .should('be.gte', 1);
 };
 Then(`there is a list of news items`, assertListOfNewsItems);
 
@@ -82,7 +91,7 @@ Then(`there is a list of news items`, assertListOfNewsItems);
 const navigateSponsorsList = () => {
   cy.get('.next').click();
   cy.get('.previous').click();
-}
+};
 Then(`I can navigate through the list of sponsors`, navigateSponsorsList);
 
 /**
@@ -92,5 +101,5 @@ Then(`I can navigate through the list of sponsors`, navigateSponsorsList);
  */
 const assertLaunchNews = () => {
   cy.get('h4').contains('Launch');
-}
+};
 Then(`I see details about website launch`, assertLaunchNews);

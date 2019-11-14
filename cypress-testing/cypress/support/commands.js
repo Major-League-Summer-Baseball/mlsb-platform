@@ -20,8 +20,8 @@
  * cy.logout();
  */
 const logout = () => {
-  cy.visit({url: '/admin/logout', method: 'GET'})
-}
+  cy.visit({url: '/admin/logout', method: 'GET'});
+};
 Cypress.Commands.add('logout', logout);
 
 /**

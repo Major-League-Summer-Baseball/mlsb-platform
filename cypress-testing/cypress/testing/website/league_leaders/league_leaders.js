@@ -5,7 +5,7 @@
  * @module website/league_leaders
  */
 
-import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
+import {When, Then} from 'cypress-cucumber-preprocessor/steps';
 import {getCurrentYear} from '../../common/helper.js';
 
 /**
@@ -22,7 +22,7 @@ const ALL_TIME_LEADERS_PAGE = LEADERS_PAGE + 'alltime/';
 
 /**
  * A function to assert the given list is in descending order
- * @param {string} selector- a selector for the given list of elements
+ * @param {string} selector - a selector for the given list of elements
  * @private
  */
 const assertDescendingOrder = (selector) => {
@@ -64,7 +64,7 @@ const assertHomerunsHasDescendingOrder = () => {
   assertDescendingOrder('[data-cy="currentSeasonHomeruns"]');
 };
 Then(`there is a descending ordered list of players for homeruns`,
-  assertHomerunsHasDescendingOrder);
+    assertHomerunsHasDescendingOrder);
 
 /**
  * A step to assert that the singles are in descending order.
@@ -75,7 +75,7 @@ const assertSinglesHasDescendingOrder = () => {
   assertDescendingOrder('[data-cy="currentSeasonSingles"]');
 };
 Then(`there is a descending ordered list of players for singles`,
-  assertSinglesHasDescendingOrder);
+    assertSinglesHasDescendingOrder);
 
 /**
  * A step to assert that the homeruns are in descending order.
@@ -87,7 +87,7 @@ const assertAllTimeHomerunsHasDescendingOrder = () => {
   assertDescendingOrder('[data-cy="allTimeSingleSeasonHomeruns"]');
 };
 Then(`there is a descending ordered list of players for all-time homeruns`,
-  assertAllTimeHomerunsHasDescendingOrder);
+    assertAllTimeHomerunsHasDescendingOrder);
 
 /**
  * A step to assert that the singles are in descending order.
@@ -99,5 +99,5 @@ const assertAllTimeSinglesHasDescendingOrder = () => {
   assertDescendingOrder('[data-cy="allTimeCareerSingles"]');
 };
 Then(`there is a descending ordered list of players for all-time singles`,
-  assertAllTimeSinglesHasDescendingOrder);
+    assertAllTimeSinglesHasDescendingOrder);
 
