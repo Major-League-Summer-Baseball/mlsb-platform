@@ -10,7 +10,7 @@ from json import dumps
 from api import DB
 from api.model import Player, Bat, Game
 from datetime import datetime, date, time
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, not_
 from api.variables import UNASSIGNED_EMAIL
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
@@ -40,7 +40,7 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                .join(Player.bats)
                .join(Game)
                .filter(Game.date.between(start, end))
-               .filter(Player.email != UNASSIGNED_EMAIL))
+               .filter(not_(Player.email.ilike(UNASSIGNED_EMAIL))))
     if team_id is not None:
         players = players.filter(Bat.team_id == team_id)
     if league_id is not None:
@@ -63,7 +63,9 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                 'e': 0,
                 'go': 0,
                 'id': player[3],
-                'rbi': 0
+                'rbi': 0,
+                'bats': 0,
+                'avg': 0.000
             }
         result[player[0]][player[1]] = player[2]
         result[player[0]]['rbi'] += player[4]
@@ -79,11 +81,11 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                                   result[player]['e'] +
                                   result[player]['go']
                                   )
-        result[player]['avg'] = ((result[player]['s'] +
-                                  result[player]['ss'] +
-                                  result[player]['d'] +
-                                  result[player]['hr']) /
-                                 result[player]['bats'])
+        result[player]['avg'] = round(((result[player]['s'] +
+                                        result[player]['ss'] +
+                                        result[player]['d'] +
+                                        result[player]['hr']) /
+                                       result[player]['bats']), 3)
     return result
 
 

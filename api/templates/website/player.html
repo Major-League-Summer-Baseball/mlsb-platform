@@ -41,9 +41,6 @@
                 <th data-cy="aveHeading">
                     AVE
                 </th>
-                <th data-cy="spHeading">
-                    SP
-                </th>
                 <th data-cy="rbiHeading">
                     RBI
                 </th>
@@ -88,10 +85,7 @@
                         {{entry.bats}}
                     </td>
                     <td data-cy="aveCell">
-                        {{entry.ave}}
-                    </td>
-                    <td data-cy="spCell">
-                        {{entry.sp}}
+                        {{'%0.3f'| format(entry.avg)}}
                     </td>
                     <td data-cy="rbiCell">
                         {{entry.rbi}}

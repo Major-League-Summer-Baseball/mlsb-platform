@@ -157,6 +157,8 @@ def team_picture(team):
             name = Sponsor.query.get(team.sponsor_id)
             if name is not None:
                 name = str(name)
+        else:
+            name = "notFound"
     name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
@@ -230,7 +232,7 @@ def standings(year):
 @app.route(Routes['statspage'] + "/<int:year>")
 @cache.cached(timeout=CACHE_TIMEOUT)
 def stats_page(year):
-    players = player_summary(year)
+    players = player_summary(year=year)
     return render_template("website/stats.html",
                            route=Routes,
                            base=base_data(year),
@@ -280,6 +282,22 @@ def player_page(year, player_id):
                                  player_id=player_id)
         if name in summary:
             player = summary[name]
+        else:
+            player = {
+                's': 0,
+                'd': 0,
+                'hr': 0,
+                'ss': 0,
+                'k': 0,
+                'fo': 0,
+                'fc': 0,
+                'e': 0,
+                'go': 0,
+                'id': player_id,
+                'rbi': 0,
+                'avg': 0.000,
+                'bats': 0
+            }
         player['team'] = str(Team.query.get(entry[1]))
         player['team_id'] = entry[1]
         player['year'] = entry[0]
