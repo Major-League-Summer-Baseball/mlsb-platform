@@ -97,8 +97,8 @@ def mock_teams_games(league, sponsor_lookup):
     team_player_lookup = {}
     random_prices = [9.99, 4.75, 100, 15.50, 12.99]
     for i in tqdm(range(0, len(teams)), desc="Adding mock espys to Teams"):
-        team_player_lookup[team.id] = team_players[i]
         team = teams[i]
+        team_player_lookup[team.id] = team_players[i]
         for __ in range(0, 4):
             points = random_value_list(random_prices)
             espy = Espys(team.id,
@@ -158,6 +158,7 @@ def mock_teams_games(league, sponsor_lookup):
                           league.id,
                           status=status,
                           field="WP2"))
+
     for game in tqdm(games, "Adding mock games"):
         DB.session.add(game)
     DB.session.commit()
