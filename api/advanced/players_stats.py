@@ -47,12 +47,15 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
         players = players.filter(Game.league_id == league_id)
     if player_id is not None:
         players = players.filter(Player.id == player_id)
-    players = players.group_by(Bat.classification).group_by(Player.id).all()
+    players = (players
+               .group_by(Bat.classification)
+               .group_by(Player.id))
+    players = players.all()
     result = {}
     for player in players:
         # format the results
-        if player[0] not in result.keys():
-            result[player[0]] = {
+        if player[3] not in result.keys():
+            result[player[3]] = {
                 's': 0,
                 'd': 0,
                 'hr': 0,
@@ -65,10 +68,12 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                 'id': player[3],
                 'rbi': 0,
                 'bats': 0,
-                'avg': 0.000
+                'avg': 0.000,
+                'name': player[0]
             }
-        result[player[0]][player[1]] = player[2]
-        result[player[0]]['rbi'] += player[4]
+        result[player[3]][player[1]] = player[2]
+        result[player[3]]['rbi'] += player[4]
+    final_result = {}
     for player in result:
         # calculate the bats and average
         result[player]['bats'] = (result[player]['s'] +
@@ -86,7 +91,9 @@ def post(year=None, team_id=None, league_id=None, player_id=None):
                                         result[player]['d'] +
                                         result[player]['hr']) /
                                        result[player]['bats']), 3)
-    return result
+        player_name = result[player].pop('name', None)
+        final_result[player_name] = result[player]
+    return final_result
 
 
 class PlayerStatsAPI(Resource):
