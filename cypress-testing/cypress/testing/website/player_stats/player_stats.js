@@ -39,7 +39,7 @@ function numberBefore(numberOne, numberTwo) {
 }
 
 /**
- * A step to navigate to the events page.
+ * A step to navigate to the player stats page.
  * @example
  * Given I am on the player stats page
  */
