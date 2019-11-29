@@ -20,6 +20,6 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
   on('file:preprocessor', cucumber());
   config.env.PASSWORD = process.env.PASSWORD;
-  config.env.ADMIN = process.env.ADMIn;
+  config.env.ADMIN = process.env.ADMIN;
   return config;
 };
