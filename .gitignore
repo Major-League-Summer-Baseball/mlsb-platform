@@ -69,3 +69,5 @@ cypress-testing/node_modules/
 cypress-testing/docs/
 cypress-testing/cypress/videos/**
 cypress-testing/cypress/screenshots/**
+
+node_modules/
