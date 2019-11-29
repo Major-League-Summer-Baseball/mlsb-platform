@@ -34,7 +34,7 @@ Given(`I navigate to the rules and fields page`, navigateToRulesAndFieldsPage);
  * When I click on "Rules" tab
  */
 const clickOnTab = (tab) => {
-  cy.get('[data-cy="' + tab + "Tab").click()
+  cy.get('[data-cy="' + tab + 'Tab').click();
 };
 When(`I click on {string} tab`, clickOnTab);
 

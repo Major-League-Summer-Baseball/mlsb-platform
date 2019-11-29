@@ -5,7 +5,7 @@
  * @module website/schedule
  */
 
-import {Given, When, Then} from 'cypress-cucumber-preprocessor/steps';
+import {Given, Then} from 'cypress-cucumber-preprocessor/steps';
 import {getCurrentYear} from '../../common/helper.js';
 
 /**
@@ -16,7 +16,7 @@ const SCHEDULE_PAGE = 'website/schedule/';
 
 
 /**
- * A step to navigate to the player stats page.
+ * A step to navigate to the schedule page.
  * @example
  * Given I am on the the schedule page
  */

@@ -33,10 +33,10 @@ function nameBefore(nameOne, nameTwo) {
  * @return {boolean} true if numberOne before numberTwo otherwise false
  */
 function numberBefore(numberOne, numberTwo) {
-  if (typeof numberOne === 'string' || numberOne instanceof String){
+  if (typeof numberOne === 'string' || numberOne instanceof String) {
     numberOne = parseInt(numberOne.trim());
   }
-  if (typeof numberTwo === 'string' || numberTwo instanceof String){
+  if (typeof numberTwo === 'string' || numberTwo instanceof String) {
     numberTwo = parseInt(numberTwo.trim());
   }
   return (numberOne <= numberTwo) ? true : false;
@@ -111,10 +111,10 @@ Then(`I see their career stats`, assertIndividualPlayerStats);
  * Then the players are sorted "numerically" by "hr"
  */
 const assertSortedByHeading = (typeOfSort, heading) => {
-  const compareFunction = (typeOfSort === 'alphabetically')
-      ? nameBefore : numberBefore;
-  let previousValue = (typeOfSort === 'alphabetically')
-      ? '' : 0;
+  const compareFunction = (typeOfSort === 'alphabetically') ?
+      nameBefore : numberBefore;
+  let previousValue = (typeOfSort === 'alphabetically') ?
+      '' : 0;
   let currentValue;
   cy.log(compareFunction);
   cy.get('[data-cy="' + heading + 'Cell"]').each(($el, index, $list) => {
