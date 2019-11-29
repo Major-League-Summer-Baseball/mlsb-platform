@@ -33,8 +33,13 @@ function nameBefore(nameOne, nameTwo) {
  * @return {boolean} true if numberOne before numberTwo otherwise false
  */
 function numberBefore(numberOne, numberTwo) {
-  numberOne = parseInt(numberOne.trim());
-  numberTwo = parseInt(numberTwo.trim());
+  try {
+    numberOne = parseInt(numberOne.trim());
+    numberTwo = parseInt(numberTwo.trim());
+  } catch (err) {
+    numberOne = parseInt(numberOne);
+    numberTwo = parseInt(numberTwo);
+  }
   return (numberOne <= numberTwo) ? true : false;
 }
 

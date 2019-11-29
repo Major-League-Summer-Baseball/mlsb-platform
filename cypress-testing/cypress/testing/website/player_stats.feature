@@ -2,7 +2,6 @@ Feature: The page for player stats
     Background:
         Given I am on the player stats page
 
-    @focus
     Scenario: Ability to get individual player information
         When I click on some player name
         Then I see their career stats
@@ -11,6 +10,7 @@ Feature: The page for player stats
         When I sort by "name"
         Then the players are sorted "alphabetically" by "name"
 
+    @focus
     Scenario: Ability to sort by player stats
         When I sort by "ss"
         Then the players are sorted "numerically" by "ss"
