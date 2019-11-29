@@ -33,12 +33,11 @@ function nameBefore(nameOne, nameTwo) {
  * @return {boolean} true if numberOne before numberTwo otherwise false
  */
 function numberBefore(numberOne, numberTwo) {
-  try {
+  if (typeof numberOne === 'string' || numberOne instanceof String){
     numberOne = parseInt(numberOne.trim());
+  }
+  if (typeof numberTwo === 'string' || numberTwo instanceof String){
     numberTwo = parseInt(numberTwo.trim());
-  } catch (err) {
-    numberOne = parseInt(numberOne);
-    numberTwo = parseInt(numberTwo);
   }
   return (numberOne <= numberTwo) ? true : false;
 }
@@ -120,7 +119,6 @@ const assertSortedByHeading = (typeOfSort, heading) => {
   cy.log(compareFunction);
   cy.get('[data-cy="' + heading + 'Cell"]').each(($el, index, $list) => {
     currentValue = $el.text();
-    cy.log(previousValue, currentValue);
     expect(compareFunction(previousValue, currentValue)).to.be.true;
     previousValue = currentValue;
   });
