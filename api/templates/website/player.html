@@ -5,41 +5,91 @@
     <table id="players_stats" width="100%" class="display">
         <thead>
             <tr>
-                <th>Year</th>
-                <th>Team</th>
-                <th>S</th>
-                <th>SS</th>
-                <th>D</th>
-                <th>HR</th>
-                <th>K</th>
-                <th>PF</th>
-                <th>FC</th>
-                <th>GO</th>
-                <th>AB</th>
-                <th>AVE</th>
-                <th>SP</th>
-                <th>RBI</th>
+                <th data-cy="nameHeading">
+                    Year
+                </th>
+                <th data-cy="teamHeading">
+                    Team
+                </th>
+                <th data-cy="sHeading">
+                    S
+                </th>
+                <th data-cy="ssHeading">
+                    SS
+                </th>
+                <th data-cy="dHeading">
+                    D
+                </th>
+                <th data-cy="hrHeading">
+                    HR
+                </th>
+                <th data-cy="kHeading">
+                    K
+                </th>
+                <th data-cy="pfHeading">
+                    PF
+                </th>
+                <th data-cy="fcHeading">
+                    FC
+                </th>
+                <th data-cy="goHeading">
+                    GO
+                </th>
+                <th data-cy="abHeading">
+                    AB
+                </th>
+                <th data-cy="aveHeading">
+                    AVE
+                </th>
+                <th data-cy="rbiHeading">
+                    RBI
+                </th>
             </tr>
         </thead>
         <tbody>
             {% for entry in stats %}
                 <tr>
-                    <td>{{entry.year}}</td>
-                    <td>
-                        <a href="{{route.teampage}}/{{entry.year}}/{{entry.team_id}}">{{entry.team}}</a>
+                    <td data-cy="yearCell">
+                        {{entry.year}}
                     </td>
-                    <td>{{entry.s}}</td>
-                    <td>{{entry.ss}}</td>
-                    <td>{{entry.d}}</td>
-                    <td>{{entry.hr}}</td>
-                    <td>{{entry.k}}</td>
-                    <td>{{entry.fo}}</td>
-                    <td>{{entry.fc}}</td>
-                    <td>{{entry.go}}</td>
-                    <td>{{entry.bats}}</td>
-                    <td>{{entry.ave}}</td>
-                    <td>{{entry.sp}}</td>
-                    <td>{{entry.rbi}}</td>
+                    <td data-cy="teamCell">
+                        <a href="{{route.teampage}}/{{entry.year}}/{{entry.team_id}}">
+                            {{entry.team}}
+                        </a>
+                    </td>
+                    <td data-cy="sCell">
+                        {{entry.s}}
+                    </td>
+                    <td data-cy="ssCell">
+                        {{entry.ss}}
+                    </td>
+                    <td data-cy="dCell">
+                        {{entry.d}}
+                    </td>
+                    <td data-cy="hrCell">
+                        {{entry.hr}}
+                    </td>
+                    <td data-cy="kCell">
+                        {{entry.k}}
+                    </td>
+                    <td data-cy="foCell">
+                        {{entry.fo}}
+                    </td>
+                    <td data-cy="fcCell">
+                        {{entry.fc}}
+                    </td>
+                    <td data-cy="goCell">
+                        {{entry.go}}
+                    </td>
+                    <td data-cy="abCell">
+                        {{entry.bats}}
+                    </td>
+                    <td data-cy="aveCell">
+                        {{'%0.3f'| format(entry.avg)}}
+                    </td>
+                    <td data-cy="rbiCell">
+                        {{entry.rbi}}
+                    </td>
                 </tr>
 
             {% endfor %}

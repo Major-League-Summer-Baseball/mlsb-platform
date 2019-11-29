@@ -8,8 +8,11 @@
         <ul class="listgroup leadersList sleemanList">
         {% for player in men %}
             <li class="list-group-item leaderPoint">
-                <span class="badge leaderBadge">{{loop.index}}</span>
-                {{player.name}} - {{player.hits}}
+                <span class="badge leaderBadge">
+                    {{loop.index}}
+                </span>
+                {{player.name}}
+                - <span data-cy="currentSeasonHomeruns">{{player.hits}}</span>
                 <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
             </li>
         {% endfor %}
@@ -22,9 +25,12 @@
         <ol class="listgroup leadersList">
         {% for player in women %}
             <li class="list-group-item leaderPoint">
-                <span class="badge leaderBadge">{{loop.index}}</span>
-                 {{player.name}} - {{player.hits}}
-                 <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
+                <span class="badge leaderBadge">
+                    {{loop.index}}
+                </span>
+                {{player.name}}
+                - <span data-cy="currentSeasonSingles">{{player.hits}}</span>
+                <img class="leaderImage" src="{{route.teampicture}}/{{player.team_id}}"  alt="" style="">
             </li>
         {% endfor %}
         </ol>

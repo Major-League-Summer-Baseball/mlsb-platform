@@ -4,6 +4,16 @@
  */
 
 /**
+ * A function to get the current year
+ * @return {number} - the current year
+ * @example
+ * const currentYear = getCurrentYear(); // 2019
+ */
+export function getCurrentYear() {
+  return new Date().getFullYear();
+}
+
+/**
  * Creates a random name to use for testing.
  * @return {string} - a random name
  * @example
