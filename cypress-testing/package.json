@@ -25,7 +25,11 @@
     "cypress-cucumber-preprocessor": "^1.16.0",
     "cypress-pipe": "^1.5.0",
     "docdash": "^1.1.1",
-    "jsdoc": "^3.6.3"
+    "jsdoc": "^3.6.3",
+    "eslint": "^6.6.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-cypress": "^2.7.0",
+
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": true
