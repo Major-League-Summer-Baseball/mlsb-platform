@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: Holds the tests for the model
 '''
-from api.model import Player, Team, Bat, Sponsor, League, Game
+from api.model import Player, Team, Bat, Sponsor, League, Game, Division
 from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
     LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, GameDoesNotExist
@@ -143,7 +143,7 @@ class PlayerModelTest(TestSetup):
 class LeagueModelTest(TestSetup):
 
     def testLeagueInit(self):
-        League("Monday & Wednesday")
+        League(str(uuid.uuid1()))
         # now bad stuff
         try:
             League(1)
@@ -152,10 +152,45 @@ class LeagueModelTest(TestSetup):
             pass
 
     def testLeagueUpdate(self):
-        league = League("Monday & Wednesday")
-        league.update("Tuesday & Thursday")
+        league = League(str(uuid.uuid1()))
+        league.update(str(uuid.uuid1()))
         try:
             league.update(1)
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+
+
+class DivisionModelTest(TestSetup):
+
+    def testDivisionInit(self):
+        Division(str(uuid.uuid1()))
+        Division(str(uuid.uuid1()), shortname=str(uuid.uuid1()))
+        # now invalid init
+        try:
+            Division(1)
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+        try:
+            Division(str(uuid.uuid1()), shortname=1)
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+
+    def testDivisionUpdate(self):
+        division = Division(str(uuid.uuid1()))
+        division.update(name=str(uuid.uuid1()))
+        division.update(name=str(uuid.uuid1()), shortname=str(uuid.uuid1()))
+        division.update(shortname=str(uuid.uuid1()))
+        # now invalid updates
+        try:
+            division.update(name=1)
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+        try:
+            division.update(shortname=1)
             self.assertEqual(False, True, "Should raise invalid field")
         except InvalidField:
             pass
