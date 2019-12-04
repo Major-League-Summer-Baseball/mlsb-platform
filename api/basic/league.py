@@ -140,7 +140,7 @@ class LeagueListAPI(Resource):
             POST request for League List
             Route: Route['league']
             Parameters :
-                tournament_name: The league's name (string)
+                league_name: The league's name (string)
             Returns:
                 if successful
                     status: 200
