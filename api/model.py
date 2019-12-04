@@ -614,6 +614,67 @@ class Sponsor(DB.Model):
         self.active = False
 
 
+class Division(DB.Model):
+    """
+    a class that holds all the information for a division in a eague.
+    Columns:
+        id: the division unique id
+        name: the name of the division
+        shortname: the short name of the division
+        league: the league the division is part of
+        games: the games that are part of division
+    """
+    id = DB.Column(DB.Integer, primary_key=True)
+    name = DB.Column(DB.String(120))
+    shortname = DB.Column(DB.String(120))
+    team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
+    games = DB.relationship('Game', backref='division', lazy='dynamic')
+
+    def __init__(self, name, shortname=None):
+        """The constructor
+
+        Raises:
+            InvalidField
+        """
+        if not string_validator(name):
+            raise InvalidField(payload={'details': "Division - name"})
+        if shortname is not None and not string_validator(shortname):
+            raise InvalidField(payload={'details': "Division - short name"})
+        self.name = name
+        self.shortname = shortname
+
+    def update(self, name=None, shortname=None):
+        """Update an existing division.
+
+        Raises:
+            InvalidField
+        """
+        if name is not None and not string_validator(name):
+            raise InvalidField(payload={'details': "Division - name"})
+        if shortname is not None and not string_validator(shortname):
+            raise InvalidField(payload={'details': "Division - shortname"})
+        if name is not None:
+            self.name = name
+        if shortname is not None:
+            self.shortname = shortname
+
+    def get_shortname(self):
+        """Returns the short name of the division"""
+        if self.shortname is not None:
+            return self.shortname
+        return self.name
+
+    def __repr__(self):
+        """Returns the string representation of the League."""
+        return self.name
+
+    def json(self):
+        """Returns a jsonserializable object."""
+        return {'division_id': self.id,
+                'divsion_name': self.name,
+                'division_shortname': self.shortname}
+
+
 class League(DB.Model):
     """
     a class that holds all the information for a league.
@@ -680,6 +741,7 @@ class Game(DB.Model):
                                            use_alter=True,
                                            name='fk_away_team_game'))
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
+    division_id = DB.Column(DB.Integer, DB.ForeignKey('division.id'))
     bats = DB.relationship("Bat", backref="game", lazy='dynamic')
     date = DB.Column(DB.DateTime)
     status = DB.Column(DB.String(120))
@@ -721,6 +783,7 @@ class Game(DB.Model):
         self.league_id = league_id
         self.status = status
         self.field = field
+        self.division_id = None
 
     def __repr__(self):
         """Returns the string representation of the Game."""
