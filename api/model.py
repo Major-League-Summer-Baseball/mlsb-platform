@@ -804,6 +804,7 @@ class Game(DB.Model):
             'away_team_id': self.away_team_id,
             'away_team': str(Team.query.get(self.away_team_id)),
             'league_id': self.league_id,
+            'division_id': self.division_id,
             'date': self.date.strftime("%Y-%m-%d"),
             'time': self.date.strftime("%H:%M"),
             'status': self.status,
