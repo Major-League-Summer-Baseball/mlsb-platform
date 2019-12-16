@@ -81,6 +81,7 @@ from api.basic.game import GameAPI, GameListAPI
 from api.basic.bat import BatAPI, BatListAPI
 from api.basic.epsys import EspyAPI, EspyListAPI
 from api.basic.fun import FunAPI, FunListAPI
+from api.basic.division import DivisionAPI, DivisionListAPI
 from api.advanced.team_roster import TeamRosterAPI
 
 # imports for advanced apis
@@ -140,6 +141,12 @@ api.add_resource(SponsorListAPI,
 api.add_resource(SponsorAPI,
                  Routes['sponsor'] + "/<int:sponsor_id>",
                  endpoint="sponsor")
+api.add_resource(DivisionListAPI,
+                 Routes['division'],
+                 endpoint="divisions")
+api.add_resource(DivisionAPI,
+                 Routes['division'] + "/<int:division_id>",
+                 endpoint="division")
 api.add_resource(LeagueListAPI,
                  Routes['league'],
                  endpoint="leagues")
@@ -205,3 +212,4 @@ api.add_resource(BotUpcomingGamesAPI,
 api.add_resource(BotSubmitTransactionAPI,
                  Routes['bottransaction'],
                  endpoint="bottransaction")
+
