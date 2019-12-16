@@ -17,10 +17,10 @@ from api.helper import pagination_response
 from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('division_name', type=str)
-parser.add_argument('division_short_name', type=str)
+parser.add_argument('division_shortname', type=str)
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('division_name', type=str, required=True)
-post_parser.add_argument('division_short_name', type=str)
+post_parser.add_argument('division_shortname', type=str)
 
 
 class DivisionAPI(Resource):
@@ -130,10 +130,10 @@ class DivisionListAPI(Resource):
                 mimetype: application/json
                 Paginated list of division objects
         """
-        # return a pagination of leagues
+        # return a pagination of Divisions
         page = request.args.get('page', 1, type=int)
         pagination = Division.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['league'])
+        result = pagination_response(pagination, Routes['division'])
         resp = Response(dumps(result), status=200,
                         mimetype="application/json")
         return resp
