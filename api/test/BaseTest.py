@@ -6,7 +6,8 @@
 '''
 from api import app, DB
 from pprint import PrettyPrinter
-from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
+from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun, \
+    Division
 from base64 import b64encode
 from datetime import date
 from api.helper import loads
@@ -47,6 +48,7 @@ class TestSetup(unittest.TestCase):
         self.players_to_delete = []
         self.sponsors_to_delete = []
         self.leagues_to_delete = []
+        self.divisions_to_delete = []
         if (not self.tables_created()):
 
             DB.engine.execute('''
@@ -59,6 +61,7 @@ class TestSetup(unittest.TestCase):
                                   DROP TABLE IF EXISTS player;
                                   DROP TABLE IF EXISTS sponsor;
                                   DROP TABLE IF EXISTS league;
+                                  DROP TABLE IF EXISTS division;
                           ''')
             DB.create_all()
 
@@ -72,6 +75,7 @@ class TestSetup(unittest.TestCase):
         sponsor_query = Sponsor.query.get
         league_query = League.query.get
         fun_query = Fun.query.get
+        division_query = Division.query.get
         to_delete = (self.delete_list(self.espys_to_delete, espy_query) +
                      self.delete_list(self.bats_to_delete, bats_query) +
                      self.delete_list(self.games_to_delete, games_query) +
@@ -79,6 +83,8 @@ class TestSetup(unittest.TestCase):
                      self.delete_list(self.teams_to_delete, team_query) +
                      self.delete_list(self.sponsors_to_delete, sponsor_query) +
                      self.delete_list(self.leagues_to_delete, league_query) +
+                     self.delete_list(self.divisions_to_delete,
+                                      division_query) +
                      self.delete_list(self.fun_to_delete, fun_query))
         final_not_delete = to_delete
         if len(final_not_delete) > 0:
@@ -151,6 +157,18 @@ class TestSetup(unittest.TestCase):
         sponsor = Sponsor.query.get(loads(rv.data))
         self.sponsors_to_delete.append(sponsor.id)
         return sponsor.json()
+
+    def add_division(self, division_name):
+        """Returns" division json object the result of a post request"""
+        params = {"division_name": division_name}
+        rv = self.app.post(Routes['division'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add divsion object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add division object")
+        division = Division.query.get(loads(rv.data))
+        self.divisions_to_delete.append(division.id)
+        return division.json()
 
     def add_league(self, league_name):
         """Returns league json object that was created with a post request."""
@@ -335,6 +353,15 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(s1['link'], s2['link'], error_message)
         self.assertEqual(s1['description'], s2['description'], error_message)
         self.assertEqual(s1['active'], s2['active'], error_message)
+
+    def assertDivisionModelEqual(self, d1, d2, error_message=""):
+        """Asserts the two division json objects are equal"""
+        self.assertEqual(d1['division_name'],
+                         d2['division_name'], error_message)
+        self.assertEqual(d1['division_shortname'],
+                         d2['division_shortname'], error_message)
+        self.assertEqual(d1['division_id'],
+                         d2['division_id'], error_message)
 
     def assertLeagueModelEqual(self, l1, l2, error_message=""):
         """Asserts the two league json objects are equal."""
