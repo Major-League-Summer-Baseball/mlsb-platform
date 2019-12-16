@@ -671,7 +671,7 @@ class Division(DB.Model):
     def json(self):
         """Returns a jsonserializable object."""
         return {'division_id': self.id,
-                'divsion_name': self.name,
+                'division_name': self.name,
                 'division_shortname': self.shortname}
 
 
