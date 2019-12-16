@@ -10,7 +10,7 @@ from datetime import date, datetime
 from api.variables import HITS
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
-    NonUniqueEmail, PlayerNotOnTeam
+    NonUniqueEmail, PlayerNotOnTeam, DivisionDoesNotExist
 from api.validators import rbi_validator, hit_validator, inning_validator,\
     string_validator, date_validator, time_validator,\
     field_validator, year_validator, gender_validator,\
@@ -753,6 +753,7 @@ class Game(DB.Model):
                  home_team_id,
                  away_team_id,
                  league_id,
+                 division_id=None,
                  status="",
                  field=""):
         """The Constructor.
@@ -761,6 +762,7 @@ class Game(DB.Model):
             InvalidField
             TeamDoesNotExist
             LeagueDoesNotExist
+            DivisionDoesNotExist
         """
         # check for all the invalid parameters
         if not date_validator(date):
@@ -777,7 +779,10 @@ class Game(DB.Model):
         if ((status != "" and not string_validator(status)) or
                 (field != "" and not field_validator(field))):
             raise InvalidField(payload={'details': "Game - field/status"})
-        # must be good now
+        if (self.division_id is not None and
+                Division.query.get(division_id) is None):
+            raise DivisionDoesNotExist(payload={'details': division_id})
+            # must be good now
         self.home_team_id = home_team_id
         self.away_team_id = away_team_id
         self.league_id = league_id
@@ -817,7 +822,8 @@ class Game(DB.Model):
                away_team_id=None,
                league_id=None,
                status=None,
-               field=None):
+               field=None,
+               division_id=None):
         """Update an existing game.
 
         Raises:
@@ -857,6 +863,11 @@ class Game(DB.Model):
             self.field = field
         elif field is not None:
             raise InvalidField(payload={'details': "Game - field"})
+        if (division_id is not None and
+                Division.query.get(division_id) is not None):
+            self.division_id = division_id
+        elif division_id is not None:
+            raise DivisionDoesNotExist(payload={'details': "division_id"})
         # worse case just overwrites it with same date or time
         self.date = datetime.strptime(d + "-" + t, '%Y-%m-%d-%H:%M')
 
