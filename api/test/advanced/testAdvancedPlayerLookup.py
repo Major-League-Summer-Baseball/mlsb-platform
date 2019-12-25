@@ -32,7 +32,6 @@ class PlayerLookupTest(TestSetup):
         rv = self.app.post(Routes['vplayerLookup'], data={'player_name': name})
         self.output(expect)
         self.output(loads(rv.data))
-        print("sdfdskfhds")
         self.assertEqual(expect,
                          loads(rv.data),
                          Routes['vplayerLookup'] + ": invalid player name")
@@ -96,7 +95,6 @@ class PlayerLookupTest(TestSetup):
 
         # only active players
         active = 1
-        print("Hello sdfsd")
         rv = self.app.post(Routes['vplayerLookup'], data={'active': active,
                                                           'player_name': name})
         expect = []

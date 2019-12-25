@@ -104,7 +104,6 @@ class TeamTest(TestSetup):
         team = mocker.get_teams()[0]
         team_id = team['team_id']
         rv = self.app.post(Routes['vteam'], data={'league_id': league_id})
-        self.show_results = True
         expect = {'games': 1,
                   'hits_allowed': 3,
                   'hits_for': 2,
