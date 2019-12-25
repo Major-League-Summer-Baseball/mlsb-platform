@@ -753,7 +753,7 @@ class Game(DB.Model):
                  home_team_id,
                  away_team_id,
                  league_id,
-                 division_id=None,
+                 division_id,
                  status="",
                  field=""):
         """The Constructor.
@@ -779,8 +779,7 @@ class Game(DB.Model):
         if ((status != "" and not string_validator(status)) or
                 (field != "" and not field_validator(field))):
             raise InvalidField(payload={'details': "Game - field/status"})
-        if (self.division_id is not None and
-                Division.query.get(division_id) is None):
+        if Division.query.get(division_id) is None:
             raise DivisionDoesNotExist(payload={'details': division_id})
             # must be good now
         self.home_team_id = home_team_id

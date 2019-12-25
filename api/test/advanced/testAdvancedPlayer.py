@@ -36,21 +36,22 @@ class PlayerTest(TestSetup):
                          Routes['vplayer'] + " Post: invalid player id")
 
         # test an valid player id
-        player_id = mocker.get_players()[0]['player_id']
+        player = mocker.get_players()[0]
+        player_id = player['player_id']
         rv = self.app.post(Routes['vplayer'], data={"player_id": player_id})
-        expect = {'Test Player 1': {'avg': 0.5,
-                                    'bats': 2,
-                                    'd': 0,
-                                    'e': 0,
-                                    'fc': 0,
-                                    'fo': 0,
-                                    'go': 0,
-                                    'hr': 1,
-                                    'id': player_id,
-                                    'k': 1,
-                                    'rbi': 2,
-                                    's': 0,
-                                    'ss': 0}}
+        expect = {player['player_name']: {'avg': 0.5,
+                                          'bats': 2,
+                                          'd': 0,
+                                          'e': 0,
+                                          'fc': 0,
+                                          'fo': 0,
+                                          'go': 0,
+                                          'hr': 1,
+                                          'id': player_id,
+                                          'k': 1,
+                                          'rbi': 2,
+                                          's': 0,
+                                          'ss': 0}}
         self.output(expect)
         self.output(loads(rv.data))
         self.assertEqual(expect,

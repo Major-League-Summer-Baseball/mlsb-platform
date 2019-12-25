@@ -56,7 +56,7 @@ class TestPlayerTeamLookup(TestSetup):
         sponsor = mocker.get_sponsor()
 
         # test a test player names
-        params = {'player_name': mocker.get_players()[0]['player_name']}
+        params = {'player_name': player['player_name']}
         rv = self.app.post(Routes['vplayerteamLookup'], data=params)
         expect = [{'captain': player,
                    'color': team['color'],
@@ -73,26 +73,9 @@ class TestPlayerTeamLookup(TestSetup):
                          Routes['vplayerteamLookup'])
 
         # test a test player names
-        player_two = mocker.get_players()[3]
-        team_two = mocker.get_teams()[1]
-        params = {'player_name': "Test Player"}
+        params = {'player_name': "Not a player"}
         rv = self.app.post(Routes['vplayerteamLookup'], data=params)
-        expect = [{'captain': player,
-                   'color': team['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team['team_id'],
-                   'team_name': team['team_name'],
-                   'year': team['year']},
-                  {'captain': player_two,
-                   'color': team_two['color'],
-                   'espys': 0,
-                   'league_id': league['league_id'],
-                   'sponsor_id': sponsor['sponsor_id'],
-                   'team_id': team_two['team_id'],
-                   'team_name': team_two['team_name'],
-                   'year': team_two['year']}]
+        expect = []
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect,

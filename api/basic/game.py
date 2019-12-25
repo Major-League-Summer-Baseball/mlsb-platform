@@ -21,14 +21,17 @@ parser.add_argument('away_team_id', type=int)
 parser.add_argument('date', type=str)
 parser.add_argument('time', type=str)
 parser.add_argument('league_id', type=int)
+parser.add_argument('division_id', type=int)
 parser.add_argument('status', type=str)
 parser.add_argument('field', type=str)
+
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('home_team_id', type=int, required=True)
 post_parser.add_argument('away_team_id', type=int, required=True)
 post_parser.add_argument('date', type=str, required=True)
 post_parser.add_argument('time', type=str, required=True)
 post_parser.add_argument('league_id', type=int, required=True)
+post_parser.add_argument('division_id', type=int, required=True)
 post_parser.add_argument('status', type=str)
 post_parser.add_argument('field', type=str)
 
@@ -116,36 +119,15 @@ class GameAPI(Resource):
         """
         game = Game.query.get(game_id)
         args = parser.parse_args()
-        home_team_id = None
-        away_team_id = None
-        league_id = None
-        date = None
-        time = None
-        field = None
-        status = None
         if game is None:
             raise GameDoesNotExist(payload={'details': game_id})
-        if args['home_team_id']:
-            home_team_id = args['home_team_id']
-        if args['away_team_id']:
-            away_team_id = args['away_team_id']
-        if args['date']:
-            date = args['date']
-        if args['time']:
-            time = args['time']
-        if args['field']:
-            field = args['field']
-        if args['status']:
-            status = args['status']
-        if args['league_id']:
-            league_id = args['league_id']
-        game.update(date=date,
-                    time=time,
-                    home_team_id=home_team_id,
-                    away_team_id=away_team_id,
-                    league_id=league_id,
-                    status=status,
-                    field=field)
+        game.update(date=args.get('date', None),
+                    time=args.get('time', None),
+                    home_team_id=args.get('home_team_id', None),
+                    away_team_id=args.get('away_team_id', None),
+                    league_id=args.get('league_id', None),
+                    status=args.get('status', None),
+                    field=args.get('field', None))
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -211,31 +193,19 @@ class GameListAPI(Resource):
         """
         # create a new game
         args = post_parser.parse_args()
-        home_team_id = None
-        away_team_id = None
         date = None
         time = None
-        league_id = None
-        status = ""
-        field = ""
-        if args['home_team_id']:
-            home_team_id = args['home_team_id']
-        if args['away_team_id']:
-            away_team_id = args['away_team_id']
         if args['date'] and args['time']:
             date = args['date']
             time = args['time']
-        if args['league_id']:
-            league_id = args['league_id']
-        if args['status']:
-            status = args['status']
-        if args['field']:
-            field = args['field']
+        status = args.get('status') if args.get('status') is not None else ''
+        field = args.get('field') if args.get('field') is not None else ''
         game = Game(date,
                     time,
-                    home_team_id,
-                    away_team_id,
-                    league_id,
+                    args.get('home_team_id'),
+                    args.get('away_team_id'),
+                    args.get('league_id'),
+                    args.get('division_id'),
                     status=status,
                     field=field)
         DB.session.add(game)

@@ -5,7 +5,8 @@
 @summary: A script that initializes the databases and adds some demo data
 '''
 from api import DB
-from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat
+from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat,\
+    Division
 from api.variables import UNASSIGNED_EMAIL, HITS
 from tqdm import tqdm
 import requests
@@ -37,7 +38,7 @@ def mock_sponsors():
     return sponsor_lookup
 
 
-def mock_teams_games(league, sponsor_lookup):
+def mock_teams_games(league, division, sponsor_lookup):
     """
     mock_team_games
         Mocks up some data for the league by add some players to a team,
@@ -49,7 +50,7 @@ def mock_teams_games(league, sponsor_lookup):
             None
     """
     # add some players
-    domain = "@" + league.name.replace(" ", "")
+    domain = "@" + division.name.replace(" ", "").replace("&", "-")
     team_one_players = [Player("Captain1", "captain1" + domain, gender="M"),
                         Player("MalePlayer1", "mp1" + domain, gender="M"),
                         Player("FemalePlayer1", "fp1" + domain, gender="F")]
@@ -121,6 +122,7 @@ def mock_teams_games(league, sponsor_lookup):
                           teams[0].id,
                           teams[1].id,
                           league.id,
+                          division.id,
                           status=status,
                           field="WP1"))
         games.append(Game(date_string,
@@ -128,6 +130,7 @@ def mock_teams_games(league, sponsor_lookup):
                           teams[2].id,
                           teams[3].id,
                           league.id,
+                          division.id,
                           status=status,
                           field="WP2"))
         games.append(Game(date_string,
@@ -135,6 +138,7 @@ def mock_teams_games(league, sponsor_lookup):
                           teams[0].id,
                           teams[2].id,
                           league.id,
+                          division.id,
                           status=status,
                           field="WP1"))
         games.append(Game(date_string,
@@ -142,6 +146,7 @@ def mock_teams_games(league, sponsor_lookup):
                           teams[2].id,
                           teams[1].id,
                           league.id,
+                          division.id,
                           status=status,
                           field="WP2"))
         games.append(Game(date_string,
@@ -149,6 +154,7 @@ def mock_teams_games(league, sponsor_lookup):
                           teams[0].id,
                           teams[3].id,
                           league.id,
+                          division.id,
                           status=status,
                           field="WP1"))
         games.append(Game(date_string,
@@ -156,6 +162,7 @@ def mock_teams_games(league, sponsor_lookup):
                           teams[2].id,
                           teams[1].id,
                           league.id,
+                          division.id,
                           status=status,
                           field="WP2"))
 
@@ -181,6 +188,14 @@ def mock_league(league_name="Demo League"):
     DB.session.add(league)
     DB.session.commit()
     return league
+
+
+def mock_division(division="Monday & Wednesday"):
+    """Returns a mock division that was added to local DB."""
+    division_model = Division(division)
+    DB.session.add(division_model)
+    DB.session.commit()
+    return division_model
 
 
 def create_fresh_tables():
@@ -306,6 +321,31 @@ def pull_leagues(url):
         DB.session.add(temp)
     DB.session.commit()
     return leagues_lookup
+
+
+def pull_divisions(url):
+    """
+    pull_divisions
+        Returns a lookup of divisions that were pulled
+        from the website into local DB
+        Parameters:
+            url: the url of the main site
+        Returns:
+            a dictionary lookup
+                for the website division id to local division object
+                e.g. division_lookup = {1: Division(), etc..}
+    """
+    _divisions = requests.get(url + "/api/leagues").json()
+    if isinstance(_divisions, dict):
+        _divisions = pull_all_pages(url, _divisions)
+    divisions_lookup = {}
+    for division in tqdm(_divisions,
+                         desc="Pulling divisions from {}".format(url)):
+        temp = Division(division['division_name'])
+        divisions_lookup[division['league_id']] = temp
+        DB.session.add(temp)
+    DB.session.commit()
+    return divisions_lookup
 
 
 def create_email(player_name):
@@ -498,9 +538,9 @@ def init_database(mock, copy_locally, url, create_db):
         mock_fun_count()
         sponsor_lookup = mock_sponsors()
         league = mock_league()
-        mock_teams_games(league, sponsor_lookup)
-        league_2 = mock_league(league_name="Mock League 2")
-        mock_teams_games(league_2, sponsor_lookup)
+        mock_teams_games(league, mock_division(), sponsor_lookup)
+        mock_teams_games(league, mock_division(
+            division="Tuesday & Thursday"), sponsor_lookup)
     else:
         if(copy_locally):
             print("Pulling a local copy of the given website")

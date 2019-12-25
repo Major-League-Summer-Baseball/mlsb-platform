@@ -4,6 +4,7 @@
 @organization: MLSB API
 @summary: Used to mock a league for advanced testings
 '''
+from uuid import uuid1
 import datetime
 
 
@@ -11,15 +12,17 @@ class MockLeague():
 
     def __init__(self, tester):
         # add a league
-        self.league = tester.add_league("Advanced Test League")
-        self.sponsor = tester.add_sponsor("Advanced Test Sponsor")
+        self.division = tester.add_division(str(uuid1()))
+        self.league = tester.add_league(str(uuid1()))
+        self.sponsor = tester.add_sponsor(str(uuid1()))
         self.field = "WP1"
 
         # add some players
-        players = [("Test Player 1", "TestPlayer1@mlsb.ca", "M"),
-                   ("Test Player 2", "TestPlayer2@mlsb.ca", "F"),
-                   ("Test Player 3", "TestPlayer3@mlsb.ca", "M"),
-                   ("Test Player 4", "TestPlayer4@mlsb.ca", "F")]
+        names = [str(uuid1()) for i in range(0, 4)]
+        players = [(names[0], names[0] + "@testing.ca", "M"),
+                   (names[1], names[1] + "@testing.ca", "F"),
+                   (names[2], names[2] + "@testing.ca", "M"),
+                   (names[3], names[3] + "@testing.ca", "F")]
         self.players = []
         for player in players:
             self.players.append(tester.add_player(player[0],
@@ -27,8 +30,8 @@ class MockLeague():
                                                   gender=player[2]))
 
         # add some teams
-        teams = [("Test Team", self.sponsor, self.league),
-                 ("Test Team 2", self.sponsor, self.league)]
+        teams = [(str(uuid1()), self.sponsor, self.league),
+                 (str(uuid1()), self.sponsor, self.league)]
         self.teams = []
         for team in teams:
             self.teams.append(tester.add_team(team[0],
@@ -52,17 +55,23 @@ class MockLeague():
                   "10:00",
                   self.teams[0],
                   self.teams[1],
-                  self.league, self.field),
+                  self.league,
+                  self.division,
+                  self.field),
                  (today_string,
                   "10:00",
                   self.teams[1],
                   self.teams[0],
-                  self.league, self.field),
+                  self.league,
+                  self.division,
+                  self.field),
                  (next_week_string,
                   "10:00",
                   self.teams[0],
                   self.teams[1],
-                  self.league, self.field),
+                  self.league,
+                  self.division,
+                  self.field),
                  ]
         self.games = []
         for game in games:
@@ -71,7 +80,8 @@ class MockLeague():
                                               game[2],
                                               game[3],
                                               game[4],
-                                              field=game[5]))
+                                              game[5],
+                                              field=game[6]))
 
         # add some bats to the games
         bats = [(self.players[0], self.teams[0], self.games[0], "K", 0),
@@ -113,4 +123,5 @@ class MockLeague():
         return self.teams
 
     def get_player_email(self, index):
-        return self.players[index]['player_name'].replace(" ", "") + "@mlsb.ca"
+        name = self.players[index]['player_name'].replace(" ", "")
+        return name + "@testing.ca"
