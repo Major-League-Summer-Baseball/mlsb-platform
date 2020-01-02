@@ -47,7 +47,13 @@ class MockLeague():
         # add some games between the teams
         today = datetime.date.today()
         week_ago = today - datetime.timedelta(days=7)
+        if (week_ago.year != today.year):
+            week_ago = datetime.datetime.combine(
+                datetime.date(today.year, 1, 1), datetime.time(0, 0))
         next_week = today + datetime.timedelta(days=3)
+        if (next_week.year != today.year):
+            next_week = datetime.datetime.combine(
+                datetime.date(today.year, 1, 1), datetime.time(18, 0))
         last_week_string = week_ago.strftime("%Y-%m-%d")
         today_string = today.strftime("%Y-%m-%d")
         next_week_string = next_week.strftime("%Y-%m-%d")
