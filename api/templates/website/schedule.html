@@ -48,13 +48,13 @@ function displayLeague(league_id, games){
                     "responsive": true,
                     "order": [[0, "asc"]],
                     "columns": [
-                        {"data": "date"},
-                        {"data": "time"},
-                        {"data": "home_team", "render": homeTeamLinkRender},
-                        {"data": "away_team", "render": awayTeamLinkRender},
-                        {"data": "field"},
-                        {"data": "score"},
-                        {"data": "status"}
+                        {"data": "date", "responsivePriority": 1},
+                        {"data": "time", "responsivePriority": 2},
+                        {"data": "home_team", "render": homeTeamLinkRender, "responsivePriority": 3},
+                        {"data": "away_team", "render": awayTeamLinkRender, "responsivePriority": 4},
+                        {"data": "field", "responsivePriority": 5},
+                        {"data": "score", "responsivePriority": 6},
+                        {"data": "status", "responsivePriority": 7}
                     ]
                     
     });
