@@ -52,6 +52,7 @@ Routes['dosponsor'] = "/documentation/object/sponsor"
 Routes['doteam'] = "/documentation/object/team"
 Routes['doteamroster'] = "/documentation/object/teamroster"
 Routes['doleague'] = "/documentation/object/league"
+Routes['dodivision'] = "/documentation/object/division"
 Routes['dofun'] = "/documentation/object/fun"
 Routes['dopagination'] = "/documentation/object/pagination"
 
@@ -63,6 +64,7 @@ Routes['dbsponsor'] = "/documentation/basic/sponsor"
 Routes['dbteam'] = "/documentation/basic/team"
 Routes['dbteamroster'] = "/documentation/basic/teamroster"
 Routes['dbleague'] = "/documentation/basic/league"
+Routes['dbdivision'] = "/documentation/basic/division"
 Routes['dbfun'] = "/documentation/basic/fun"
 
 # dv = documentation view
