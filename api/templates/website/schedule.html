@@ -24,10 +24,10 @@
                 <tr>
                     <th>Date</th>
                     <th>Time</th>
-                    <th>Score</th>
                     <th>Home Team</th>
                     <th>Away Team</th>
                     <th>Field</th>
+                    <th>Score</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -45,14 +45,15 @@
 function displayLeague(league_id, games){
     var table = $('#'+ league_id +'League').DataTable({
                     "data": games,
+                    "responsive": true,
                     "order": [[0, "asc"]],
                     "columns": [
                         {"data": "date"},
                         {"data": "time"},
-                        {"data": "score"},
                         {"data": "home_team", "render": homeTeamLinkRender},
                         {"data": "away_team", "render": awayTeamLinkRender},
                         {"data": "field"},
+                        {"data": "score"},
                         {"data": "status"}
                     ]
                     
