@@ -787,7 +787,7 @@ class Game(DB.Model):
         self.league_id = league_id
         self.status = status
         self.field = field
-        self.division_id = None
+        self.division_id = division_id
 
     def __repr__(self):
         """Returns the string representation of the Game."""
