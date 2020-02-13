@@ -22,11 +22,11 @@
         <table id="{{league.league_id}}League" width="100%" class="display">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Home Team</th>
-                    <th>Away Team</th>
-                    <th>Field</th>
+                    <th data-priority="1" >Date</th>
+                    <th data-priority="2" >Time</th>
+                    <th data-priority="3" >Home Team</th>
+                    <th data-priority="4" >Away Team</th>
+                    <th data-priority="5" >Field</th>
                     <th>Score</th>
                     <th>Status</th>
                 </tr>
@@ -48,13 +48,13 @@ function displayLeague(league_id, games){
                     "responsive": true,
                     "order": [[0, "asc"]],
                     "columns": [
-                        {"data": "date", "responsivePriority": 1},
-                        {"data": "time", "responsivePriority": 2},
-                        {"data": "home_team", "render": homeTeamLinkRender, "responsivePriority": 3},
-                        {"data": "away_team", "render": awayTeamLinkRender, "responsivePriority": 4},
-                        {"data": "field", "responsivePriority": 5},
-                        {"data": "score", "responsivePriority": 6},
-                        {"data": "status", "responsivePriority": 7}
+                        {"data": "date"},
+                        {"data": "time"},
+                        {"data": "home_team", "render": homeTeamLinkRender},
+                        {"data": "away_team", "render": awayTeamLinkRender},
+                        {"data": "field"},
+                        {"data": "score"},
+                        {"data": "status"}
                     ]
                     
     });
