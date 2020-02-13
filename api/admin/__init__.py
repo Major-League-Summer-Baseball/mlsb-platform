@@ -15,7 +15,7 @@ from api.routes import Routes
 from api import app
 from api import DB
 from api.errors import InvalidField
-from api.model import Team, Player, Sponsor, League, Game, Espys, Fun
+from api.model import Team, Player, Sponsor, League, Game, Espys, Fun, Division
 from api.variables import BATS
 from api.authentication import check_auth
 from datetime import date, time, datetime
@@ -240,6 +240,17 @@ def admin_edit_fun(year):
                            route=Routes,
                            funs=get_funs(),
                            title="Edit Fun")
+
+
+@app.route(Routes['editdivision'] + "/<int:year>")
+def admin_edit_division(year):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    return render_template("admin/editDivision.html",
+                           year=year,
+                           route=Routes,
+                           divisions=get_divisions(),
+                           title="Edit Division")
 
 
 @app.route(Routes['editleague'] + "/<int:year>")
@@ -543,6 +554,11 @@ def get_leagues():
 def get_funs():
     results = Fun.query.all()
     return [fun.json() for fun in results]
+
+
+def get_divisions():
+    results = Division.query.all()
+    return [division.json() for division in results]
 
 
 def get_players(active=True):
