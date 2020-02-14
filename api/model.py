@@ -769,9 +769,9 @@ class Game(DB.Model):
         if not time_validator(time):
             raise InvalidField(payload={'details': "Game - time"})
         self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
-        if (Team.query.get(home_team_id) is None):
+        if (home_team_id is None or Team.query.get(home_team_id) is None):
             raise TeamDoesNotExist(payload={'details': home_team_id})
-        if Team.query.get(away_team_id) is None:
+        if (away_team_id is None or Team.query.get(away_team_id) is None):
             raise TeamDoesNotExist(payload={'details': away_team_id})
         if League.query.get(league_id) is None:
             raise LeagueDoesNotExist(payload={'details': league_id})
