@@ -104,7 +104,7 @@
                 </select>
             </td>
             <td>
-                <select class="selectpicker" value="" id="new_division_id" onclick="updateTeams();">
+                <select class="selectpicker" value="" id="new_division_id">
                     {% for division in divisions%}
                         <option value="{{division.division_id}}" class="Divisions">{{division.division_name}}</option>
                     {% endfor %}
@@ -242,9 +242,18 @@ function parseData() {
     if (away_team_id == home_team_id) {
         alert("One team cannot play itself");
         return null;
-    } else if (date == "") {
-        alert("Need a date");
+    } else if (date == '' || time == '') {
+        alert("Need a date and a time");
         return null;
+    } else if (away_team_id == null) {
+        alert("Forgot to set the away team");
+        return null;
+    } else if (home_team_id == null) {
+        alert('Forgot to set the home team');
+        return;
+    } else if (field == '') {
+        alert("Forgot to set the field");
+        return;
     }
     return {
       'league_id': league_id,
@@ -257,6 +266,18 @@ function parseData() {
       'field':field
     };
 }
+
+function clearData() {
+    $('#new_league_id').val('');
+    $('#new_division_id').val('');
+    $('#new_away_team_id').val('');
+    $('#new_home_team_id').val('');
+    $('#new_field').val('');
+    $('#new_time').val('');
+    $('#new_date').val('');
+    $('#new_status').val('');
+}
+
 /**
  * A function that produces the HTML for the division row
  * @param {int} id - the id of the row
@@ -293,7 +314,7 @@ function produceRow(id, data) {
         </a>
       </td>
       <td>
-        <button type="button" class="btn btn-danger" onclick="deleteGame('${id}');>
+        <button type="button" class="btn btn-danger" onclick="deleteGame('${id}');">
           Delete
         </button>
       </td>
@@ -324,6 +345,7 @@ function postGame() {
           const newRow = produceRow(game_id, data);
           console.log(newRow);
           $("#gameTable").append(newRow);
+          clearData();
       }, error: function(request, error){
           showErrors(request.responseJSON, request.status);
           console.error(request);
