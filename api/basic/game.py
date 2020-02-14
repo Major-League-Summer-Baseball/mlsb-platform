@@ -126,6 +126,7 @@ class GameAPI(Resource):
                     home_team_id=args.get('home_team_id', None),
                     away_team_id=args.get('away_team_id', None),
                     league_id=args.get('league_id', None),
+                    division_id=args.get('division_id', None),
                     status=args.get('status', None),
                     field=args.get('field', None))
         DB.session.commit()
