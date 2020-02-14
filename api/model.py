@@ -627,7 +627,6 @@ class Division(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120))
     shortname = DB.Column(DB.String(120))
-    team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
     games = DB.relationship('Game', backref='division', lazy='dynamic')
 
     def __init__(self, name, shortname=None):
