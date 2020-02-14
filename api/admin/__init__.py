@@ -334,6 +334,7 @@ def admin_edit_game(year):
         return redirect(url_for('admin_login'))
     results = Team.query.filter(Team.year == year).all()
     leagues = get_leagues()
+    divisions = get_divisions()
     teams = []
     for league in leagues:
         while len(teams) < league['league_id'] + 1:
@@ -354,7 +355,8 @@ def admin_edit_game(year):
                            route=Routes,
                            teams=teams,
                            title="Edit Game",
-                           leagues=get_leagues(),
+                           leagues=leagues,
+                           divisions=divisions,
                            games=games)
 
 
