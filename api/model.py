@@ -4,6 +4,9 @@
 @organization: MLSB API
 @summary: Holds the model for the database
 """
+from sqlalchemy.orm import column_property
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import and_, select, func, or_
 from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime
@@ -118,6 +121,15 @@ class Espys(DB.Model):
             self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         else:
             self.date = datetime.today()
+
+    def __add__(self, other):
+        """Adds two Espys or an int together"""
+        if (isinstance(other, Espys)):
+            return self.points + other.points
+        else:
+            return self.points + other
+
+    __radd__ = __add__
 
     def update(self,
                team_id=None,
@@ -329,6 +341,100 @@ class Player(DB.Model):
         self.active = False
 
 
+class Sponsor(DB.Model):
+    """
+    A class that stores information about a sponsor.
+    Columns:
+        id: the sponsor's unique id
+        name: the name of the sponsor
+        teams: the teams the sponsor is associated with
+        description: a description of the sponsor
+        link: a link to the sponsor's website or facebook
+        active: a boolean telling whether the sponsor
+                is currently sponsoring a team
+        espys: all the espys transaction associated with the sponsor
+    """
+    __tablename__ = 'sponsor'
+    id = DB.Column(DB.Integer, primary_key=True)
+    name = DB.Column(DB.String(120), unique=True)
+    teams = DB.relationship('Team', backref='sponsor',
+                            lazy='dynamic')
+    description = DB.Column(DB.String(200))
+    link = DB.Column(DB.String(100))
+    active = DB.Column(DB.Boolean)
+    espys = DB.relationship('Espys', backref='sponsor', lazy='dynamic')
+    nickname = DB.Column(DB.String(100))
+
+    def __init__(self,
+                 name,
+                 link=None,
+                 description=None,
+                 active=True,
+                 nickname=None):
+        """The constructor.
+
+           Raises:
+               InvalidField
+        """
+        if not string_validator(name):
+            raise InvalidField(payload={'details': "Sponsor - name"})
+        if not string_validator(link):
+            raise InvalidField(payload={'details': "Sponsor - link"})
+        if not string_validator(description):
+            raise InvalidField(payload={'details': "Sponsor - description"})
+        self.name = name
+        self.description = description
+        self.link = link
+        self.active = active
+        if nickname is None:
+            self.nickname = name
+        else:
+            self.nickname = nickname
+
+    def __repr__(self):
+        """Returns the string representation of the sponsor."""
+        return self.name if self.name is not None else ""
+
+    def json(self):
+        """Returns a jsonserializable object."""
+        return {'sponsor_id': self.id,
+                'sponsor_name': self.name,
+                'link': self.link,
+                'description': self.description,
+                'active': self.active}
+
+    def update(self, name=None, link=None, description=None, active=None):
+        """Updates an existing sponsor.
+
+           Raises:
+               InvalidField
+        """
+        if name is not None and string_validator(name):
+            self.name = name
+        elif name is not None:
+            raise InvalidField(payload={'details': "Sponsor - name"})
+        if description is not None and string_validator(description):
+            self.description = description
+        elif description is not None:
+            raise InvalidField(payload={'details': "Sponsor - description"})
+        if link is not None and string_validator(link):
+            self.link = link
+        elif link is not None:
+            raise InvalidField(payload={'details': "Sponsor - link"})
+        if active is not None and boolean_validator(active):
+            self.active = active
+        elif active is not None:
+            raise InvalidField(payload={'detail': "Player - active"})
+
+    def activate(self):
+        """Activate a sponsor (they are back baby)."""
+        self.active = True
+
+    def deactivate(self):
+        """Deactivate a sponsor (they are no longer sponsoring). """
+        self.active = False
+
+
 class Team(DB.Model):
     """
     A class that stores information about a team.
@@ -366,6 +472,10 @@ class Team(DB.Model):
     espys = DB.relationship('Espys',
                             backref='team',
                             lazy='dynamic')
+    espys_total = column_property(select([func.sum(Espys.points)]).where(
+        Espys.team_id == id).correlate_except(Espys), deferred=True)
+    sponsor_name = column_property(select([Sponsor.nickname]).where(
+        Sponsor.id == sponsor_id).correlate_except(Sponsor))
 
     def __init__(self,
                  color=None,
@@ -395,21 +505,14 @@ class Team(DB.Model):
 
     def __repr__(self):
         """Returns the string representation."""
-        result = []
-        if self.sponsor_id is not None:
-            sponsor = Sponsor.query.get(self.sponsor_id)
-            if sponsor is not None and sponsor.nickname is not None:
-                result.append(sponsor.nickname)
-        if self.color is not None:
-            result.append(self.color)
-        return " ".join(result)
-
-    def espys_awarded(self):
-        """Returns the number of espy ponts the team has."""
-        count = 0
-        for espy in self.espys:
-            count += espy.points
-        return count
+        if self.sponsor_name is not None and self.color is not None:
+            return f"{self.sponsor_name} {self.color}"
+        elif self.sponsor_name is not None:
+            return f"{self.sponsor_name}"
+        elif self.color is not None:
+            return f"{self.color}"
+        else:
+            return f"Team: {self.id}"
 
     def json(self):
         """Returns a jsonserializable object."""
@@ -520,100 +623,6 @@ class Team(DB.Model):
         pass
 
 
-class Sponsor(DB.Model):
-    """
-    A class that stores information about a sponsor.
-    Columns:
-        id: the sponsor's unique id
-        name: the name of the sponsor
-        teams: the teams the sponsor is associated with
-        description: a description of the sponsor
-        link: a link to the sponsor's website or facebook
-        active: a boolean telling whether the sponsor
-                is currently sponsoring a team
-        espys: all the espys transaction associated with the sponsor
-    """
-    __tablename__ = 'sponsor'
-    id = DB.Column(DB.Integer, primary_key=True)
-    name = DB.Column(DB.String(120), unique=True)
-    teams = DB.relationship('Team', backref='sponsor',
-                            lazy='dynamic')
-    description = DB.Column(DB.String(200))
-    link = DB.Column(DB.String(100))
-    active = DB.Column(DB.Boolean)
-    espys = DB.relationship('Espys', backref='sponsor', lazy='dynamic')
-    nickname = DB.Column(DB.String(100))
-
-    def __init__(self,
-                 name,
-                 link=None,
-                 description=None,
-                 active=True,
-                 nickname=None):
-        """The constructor.
-
-           Raises:
-               InvalidField
-        """
-        if not string_validator(name):
-            raise InvalidField(payload={'details': "Sponsor - name"})
-        if not string_validator(link):
-            raise InvalidField(payload={'details': "Sponsor - link"})
-        if not string_validator(description):
-            raise InvalidField(payload={'details': "Sponsor - description"})
-        self.name = name
-        self.description = description
-        self.link = link
-        self.active = active
-        if nickname is None:
-            self.nickname = name
-        else:
-            self.nickname = nickname
-
-    def __repr__(self):
-        """Returns the string representation of the sponsor."""
-        return self.name if self.name is not None else ""
-
-    def json(self):
-        """Returns a jsonserializable object."""
-        return {'sponsor_id': self.id,
-                'sponsor_name': self.name,
-                'link': self.link,
-                'description': self.description,
-                'active': self.active}
-
-    def update(self, name=None, link=None, description=None, active=None):
-        """Updates an existing sponsor.
-
-           Raises:
-               InvalidField
-        """
-        if name is not None and string_validator(name):
-            self.name = name
-        elif name is not None:
-            raise InvalidField(payload={'details': "Sponsor - name"})
-        if description is not None and string_validator(description):
-            self.description = description
-        elif description is not None:
-            raise InvalidField(payload={'details': "Sponsor - description"})
-        if link is not None and string_validator(link):
-            self.link = link
-        elif link is not None:
-            raise InvalidField(payload={'details': "Sponsor - link"})
-        if active is not None and boolean_validator(active):
-            self.active = active
-        elif active is not None:
-            raise InvalidField(payload={'detail': "Player - active"})
-
-    def activate(self):
-        """Activate a sponsor (they are back baby)."""
-        self.active = True
-
-    def deactivate(self):
-        """Deactivate a sponsor (they are no longer sponsoring). """
-        self.active = False
-
-
 class Division(DB.Model):
     """
     a class that holds all the information for a division in a eague.
@@ -718,6 +727,134 @@ class League(DB.Model):
         self.name = league
 
 
+class Bat(DB.Model):
+    """
+    A class that stores information about a Bat.
+    Columns:
+        id: the bat id
+        game_id: the game that bat took place in
+        team_id: the team the bat was for
+        player_id: the player who took the bat
+        rbi: the number of runs batted in
+        inning: the inning the bat took place
+        classification: how the bat would be classified (see BATS)
+    """
+    id = DB.Column(DB.Integer, primary_key=True)
+    game_id = DB.Column(DB.Integer, DB.ForeignKey('game.id'))
+    team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
+    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
+    rbi = DB.Column(DB.Integer)
+    inning = DB.Column(DB.Integer)
+    classification = DB.Column(DB.String(2))
+
+    def __init__(self,
+                 player_id,
+                 team_id,
+                 game_id,
+                 classification,
+                 inning=1,
+                 rbi=0):
+        """The constructor.
+
+        Raises:
+            PlayerDoesNotExist
+            InvalidField
+            TeamDoesNotExist
+            GameDoesNotExist
+        """
+        # check for exceptions
+        classification = classification.lower().strip()
+        player = Player.query.get(player_id)
+        if player is None:
+            raise PlayerDoesNotExist(payload={'details': player_id})
+        if not hit_validator(classification, player.gender):
+            raise InvalidField(payload={'details': "Bat - hit"})
+        if not rbi_validator(rbi):
+            raise InvalidField(payload={'details': "Bat - rbi"})
+        if not inning_validator(inning):
+            raise InvalidField(payload={'details': "Bat - inning"})
+        if Team.query.get(team_id) is None:
+            raise TeamDoesNotExist(payload={'details': team_id})
+        if Game.query.get(game_id) is None:
+            raise GameDoesNotExist(payload={'details': game_id})
+        # otherwise good and a valid object
+        self.classification = classification
+        self.rbi = rbi
+        self.player_id = player_id
+        self.team_id = team_id
+        self.game_id = game_id
+        self.inning = inning
+
+    def __repr__(self):
+        """Returns the string representation of the Bat."""
+        player = Player.query.get(self.player_id)
+        return (player.name + "-" + self.classification + " in " +
+                str(self.inning))
+
+    def __add__(self, other):
+        """Adds two Bat or an int together"""
+        if (isinstance(other, Bat)):
+            return self.rbi + other.rbi
+        else:
+            return self.rbi + other
+
+    __radd__ = __add__
+
+    def json(self):
+        """Returns a jsonserializable object."""
+        return{
+            'bat_id': self.id,
+            'game_id': self.game_id,
+            'team_id': self.team_id,
+            'team': str(Player.query.get(self.team_id)),
+            'rbi': self.rbi,
+            'hit': self.classification,
+            'inning': self.inning,
+            'player_id': self.player_id,
+            'player': str(Player.query.get(self.player_id))
+        }
+
+    def update(self,
+               player_id=None,
+               team_id=None,
+               game_id=None,
+               rbi=None,
+               hit=None,
+               inning=None):
+        """Update an existing bat.
+
+        Raises:
+            TeamDoesNotExist
+            GameDoesNotExist
+            PlayerDoesNotExist
+            InvalidField
+        """
+        if team_id is not None and Team.query.get(team_id) is not None:
+            self.team_id = team_id
+        elif team_id is not None:
+            raise TeamDoesNotExist(payload={'details': team_id})
+        if game_id is not None and Game.query.get(game_id) is not None:
+            self.game_id = game_id
+        elif game_id is not None:
+            raise GameDoesNotExist(payload={'details': game_id})
+        if player_id is not None and Player.query.get(player_id) is not None:
+            self.player_id = player_id
+        elif player_id is not None:
+            raise PlayerDoesNotExist(payload={'details': player_id})
+        if rbi is not None and rbi_validator(rbi):
+            self.rbi = rbi
+        elif rbi is not None:
+            raise InvalidField(payload={'details': "Bat - rbi"})
+        if hit is not None and hit_validator(hit):
+            self.classification = hit
+        elif hit is not None:
+            raise InvalidField(payload={'details': "Bat - hit"})
+        if inning is not None and inning_validator(inning):
+            self.inning = inning
+        elif inning is not None:
+            raise InvalidField(payload={'details': "Bat - inning"})
+
+
 class Game(DB.Model):
     """
     A class that holds information about a Game.
@@ -745,16 +882,43 @@ class Game(DB.Model):
     date = DB.Column(DB.DateTime)
     status = DB.Column(DB.String(120))
     field = DB.Column(DB.String(120))
+    away_team_score = column_property(select([func.sum(Bat.rbi)])
+                                      .where(and_(
+                                          (Bat.game_id == id),
+                                          (Bat.team_id == away_team_id)))
+                                      .correlate_except(Bat),
+                                      deferred=True,
+                                      group='summary')
+    home_team_score = column_property(select([func.sum(Bat.rbi)])
+                                      .where(and_(
+                                          (Bat.game_id == id),
+                                          (Bat.team_id == home_team_id)))
+                                      .correlate_except(Bat),
+                                      deferred=True,
+                                      group='summary')
+    hit_clause = or_((Bat.classification == 's'),
+                     (Bat.classification == 'ss'),
+                     (Bat.classification == 'd'),
+                     (Bat.classification == 'hr'))
+    home_team_hits = column_property(select([func.count(Bat.id)])
+                                     .where(and_(
+                                         (Bat.game_id == id),
+                                         (Bat.team_id == home_team_id),
+                                         hit_clause))
+                                     .correlate_except(Bat),
+                                     deferred=True,
+                                     group='summary')
+    away_team_hits = column_property(select([func.count(Bat.id)])
+                                     .where(and_(
+                                         (Bat.game_id == id),
+                                         (Bat.team_id == away_team_id),
+                                         hit_clause))
+                                     .correlate_except(Bat),
+                                     deferred=True,
+                                     group='summary')
 
-    def __init__(self,
-                 date,
-                 time,
-                 home_team_id,
-                 away_team_id,
-                 league_id,
-                 division_id,
-                 status="",
-                 field=""):
+    def __init__(self, date, time, home_team_id, away_team_id, league_id,
+                 division_id, status="", field=""):
         """The Constructor.
 
         Raises:
@@ -871,139 +1035,13 @@ class Game(DB.Model):
 
     def summary(self):
         """Returns a game summary."""
-        away_bats = 0
-        home_bats = 0
-        away_score = 0
-        home_score = 0
-        for bat in self.bats:
-            if bat.team_id == self.home_team_id:
-                home_score += bat.rbi
-                home_bats += 1 if bat.classification in HITS else 0
-            elif bat.team_id == self.away_team_id:
-                away_score += bat.rbi
-                away_bats += 1 if bat.classification in HITS else 0
         return {
-            'away_score': away_score,
-            'away_bats': away_bats,
-            'home_score': home_score,
-            'home_bats': home_bats
+            'away_score': self.away_team_score
+            if self.away_team_score is not None else 0,
+            'away_bats': self.away_team_hits
+            if self.away_team_hits is not None else 0,
+            'home_score': self.home_team_score
+            if self.home_team_score is not None else 0,
+            'home_bats': self.home_team_hits
+            if self.home_team_hits is not None else 0
         }
-
-
-class Bat(DB.Model):
-    """
-    A class that stores information about a Bat.
-    Columns:
-        id: the bat id
-        game_id: the game that bat took place in
-        team_id: the team the bat was for
-        player_id: the player who took the bat
-        rbi: the number of runs batted in
-        inning: the inning the bat took place
-        classification: how the bat would be classified (see BATS)
-    """
-    id = DB.Column(DB.Integer, primary_key=True)
-    game_id = DB.Column(DB.Integer, DB.ForeignKey('game.id'))
-    team_id = DB.Column(DB.Integer, DB.ForeignKey('team.id'))
-    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
-    rbi = DB.Column(DB.Integer)
-    inning = DB.Column(DB.Integer)
-    classification = DB.Column(DB.String(2))
-
-    def __init__(self,
-                 player_id,
-                 team_id,
-                 game_id,
-                 classification,
-                 inning=1,
-                 rbi=0):
-        """The constructor.
-
-        Raises:
-            PlayerDoesNotExist
-            InvalidField
-            TeamDoesNotExist
-            GameDoesNotExist
-        """
-        # check for exceptions
-        classification = classification.lower().strip()
-        player = Player.query.get(player_id)
-        if player is None:
-            raise PlayerDoesNotExist(payload={'details': player_id})
-        if not hit_validator(classification, player.gender):
-            raise InvalidField(payload={'details': "Bat - hit"})
-        if not rbi_validator(rbi):
-            raise InvalidField(payload={'details': "Bat - rbi"})
-        if not inning_validator(inning):
-            raise InvalidField(payload={'details': "Bat - inning"})
-        if Team.query.get(team_id) is None:
-            raise TeamDoesNotExist(payload={'details': team_id})
-        if Game.query.get(game_id) is None:
-            raise GameDoesNotExist(payload={'details': game_id})
-        # otherwise good and a valid object
-        self.classification = classification
-        self.rbi = rbi
-        self.player_id = player_id
-        self.team_id = team_id
-        self.game_id = game_id
-        self.inning = inning
-
-    def __repr__(self):
-        """Returns the string representation of the Bat."""
-        player = Player.query.get(self.player_id)
-        return (player.name + "-" + self.classification + " in " +
-                str(self.inning))
-
-    def json(self):
-        """Returns a jsonserializable object."""
-        return{
-            'bat_id': self.id,
-            'game_id': self.game_id,
-            'team_id': self.team_id,
-            'team': str(Player.query.get(self.team_id)),
-            'rbi': self.rbi,
-            'hit': self.classification,
-            'inning': self.inning,
-            'player_id': self.player_id,
-            'player': str(Player.query.get(self.player_id))
-        }
-
-    def update(self,
-               player_id=None,
-               team_id=None,
-               game_id=None,
-               rbi=None,
-               hit=None,
-               inning=None):
-        """Update an existing bat.
-
-        Raises:
-            TeamDoesNotExist
-            GameDoesNotExist
-            PlayerDoesNotExist
-            InvalidField
-        """
-        if team_id is not None and Team.query.get(team_id) is not None:
-            self.team_id = team_id
-        elif team_id is not None:
-            raise TeamDoesNotExist(payload={'details': team_id})
-        if game_id is not None and Game.query.get(game_id) is not None:
-            self.game_id = game_id
-        elif game_id is not None:
-            raise GameDoesNotExist(payload={'details': game_id})
-        if player_id is not None and Player.query.get(player_id) is not None:
-            self.player_id = player_id
-        elif player_id is not None:
-            raise PlayerDoesNotExist(payload={'details': player_id})
-        if rbi is not None and rbi_validator(rbi):
-            self.rbi = rbi
-        elif rbi is not None:
-            raise InvalidField(payload={'details': "Bat - rbi"})
-        if hit is not None and hit_validator(hit):
-            self.classification = hit
-        elif hit is not None:
-            raise InvalidField(payload={'details': "Bat - hit"})
-        if inning is not None and inning_validator(inning):
-            self.inning = inning
-        elif inning is not None:
-            raise InvalidField(payload={'details': "Bat - inning"})

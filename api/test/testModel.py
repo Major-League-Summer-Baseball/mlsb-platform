@@ -9,6 +9,7 @@ from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
     LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, GameDoesNotExist, DivisionDoesNotExist
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
+from sqlalchemy.orm import undefer
 from datetime import datetime
 import unittest
 import uuid
@@ -363,6 +364,25 @@ class TeamModelTest(TestSetup):
         team_model.remove_player(player['player_id'])
         self.assertFalse(team_model.is_player_on_team(Player.query.get(
             player['player_id'])), "Expecting player to be removed from team")
+
+    def testEspsysTotal(self):
+        """Test that espys total work"""
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team = self.add_team(color="Blacl",
+                             sponsor=sponsor,
+                             league=league)
+
+        # award the team 3 espys points in from two different
+        # transactions
+        espy_one = self.add_espys(team, sponsor, points=1)
+        espy_two = self.add_espys(team, sponsor, points=2)
+
+        # assert that their total is 3 points
+        self.assertEqual(Team.query.options(undefer('espys_total'))
+                         .get(team['team_id']).espys_total,
+                         espy_one['points'] + espy_two['points'],
+                         "Expecting 3 espys points to be awarded")
 
 
 class GameModelTest(TestSetup):
