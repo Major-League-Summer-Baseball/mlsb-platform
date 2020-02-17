@@ -111,6 +111,7 @@ Routes['statspage'] = "/website/stats"
 Routes['playerpage'] = "/website/player"
 Routes['leagueleaderpage'] = "/website/leaders"
 Routes['alltimeleaderspage'] = Routes['leagueleaderpage'] + "/alltime"
+Routes['leaguenotfoundpage'] = "/website/leagueNotFound"
 
 # events
 Routes['eventspage'] = "/website/event"

@@ -1,41 +1,28 @@
 {% extends "website/new-base.html" %}
 {% block content %}
     <ul class="nav nav-pills" id="listing">
-        {% for league in leagues %}
-            {% if loop.index == 1 %}
-                <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
-            {% else %}
-                <li role="presentation" class="presentation"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
-            {% endif %}
-        {% endfor %}
-        
+            <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
     </ul>
     <div class="tab-content">
-    {% for league in leagues %}
-            {% if loop.index == 1 %}
-                <div id="{{league.league_id}}" class="tab-pane fade in active">
-            {% else %}
-                <div id="{{league.league_id}}" class="tab-pane fade in">
-            {% endif %}
-        <h4>{{league.name}}
-        <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="loader{{league.league_id}}" />
-        <table id="{{league.league_id}}League" width="100%" class="display">
-            <thead>
-                <tr>
-                    <th data-priority="1" >Date</th>
-                    <th data-priority="2" >Time</th>
-                    <th data-priority="3" >Home Team</th>
-                    <th data-priority="4" >Away Team</th>
-                    <th data-priority="5" >Field</th>
-                    <th>Score</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div id="{{league.league_id}}" class="tab-pane fade in active">
+            <h4>{{league.name}}
+            <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="loader{{league.league_id}}" />
+            <table id="{{league.league_id}}League" width="100%" class="display">
+                <thead>
+                    <tr>
+                        <th data-priority="1" >Date</th>
+                        <th data-priority="2" >Time</th>
+                        <th data-priority="3" >Home Team</th>
+                        <th data-priority="4" >Away Team</th>
+                        <th data-priority="5" >Field</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
-    {% endfor %}
     </div>
 {% endblock %}
 {% block script %}
@@ -125,9 +112,7 @@ function ready(){
     } );
 
     // load the table for the schedule using ajax
-    {% for league in leagues %}
-        loadLeague({{league.league_id}}, "{{route.vschedule}}/{{year}}/{{league.league_id}}", []);
-    {% endfor %}
+    loadLeague({{league.league_id}}, "{{route.vschedule}}/{{year}}/{{league.league_id}}", []);
 }
 </script>
 {% endblock %}

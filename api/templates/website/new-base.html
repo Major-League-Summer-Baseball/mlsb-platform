@@ -83,28 +83,82 @@
 
                     <div class="collapse navbar-collapse navbar-left">
                         <ul class="nav navbar-nav">
-                            <li><a href="{{route.schedulepage}}/{{year}}">Schedule</a></li>
-                            <li><a href="{{route.standingspage}}/{{year}}">PBR Power Rankings</a></li>
-                            <li><a href="{{route.eventspage}}/{{year}}">Events</a></li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">League Leaders <b class="caret"></b></a>
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                  Schedule <b class="caret"></b>
+                              </a>
+                              <ul class="dropdown-menu">
+                                {% for league in base.leagues %}
+                                <li>
+                                  <a href="{{route.schedulepage}}/{{league.league_id}}/{{year}}">
+                                    {{league.league_name}}
+                                  </a>
+                                </li>
+                                {% endfor %}
+                              </ul>
+                            </li>
+                            <li>
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                  PBR Power Rankings <b class="caret"></b>
+                              </a>
+                              <ul class="dropdown-menu">
+                                {% for league in base.leagues %}
+                                <li>
+                                  <a href="{{route.standingspage}}/{{league.league_id}}/{{year}}">
+                                    {{league.league_name}}
+                                  </a>
+                                </li>
+                                {% endfor %}
+                              </ul>
+                            </li>
+                            <li>
+                                <a href="{{route.eventspage}}/{{year}}">
+                                  Events
+                                </a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                  League Leaders <b class="caret"></b>
+                                </a>
                                 <ul class="dropdown-menu">
                                   <li>
-                                      <a href="{{route.leagueleaderpage}}/{{year}}">This Season</a>
+                                      <a href="{{route.leagueleaderpage}}/{{year}}">
+                                        This Season
+                                      </a>
                                   </li>
                                   <li>
-                                      <a href="{{route.alltimeleaderspage}}/{{year}}">All-Time</a>
+                                      <a href="{{route.alltimeleaderspage}}/{{year}}">
+                                        All-Time
+                                      </a>
                                   </li>
                                 </ul>
                             </li>
-                            <li><a href="{{route.statspage}}/{{year}}">Player Stats</a></li>
-                            <li><a href="{{route.fieldsrulespage}}/{{year}}">Fields & Rules</a></li>
+                            <li>
+                                <a href="{{route.statspage}}/{{year}}">
+                                  Player Stats
+                                </a>
+                            </li>
+                            <li>
+                              <a href="{{route.fieldsrulespage}}/{{year}}">
+                                Fields & Rules
+                              </a>
+                            </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Archive <b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                  Archive <b class="caret"></b>
+                                </a>
                                 <ul class="dropdown-menu">
-                                  <li><a href="/">Current Year</a></li>
-                                  {% for n in range (2016, year) %}
-                                    <li><a href="{{route.homepage}}/{{n}}">{{n}}</a></li>
+                                  <li>
+                                    <a href="/">
+                                      Current Year
+                                    </a>
+                                  </li>
+                                  {% for n in range (2016, base.current_year) %}
+                                    <li>
+                                      <a href="{{route.homepage}}/{{n}}">
+                                        {{n}}
+                                      </a>
+                                    </li>
                                   {% endfor %}
                                 </ul>
                             </li>

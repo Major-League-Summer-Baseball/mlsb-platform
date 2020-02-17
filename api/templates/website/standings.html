@@ -22,83 +22,86 @@
 </style>
 
     <ul class="nav nav-pills" id="listing">
-        <li role="presentation" class=" active presentation"><a data-toggle="pill" href="#whole">Whole League</a></li>
-        {% for id, league in leagues.items() %}
-        <li role="presentation" class="presentation"><a data-toggle="pill" href="#league{{id}}">{{league.name}}</a></li>
-        {% endfor %}
-        
+        <li role="presentation" class=" active presentation">
+          <a data-toggle="pill" href="#whole">
+            {{league.league_name}}
+          </a>
+        </li>
     </ul>
     <div class="tab-content">
         <div id="whole" class="tab-pane fade in active">
-            <h4>Both Leagues</h4>
-            <table id="whole_league" width="100%" class="display">
+            <h4>
+              {{league.league_name}}
+            </h4>
+            <table id="league_{{league.league_id}}" width="100%" class="display">
                 <thead>
                     <tr>
-                        <th>Team</th>
-                        <th>Espys</th>
-                        <th>GP</th>
-                        <th>W</th>
-                        <th>L</th>
-                        <th>T</th>
-                        <th>RF</th>
-                        <th>RA</th>
-                        <th>+/-</th>
+                        <th data-priority="1">
+                          Team
+                        </th>
+                        <th data-priority="2">
+                          Espys
+                        </th>
+                        <th data-priority="4">
+                          GP
+                        </th>
+                        <th data-priority="3">
+                          W
+                        </th>
+                        <th data-priority="5">
+                          L
+                        </th>
+                        <th>
+                          T
+                        </th>
+                        <th data-priority="6">
+                          RF
+                        </th>
+                        <th>
+                          RA
+                        </th>
+                        <th>
+                          +/-
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for id, league in leagues.items() %}
-                        {% for team in league.teams %}
-                            <tr>
-                                <td><a href="{{route.teampage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
-                                <td>{{team.espys}}</td>
-                                <td>{{team.games}}</td>
-                                <td>{{team.wins}}</td>
-                                <td>{{team.losses}}</td>
-                                <td>{{team.ties}}</td>
-                                <td>{{team.runs_for}}</td>
-                                <td>{{team.runs_against}}</td>
-                                <td>{{team.plus_minus}}</td>
-                            </tr>
-                        {% endfor %}
-                    {% endfor %}
+                  {% for team in league.teams %}
+                      <tr>
+                          <td>
+                            <a href="{{route.teampage}}/{{year}}/{{team.id}}">
+                              {{team.name}}
+                            </a>
+                          </td>
+                          <td>
+                            {{team.espys}}
+                          </td>
+                          <td>
+                            {{team.games}}
+                          </td>
+                          <td>
+                            {{team.wins}}
+                          </td>
+                          <td>
+                            {{team.losses}}
+                          </td>
+                          <td>
+                            {{team.ties}}
+                          </td>
+                          <td>
+                            {{team.runs_for}}
+                          </td>
+                          <td>
+                            {{team.runs_against}}
+                          </td>
+                          <td>
+                            {{team.plus_minus}}
+                          </td>
+                      </tr>
+                  {% endfor %}
                 </tbody>
             </table>
         </div>
-        {% for id, league in leagues.items() %}
-        <div id="league{{id}}" class="tab-pane fade in">
-            <h4>{{league.name}}</h4>
-            <table id="league_{{id}}" width="100%" class="display">
-                <thead>
-                    <tr>
-                        <th>Team</th>
-                        <th>Espys</th>
-                        <th>GP</th>
-                        <th>W</th>
-                        <th>L</th>
-                        <th>T</th>
-                        <th>RF</th>
-                        <th>RA</th>
-                        <th>+/-</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for team in league.teams %}
-                        <tr>
-                            <td><a href="{{route.teampage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
-                            <td>{{team.espys}}</td>
-                            <td>{{team.games}}</td>
-                            <td>{{team.wins}}</td>
-                            <td>{{team.losses}}</td>
-                            <td>{{team.ties}}</td>
-                            <td>{{team.runs_for}}</td>
-                            <td>{{team.runs_against}}</td>
-                            <td>{{team.plus_minus}}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endfor %}
     </div>
 
       <div class="tab-content" id="graph">
@@ -119,14 +122,10 @@
 <script>
 $(document).ready(ready());
 function ready(){
-    {% for id, league in leagues.items()  %}
-        $('#league_{{id}}').DataTable({
-        "order": [[1, "desc"]]
+    $('#league_{{league.league_id}}').DataTable({
+        "order": [[1, "desc"]],
+        "responsive": true,
     });
-    {% endfor %}
-    $('#whole_league').DataTable({
-        "order": [[1, "desc"]]
-    })
 }
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename="d3/d3.js") }}"></script>
