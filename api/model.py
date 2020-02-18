@@ -525,7 +525,7 @@ class Team(DB.Model):
             'sponsor_id': self.sponsor_id,
             'league_id': self.league_id,
             'year': self.year,
-            'espys': self.espys_awarded(),
+            'espys': self.espys_total if self.espys_total is not None else 0,
             'captain': captain}
 
     def update(self,
