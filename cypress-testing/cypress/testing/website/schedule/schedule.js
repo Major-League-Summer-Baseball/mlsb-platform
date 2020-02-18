@@ -14,7 +14,7 @@ import {getCurrentYear} from '../../common/helper.js';
  * @TODO: fix this route and steps so more dynamic
  *  navigates to the proper schedule for a given league
  */
-const SCHEDULE_PAGE = 'website/schedule/1';
+const SCHEDULE_PAGE = 'website/schedule/1/';
 
 
 /**
