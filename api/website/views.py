@@ -491,7 +491,6 @@ def get_league(league_id):
 @cache.memoize(timeout=CACHE_TIMEOUT)
 def get_leagues():
     leagues = [league.json() for league in League.query.all()]
-    print(leagues)
     return leagues
 
 

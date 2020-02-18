@@ -22,6 +22,7 @@ headers = {
                                                   "utf-8")).decode("ascii")
 }
 SUCCESSFUL_GET_CODE = 200
+REDIRECT_CODE = 302
 SUCCESSFUL_DELETE_CODE = 200
 SUCCESSFUL_PUT_CODE = 200
 SUCCESSFUL_POST_CODE = 201
