@@ -1,0 +1,232 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<table id="myTable" class="table table-bordered table-striped">
+    <thead>
+        <th>ID</td>
+        <th>Name</th>
+        <th>Short Name</th>
+        <th>
+            <button type="button" class="btn btn-warning" onclick="putDivisions();" id="updateButton" disabled>
+                Update Divisions
+            </button>
+        </th>
+    </thead>
+    <tbody id="divisionTable" >
+        {% for entry in divisions %}
+            <tr class="divisionEntry" id="{{entry.division_id}}">
+                <td>
+                    {{entry.division_id}}
+                </td>
+                <td>
+                    <input class="input" value="{{entry.division_name}}" id='{{entry.division_id}}_division_name' onchange="change({{entry.division_id}}, 'division_name');">
+                </td>
+                <td>
+                  {% if entry.division_shortname is not none %}
+                    <input class="input" value="{{entry.division_shortname}}" id='{{entry.division_id}}_division_shortname' onchange="change({{entry.division_id}}, 'division_shortname');">
+                  {% else %}
+                      <input class="input" value="" id='{{entry.division_id}}_division_shortname' onchange="change({{entry.division_id}}, 'division_shortname');">
+                  {% endif %}
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="deleteDivision({{entry.division_id}});">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+                <button  type="button" class="btn btn-info" onclick="postDivision()">
+                    Add division
+                </button>
+            </td>
+            <td>
+                <input  class="newDivision" value="" id="newName">
+            </td>
+            <td>
+                <input  class="newDivision" value="" id="newShortname">
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
+<table>
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+{% endblock %}
+
+{% block script %}
+<script>
+var updates = {};
+/**
+ * A function that produces the HTML for the division row
+ * @param {int} id - the id of the row
+ * @param {Object} data - the json data of the row
+ */
+function produceRow(id, data) {
+
+  let name = data.division_name;
+  let shortname = data.division_shortname;
+  if (shortname == null) {
+    shortname = '';
+  }
+  return `
+  <tr class="divisionEntry" id="${id}">
+    <td> ${id}</td>
+    <td>
+      <input class="input" value="${name}" id="${id}_division_name" onchange="change('${id}', 'division_name')">
+    </td>
+    <td>
+      <input class="input" value="${shortname}" id="${id}_division_shortname" onchange="change('${id}', 'division_shortname')">
+    </td>
+    <td>
+      <button type="button" class="btn btn-danger" onclick="deleteDivision('${id}');">
+        Delete
+      </button>
+    </td>
+  </tr>
+  `;
+}
+
+/**
+ * Parse the data of the object that is about to be created.
+ * @return {Object} - the data that was parsed and null if there is an issue
+ */
+function parseData(){
+  let division_name, division_shortname;
+  division_name = $("#newName").val();
+  division_shortname = $("#newShortname").val();
+  if (data.division_name.trim() == ''){
+      alert("Did not set a division name");
+      return null;
+  }
+  if (data.division_shortname.trim() == ''){
+    data.division_shortname = null;
+  }
+
+  return {
+    "division_name":division_name,
+    "division_shortname":division_shortname
+  };
+}
+
+
+function postDivision(){
+    const data = parseData();
+    if (data == null) {
+      return;
+    }
+
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.division}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
+      dataType: "json",
+      success: function (division_id){
+          alert('division was added successfully');
+          var row = produceRow(division_id, division_name, division_shortname);
+          console.log(row);
+          $("#divisionTable").append(row);
+          $("#newName").val('');
+          $("#newShortname").val('');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request);
+          console.error(error);
+      }
+    });
+}
+
+function change(id, cat){
+  console.log(id, cat);
+    if (!(id  in updates)){
+        updates[id] = {}
+    }
+    const value = $('#' + id + '_' + cat).val()
+    updates[id][cat] = value;
+    console.log("New value", value);
+    $('#updateButton').attr('disabled', false);
+}
+
+function deleteDivision(id){
+    var data = { "id": id};
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.division}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
+      dataType: "json",
+      success: function (results){
+          alert('division was removed successfully');
+          $('#'+id).remove();
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request.text);
+          console.error(error);
+      }
+    });
+}
+
+function putDivisions(){
+    for (var id in updates){
+        putDivision(id, updates[id]);
+    }
+}
+
+function putDivision(id, attributes){
+  console.log(id, attributes);
+    $.ajax
+    ({
+      type: "PUT",
+      url: "{{route.division}}/"+id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(attributes),
+      dataType: "json",
+      success: function (results){
+          alert('division was updated successfully');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request.text);
+          console.error(error);
+      }
+    });
+}
+
+function showErrors(response, status_code){
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element);
+}
+
+</script>
+{% endblock %}

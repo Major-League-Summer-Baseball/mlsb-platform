@@ -8,8 +8,8 @@ from api.helper import loads
 from api.routes import Routes
 from api.errors import \
     InvalidField, TeamDoesNotExist,\
-    LeagueDoesNotExist, GameDoesNotExist
-
+    LeagueDoesNotExist, GameDoesNotExist, DivisionDoesNotExist
+from uuid import uuid1
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
     INVALID_ID, SUCCESSFUL_PUT_CODE, addGame,\
@@ -36,7 +36,8 @@ class TestGame(TestSetup):
             'date': MISSING_PARAMETER,
             'home_team_id': MISSING_PARAMETER,
             'league_id': MISSING_PARAMETER,
-            'time': MISSING_PARAMETER}}
+            'time': MISSING_PARAMETER,
+            'division_id': MISSING_PARAMETER}}
         error_message = (Routes['game'] +
                          " POST: request with missing parameter")
         self.postInvalidTest(Routes['game'],
@@ -47,10 +48,11 @@ class TestGame(TestSetup):
                              error_message=error_message)
 
         # add two teams, a sponsor and a league
-        league = self.add_league("New League")
-        sponsor = self.add_sponsor("Sponsor")
-        home_team = self.add_team("Black", sponsor, league, VALID_YEAR)
-        away_team = self.add_team("White", sponsor, league, VALID_YEAR)
+        division = self.add_division(str(uuid1()))
+        league = self.add_league(str(uuid1()))
+        sponsor = self.add_sponsor(str(uuid1()))
+        home_team = self.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
+        away_team = self.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
 
         # testing invalid date
         params = {
@@ -58,7 +60,8 @@ class TestGame(TestSetup):
             'away_team_id': away_team['team_id'],
             'date': "2014-02-2014",
             'time': "22:40",
-            'league_id': league['league_id']
+            'league_id': league['league_id'],
+            'division_id': division['division_id']
         }
         expect = {'details': 'Game - date', 'message': InvalidField.message}
         error_message = (Routes['game'] +
@@ -76,7 +79,8 @@ class TestGame(TestSetup):
             'away_team_id': away_team['team_id'],
             'date': "2014-02-10",
             'time': "22:66",
-            'league_id': league['league_id']
+            'league_id': league['league_id'],
+            'division_id': division['division_id']
         }
         expect = {'details': 'Game - time', 'message': InvalidField.message}
         error_message = (Routes['game'] +
@@ -94,7 +98,8 @@ class TestGame(TestSetup):
             'away_team_id': away_team['team_id'],
             'date': "2014-02-10",
             'time': "22:40",
-            'league_id': league['league_id']
+            'league_id': league['league_id'],
+            'division_id': division['division_id']
         }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['game'] +
@@ -112,7 +117,8 @@ class TestGame(TestSetup):
             'away_team_id': INVALID_ID,
             'date': "2014-02-10",
             'time': "22:40",
-            'league_id': league['league_id']
+            'league_id': league['league_id'],
+            'division_id': division['division_id']
         }
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         error_message = (Routes['game'] +
@@ -124,19 +130,41 @@ class TestGame(TestSetup):
                              expect,
                              error_message=error_message)
 
+        # testing invalid division id
+        params = {
+            'home_team_id': home_team['team_id'],
+            'away_team_id': away_team['team_id'],
+            'date': "2014-02-10",
+            'time': "22:40",
+            'league_id': league['league_id'],
+            'division_id': INVALID_ID
+        }
+        expect = {'details': INVALID_ID,
+                  'message': DivisionDoesNotExist.message}
+        error_message = (Routes['game'] +
+                         " POST: request with invalid away team id")
+        self.postInvalidTest(Routes['game'],
+                             params,
+                             TeamDoesNotExist.status_code,
+                             self.assertEqual,
+                             expect,
+                             error_message=error_message)
+
     def testGameListAPI(self):
         # add two teams, a sponsor and a league
-        league = self.add_league("New League")
-        sponsor = self.add_sponsor("Sponsor")
-        home_team = self.add_team("Black", sponsor, league, VALID_YEAR)
-        away_team = self.add_team("White", sponsor, league, VALID_YEAR)
+        division = self.add_division(str(uuid1()))
+        league = self.add_league(str(uuid1()))
+        sponsor = self.add_sponsor(str(uuid1()))
+        home_team = self.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
+        away_team = self.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
 
         # add a game
         self.add_game("2014-02-10",
                       "22:40",
                       home_team,
                       away_team,
-                      league)
+                      league,
+                      division)
 
         # test a get with games
         error_message = (Routes['game'] +

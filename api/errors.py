@@ -72,6 +72,11 @@ class LeagueDoesNotExist(BaseException):
     message = "League does not exist"
 
 
+class DivisionDoesNotExist(BaseException):
+    status_code = LDNESC
+    message = "Division does not exist"
+
+
 class SponsorDoesNotExist(BaseException):
     status_code = SDNESC
     message = "Sponsor does not exist"
@@ -138,6 +143,10 @@ ERRORS = {
     'LeagueDoesNotExist': {
         'message': LeagueDoesNotExist.message,
         'status_code': LeagueDoesNotExist.status_code,
+    },
+    'DivisionDoesNotExist': {
+        'message': DivisionDoesNotExist.message,
+        'status_code': DivisionDoesNotExist.status_code,
     },
     'SponsorDoesNotExist': {
         'message': SponsorDoesNotExist.message,

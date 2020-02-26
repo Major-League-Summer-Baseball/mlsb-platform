@@ -5,22 +5,28 @@
     <strong>League:</strong> {{team.league}}<br/>
     <strong>Record:</strong> {{team.wins}} - {{team.losses}} - {{team.ties}}<br/>
 </p>
-<h4>Roster</h4>
+<h4>
+    Roster
+</h4>
 <ul class="listgroup leadersList">
-{% for player in team.players %}
-    <li class="list-group-item leaderPoint"> {{player}} </li>
-{% endfor %}
-<ul>
-<h4>Stats</h4>
+    {% for player in team.players %}
+        <li class="list-group-item leaderPoint">
+            {{player}}
+        </li>
+    {% endfor %}
+</ul>
+<h4>
+    Stats
+</h4>
 <table class="display" id="teamTable" cellspacing="0" width="100%">
     <thead>
-        <th>Player</th>
+        <th data-priority="1">Player</th>
         <th>Ave.</th>
         <th>SP</th>
         <th>S</th>
-        <th>SS</th>
+        <th data-priority="3">SS</th>
         <th>D</th>
-        <th>HR</th>
+        <th data-priority="2">HR</th>
         <th>AB</th>
     </thead>
     <tbody>
@@ -45,7 +51,8 @@ $(document).ready(ready());
 function ready(){
     console.log("Done");
         $('#teamTable').DataTable({
-            "order": [[6, "desc"]]
+            "order": [[6, "desc"]],
+            "responsive": true
         });
 }
 </script>

@@ -8,15 +8,22 @@ from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api import DB
-from api.model import Team, Player, Game, League, Bat
+from api.model import Team, Player, Game, League, Bat, Division
 from datetime import datetime, date, time, timedelta
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('game_id', type=int)
+parser.add_argument('division_id', type=int)
 
 
-def post(game_id=None, league_id=None, year=None, today=False, increment=None):
+def post(
+        game_id=None,
+        league_id=None,
+        division_id=None,
+        year=None,
+        today=False,
+        increment=None):
     result = []
     if game_id is not None:
         games = DB.session.query(Game).filter_by(id=game_id)
@@ -40,6 +47,8 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
         games = (DB.session.query(Game)
                  .filter(Game.date.between(start, end))
                  .order_by(Game.date))
+    if division_id is not None:
+        games = games.filter_by(division_id=division_id)
     if league_id is not None:
         games = games.filter_by(league_id=league_id)
     for game in games:
@@ -55,7 +64,9 @@ def post(game_id=None, league_id=None, year=None, today=False, increment=None):
             'home_team': None,
             'away_team': None,
             'date': game.date.strftime("%Y-%m-%d %H:%M"),
-            'league': League.query.get(game.league_id).json()}
+            'league': League.query.get(game.league_id).json(),
+            'division': Division.query.get(game.division_id).json()
+        }
         g['home_team'] = Team.query.get(hid).json()
         g['away_team'] = Team.query.get(aid).json()
         away_bats = (DB.session.query(Bat,
@@ -110,6 +121,7 @@ class GameStatsAPI(Resource):
         args = parser.parse_args()
         game_id = None
         league_id = None
+        division_id = None
         year = None
         if args['game_id']:
             game_id = args['game_id']
@@ -117,5 +129,8 @@ class GameStatsAPI(Resource):
             league_id = args['league_id']
         if args['year']:
             year = args['year']
-        result = post(game_id=game_id, league_id=league_id, year=year)
+        if args['division_id']:
+            division_id = args['division_id']
+        result = post(game_id=game_id, league_id=league_id,
+                      year=year, division_id=division_id)
         return Response(dumps(result), status=200, mimetype="application/json")

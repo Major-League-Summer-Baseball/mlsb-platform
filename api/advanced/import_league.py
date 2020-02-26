@@ -6,9 +6,10 @@
 '''
 # imports
 from sqlalchemy import func
-from api.model import Sponsor, Game, League
+from api.model import Sponsor, Game, League, Division
 from api import DB
-from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist
+from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist,\
+    DivisionDoesNotExist
 import logging
 import datetime
 
@@ -18,9 +19,10 @@ LEFT_BACKGROUND_EXAMPLE = "Background example was left: {}"
 INVALID_TEAM = "{} is not a team in the league"
 INVALID_ROW = "Unsure what to do with the following row: {}"
 INVALID_LEAGUE = "League given was not found: {}"
+INVALID_DIVISION = "Division given was not found: {}"
 INVALID_GAME = "The game was invalid - {} with error {}"
 TEAM_NOT_FOUND = "Did not find team {} - for row {}"
-BACKGROUND = {"league": "League"}
+BACKGROUND = {"league": "League", "division": "Division"}
 HEADERS = {"home": "Home Team",
            "away": "Away Team",
            "date": "Date",
@@ -66,6 +68,7 @@ class LeagueList():
         # extract the background such a league, sponsor and color
         background = extract_background(parts['background'])
         league = background["league"]
+        division = background["division"]
 
         # extract the players using the header as lookup
         lookup = extract_column_indices_lookup(parts['header'])
@@ -85,6 +88,7 @@ class LeagueList():
                             game_json["home_team_id"],
                             game_json["away_team_id"],
                             league["league_id"],
+                            division["division_id"],
                             field=game_json["field"])
                 self.session.add(game)
             except Exception as error:
@@ -223,16 +227,29 @@ def extract_background(background):
         if value.lower() not in background_keys:
             errorMessage = MISSING_BACKGROUND.format(value)
             raise InvalidField(payload={"details": errorMessage})
+
+    # ensure able to find the division
+    division_name = background['division']
+    if division_name.lower().startswith("ex."):
+        error_message = LEFT_BACKGROUND_EXAMPLE.format(division_name)
+        raise InvalidField(payload={"details": error_message})
+    division = Division.query.filter(func.lower(Division.name) ==
+                                     func.lower(division_name)).first()
+
+    # ensure able to find the league
     league_name = background['league']
     if league_name.lower().startswith("ex."):
         error_message = LEFT_BACKGROUND_EXAMPLE.format(league_name)
         raise InvalidField(payload={"details": error_message})
     league = League.query.filter(func.lower(League.name) ==
                                  func.lower(league_name)).first()
+    if division is None:
+        error_message = INVALID_DIVISION.format(division_name)
+        raise DivisionDoesNotExist(payload={'details': error_message})
     if league is None:
         error_message = INVALID_LEAGUE.format(league_name)
         raise LeagueDoesNotExist(payload={'details': error_message})
-    return {"league": league.json()}
+    return {"league": league.json(), "division": division.json()}
 
 
 def clean_cell(cell):

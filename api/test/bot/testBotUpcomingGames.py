@@ -52,6 +52,7 @@ class testUpcomingGames(TestSetup):
                    'home_team': game['home_team'],
                    'home_team_id': game['home_team_id'],
                    'league_id': game['league_id'],
+                   'division_id': game['division_id'],
                    'status': game['status'],
                    'time': game['time']}]
         rv = self.app.post(Routes['botupcominggames'],

@@ -112,23 +112,11 @@ class PlayerStatsAPI(Resource):
                 mimetype: application/json
                 data: list of Players
         """
-        year = None
-        league_id = None
-        player_id = None
-        team_id = None
         args = parser.parse_args()
-        if args['year']:
-            year = args['year']
-        if args['league_id']:
-            league_id = args['league_id']
-        if args['player_id']:
-            player_id = args['player_id']
-        if args['team_id']:
-            team_id = args['team_id']
-        players = post(year=year,
-                       team_id=team_id,
-                       league_id=league_id,
-                       player_id=player_id)
+        players = post(year=args.get('year'),
+                       team_id=args.get('team_id'),
+                       league_id=args.get('league_id'),
+                       player_id=args.get('player_id'))
         return Response(dumps(players),
                         status=200,
                         mimetype="application/json")

@@ -5,19 +5,19 @@
     <table id="players_stats" width="100%" class="display">
         <thead>
             <tr>
-                <th data-cy="nameHeading">
+                <th data-priority="1" data-cy="nameHeading">
                     Name
                 </th>
-                <th data-cy="sHeading">
+                <th data-priority="4" data-cy="sHeading">
                     S
                 </th>
-                <th data-cy="ssHeading">
+                <th data-priority="3" data-cy="ssHeading">
                     SS
                 </th>
                 <th data-cy="dHeading">
                     D
                 </th>
-                <th data-cy="hrHeading">
+                <th data-priority="2" data-cy="hrHeading">
                     HR
                 </th>
                 <th data-cy="kHeading">
@@ -97,7 +97,8 @@
 $(document).ready(ready());
 function ready(){
         $('#players_stats').DataTable({
-            "order": [[4, "desc"]]
+            "order": [[4, "desc"]],
+            "responsive": true,
         });
 }
 </script>

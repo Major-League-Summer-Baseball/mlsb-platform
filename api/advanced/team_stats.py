@@ -10,7 +10,9 @@ from json import dumps
 from api import DB
 from api.model import Team, Game
 from datetime import datetime, date, time
+from sqlalchemy.orm import undefer
 from sqlalchemy import or_
+from sqlalchemy.sql import func, not_
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
@@ -26,7 +28,7 @@ def post(team_id, year, league_id):
 
 
 def single_team(team_id):
-    team_query = Team.query.get(team_id)
+    team_query = Team.query.options(undefer('espys_total')).get(team_id)
     if team_query is None:
         return {}
     games = (DB.session.query(Game)
@@ -41,7 +43,8 @@ def single_team(team_id):
                       "runs_against": 0,
                       'hits_for': 0,
                       'hits_allowed': 0,
-                      'name': str(team_query)}
+                      'name': str(team_query),
+                      'espys': team_query.espys_total}
             }
     for game in games:
         # loop through each game
@@ -73,7 +76,7 @@ def single_team(team_id):
 def team_stats(year, league_id):
     t = time(0, 0)
     games = DB.session.query(Game)
-    teams = DB.session.query(Team)
+    teams = DB.session.query(Team).options(undefer('espys_total'))
     if year is not None:
         d1 = date(year, 1, 1)
         d2 = date(year, 12, 30)
@@ -95,7 +98,8 @@ def team_stats(year, league_id):
                            "runs_against": 0,
                            'hits_for': 0,
                            'hits_allowed': 0,
-                           'name': str(team)}
+                           'name': str(team),
+                           'espys': team.espys_total}
     for game in games:
         # loop through each game (max ~400 for a season)
         score = game.summary()

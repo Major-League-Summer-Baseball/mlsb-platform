@@ -12,7 +12,7 @@ from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
     PlayerNotOnTeam, FunDoesNotExist,\
     EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
     TeamAlreadyHasCaptain, PlayerNotSubscribed,\
-    BadRequestError, TeamNotPartOfLeague
+    BadRequestError, TeamNotPartOfLeague, DivisionDoesNotExist
 from flask import Response
 from json import dumps
 
@@ -24,6 +24,7 @@ from json import dumps
 @app.errorhandler(BadRequestError)
 @app.errorhandler(EspysDoesNotExist)
 @app.errorhandler(SponsorDoesNotExist)
+@app.errorhandler(DivisionDoesNotExist)
 @app.errorhandler(LeagueDoesNotExist)
 @app.errorhandler(GameDoesNotExist)
 @app.errorhandler(PlayerDoesNotExist)

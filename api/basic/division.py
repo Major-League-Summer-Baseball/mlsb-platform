@@ -1,54 +1,60 @@
 '''
 @author: Dallas Fraser
-@date: 2015-08-25
+@date: 2019-12-04
 @organization: MLSB API
-@summary: The basic league API
+@summary: The basic division API
 '''
 from flask_restful import Resource, reqparse
 from flask import Response
-from api.model import League
+from api.model import Division
 from json import dumps
 from api import DB
 from api.authentication import requires_admin
-from api.errors import LeagueDoesNotExist
+from api.errors import DivisionDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
 from flask import request
 parser = reqparse.RequestParser()
-parser.add_argument('league_name', type=str)
+parser.add_argument('division_name', type=str)
+parser.add_argument('division_shortname', type=str)
 post_parser = reqparse.RequestParser()
-post_parser.add_argument('league_name', type=str, required=True)
+post_parser.add_argument('division_name', type=str, required=True)
+post_parser.add_argument('division_shortname', type=str)
 
 
-class LeagueAPI(Resource):
-    def get(self, league_id):
+class DivisionAPI(Resource):
+    def get(self, division_id):
         """
-            GET request for League Object matching given league_id
-            Route: Route['league']/<league_id: int>
+            GET request for Division Object matching given division_id
+            Route: Route['division']/<division_id: int>
             Returns:
                 if found
                     status: 200
                     mimetype: application/json
-                    data: {league_id:int, league_name:string}
+                    data: {
+                        division_id:int,
+                        division_name:string,
+                        division_shortname:string
+                    }
                 otherwise
                     status: 404
                     mimetype: application/json
                     data: None
         """
-        # expose a single League
-        entry = League.query.get(league_id)
+        # expose a single Division
+        entry = Division.query.get(division_id)
         if entry is None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
+            raise DivisionDoesNotExist(payload={'details': division_id})
         response = Response(dumps(entry.json()), status=200,
                             mimetype="application/json")
         return response
 
     @requires_admin
-    def delete(self, league_id):
+    def delete(self, division_id):
         """
-            DELETE request for League
-            Route: Route['league']/<league_id: int>
+            DELETE request for Division
+            Route: Route['division']/<division_id: int>
             Returns:
                 if found
                     status: 200
@@ -59,23 +65,24 @@ class LeagueAPI(Resource):
                     mimetype: application/json
                     data: None
         """
-        # delete a single user
-        league = League.query.get(league_id)
-        if league is None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
-        DB.session.delete(league)
+        # delete a single division
+        division = Division.query.get(division_id)
+        if division is None:
+            raise DivisionDoesNotExist(payload={'details': division_id})
+        DB.session.delete(division)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
         return response
 
     @requires_admin
-    def put(self, league_id):
+    def put(self, division_id):
         """
-            PUT request for league
-            Route: Route['league']/<league_id: int>
+            PUT request for Division
+            Route: Route['division']/<division_id: int>
             Parameters :
-                league_name: The league's name (string)
+                division_name: The division's name (string)
+                division_shortname: The shortened division's name (string)
             Returns:
                 if found and successful
                     status: 200
@@ -92,13 +99,16 @@ class LeagueAPI(Resource):
         """
         # update a single user
         args = parser.parse_args()
-        league = League.query.get(league_id)
-        league_name = None
-        if league is None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
-        if args['league_name']:
-            league_name = args['league_name']
-        league.update(league_name)
+        division = Division.query.get(division_id)
+        name = None
+        shortname = None
+        if division is None:
+            raise DivisionDoesNotExist(payload={'details': division_id})
+        if args['division_name']:
+            name = args['division_name']
+        if args['division_shortname']:
+            shortname = args['division_shortname']
+        division.update(name=name, shortname=shortname)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -110,26 +120,20 @@ class LeagueAPI(Resource):
                 'Access-Control-Allow-Methods': 'PUT,GET'}
 
 
-class LeagueListAPI(Resource):
+class DivisionListAPI(Resource):
     def get(self):
         """
-            GET request for League List
-            Route: Route['league']
-            Parameters :
-                league_name: The league's name (string)
+            GET request for Division List
+            Route: Route['division']
             Returns:
                 status: 200
                 mimetype: application/json
-                data:
-                    tournaments: [{league_id:int,
-                                   league_name:string,
-                                  },{...}
-                            ]
+                Paginated list of division objects
         """
-        # return a pagination of leagues
+        # return a pagination of Divisions
         page = request.args.get('page', 1, type=int)
-        pagination = League.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['league'])
+        pagination = Division.query.paginate(page, PAGE_SIZE, False)
+        result = pagination_response(pagination, Routes['division'])
         resp = Response(dumps(result), status=200,
                         mimetype="application/json")
         return resp
@@ -137,33 +141,38 @@ class LeagueListAPI(Resource):
     @requires_admin
     def post(self):
         """
-            POST request for League List
-            Route: Route['league']
+            POST request for Division
+            Route: Route['division']
             Parameters :
-                league_name: The league's name (string)
+                division_name: The Division's name (string)
+                division_shortname: The shortened version of
+                    Division's name (string)
             Returns:
                 if successful
                     status: 200
                     mimetype: application/json
-                    data: the created user league id (int)
+                    data: the created user division id (int)
                 if missing required parameter
                     status: 400
                     mimetype: application/json
-                    data: the created user league id (int)
+                    data: missing parameter
                 if invalid parameter
                     status: IFSC
                     mimetype: application/json
-                    data: the created user league id (int)
+                    data: the invalid field
         """
         # create a new user
         args = post_parser.parse_args()
-        league_name = None
-        if args['league_name']:
-            league_name = args['league_name']
-        league = League(league_name)
-        DB.session.add(league)
+        name = None
+        shortname = None
+        if args['division_name']:
+            name = args['division_name']
+        if args['division_shortname']:
+            shortname = args['division_shortname']
+        division = Division(name, shortname=shortname)
+        DB.session.add(division)
         DB.session.commit()
-        result = league.id
+        result = division.id
         return Response(dumps(result), status=201,
                         mimetype="application/json")
 

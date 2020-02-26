@@ -1,7 +1,8 @@
 League,Demo League,,,
+Division,Monday & Wednesday,,,
 Home Team,Away Team,Date,Time,Field
-NotTestTeam Home,TestTeam Away,2019-04-08,12:15,WP1
-TestTeam Home,NotTestTeam Away,2019-04-08,12:15,WP1
-TestTeam Home,TestTeam Away,04-2019-08,12:15,WP1
-TestTeam Home,TestTeam Away,2019-04-08,12:XX,WP1
-TestTeam Home,TestTeam Away,2019-04-08,12:15,WPXX
+NotTestTeam Home,TestTeam Away,2020-04-08,12:15,WP1
+TestTeam Home,NotTestTeam Away,2020-04-08,12:15,WP1
+TestTeam Home,TestTeam Away,04-2020-08,12:15,WP1
+TestTeam Home,TestTeam Away,2020-04-08,12:XX,WP1
+TestTeam Home,TestTeam Away,2020-04-08,12:15,WPXX
