@@ -20,8 +20,8 @@
  * cy.logout();
  */
 const logout = () => {
-  cy.visit({url: '/admin/logout', method: 'GET'})
-}
+  cy.visit({url: '/admin/logout', method: 'GET'});
+};
 Cypress.Commands.add('logout', logout);
 
 /**
@@ -30,6 +30,7 @@ Cypress.Commands.add('logout', logout);
  * cy.login();
  */
 const login = () => {
+  logout();
   cy.visit({url: '/admin/login', method: 'GET'});
   cy.get('[data-cy=username]').type(Cypress.env('ADMIN'));
   cy.get('[data-cy=password]').type(Cypress.env('PASSWORD'));

@@ -52,7 +52,7 @@ class TestLeagueLeaders(TestSetup):
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expect, loads(rv.data), Routes['vleagueleaders'] +
-                         " View: empty stat on all years")
+                         " View: empty stat on not-recording year")
 
     def testNonEmptyYear(self):
         """Test a non-empty year"""

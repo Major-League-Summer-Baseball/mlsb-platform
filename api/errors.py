@@ -17,6 +17,7 @@ FDNESC = 404
 NUESC = 400
 THCSC = 400
 MPSC = 400
+LNPOT = 400
 PNOT = 400
 PAST = 400
 PNS = 401
@@ -24,7 +25,7 @@ NTCSC = 401
 BRSC = 400
 
 
-class FunDoesNotExist(Exception):
+class BaseException(Exception):
     status_code = FDNESC
     message = "Fun count does not exist"
 
@@ -41,242 +42,89 @@ class FunDoesNotExist(Exception):
         return rv
 
 
-class TeamDoesNotExist(Exception):
+class FunDoesNotExist(BaseException):
+    status_code = FDNESC
+    message = "Fun count does not exist"
+
+
+class TeamDoesNotExist(BaseException):
     status_code = TDNESC
     message = "Team does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class PlayerDoesNotExist(Exception):
+class PlayerDoesNotExist(BaseException):
     status_code = PDNESC
     message = "Player does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class GameDoesNotExist(Exception):
+class GameDoesNotExist(BaseException):
     status_code = GDNESC
     message = "Game does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class InvalidField(Exception):
+class InvalidField(BaseException):
     status_code = IFSC
     message = "Invalid field"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class LeagueDoesNotExist(Exception):
+class LeagueDoesNotExist(BaseException):
     status_code = LDNESC
     message = "League does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
+class DivisionDoesNotExist(BaseException):
+    status_code = LDNESC
+    message = "Division does not exist"
 
 
-class SponsorDoesNotExist(Exception):
+class SponsorDoesNotExist(BaseException):
     status_code = SDNESC
     message = "Sponsor does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class TeamAlreadyHasCaptain(Exception):
+class TeamAlreadyHasCaptain(BaseException):
     status_code = THCSC
     message = "Team has captain already"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class BatDoesNotExist(Exception):
+class BatDoesNotExist(BaseException):
     status_code = BDNESC
     message = "Bat does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class EspysDoesNotExist(Exception):
+class EspysDoesNotExist(BaseException):
     status_code = EDNESC
     message = "Espys does not exist"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class NonUniqueEmail(Exception):
+class NonUniqueEmail(BaseException):
     status_code = NUESC
     message = "Email is not unique"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
+class TeamNotPartOfLeague(BaseException):
+    status_code = LNPOT
+    message = "Team not part of league"
 
 
-class PlayerNotOnTeam(Exception):
+class PlayerNotOnTeam(BaseException):
     status_code = PNOT
     message = "Player is not on team"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class PlayerNotSubscribed(Exception):
+class PlayerNotSubscribed(BaseException):
     status_code = PNS
     message = "Player is not subscribed"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class NotTeamCaptain(Exception):
+class NotTeamCaptain(BaseException):
     status_code = NTCSC
     message = "Not team's captain"
 
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-class BadRequestError(Exception):
+class BadRequestError(BaseException):
     status_code = BRSC
     message = "Bad request"
-
-    def __init__(self, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = self.message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
-
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
 
 
 ERRORS = {
@@ -295,6 +143,10 @@ ERRORS = {
     'LeagueDoesNotExist': {
         'message': LeagueDoesNotExist.message,
         'status_code': LeagueDoesNotExist.status_code,
+    },
+    'DivisionDoesNotExist': {
+        'message': DivisionDoesNotExist.message,
+        'status_code': DivisionDoesNotExist.status_code,
     },
     'SponsorDoesNotExist': {
         'message': SponsorDoesNotExist.message,
@@ -323,6 +175,10 @@ ERRORS = {
     'PlayerNotOnTeam': {
         'message': PlayerNotOnTeam.message,
         'status_code': PlayerNotOnTeam.status_code
+    },
+    'TeamNotPartOfLeague': {
+        'message': TeamNotPartOfLeague.message,
+        'status_code': TeamNotPartOfLeague.status_code
     },
     'EspysDoesNotExist': {
         'message': EspysDoesNotExist.message,

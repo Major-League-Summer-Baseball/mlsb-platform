@@ -6,7 +6,7 @@
 '''
 from api.routes import Routes
 from api.test.BaseTest import TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID,\
-    NOT_FOUND_CODE
+    NOT_FOUND_CODE, REDIRECT_CODE
 from datetime import datetime
 import uuid
 START_OF_PLATFORM = 2016
@@ -149,14 +149,29 @@ class TestWebsiteViews(TestSetup):
         error_message = "Get events for a given year with no events"
         self.assertGetRequest(route, error_message)
 
+    def testLeaguePages(self):
+        # test the pages that are dependent on a league
+        league_routes = [
+            'schedulepage',
+            'standingspage',
+        ]
+        current_year = datetime.now().year
+        for route in league_routes:
+            for division in range(1, 10):
+                actual_route = Routes[route] + f"/{division}/{current_year}"
+                error_message = ("expecting 200 for route: {} page at url: {}"
+                                 .format(route, Routes[route]))
+                with self.app.get(actual_route) as result:
+                    self.assertTrue(result.status_code in [SUCCESSFUL_GET_CODE,
+                                                           REDIRECT_CODE],
+                                    error_message)
+
     def testOtherPages(self):
 
         # test other routes that do not need parameters beside just a year
         other_routes = [
             'fieldsrulespage',
             'homepage',
-            'schedulepage',
-            'standingspage',
             'statspage',
             'leagueleaderpage',
             'alltimeleaderspage',

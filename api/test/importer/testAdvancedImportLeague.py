@@ -12,27 +12,33 @@ from api.advanced.import_league import LeagueList, parse_parts, BACKGROUND,\
     extract_column_indices_lookup,\
     extract_background,\
     extract_game, extract_games
-from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist
+from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist,\
+    DivisionDoesNotExist
 from api.test.importer.testImportMockSession import TestImportMockSession
 import datetime
+import uuid
 
 
 class testAdvancedImportLeagueParsing(TestSetup):
 
+    division = "Test Import Division"
+    league = "Test Import League"
+    home_team = "Test Import Home Team"
+    away_team = "Teat Import Away Team"
+    date = datetime.date.today().strftime("%Y-%m-%d")
+    time = datetime.date.today().strftime("%H:%M")
+    field = "WP1"
+
     def testParseLines(self):
         """Test a a valid file in the standard format"""
-        league = "Test Import League"
-        home_team = "Test Import Home Team"
-        away_team = "Teat Import Away Team"
-        date = datetime.date.today().strftime("%Y-%m-%d")
-        time = datetime.date.today().strftime("%H:%M")
         field = "WP1"
-        entry = "{},{},{},{},{}".format(home_team,
-                                        away_team,
-                                        date,
-                                        time,
+        entry = "{},{},{},{},{}".format(self.home_team,
+                                        self.away_team,
+                                        self.date,
+                                        self.time,
                                         field)
-        lines = ["{}:,{},,,".format(BACKGROUND['league'], league),
+        lines = ["{}:,{},,,".format(BACKGROUND['league'], self.league),
+                 "{}:,{},,,".format(BACKGROUND['division'], self.division),
                  ",".join(HEADERS.values()),
                  entry]
 
@@ -43,7 +49,8 @@ class testAdvancedImportLeagueParsing(TestSetup):
         self.assertEqual(result['warnings'], [], "Expected no warnings")
 
         # check background
-        expected_background = {'league': league}
+        expected_background = {
+            'league': self.league, 'division': self.division}
         error = "Failed parsing background"
         self.output(result['background'])
         self.output(expected_background)
@@ -64,19 +71,14 @@ class testAdvancedImportLeagueParsing(TestSetup):
 
     def testParseLinesOrder(self):
         """Test that the order of a valid file does not matter"""
-        league = "Test Import League"
-        home_team = "Test Import Home Team"
-        away_team = "Teat Import Away Team"
-        date = datetime.date.today().strftime("%Y-%m-%d")
-        time = datetime.date.today().strftime("%H:%M")
-        field = "WP1"
-        entry = "{},{},{},{},{}".format(home_team,
-                                        away_team,
-                                        date,
-                                        time,
-                                        field)
+        entry = "{},{},{},{},{}".format(self.home_team,
+                                        self.away_team,
+                                        self.date,
+                                        self.time,
+                                        self.field)
         lines = [entry,
-                 "{}:,{},,,".format(BACKGROUND['league'], league),
+                 "{}:,{},,,".format(BACKGROUND['league'], self.league),
+                 "{}:,{},,,".format(BACKGROUND['division'], self.division),
                  ",".join(HEADERS.values())]
 
         # parse the lines
@@ -86,7 +88,8 @@ class testAdvancedImportLeagueParsing(TestSetup):
         self.assertEqual(result['warnings'], [], "Expected no warnings")
 
         # check background
-        expected_background = {'league': league}
+        expected_background = {
+            'league': self.league, 'division': self.division}
         error = "Failed parsing background"
         self.output(result['background'])
         self.output(expected_background)
@@ -107,18 +110,13 @@ class testAdvancedImportLeagueParsing(TestSetup):
 
     def testParseLinesDelimiter(self):
         """Test using a different delimiter"""
-        league = "Test Import League"
-        home_team = "Test Import Home Team"
-        away_team = "Teat Import Away Team"
-        date = datetime.date.today().strftime("%Y-%m-%d")
-        time = datetime.date.today().strftime("%H:%M")
-        field = "WP1"
-        entry = "{}|{}|{}|{}|{}".format(home_team,
-                                        away_team,
-                                        date,
-                                        time,
-                                        field)
-        lines = ["{}:|{}|||".format(BACKGROUND['league'], league),
+        entry = "{}|{}|{}|{}|{}".format(self.home_team,
+                                        self.away_team,
+                                        self.date,
+                                        self.time,
+                                        self.field)
+        lines = ["{}:|{}|||".format(BACKGROUND['league'], self.league),
+                 "{}:|{}|||".format(BACKGROUND['division'], self.division),
                  "|".join(HEADERS.values()),
                  entry]
 
@@ -129,7 +127,8 @@ class testAdvancedImportLeagueParsing(TestSetup):
         self.assertEqual(result['warnings'], [], "Expected no warnings")
 
         # check background
-        expected_background = {'league': league}
+        expected_background = {
+            'league': self.league, 'division': self.division}
         error = "Failed parsing background"
         self.output(result['background'])
         self.output(expected_background)
@@ -150,19 +149,14 @@ class testAdvancedImportLeagueParsing(TestSetup):
 
     def testParseLinesWarnings(self):
         """Test a a valid file in the standard format"""
-        league = "Test Import League"
-        home_team = "Test Import Home Team"
-        away_team = "Teat Import Away Team"
-        date = datetime.date.today().strftime("%Y-%m-%d")
-        time = datetime.date.today().strftime("%H:%M")
-        field = "WP1"
-        entry = "{},{},{},{},{}".format(home_team,
-                                        away_team,
-                                        date,
-                                        time,
-                                        field)
+        entry = "{},{},{},{},{}".format(self.home_team,
+                                        self.away_team,
+                                        self.date,
+                                        self.time,
+                                        self.field)
         lines = ["WARNING,WARNING",
-                 "{}:,{},,,".format(BACKGROUND['league'], league),
+                 "{}:,{},,,".format(BACKGROUND['league'], self.league),
+                 "{}:,{},,,".format(BACKGROUND['division'], self.division),
                  "WARNING,WARNING,WARNING",
                  ",".join(HEADERS.values()),
                  entry]
@@ -179,7 +173,8 @@ class testAdvancedImportLeagueParsing(TestSetup):
                          expected_warnings,
                          "Warnings were not returned")
         # check background
-        expected_background = {'league': league}
+        expected_background = {
+            'league': self.league, 'division': self.division}
         error = "Failed parsing background"
         self.output(result['background'])
         self.output(expected_background)
@@ -250,11 +245,15 @@ class testAdvancedImpotLeagueExtractFunctions(TestSetup):
     def testExtractBackground(self):
         """Test extract background when cant find sponsor"""
 
-        # some date to use through out test
-        league_name = "TTIEB Existing league"
+        # some data to use through out test
+        league_name = str(uuid.uuid1())
+        division_name = str(uuid.uuid1())
         league = self.add_league(league_name)
-        background = {'league': league_name}
+        division = self.add_division(division_name)
+        background = {'league': league_name, 'division': division_name}
         result = extract_background(background)
+
+        # check the extracted league
         self.assertEqual(result['league']['league_id'],
                          league['league_id'],
                          "Did not find existing league in background")
@@ -262,16 +261,40 @@ class testAdvancedImpotLeagueExtractFunctions(TestSetup):
                          league_name,
                          "Extracted league name did not match")
 
+        # check the extracted division
+        self.assertEqual(result['division']['division_id'],
+                         division['division_id'],
+                         "Did not find existing division in background")
+        self.assertEqual(result['division']['division_name'],
+                         division_name,
+                         "Extracted division name did not match")
+
     def testExtractBackgroundCantFindLeague(self):
         """ Test extract background when cant find league"""
 
         # some date to use through out test
-        league = "TTIEB Non-existent league"
-        background = {'league': league}
+        league = str(uuid.uuid1())
+        division_name = str(uuid.uuid1())
+        self.add_division(division_name)
+        background = {'league': league, 'division': division_name}
         try:
             extract_background(background)
             self.assertTrue(False, "Expecting exception raised")
         except LeagueDoesNotExist:
+            pass
+
+    def testExtractBackgroundCantFindDivision(self):
+        """ Test extract background when cant find division"""
+
+        # some date to use through out test
+        league_name = str(uuid.uuid1())
+        division_name = str(uuid.uuid1())
+        self.add_league(league_name)
+        background = {'league': league_name, 'division': division_name}
+        try:
+            extract_background(background)
+            self.assertTrue(False, "Expecting exception raised")
+        except DivisionDoesNotExist:
             pass
 
     def testExtractGame(self):
@@ -363,12 +386,14 @@ class testAdvancedImportLeague(TestSetup):
 
     def testImportLeague(self):
         """Import a league with no warnings"""
-        sponsor_name = "Test Import Sponsor"
-        league_name = "Test Import League"
+        sponsor_name = str(uuid.uuid1())
+        league_name = str(uuid.uuid1())
+        division_name = str(uuid.uuid1())
         team_one_color = "Blue"
         team_two_color = "Red"
         sponsor = self.add_sponsor(sponsor_name)
         league = self.add_league(league_name)
+        division = self.add_division(division_name)
         team_one = self.add_team(team_one_color, sponsor, league)
         team_two = self.add_team(team_two_color, sponsor, league)
         date = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -384,6 +409,8 @@ class testAdvancedImportLeague(TestSetup):
                                         time,
                                         "WP1")
         lines = ["{}:,{},".format(BACKGROUND['league'], league["league_name"]),
+                 "{}:,{},".format(
+                     BACKGROUND['division'], division["division_name"]),
                  header_line,
                  entry]
         league_importer = LeagueList(lines,
@@ -402,11 +429,13 @@ class testAdvancedImportLeague(TestSetup):
 
     def testImportLeagueWarnings(self):
         """Import a league that has warnings"""
-        sponsor_name = "Test Import Sponsor"
-        league_name = "Test Import League"
+        sponsor_name = str(uuid.uuid1())
+        league_name = str(uuid.uuid1())
+        division_name = str(uuid.uuid1())
         team_two_color = "Red"
         sponsor = self.add_sponsor(sponsor_name)
         league = self.add_league(league_name)
+        division = self.add_division(division_name)
         team_two = self.add_team(team_two_color, sponsor, league)
         date = datetime.datetime.today().strftime("%Y-%m-%d")
         time = datetime.datetime.today().strftime("%H:%M")
@@ -421,6 +450,8 @@ class testAdvancedImportLeague(TestSetup):
                                         time,
                                         "WP1")
         lines = ["{}:,{},".format(BACKGROUND['league'], league["league_name"]),
+                 "{}:,{},".format(
+                     BACKGROUND['division'], division["division_name"]),
                  header_line,
                  entry]
         league_importer = LeagueList(lines,

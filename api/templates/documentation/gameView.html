@@ -27,6 +27,11 @@
                 <td class="col-md-3">The Leagues-ID</td>
             </tr>
             <tr>
+                <td class="col-md-3">division_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Division-ID</td>
+            </tr>
+            <tr>
                 <td class="col-md-3">game_id</td>
                 <td class="col-md-3">int</td>
                 <td class="col-md-3">The Games-ID</td>
@@ -89,6 +94,11 @@
                 <td class="col-md-3"><a href="{{route.doleague}}">League</a></td>
                 <td class="col-md-3">The league the game was part off</td>
             </tr>
+            <tr>
+                <td class="col-md-3">division</td>
+                <td class="col-md-3"><a href="{{route.dodivision}}">Division</a></td>
+                <td class="col-md-3">The division the game was part off</td>
+            </tr>
         </tbody>
     </table>
     <h5> Example</h5>
@@ -104,6 +114,9 @@
                                          'team_name': 'Chainsaw Black',
                                          'year': 2015},
                         'date': '2014-08-23 11:37',
+                        'division': {   'division_id': 3,
+                                        'division_name': 'Monday & Wednesday',
+                                        'division_shortname': 'M & W'},
                         'game_id': 1,
                         'home_bats': [   {   'hit': 's',
                                              'bat_id': 1,
@@ -124,7 +137,7 @@
                                          'team_id': 1,
                                          'team_name': 'Domus Green',
                                          'year': 2015},
-                        'league': {'league_id': 1, 'league_name': 'Monday & Wedneday'},
+                        'league': {'league_id': 1, 'league_name': 'MLSB'},
                         'status': ''}]
     </code>
 {% endblock %}

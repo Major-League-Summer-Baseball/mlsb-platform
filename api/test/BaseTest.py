@@ -6,13 +6,15 @@
 '''
 from api import app, DB
 from pprint import PrettyPrinter
-from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun
+from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun, \
+    Division
 from base64 import b64encode
 from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from api.variables import PAGE_SIZE
 from api.authentication import ADMIN, PASSWORD
+from uuid import uuid1
 import unittest
 
 headers = {
@@ -20,6 +22,7 @@ headers = {
                                                   "utf-8")).decode("ascii")
 }
 SUCCESSFUL_GET_CODE = 200
+REDIRECT_CODE = 302
 SUCCESSFUL_DELETE_CODE = 200
 SUCCESSFUL_PUT_CODE = 200
 SUCCESSFUL_POST_CODE = 201
@@ -47,6 +50,7 @@ class TestSetup(unittest.TestCase):
         self.players_to_delete = []
         self.sponsors_to_delete = []
         self.leagues_to_delete = []
+        self.divisions_to_delete = []
         if (not self.tables_created()):
 
             DB.engine.execute('''
@@ -59,6 +63,7 @@ class TestSetup(unittest.TestCase):
                                   DROP TABLE IF EXISTS player;
                                   DROP TABLE IF EXISTS sponsor;
                                   DROP TABLE IF EXISTS league;
+                                  DROP TABLE IF EXISTS division;
                           ''')
             DB.create_all()
 
@@ -72,6 +77,7 @@ class TestSetup(unittest.TestCase):
         sponsor_query = Sponsor.query.get
         league_query = League.query.get
         fun_query = Fun.query.get
+        division_query = Division.query.get
         to_delete = (self.delete_list(self.espys_to_delete, espy_query) +
                      self.delete_list(self.bats_to_delete, bats_query) +
                      self.delete_list(self.games_to_delete, games_query) +
@@ -79,6 +85,8 @@ class TestSetup(unittest.TestCase):
                      self.delete_list(self.teams_to_delete, team_query) +
                      self.delete_list(self.sponsors_to_delete, sponsor_query) +
                      self.delete_list(self.leagues_to_delete, league_query) +
+                     self.delete_list(self.divisions_to_delete,
+                                      division_query) +
                      self.delete_list(self.fun_to_delete, fun_query))
         final_not_delete = to_delete
         if len(final_not_delete) > 0:
@@ -152,6 +160,18 @@ class TestSetup(unittest.TestCase):
         self.sponsors_to_delete.append(sponsor.id)
         return sponsor.json()
 
+    def add_division(self, division_name):
+        """Returns" division json object the result of a post request"""
+        params = {"division_name": division_name}
+        rv = self.app.post(Routes['division'], data=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add divsion object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add division object")
+        division = Division.query.get(loads(rv.data))
+        self.divisions_to_delete.append(division.id)
+        return division.json()
+
     def add_league(self, league_name):
         """Returns league json object that was created with a post request."""
         params = {"league_name": league_name}
@@ -213,6 +233,7 @@ class TestSetup(unittest.TestCase):
                  home_team,
                  away_team,
                  league,
+                 division,
                  status="",
                  field=""):
         """Returns a game json object that was created with a post request."""
@@ -221,6 +242,7 @@ class TestSetup(unittest.TestCase):
                   "date": date,
                   "time": time,
                   "league_id": int(league['league_id']),
+                  "division_id": int(division['division_id']),
                   "status": status
                   }
         rv = self.app.post(Routes['game'], data=params, headers=headers)
@@ -335,6 +357,15 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(s1['link'], s2['link'], error_message)
         self.assertEqual(s1['description'], s2['description'], error_message)
         self.assertEqual(s1['active'], s2['active'], error_message)
+
+    def assertDivisionModelEqual(self, d1, d2, error_message=""):
+        """Asserts the two division json objects are equal"""
+        self.assertEqual(d1['division_name'],
+                         d2['division_name'], error_message)
+        self.assertEqual(d1['division_shortname'],
+                         d2['division_shortname'], error_message)
+        self.assertEqual(d1['division_id'],
+                         d2['division_id'], error_message)
 
     def assertLeagueModelEqual(self, l1, l2, error_message=""):
         """Asserts the two league json objects are equal."""
@@ -503,15 +534,14 @@ class TestSetup(unittest.TestCase):
 def addGame(tester, day="2014-02-10", time="22:40"):
     """Returns a created game (creates, league, sponsor, two teams)."""
     # add two teams, a sponsor and a league
-    counter = tester.get_counter()
-    tester.increment_counter()
-    league = tester.add_league("New League" + str(counter))
-    sponsor = tester.add_sponsor("Sponsor" + str(counter))
-    home_team = tester.add_team("Black" + str(counter),
+    league = tester.add_league(str(uuid1()))
+    division = tester.add_division(str(uuid1()))
+    sponsor = tester.add_sponsor(str(uuid1()))
+    home_team = tester.add_team(str(uuid1()),
                                 sponsor,
                                 league,
                                 VALID_YEAR)
-    away_team = tester.add_team("White" + str(counter),
+    away_team = tester.add_team(str(uuid1()),
                                 sponsor,
                                 league,
                                 VALID_YEAR)
@@ -519,7 +549,8 @@ def addGame(tester, day="2014-02-10", time="22:40"):
                            time,
                            home_team,
                            away_team,
-                           league)
+                           league,
+                           division)
     return game
 
 
@@ -528,19 +559,19 @@ def addBat(tester, classification):
 
     (creates a league, sponsor, two teams, game, player)
     """
-    counter = tester.get_counter()
-    tester.increment_counter()
-    league = tester.add_league("New League" + str(counter))
-    sponsor = tester.add_sponsor("Sponsor" + str(counter))
-    home_team = tester.add_team("Black", sponsor, league, VALID_YEAR)
-    away_team = tester.add_team("White", sponsor, league, VALID_YEAR)
+    division = tester.add_division(str(uuid1()))
+    league = tester.add_league(str(uuid1()))
+    sponsor = tester.add_sponsor(str(uuid1()))
+    home_team = tester.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
+    away_team = tester.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
     game = tester.add_game("2014-02-10",
                            "22:40",
                            home_team,
                            away_team,
-                           league)
-    player = tester.add_player("Test Player" + str(counter),
-                               "TestPlayer" + str(counter) + "@mlsb.ca",
+                           league,
+                           division)
+    player = tester.add_player(str(uuid1()),
+                               str(uuid1()) + "@testing.ca",
                                gender="M")
     bat = tester.add_bat(player, home_team, game, classification)
     return bat
@@ -551,10 +582,8 @@ def addEspy(tester, points):
 
     (Creates a league, sponsor, team and espys transaction)
     """
-    counter = tester.get_counter()
-    tester.increment_counter()
-    league = tester.add_league("New League" + str(counter))
-    sponsor = tester.add_sponsor("Sponsor" + str(counter))
-    team = tester.add_team("Black", sponsor, league, VALID_YEAR)
+    league = tester.add_league(str(uuid1()))
+    sponsor = tester.add_sponsor(str(uuid1()))
+    team = tester.add_team(str(uuid1()), sponsor, league, VALID_YEAR)
     espy = tester.add_espys(team, sponsor, points=points)
     return espy

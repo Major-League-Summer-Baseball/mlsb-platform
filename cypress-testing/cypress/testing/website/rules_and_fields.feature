@@ -3,12 +3,12 @@
 
 Feature: The fields and rules
     Background:
-        Given I navigate to the "fieldsrules" page
+        Given I navigate to the rules and fields page
 
     Scenario: Checking the rules tab
         When I click on "Rules" tab
-        Then I see a paragraph containing "official MLSB Rules"
+        Then I see information about the rules
 
     Scenario: Check the fields tab
         When I click on "Fields" tab
-        Then I see a paragraph containing "games take place"
+        Then I see information about the fields

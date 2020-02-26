@@ -82,7 +82,7 @@ function postLeague(){
       success: function (league_id){
           alert('League was added successfully');
           var i1, i4;
-          i1 = '<input class="input" value="' + league_name + '" id="' + league_id + '_league_name" onclick="change('+ league_id+', \'league_name\')">';
+          i1 = '<input class="input" value="' + league_name + '" id="' + league_id + '_league_name" onchange="change('+ league_id+', \'league_name\')">';
           i4 = '    <button type="button" class="btn btn-danger" onclick="deleteLeague('+league_id+');">Delete</button>'
           $("#leagueTable").append('<tr class="leagueEntry" id="'+league_id+'"><td>' + league_id + '</td><td>' + i1 + '</td><td>' + i4 + '</td></tr>');
           $("#newName").val('');

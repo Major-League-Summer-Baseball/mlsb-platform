@@ -6,7 +6,7 @@
 /**
  * A hook that runs once after each test.
  */
-const globalAfter = () => {
+const globalAfterEach = () => {
 };
 
-afterEach(globalAfter);
+afterEach(globalAfterEach);

@@ -126,6 +126,11 @@
                 <td class="col-md-3">The Leagues-ID</td>
             </tr>
             <tr>
+                <td class="col-md-3">division_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Division-ID</td>
+            </tr>
+            <tr>
                 <td class="col-md-3">date</td>
                 <td class="col-md-3">string</td>
                 <td class="col-md-3">The date of the game (%Y-%M-%D HH:MM)</td>
@@ -179,6 +184,11 @@
                 <td class="col-md-3">{{errors.LeagueDoesNotExist.message}}</td>
             </tr>
             <tr>
+                <td class="col-md-3">{{errors.DivisionDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">{{errors.DivisionDoesNotExist.message}}</td>
+            </tr>
+            <tr>
                 <td class="col-md-3">{{errors.GameDoesNotExist.status_code}}</td>
                 <td class="col-md-3">--</td>
                 <td class="col-md-3">{{errors.GameDoesNotExist.message}}</td>
@@ -216,6 +226,11 @@
                 <td class="col-md-3">league_id</td>
                 <td class="col-md-3">int</td>
                 <td class="col-md-3">The Leagues-ID</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">division_id</td>
+                <td class="col-md-3">int</td>
+                <td class="col-md-3">The Division-ID</td>
             </tr>
             <tr>
                 <td class="col-md-3">date</td>
@@ -274,6 +289,11 @@
                 <td class="col-md-3">{{errors.LeagueDoesNotExist.status_code}}</td>
                 <td class="col-md-3">--</td>
                 <td class="col-md-3">{{errors.LeagueDoesNotExist.message}}</td>
+            </tr>
+            <tr>
+                <td class="col-md-3">{{errors.DivisionDoesNotExist.status_code}}</td>
+                <td class="col-md-3">--</td>
+                <td class="col-md-3">{{errors.DivisionDoesNotExist.message}}</td>
             </tr>
         </tbody>
     </table>

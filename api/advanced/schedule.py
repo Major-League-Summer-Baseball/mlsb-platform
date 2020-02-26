@@ -48,7 +48,7 @@ class ScheduleAPI(Resource):
         page = request.args.get('page', 1, type=int)
         league = League.query.get(league_id)
         start = datetime.combine(date(year, 1, 1), time(0, 0))
-        end = datetime.combine(date(year, 12, 30), time(0, 0))
+        end = datetime.combine(date(year, 12, 30), time(23, 0))
         if league is None:
             raise LeagueDoesNotExist(payload={'details': league_id})
         games = (Game.query.filter(and_(Game.league_id == league.id,

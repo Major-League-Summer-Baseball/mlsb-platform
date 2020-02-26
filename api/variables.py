@@ -4,8 +4,13 @@ Date: 2016-04-12
 Project: MLSB API
 Purpose: Holds constant variables that used
 '''
-# cache timeout for the main website (how ofter things are cached for)
+# cache timeouts for the main website (in seconds)
+import os
+
+SHORT_TERM_CACHE = os.environ.get('SHORT_TERM_CACHE', 600)
+LONG_TERM_CACHE = os.environ.get('SHORT_TERM_CACHE', 3600)
 CACHE_TIMEOUT = 600
+
 
 NOTFOUND = "notFound.png"
 
@@ -56,6 +61,16 @@ EVENTS = {
     },
     2019: {
         "Beerlympics": "TBD",
+        "Jays_Game": "Cancelled",
+        "Summerween": "June 21st",
+        "Mystery_Bus": "March 22nd",
+        "Rafting": "July 5th-7th",
+        "Grand Bender": "July 29th",
+        "Tournaments": "June 28th, July 12th, July 19th",
+        "Chainsaw Idol": "???"
+    },
+    2020: {
+        "Beerlympics": "TBD",
         "Jays_Game": "TBD",
         "Summerween": "TBD",
         "Mystery_Bus": "TBD",
@@ -69,6 +84,5 @@ EVENTS = {
 # the fields we play at
 FIELDS = ["WP1", "WP2", "WP3", "WP4", "Hillside Upper", "Hillside Lower"]
 
-# the kik points assigned for subscription
-KIKPOINTS = 2
+# the page size for the API paginated responses
 PAGE_SIZE = 30

@@ -59,6 +59,13 @@ def league_object_doc():
                            errors=ERRORS)
 
 
+@app.route(Routes["dodivision"])
+def division_object_doc():
+    return render_template('documentation/divisionObject.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
 @app.route(Routes["dosponsor"])
 def sponsor_object_doc():
     return render_template('documentation/sponsorObject.html',
@@ -139,6 +146,13 @@ def sponsor_route_doc():
 @app.route(Routes["dbleague"])
 def league_route_doc():
     return render_template('documentation/leagueRoute.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes["dbdivision"])
+def division_route_doc():
+    return render_template('documentation/divisionRoute.html',
                            route=Routes,
                            errors=ERRORS)
 

@@ -1,12 +1,10 @@
-#Author: dallas.fraser.waterloo@gmail.com
-#Keywords Summary : Test the league events
 Feature: The league events
     Background:
-        Given I navigate to the "events" page
+        Given I navigate to the events page
 
     Scenario Outline: Clicking the various events
-        When I click on "<eventName>" event button
-        Then I see a event paragraph containing "<eventDescription>"
+        When viewing the event "<eventName>"
+        Then I see details relating to "<eventDescription>"
 
     Examples: Events
     | eventName             | eventDescription  |

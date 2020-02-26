@@ -9,7 +9,7 @@ from api.routes import Routes
 from flask import render_template, url_for, send_from_directory, \
     redirect
 from api.model import Team, Player, Sponsor, League, Espys, Fun
-from api.variables import EVENTS, NOTFOUND, CACHE_TIMEOUT
+from api.variables import EVENTS, NOTFOUND, CACHE_TIMEOUT, LONG_TERM_CACHE
 from datetime import date, datetime, time
 from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
@@ -77,23 +77,11 @@ def checkout_post(year, date, file_name):
 # -----------------------------------------------------------------------------
 '''
 
-# redirect old urls
-
-
-@app.route("/index.php/schedule/")
-def reroute_schedule():
-    year = date.today.year()
-    return redirect(url_for("schedule", year=year))
-
-
-@app.route("/index.php/standings/")
-def reroute_standings():
-    year = date.today.year()
-    return redirect(url_for("standings", year=year))
-
 
 @app.route("/")
 @app.route(Routes["homepage"])
+@app.route("/website")
+@app.route("/website/")
 def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
@@ -128,7 +116,7 @@ def index(year):
 def sponsor_picture(name):
     if isinstance(name, int):
         name = Sponsor.query.get(name)
-        if name is None:
+        if name is None or name == "None":
             name = "notFound"
         else:
             name = str(name)
@@ -148,15 +136,14 @@ def mlsb_logo():
 
 
 @app.route(Routes['teampicture'] + "/<int:team>")
+@app.route(Routes['teampicture'] + "/<team>")
 def team_picture(team):
+    name = team if team is not None and team != "None" else "notFound"
     if isinstance(team, int):
         team = Team.query.get(team)
-        name = "notFound"
         if team is not None and team.sponsor_id is not None:
             name = Sponsor.query.get(team.sponsor_id)
-            if name is None:
-                name = "notFound"
-            else:
+            if name is not None:
                 name = str(name)
         else:
             name = "notFound"
@@ -207,25 +194,39 @@ def sponsor_page(year, sponsor_id):
     return page
 
 
-@app.route(Routes["schedulepage"] + "/<int:year>")
+@app.route(Routes['leaguenotfoundpage'] + "<int:year>")
+def league_not_found(year):
+    return render_template("website/leagueNotFound.html",
+                           route=Routes,
+                           base=base_data(year),
+                           title="League not found",
+                           year=year)
+
+
+@app.route(Routes["schedulepage"] + "/<int:league_id>/<int:year>")
 @cache.cached(timeout=CACHE_TIMEOUT)
-def schedule(year):
+def schedule(league_id, year):
+    league = get_league(league_id)
+    if league is None:
+        return redirect(url_for("league_not_found", year=year))
     return render_template("website/schedule.html",
                            route=Routes,
                            base=base_data(year),
                            title="Schedule",
-                           leagues=get_leagues(),
+                           league=get_league(league_id),
                            year=year)
 
 
-@app.route(Routes['standingspage'] + "/<int:year>")
+@app.route(Routes['standingspage'] + "/<int:league_id>/<int:year>")
 @cache.cached(timeout=CACHE_TIMEOUT)
-def standings(year):
-    """ """
+def standings(league_id, year):
+    league_standings = get_league_standings(league_id, year)
+    if league_standings is None:
+        return redirect(url_for("league_not_found", year=year))
     return render_template("website/standings.html",
                            route=Routes,
                            base=base_data(year),
-                           leagues=get_league_standings(year),
+                           league=league_standings,
                            title="Standings",
                            year=year)
 
@@ -233,7 +234,7 @@ def standings(year):
 @app.route(Routes['statspage'] + "/<int:year>")
 @cache.cached(timeout=CACHE_TIMEOUT)
 def stats_page(year):
-    players = player_summary(year)
+    players = player_summary(year=year)
     return render_template("website/stats.html",
                            route=Routes,
                            base=base_data(year),
@@ -283,6 +284,22 @@ def player_page(year, player_id):
                                  player_id=player_id)
         if name in summary:
             player = summary[name]
+        else:
+            player = {
+                's': 0,
+                'd': 0,
+                'hr': 0,
+                'ss': 0,
+                'k': 0,
+                'fo': 0,
+                'fc': 0,
+                'e': 0,
+                'go': 0,
+                'id': player_id,
+                'rbi': 0,
+                'avg': 0.000,
+                'bats': 0
+            }
         player['team'] = str(Team.query.get(entry[1]))
         player['team_id'] = entry[1]
         player['year'] = entry[0]
@@ -465,9 +482,16 @@ def get_espys_breakdown(year):
 '''
 
 
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def get_league(league_id):
+    league = League.query.get(league_id)
+    return None if league is None else league.json()
+
+
 @cache.memoize(timeout=CACHE_TIMEOUT)
 def get_leagues():
-    return [league.json() for league in League.query.all()]
+    leagues = [league.json() for league in League.query.all()]
+    return leagues
 
 
 @cache.memoize(timeout=CACHE_TIMEOUT)
@@ -558,27 +582,27 @@ def get_teams(year):
 
 
 @cache.memoize(timeout=CACHE_TIMEOUT)
-def get_league_standings(year):
-    result = League.query.all()
-    leagues = {}
-    for league in result:
-        leagues[league.id] = {'name': league.name, 'teams': []}
-        teams = team_stats(year, league.id)
-        for team in teams:
-            espys = "{0:.2f}".format(Team.query.get(team).espys_awarded())
-            valid_form = {'name': teams[team]['name'],
-                          'id': team,
-                          'espys': espys,
-                          'games': teams[team]['games'],
-                          'wins': teams[team]['wins'],
-                          'losses': teams[team]['losses'],
-                          'ties': teams[team]['ties'],
-                          'runs_for': teams[team]['runs_for'],
-                          'runs_against': teams[team]['runs_against'],
-                          'plus_minus': (teams[team]['runs_for'] -
-                                         teams[team]['runs_against'])}
-            leagues[league.id]['teams'].append(valid_form)
-    return leagues
+def get_league_standings(league_id, year):
+    league_model = League.query.get(league_id)
+    if league_model is None:
+        return None
+    league = league_model.json()
+    league['teams'] = []
+    teams = team_stats(year, league['league_id'])
+    for team in teams:
+        valid_form = {'name': teams[team]['name'],
+                      'id': team,
+                      'espys': teams[team]['espys'],
+                      'games': teams[team]['games'],
+                      'wins': teams[team]['wins'],
+                      'losses': teams[team]['losses'],
+                      'ties': teams[team]['ties'],
+                      'runs_for': teams[team]['runs_for'],
+                      'runs_against': teams[team]['runs_against'],
+                      'plus_minus': (teams[team]['runs_for'] -
+                                     teams[team]['runs_against'])}
+        league['teams'].append(valid_form)
+    return league
 
 
 def get_sponsors():
@@ -598,8 +622,10 @@ def get_upcoming_games(year):
 @cache.memoize(timeout=CACHE_TIMEOUT)
 def base_data(year):
     base = {}
+    base['current_year'] = datetime.now().year
     base['games'] = get_upcoming_games(year)
     base['sponsors'] = get_sponsors()
+    base['leagues'] = get_leagues()
     fun_count = Fun.query.filter_by(year=year).first()
     if fun_count is None:
         fun_count = {'year': year, 'count': 0}
@@ -657,7 +683,7 @@ def rip_summary(f, year):
                 line = line.replace("<h4>", "")
                 line = line.replace("</h4>", "")
                 if result['title'] is None:
-                    result['title'] = line
+                    result['title'] = line.strip()
             elif "<img" in line:
                 image = line.split('filename="')[1]
                 image = image.split('"')[0]
