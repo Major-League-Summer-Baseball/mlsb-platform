@@ -124,6 +124,7 @@ Routes['postpicture'] = "/website/post/pictures"
 # Captain help
 Routes['espysbreakdown'] = "/website/espysbreakdown"
 Routes['sponsorbreakdown'] = "/website/sponsorbreakdown"
+Routes['schedulecache'] = "/website/cache/view/schedule"
 
 # -----------------------------------------------------------------------------
 # Admin
