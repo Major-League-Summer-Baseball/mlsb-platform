@@ -4,20 +4,20 @@
 @organization: MLSB API
 @summary: Holds the the views for the website
 '''
-from api import app, PICTURES, POSTS, cache
-from api.routes import Routes
-from flask import render_template, url_for, send_from_directory, \
-    redirect
+from api import app, PICTURES, POSTS, cache, DB
+from api.advanced.game_stats import post as game_summary
 from api.model import Team, Player, Sponsor, League, Espys, Fun
 from api.variables import EVENTS, NOTFOUND, CACHE_TIMEOUT, LONG_TERM_CACHE
-from datetime import date, datetime, time
+from api.routes import Routes
 from api.advanced.team_stats import team_stats, single_team
 from api.advanced.players_stats import post as player_summary
 from api.advanced.league_leaders import get_leaders,\
     get_leaders_not_grouped_by_team
-from api import DB
+from api.advanced.schedule import pull_schedule
+from flask import render_template, url_for, send_from_directory, \
+    redirect, request
 from sqlalchemy.sql import func
-from api.advanced.game_stats import post as game_summary
+from datetime import date, datetime, time
 import os.path
 import json
 
@@ -204,7 +204,7 @@ def league_not_found(year):
 
 
 @app.route(Routes["schedulepage"] + "/<int:league_id>/<int:year>")
-@cache.cached(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def schedule(league_id, year):
     league = get_league(league_id)
     if league is None:
@@ -218,7 +218,7 @@ def schedule(league_id, year):
 
 
 @app.route(Routes['standingspage'] + "/<int:league_id>/<int:year>")
-@cache.cached(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def standings(league_id, year):
     league_standings = get_league_standings(league_id, year)
     if league_standings is None:
@@ -232,7 +232,7 @@ def standings(league_id, year):
 
 
 @app.route(Routes['statspage'] + "/<int:year>")
-@cache.cached(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def stats_page(year):
     players = player_summary(year=year)
     return render_template("website/stats.html",
@@ -314,7 +314,7 @@ def player_page(year, player_id):
 
 
 @app.route(Routes['leagueleaderpage'] + "/<int:year>")
-@cache.cached(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def leaders_page(year):
     women = get_leaders("ss", year=year)[:5]
     men = get_leaders("hr", year=year)[:5]
@@ -327,8 +327,21 @@ def leaders_page(year):
                            year=year)
 
 
+@app.route(Routes['schedulecache'] + "/<int:year>/<int:league_id>")
+def cache_schedule_page(year, league_id):
+    page = int(request.args.get('page', 1))
+    schedule_parts = pull_schedule_cache(year, league_id, page)
+    return schedule_parts
+
+
+@cache.memoize(timeout=CACHE_TIMEOUT)
+def pull_schedule_cache(year, league_id, page):
+    url_route = Routes['schedulecache'] + f"/{year}/{league_id}"
+    return pull_schedule(year, league_id, page=page, url_route=url_route)
+
+
 @app.route(Routes['alltimeleaderspage'] + "/<int:year>")
-@cache.cached(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def all_time_leaders_page(year):
     hrSingleSeason = get_leaders("hr")
     ssSingleSeason = get_leaders("ss")
