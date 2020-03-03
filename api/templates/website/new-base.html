@@ -31,11 +31,13 @@
         <header id="header">
            <div class="sponsor-banner js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false, "autoPlay": true}'>
                {% for sponsor in base.sponsors %}
-                <div class="sponsor-cell" data-cy="sponsor-cell">
-                  <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}" target="_blank">
-                    <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
-                  </a>
-                </div>
+                 {% if sponsor.sponsor_name is defined and sponsor.sponsor_name.strip()|length%}
+                   <div class="sponsor-cell" data-cy="sponsor-cell">
+                     <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}" target="_blank">
+                       <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
+                     </a>
+                   </div>
+                  {% endif %}
               {% endfor %}
            </div>
            <div class="games-container">
