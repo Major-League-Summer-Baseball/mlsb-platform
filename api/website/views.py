@@ -114,10 +114,9 @@ def index(year):
 @app.route(Routes['sponsorspicture'] + "/<int:name>")
 @app.route(Routes['sponsorspicture'] + "/<name>")
 def sponsor_picture(name):
-    name = "notFound"
     if isinstance(name, int):
         sponsor_id = int(name)
-        sponsor = get_sponsor_map().get(sponsor_id, None)
+        sponsor = get_sponsor_map().get(sponsor_id, "notFound")
         if sponsor is not None:
             name = sponsor['sponsor_name']
     name = name.lower().replace(" ", "_") + ".png"
