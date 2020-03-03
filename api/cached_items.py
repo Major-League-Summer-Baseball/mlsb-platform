@@ -13,6 +13,7 @@ from api.advanced.game_stats import post as game_summary
 from api.model import Team, Sponsor, League, Espys, Fun, Sponsor, Game
 from api.errors import LeagueDoesNotExist
 from api.variables import LONG_TERM_CACHE
+from api.advanced.team_stats import team_stats
 from api.advanced.league_leaders import get_leaders,\
     get_leaders_not_grouped_by_team
 from api.tables import Tables
@@ -148,7 +149,7 @@ def get_website_base_data(year):
     base = {}
     base['current_year'] = datetime.now().year
     base['games'] = get_upcoming_games(year)
-    base['sponsors'] = [sponsor.json for sponsor in DB.session.query(Sponsor)
+    base['sponsors'] = [sponsor.json() for sponsor in DB.session.query(Sponsor)
                         .filter(Sponsor.active == True)
                         .order_by(Sponsor.name).all()]
     base['leagues'] = [league.json() for league in League.query.all()]

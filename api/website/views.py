@@ -218,7 +218,7 @@ def schedule(league_id, year):
 
 @app.route(Routes['standingspage'] + "/<int:league_id>/<int:year>")
 def standings(league_id, year):
-    league_standings = get_league_standings(league_id, year)
+    league_standings = get_league_standings(year, league_id)
     if league_standings is None:
         return redirect(url_for("league_not_found", year=year))
     return render_template("website/standings.html",
