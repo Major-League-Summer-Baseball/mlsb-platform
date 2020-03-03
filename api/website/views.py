@@ -117,7 +117,7 @@ def sponsor_picture(name):
     if isinstance(name, int):
         sponsor_id = int(name)
         sponsor = get_sponsor_map().get(sponsor_id, "notFound")
-        if sponsor is not None:
+        if sponsor != "notFound":
             name = sponsor['sponsor_name']
     name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors", name)
