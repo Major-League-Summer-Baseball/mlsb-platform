@@ -5,16 +5,18 @@
 @summary: The basic league API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
-from api.model import League
+from flask import Response, request
 from json import dumps
 from api import DB
+from api.model import League
 from api.authentication import requires_admin
 from api.errors import LeagueDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
+
 parser = reqparse.RequestParser()
 parser.add_argument('league_name', type=str)
 post_parser = reqparse.RequestParser()
@@ -67,6 +69,7 @@ class LeagueAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.LEAGUE, item=league.json())
         return response
 
     @requires_admin
@@ -102,6 +105,7 @@ class LeagueAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.LEAGUE, item=league.json())
         return response
 
     def option(self):
@@ -164,6 +168,7 @@ class LeagueListAPI(Resource):
         DB.session.add(league)
         DB.session.commit()
         result = league.id
+        handle_table_change(Tables.LEAGUE, item=league.json())
         return Response(dumps(result), status=201,
                         mimetype="application/json")
 

@@ -7,7 +7,8 @@ Purpose: Holds constant variables that used
 # cache timeouts for the main website (in seconds)
 import os
 
-SHORT_TERM_CACHE = os.environ.get('SHORT_TERM_CACHE', 600)
+SHORT_TERM_CACHE = os.environ.get('SHORT_TERM_CACHE', 60)
+MEDIUM_TERM_CACHE = os.environ.get('MEDIUM_TERM_CACHE', 3600)
 LONG_TERM_CACHE = os.environ.get('SHORT_TERM_CACHE', 3600)
 CACHE_TIMEOUT = 600
 

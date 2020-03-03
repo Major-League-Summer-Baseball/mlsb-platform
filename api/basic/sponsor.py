@@ -5,17 +5,19 @@
 @summary: The basic sponsor API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
+from api import DB
 from api.validators import string_validator
 from api.model import Sponsor
-from api import DB
 from api.authentication import requires_admin
 from api.errors import SponsorDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
+
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_name', type=str)
 parser.add_argument('link', type=str)
@@ -81,6 +83,7 @@ class SponsorAPI(Resource):
             raise SponsorDoesNotExist(payload={'details': sponsor_id})
         DB.session.delete(sponsor)
         DB.session.commit()
+        handle_table_change(Tables.SPONSOR, item=sponsor.json())
         return Response(dumps(None), status=200, mimetype="application/json")
 
     @requires_admin
@@ -131,6 +134,7 @@ class SponsorAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.SPONSOR, item=sponsor.json())
         return response
 
     def option(self):
@@ -206,6 +210,7 @@ class SponsorListAPI(Resource):
         DB.session.add(sponsor)
         DB.session.commit()
         sponsor_id = sponsor.id
+        handle_table_change(Tables.SPONSOR, item=sponsor.json())
         return Response(dumps(sponsor_id), status=201,
                         mimetype="application/json")
 

@@ -35,6 +35,8 @@ def single_team(team_id):
              .filter(or_(Game.away_team_id == team_id,
                          Game.home_team_id == team_id)
                      ).all())
+    espy_total = (team_query.espys_total
+                  if team_query.espys_total is not None else 0)
     team = {team_id: {'wins': 0,
                       'losses': 0,
                       'games': 0,
@@ -44,7 +46,7 @@ def single_team(team_id):
                       'hits_for': 0,
                       'hits_allowed': 0,
                       'name': str(team_query),
-                      'espys': team_query.espys_total}
+                      'espys': espy_total}
             }
     for game in games:
         # loop through each game
@@ -90,6 +92,8 @@ def team_stats(year, league_id):
     result = {}
     for team in teams:
         # initialize each team
+        espy_total = (team.espys_total
+                      if team.espys_total is not None else 0)
         result[team.id] = {'wins': 0,
                            'losses': 0,
                            'games': 0,
@@ -99,7 +103,7 @@ def team_stats(year, league_id):
                            'hits_for': 0,
                            'hits_allowed': 0,
                            'name': str(team),
-                           'espys': team.espys_total}
+                           'espys': espy_total}
     for game in games:
         # loop through each game (max ~400 for a season)
         score = game.summary()

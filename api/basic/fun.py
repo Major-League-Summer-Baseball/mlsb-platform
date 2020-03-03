@@ -5,17 +5,18 @@
 @summary: The basic fun API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
+from api import DB
 from api.validators import string_validator
 from api.model import Fun
-from api import DB
 from api.authentication import requires_admin
 from api.errors import FunDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('count', type=int)
@@ -74,8 +75,10 @@ class FunAPI(Resource):
         if fun_year is None:
             # Sponsor is not in the table
             raise FunDoesNotExist(payload={'details': year})
+        fun_json = fun_year.json()
         DB.session.delete(fun_year)
         DB.session.commit()
+        handle_table_change(Tables.FUN, item=fun_json)
         return Response(dumps(None), status=200, mimetype="application/json")
 
     @requires_admin
@@ -107,10 +110,12 @@ class FunAPI(Resource):
         args = parser.parse_args()
         if args['count']:
             count = args['count']
+
         fun_year.update(count=count)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.FUN, item=fun_year.json())
         return response
 
     def option(self):
@@ -175,6 +180,7 @@ class FunListAPI(Resource):
         DB.session.add(fun)
         DB.session.commit()
         fun_id = fun.year
+        handle_table_change(Tables.FUN, item=fun.json())
         return Response(dumps(fun_id), status=201,
                         mimetype="application/json")
 
