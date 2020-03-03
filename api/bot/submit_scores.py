@@ -13,6 +13,8 @@ from api.authentication import requires_admin
 from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist,\
     PlayerNotSubscribed
 from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('game_id', type=int, required=True)
 parser.add_argument('player_id', type=int, required=True)
@@ -110,4 +112,5 @@ class SubmitScoresAPI(Resource):
             DB.session.add(bat)
             score -= 1
         DB.session.commit()  # good to add the submission
+        handle_table_change(Tables.GAME)
         return Response(dumps(True), status=200, mimetype="application/json")

@@ -5,17 +5,18 @@
 @summary: The basic team API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
+from datetime import date
 from api import DB
 from api.model import Team
-from datetime import date
 from api.authentication import requires_admin
 from api.errors import TeamDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
@@ -81,10 +82,12 @@ class TeamAPI(Resource):
         if team is None:
             raise TeamDoesNotExist(payload={'details': team_id})
         # delete a single team
+        team_json = team.json()
         DB.session.delete(team)
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.TEAM, item=team_json)
         return response
 
     @requires_admin
@@ -135,6 +138,7 @@ class TeamAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.TEAM, item=team.json())
         return response
 
     def option(self):
@@ -216,6 +220,7 @@ class TeamListAPI(Resource):
         DB.session.add(t)
         DB.session.commit()
         result = t.id
+        handle_table_change(Tables.TEAM, item=t.json())
         return Response(dumps(result), status=201, mimetype="application/json")
 
     def option(self):

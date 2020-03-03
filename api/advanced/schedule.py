@@ -17,7 +17,7 @@ from api.variables import PAGE_SIZE, CACHE_TIMEOUT
 from api.helper import pagination_response_items
 
 
-@cache.cached(timeout=CACHE_TIMEOUT)
+@cache.memoize(timeout=CACHE_TIMEOUT)
 def get_team_mapper():
     """Return a team map from id to the team name"""
     team_map = {}
