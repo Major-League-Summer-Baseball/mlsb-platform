@@ -116,9 +116,11 @@ def index(year):
 def sponsor_picture(name):
     if isinstance(name, int):
         sponsor_id = int(name)
-        sponsor = get_sponsor_map().get(sponsor_id, "notFound")
-        if sponsor != "notFound":
+        sponsor = get_sponsor_map().get(sponsor_id, None)
+        if sponsor is not None:
             name = sponsor['sponsor_name']
+        else:
+            name = "notFound"
     name = name.lower().replace(" ", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
