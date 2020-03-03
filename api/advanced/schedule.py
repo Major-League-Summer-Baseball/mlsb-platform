@@ -5,41 +5,22 @@
 @summary: The views for game schedule
 '''
 from sqlalchemy.sql.expression import and_
-
-from flask_restful import Resource
-from api.model import Game, League, Team
 from datetime import datetime, date, time
+from flask_restful import Resource, request
+from api.model import Game
 from api.errors import LeagueDoesNotExist
 from api.routes import Routes
-from flask import request
-from api import cache
-from api.variables import PAGE_SIZE, CACHE_TIMEOUT
+from api.cached_items import get_team_map, get_league_map
 from api.helper import pagination_response_items
-
-
-@cache.memoize(timeout=CACHE_TIMEOUT)
-def get_team_mapper():
-    """Return a team map from id to the team name"""
-    team_map = {}
-    teams = Team.query.all()
-    for team in teams:
-        team_map[team.id] = str(team)
-    return team_map
-
-
-@cache.memoize(timeout=CACHE_TIMEOUT)
-def check_league(league_id):
-    """Checks if the given league id is valid"""
-    league = League.query.get(league_id)
-    if league is None:
-        raise LeagueDoesNotExist(payload={'details': league_id})
+from api.variables import PAGE_SIZE
 
 
 def pull_schedule(year, league_id, page=1, page_size=PAGE_SIZE,
                   url_route=None):
     """Pull the schedule for the given league and year"""
-    team_mapper = get_team_mapper()
-    check_league(league_id)
+    team_mapper = get_team_map()
+    if league_id not in get_league_map().keys():
+        raise LeagueDoesNotExist(payload={'details': league_id})
     start = datetime.combine(date(year, 1, 1), time(0, 0))
     end = datetime.combine(date(year, 12, 30), time(23, 0))
     games = (Game.query.filter(and_(Game.league_id == league_id,
@@ -65,9 +46,9 @@ def game_to_json(game, team_mapper):
     return {
         'game_id': game.id,
         'home_team_id': game.home_team_id,
-        'home_team': team_mapper[game.home_team_id],
+        'home_team': team_mapper[game.home_team_id]['team_name'],
         'away_team_id': game.away_team_id,
-        'away_team': team_mapper[game.away_team_id],
+        'away_team': team_mapper[game.away_team_id]['team_name'],
         'league_id': game.league_id,
         'division_id': game.division_id,
         'date': game.date.strftime("%Y-%m-%d"),
