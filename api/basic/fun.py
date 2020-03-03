@@ -75,9 +75,10 @@ class FunAPI(Resource):
         if fun_year is None:
             # Sponsor is not in the table
             raise FunDoesNotExist(payload={'details': year})
+        fun_json = fun_year.json()
         DB.session.delete(fun_year)
         DB.session.commit()
-        handle_table_change(Tables.FUN, item=fun_year.json())
+        handle_table_change(Tables.FUN, item=fun_json)
         return Response(dumps(None), status=200, mimetype="application/json")
 
     @requires_admin
@@ -109,6 +110,7 @@ class FunAPI(Resource):
         args = parser.parse_args()
         if args['count']:
             count = args['count']
+
         fun_year.update(count=count)
         DB.session.commit()
         response = Response(dumps(None), status=200,
