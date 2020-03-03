@@ -6,7 +6,7 @@
 '''
 from api.advanced.game_stats import post as game_summary
 from api import cache, DB
-from api.model import Team, Sponsor, League, Espys
+from api.model import Team, Sponsor, League, Espys, Fun
 from api.variables import LONG_TERM_CACHE
 from api.advanced.league_leaders import get_leaders,\
     get_leaders_not_grouped_by_team
@@ -27,11 +27,23 @@ def handle_table_change(table_changed: 'Tables', item=None):
     if table_changed == Tables.ESPYS:
         cache.delete_memoized(get_league_standings)
         cache.delete_memoized(get_espys_breakdown)
+    if table_changed == Tables.LEAGUE:
+        cache.delete_memoized(get_league_map)
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
-def get_fun_count():
-    pass
+def get_fun_counts():
+    return [fun.json() for fun in Fun.query.all()]
+
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def get_league_map():
+    print("Getting league map")
+    league_map = {}
+    leagues = League.query.all()
+    for league in leagues:
+        league_map[league.id] = league.json()
+    return league_map
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
