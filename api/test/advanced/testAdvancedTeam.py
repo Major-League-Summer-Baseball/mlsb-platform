@@ -47,7 +47,7 @@ class TeamTest(TestSetup):
                   'runs_for': 1,
                   'ties': 0,
                   'wins': 0,
-                  'espys': None}
+                  'espys': 0}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertTrue(len(loads(rv.data).keys()) == 1,
@@ -80,7 +80,7 @@ class TeamTest(TestSetup):
                   'runs_for': 1,
                   'ties': 0,
                   'wins': 0,
-                  'espys': None}
+                  'espys': 0}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertTrue(len(loads(rv.data).keys()) > 0,
@@ -115,7 +115,7 @@ class TeamTest(TestSetup):
                   'runs_for': 1,
                   'ties': 0,
                   'wins': 0,
-                  'espys': None}
+                  'espys': 0}
         self.output(loads(rv.data))
         self.output(expect)
         self.assertTrue(len(loads(rv.data).keys()) > 0,
