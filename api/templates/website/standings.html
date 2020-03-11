@@ -29,7 +29,7 @@
         </li>
         {% for division in divisions %}
         <li role="presentation" class="presentation">
-          {% if division.short_name is not none %}
+          {% if division.division_shortname is not none %}
             <a data-toggle="pill" title="{{division_division_name}}" href="#division{{division.division_id}}">
               {{division.division_shortname}}
             </a>
