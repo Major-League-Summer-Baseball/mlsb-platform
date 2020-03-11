@@ -4,9 +4,11 @@
 @organization: MLSB API
 @summary: Holds various cached items that allow API and website to speed up
 '''
+
 from datetime import datetime
 from sqlalchemy import func
-from sqlalchemy.sql.expression import and_
+from sqlalchemy.orm import undefer
+from sqlalchemy.sql.expression import and_, or_, not_
 from datetime import date, datetime, time
 from api import cache, DB
 from api.advanced.game_stats import post as game_summary
@@ -14,7 +16,6 @@ from api.model import Team, Sponsor, League, Espys, Fun, Sponsor, Game,\
     Division
 from api.errors import LeagueDoesNotExist, DivisionDoesNotExist
 from api.variables import LONG_TERM_CACHE
-from api.advanced.team_stats import team_stats
 from api.advanced.league_leaders import get_leaders,\
     get_leaders_not_grouped_by_team
 from api.tables import Tables
@@ -37,7 +38,7 @@ def handle_table_change(table_changed: 'Tables', item=None):
     # league standings and schedule should only change if score is changed
     # or some of the game information changed
     if table_changed == Tables.BAT or table_changed == Tables.GAME:
-        cache.delete_memoized(get_league_standings)
+        cache.delete_memoized(team_stats)
         cache.delete_memoized(get_league_schedule)
         cache.delete_memoized(get_upcoming_games)
         cache.delete_memoized(get_league_leaders)
@@ -50,7 +51,7 @@ def handle_table_change(table_changed: 'Tables', item=None):
     #  update league standings if esyps change
     # also update the esyps break down
     if table_changed == Tables.ESPYS:
-        cache.delete_memoized(get_league_standings)
+        cache.delete_memoized(team_stats)
         cache.delete_memoized(get_espys_breakdown)
 
     if table_changed == Tables.SPONSOR:
@@ -258,3 +259,131 @@ def game_to_json(game, team_mapper):
         'time': game.date.strftime("%H:%M"),
         'status': game.status,
         'field': game.field}
+
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def team_stats(team_id, year, league_id, division_id=None):
+    if team_id is not None:
+        team = single_team(team_id)
+    else:
+        team = multiple_teams(year, league_id, division_id=division_id)
+    return team
+
+
+def single_team(team_id):
+    team_query = Team.query.options(undefer('espys_total')).get(team_id)
+    if team_query is None:
+        return {}
+    games = (DB.session.query(Game)
+             .filter(or_(Game.away_team_id == team_id,
+                         Game.home_team_id == team_id)
+                     ).all())
+    espy_total = (team_query.espys_total
+                  if team_query.espys_total is not None else 0)
+    team = {team_id: {'wins': 0,
+                      'losses': 0,
+                      'games': 0,
+                      'ties': 0,
+                      'runs_for': 0,
+                      "runs_against": 0,
+                      'hits_for': 0,
+                      'hits_allowed': 0,
+                      'name': str(team_query),
+                      'espys': espy_total}
+            }
+    for game in games:
+        # loop through each game
+        scores = game.summary()
+        if game.away_team_id == team_id:
+            score = scores['away_score']
+            hits = scores['away_bats']
+            opp = scores['home_score']
+            opp_hits = scores['home_bats']
+        else:
+            score = scores['home_score']
+            hits = scores['home_bats']
+            opp = scores['away_score']
+            opp_hits = scores['away_bats']
+        if score > opp:
+            team[team_id]['wins'] += 1
+        elif score < opp:
+            team[team_id]['losses'] += 1
+        elif scores['home_bats'] + scores['away_bats'] > 0:
+            team[team_id]['ties'] += 1
+        team[team_id]['runs_for'] += score
+        team[team_id]['runs_against'] += opp
+        team[team_id]['hits_for'] += hits
+        team[team_id]['hits_allowed'] += opp_hits
+        team[team_id]['games'] += 1
+    return team
+
+
+def filter_teams_by_map(result, team_map):
+    """Returns copy of the result with only teams in the map"""
+    new_result = {}
+    for team_id in result.keys():
+        if team_id in team_map.keys():
+            new_result[team_id] = result[team_id]
+    return new_result
+
+
+def multiple_teams(year, league_id, division_id=None):
+    t = time(0, 0)
+    games = DB.session.query(Game)
+    teams = DB.session.query(Team).options(undefer('espys_total'))
+    team_map = {}
+    if year is not None:
+        d1 = date(year, 1, 1)
+        d2 = date(year, 12, 30)
+        start = datetime.combine(d1, t)
+        end = datetime.combine(d2, t)
+        games = games.filter(Game.date.between(start, end))
+        teams = teams.filter(Team.year == year)
+    if league_id is not None:
+        games = games.filter(Game.league_id == league_id)
+        teams = teams.filter(Team.league_id == league_id)
+    if division_id is not None:
+        games = games.filter(Game.division_id == division_id)
+    result = {}
+    for team in teams:
+        # initialize each team
+        espy_total = (team.espys_total
+                      if team.espys_total is not None else 0)
+        result[team.id] = {'wins': 0,
+                           'losses': 0,
+                           'games': 0,
+                           'ties': 0,
+                           'runs_for': 0,
+                           "runs_against": 0,
+                           'hits_for': 0,
+                           'hits_allowed': 0,
+                           'name': str(team),
+                           'espys': espy_total}
+    for game in games:
+        # loop through each game (max ~400 for a season)
+        team_map[game.home_team_id] = True
+        team_map[game.away_team_id] = True
+        score = game.summary()
+        result[game.away_team_id]['runs_for'] += score['away_score']
+        result[game.away_team_id]['runs_against'] += score['home_score']
+        result[game.away_team_id]['hits_for'] += score['away_bats']
+        result[game.away_team_id]['hits_allowed'] += score['home_bats']
+        result[game.home_team_id]['runs_for'] += score['home_score']
+        result[game.home_team_id]['runs_against'] += score['away_score']
+        result[game.home_team_id]['hits_for'] += score['home_bats']
+        result[game.home_team_id]['hits_allowed'] += score['away_bats']
+        if score['away_bats'] + score['home_bats'] > 0:
+            result[game.away_team_id]['games'] += 1
+            result[game.home_team_id]['games'] += 1
+        if score['away_score'] > score['home_score']:
+            result[game.away_team_id]['wins'] += 1
+            result[game.home_team_id]['losses'] += 1
+        elif score['away_score'] < score['home_score']:
+            result[game.home_team_id]['wins'] += 1
+            result[game.away_team_id]['losses'] += 1
+        elif score['away_bats'] + score['home_bats'] > 0:
+            result[game.home_team_id]['ties'] += 1
+            result[game.away_team_id]['ties'] += 1
+    if division_id is not None:
+        result = filter_teams_by_map(result, team_map)
+    return result

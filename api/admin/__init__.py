@@ -69,7 +69,6 @@ def admin_import_game_list():
     file = request.files['file']
     if file and allowed_file(file.filename):
         content = (file.read()).decode("UTF-8")
-        print(content)
         lines = content.replace("\r", "")
         lines = lines.split("\n")
         team = LeagueList(lines)
@@ -115,13 +114,11 @@ def admin_import_game():
 
 @app.route(Routes['team_template'])
 def admin_team_template():
-    print(app.root_path)
     uploads = join(app.root_path, "static", "files", "team_template.csv")
     result = ""
     with open(uploads, "r") as f:
         for line in f:
             result += line
-    print(result)
     response = make_response(result)
     s = "attachment; filename=team_template.csv"
     response.headers["Content-Disposition"] = s
@@ -130,13 +127,11 @@ def admin_team_template():
 
 @app.route(Routes['game_template'])
 def admin_game_template():
-    print(app.root_path)
     uploads = join(app.root_path, "static", "files", "game_template.csv")
     result = ""
     with open(uploads, "r") as f:
         for line in f:
             result += line
-    print(result)
     response = make_response(result)
     s = "attachment; filename=game_template.csv"
     response.headers["Content-Disposition"] = s
@@ -172,7 +167,6 @@ def get_captains_games_not_submitted(year):
             player = (Player.query.get(team.player_id))
             captains.append(player.name + "-" + player.email +
                             " on " + str(game.date))
-    print(captains)
     return render_template("admin/viewGamesNotSubmitted.html",
                            route=Routes,
                            title="Captains with games to submit",
@@ -192,7 +186,6 @@ def admin_edit_roster(year, team_id):
     else:
         players = []
         for player in team.players:
-            print(player)
             players.append(player.json())
         players = quick_sort(players)
         all_players = Player.query.order_by(Player.name).all()
