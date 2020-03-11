@@ -75,10 +75,19 @@ def single_team(team_id):
     return team
 
 
-def team_stats(year, league_id):
+def remove_teams_not_map(result, team_map):
+    """Remove any team stats that are not in the given team map"""
+    for team_id in result.keys():
+        if team_id not in team_map.keys():
+            del result[team_id]
+    return result
+
+
+def team_stats(year, league_id, division_id=None):
     t = time(0, 0)
     games = DB.session.query(Game)
     teams = DB.session.query(Team).options(undefer('espys_total'))
+    team_map = {}
     if year is not None:
         d1 = date(year, 1, 1)
         d2 = date(year, 12, 30)
@@ -89,6 +98,8 @@ def team_stats(year, league_id):
     if league_id is not None:
         games = games.filter(Game.league_id == league_id)
         teams = teams.filter(Team.league_id == league_id)
+    if division_id is not None:
+        games = games.filter(Game.division_id == division_id)
     result = {}
     for team in teams:
         # initialize each team
@@ -106,6 +117,8 @@ def team_stats(year, league_id):
                            'espys': espy_total}
     for game in games:
         # loop through each game (max ~400 for a season)
+        team_map[game.home_team_id] = True
+        team_map[game.away_team_id] = True
         score = game.summary()
         result[game.away_team_id]['runs_for'] += score['away_score']
         result[game.away_team_id]['runs_against'] += score['home_score']
@@ -127,6 +140,8 @@ def team_stats(year, league_id):
         elif score['away_bats'] + score['home_bats'] > 0:
             result[game.home_team_id]['ties'] += 1
             result[game.away_team_id]['ties'] += 1
+    if division_id is not None:
+        result = remove_teams_not_map(result, team_map)
     return result
 
 
