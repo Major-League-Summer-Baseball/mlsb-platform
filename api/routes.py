@@ -78,6 +78,7 @@ Routes['dvplayerLookup'] = "/documentation/view/player_lookup"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 Routes['dvschedule'] = "/documentation/views/schedule"
+Routes['dvdivisions'] = "/documentation/views/divisions"
 
 # bot documentation
 Routes['dbotsubscribe'] = "/documentation/bot/subscribe"

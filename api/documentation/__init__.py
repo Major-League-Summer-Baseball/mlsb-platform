@@ -212,6 +212,13 @@ def schedule_view_doc():
                            route=Routes,
                            errors=ERRORS)
 
+
+@app.route(Routes['dvdivisions'])
+def divisions_view_doc():
+    return render_template('documentation/divisionsView.html',
+                           route=Routes,
+                           errors=ERRORS)
+
 # -----------------------------------------------------------------------------
 # Bot documentation
 # -----------------------------------------------------------------------------
