@@ -12,11 +12,12 @@ from api import app, PICTURES, POSTS, DB
 from api.model import Team, Player, Sponsor, League, Espys
 from api.variables import EVENTS, NOTFOUND
 from api.routes import Routes
-from api.advanced.team_stats import single_team
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_league_map, get_team_map, get_sponsor_map,\
     get_league_standings, get_league_schedule, get_league_leaders,\
-    get_espys_breakdown, get_upcoming_games
+    get_espys_breakdown, get_upcoming_games,\
+    get_divisions_for_league_and_year, single_team
+
 from api.cached_items import get_website_base_data as base_data
 import os.path
 import json
@@ -209,23 +210,31 @@ def schedule(league_id, year):
     league = get_league_map().get(league_id, None)
     if league is None:
         return redirect(url_for("league_not_found", year=year))
+    divisions = get_divisions_for_league_and_year(year, league_id)
+    if len(divisions) == 1:
+        divisions = []
     return render_template("website/schedule.html",
                            route=Routes,
                            base=base_data(year),
                            title="Schedule",
                            league=league,
+                           divisions=divisions,
                            year=year)
 
 
 @app.route(Routes['standingspage'] + "/<int:league_id>/<int:year>")
 def standings(league_id, year):
-    league_standings = get_league_standings(year, league_id)
-    if league_standings is None:
+    league = get_league_map().get(league_id, None)
+    if league is None:
         return redirect(url_for("league_not_found", year=year))
+    divisions = get_divisions_for_league_and_year(year, league_id)
+    if len(divisions) == 1:
+        divisions = []
     return render_template("website/standings.html",
                            route=Routes,
                            base=base_data(year),
-                           league=league_standings,
+                           league=league,
+                           divisions=divisions,
                            title="Standings",
                            year=year)
 

@@ -30,6 +30,8 @@ Routes['vfun'] = "/api/view/fun"
 Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
 Routes['vleagueleaders'] = "/api/view/league_leaders"
 Routes['vschedule'] = "/api/view/schedule"
+Routes['vdivisions'] = "/api/view/divisions"
+
 
 # Bot APIS
 Routes['botsubmitscore'] = "/api/bot/submit_score"
@@ -76,6 +78,7 @@ Routes['dvplayerLookup'] = "/documentation/view/player_lookup"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 Routes['dvschedule'] = "/documentation/views/schedule"
+Routes['dvdivisions'] = "/documentation/views/divisions"
 
 # bot documentation
 Routes['dbotsubscribe'] = "/documentation/bot/subscribe"

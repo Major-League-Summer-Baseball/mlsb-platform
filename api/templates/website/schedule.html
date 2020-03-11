@@ -1,7 +1,23 @@
 {% extends "website/new-base.html" %}
 {% block content %}
     <ul class="nav nav-pills" id="listing">
-            <li role="presentation" class="presentation active"><a data-toggle="pill" href="#{{league.league_id}}">{{league.league_name}}</a></li>
+            <li role="presentation" class="presentation active">
+                <a data-toggle="pill" href="#{{league.league_id}}" onclick="filterByDivision(null);">
+                    {{league.league_name}}
+                </a>
+            </li>
+            {% for division in divisions %}
+                <li role="presentation" class="presentation">
+                {% if division.divisions_shortname is not none %}
+                    <a data-toggle="pill" href="#{{league.league_id}}" onclick="filterByDivision({{division.division_id}});" title="{{division.division_name}}">
+                        {{division.division_shortname}}
+                    </a>
+                {% else %}
+                    <a data-toggle="pill" href="#{{league.league_id}}" onclick="filterByDivision({{division.division_id}});">
+                        {{division.division_name}}
+                    </a>
+                {% endif %}
+            {% endfor %}
     </ul>
     <div class="tab-content">
         <div id="{{league.league_id}}" class="tab-pane fade in active">
@@ -17,6 +33,7 @@
                         <th data-priority="5" >Field</th>
                         <th>Score</th>
                         <th>Status</th>
+                        <th>Division</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,7 +58,9 @@ function displayLeague(league_id, games){
                         {"data": "away_team", "render": awayTeamLinkRender},
                         {"data": "field"},
                         {"data": "score"},
-                        {"data": "status"}
+                        {"data": "status"},
+                        {"data": "division_id", "visible": false,
+                         "searchable": true}
                     ]
                     
     });
@@ -49,6 +68,16 @@ function displayLeague(league_id, games){
     // jump to todays date
     table.page.jumpToData("{{base.today}}", 0);
     $('#loader' + league_id).hide();
+}
+
+function filterByDivision(division) {
+    var league_id = {{league.league_id}};
+    var table = $('#'+ league_id +'League').DataTable();
+    if (division == null) {
+        table.column(7).search("").draw();
+    } else {
+        table.column(7).search(division).draw();
+    }
 }
 
 /** Renders the away team as a link. */
