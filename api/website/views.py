@@ -8,7 +8,7 @@ from flask import render_template, url_for, send_from_directory, \
     redirect, request
 from sqlalchemy.sql import func
 from datetime import date, datetime
-from api import app, PICTURES, POSTS, DB
+from api import app, PICTURES, POSTS, DB, CSS_FOLDER
 from api.model import Team, Player, Sponsor, League, Espys
 from api.variables import EVENTS, NOTFOUND
 from api.routes import Routes
@@ -131,10 +131,48 @@ def sponsor_picture(name):
         return send_from_directory(fp, filename=NOTFOUND)
 
 
+@app.route(Routes['accents'])
+def mlsb_colors():
+    return send_from_directory(CSS_FOLDER, filename="baseAccents.css")
+
+
+@app.route(Routes['accents'] + "/<int:year>")
+def mlsb_colors_year(year):
+    print("year")
+    filename = f"accents-{year}.css"
+    if os.path.isfile(os.path.join(CSS_FOLDER, filename)):
+        return send_from_directory(CSS_FOLDER, filename=filename)
+    return mlsb_colors()
+
+
 @app.route(Routes["logo"])
 def mlsb_logo():
     fp = os.path.dirname(PICTURES)
     return send_from_directory(fp, filename="banner.png")
+
+
+@app.route(Routes["favicon"])
+def mlsb_favicon():
+    fp = os.path.dirname(PICTURES)
+    return send_from_directory(fp, filename="mlsb-favicon.png")
+
+
+@app.route(Routes["logo"] + "/<int:year>")
+def mlsb_logo_year(year):
+    fp = os.path.join(PICTURES, 'logos')
+    filename = f"mlsb-logo-{year}.png"
+    if os.path.isfile(os.path.join(fp, filename)):
+        return send_from_directory(fp, filename=filename)
+    return mlsb_logo()
+
+
+@app.route(Routes["favicon"] + "/<int:year>")
+def mlsb_favicon_year(year):
+    fp = os.path.join(PICTURES, 'logos')
+    filename = f"mlsb-favicon-{year}.png"
+    if os.path.isfile(os.path.join(fp, filename)):
+        return send_from_directory(fp, filename=filename)
+    return mlsb_favicon()
 
 
 @app.route(Routes['teampicture'] + "/<int:team>")

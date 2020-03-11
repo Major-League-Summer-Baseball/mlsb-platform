@@ -5,6 +5,9 @@ body {
   background-image: url('/static/images/geometry.png');
   background-size: 20%;
 }
+.fun-meter {
+  text-align: center;
+}
 
 .full-wrap {
     min-height: 100vh;
@@ -19,7 +22,6 @@ body {
     border-bottom: 1px solid #dcdcdc;
     white-space: nowrap;
     overflow: hidden;
-    background-color: rgba(0, 100, 0, 0.3);
 }
 
 .sponsor-banner .sponsor-cell {
@@ -48,8 +50,11 @@ body {
 
 .games-container {
     border-bottom: 1px solid #dcdcdc;
-    background-color: rgba(0, 100, 0, 1);
     color: white;
+}
+
+.games-container .team img {
+  background-color: white;
 }
 
 .games {
@@ -93,7 +98,7 @@ body {
 }
 
 .navbar .container .navbar-brand {
-    padding: 6px 0px;
+    padding: 0px 0px;
 }
 
 .navbar .container .navbar-brand img {
@@ -103,15 +108,11 @@ body {
 }
 
 .navbar .container .navbar-nav {
-    font-size: 12px;
+    font-size: 20px;
 }
 
 .navbar .navbar-toggle {
     margin-right: -15px;
-}
-
-.navbar .icon-bar {
-    background-color: #FFE100;
 }
 
 @media screen and (max-width: 992px) {
@@ -163,14 +164,12 @@ body {
 
 .fun-div {
     font-weight: 300;
-    color: #006400;
     text-align: center;
-    margin-bottom: 5px;  
+    margin-bottom: 5px;
 }
 
 .fun-meter {
     font-weight: 300;
-    color: #006400;
     text-align: center;
     margin-bottom: 5px;
 }
@@ -247,10 +246,6 @@ p.primary{
   color:#FFFFFF;
 }
 
-p.accent{
-  color:#006400;
-}
-
 .mainTitle{
   color: #000;
   font-size: 62px;
@@ -262,7 +257,6 @@ p.accent{
 }
 
 .leaderTitle{
-  color: #006400;
   font-size: 30px;
   font-weight: 800;
   line-height: 36px;
@@ -307,7 +301,6 @@ hr {
 
 .btn-primary {
   padding: 8px 20px;
-  background: #FFE100;
   color: #fff;
   border-radius: 4px;
   border:none;
@@ -316,7 +309,6 @@ hr {
 
 .btn-primary:hover,
 .btn-primary:focus{
-  background: #FFE100;
   outline: none;
   box-shadow: none;
 }
@@ -409,25 +401,6 @@ a:focus {
   padding-bottom:5px;
 }
 
-li.presentation a{
-  background-color: #006400;
-  color: #FFE100;
-}
-
-li.presentation a:hover{
-  background-color: rgba(0, 100, 0, 0.3);
-  color: #FFE100;
-}
-
-.active .presentation a{
-  background-color: #FFE100;
-  color: #006400;
-}
-
-#listing>li.active>a{
-  background-color: #FFE100;
-  color: #696969;
-}
 
 .postImage{
   max-width: 600px;
@@ -532,7 +505,6 @@ ul.social_icons li  a i{
 ***********************/
 .footer {
   background: none repeat scroll 0 0 #2E2E2E;
-  border-top: 5px solid #FFE100;
   height: 84px;
   margin-top: 110px;
 }
@@ -582,10 +554,6 @@ ul.social_icons li  a i{
   border-radius: 60px
 }
 
-.2015{
-
-}
-
 .navlinks{
   color: #000000;
 }
@@ -599,16 +567,6 @@ nav.primary{
   background-color: #151515;
 }
 
-nav.accent{
-  background-color: #006400;
-  border-color: #006400;
-}
-
-div.accent{
-  background-color:#006400;
-}
-
-
 @media (max-wdith: 640px)
 {
   div.primary{
@@ -616,25 +574,15 @@ div.accent{
   }
 }
 
-
-div.secondary{
-  background-color: #FFE100;
-}
-
 div.neutral{
   background-color: #eaeaea;
 }
 
 a {
-  color: #006400;
   -webkit-transition: color 300ms, background-color 300ms;
   -moz-transition: color 300ms, background-color 300ms;
   -o-transition:  color 300ms, background-color 300ms;
   transition:  color 300ms, background-color 300ms;
-}
-
-a:hover, a:focus {
-  color: #006400;
 }
 
 .liquidFillGaugeText { 
@@ -647,7 +595,6 @@ a:hover, a:focus {
 ************************/
 #bottom {
   background: #f5f5f5;
-  border-bottom: 5px solid #006400;
   font-size: 14px;
 }
 
@@ -670,10 +617,6 @@ a:hover, a:focus {
   padding: 5px 0;
 }
 
-#bottom ul li a {
-  color: #FFE100  ;
-}
-
 #bottom ul li a:hover {
   color: #fff;
 }
@@ -691,10 +634,6 @@ a:hover, a:focus {
 
 #footer a {
   color: #fff;
-}
-
-#footer a:hover {
-  color: #FFE100;
 }
 
 #footer ul {

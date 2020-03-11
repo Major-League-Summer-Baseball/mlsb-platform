@@ -60,6 +60,7 @@ api.decorators = [cors.crossdomain(origin='*',
                                    headers=['accept',
                                             'Content-Type'])]
 PICTURES = join(getcwd(), "api", "static", "pictures")
+CSS_FOLDER = join(getcwd(), "api", "static", "css")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] = "./static"
 
