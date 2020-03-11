@@ -210,6 +210,8 @@ def schedule(league_id, year):
     if league is None:
         return redirect(url_for("league_not_found", year=year))
     divisions = get_divisions_for_league_and_year(year, league_id)
+    if len(divisions) == 1:
+        divisions = []
     return render_template("website/schedule.html",
                            route=Routes,
                            base=base_data(year),
