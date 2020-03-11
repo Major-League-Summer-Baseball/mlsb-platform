@@ -11,7 +11,7 @@ from api import DB
 from api.errors import LeagueDoesNotExist
 from api.model import Game, League, Division
 from datetime import datetime, date, time, timedelta
-from api.cached_items import get_league_map
+from api.cached_items import get_divisions_for_league_and_year
 parser = reqparse.RequestParser()
 parser.add_argument('league_id', type=int, required=True)
 parser.add_argument('game_id', type=int)
@@ -30,15 +30,6 @@ class DivisionsLeagueAPI(Resource):
                 mimetype: application/json
                 data: list of divisions
         """
-        if get_league_map().get(league_id, None) is None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
-        start = datetime.combine(date(year, 1, 1), time(0, 0))
-        end = datetime.combine(date(year, 12, 30), time(23, 0))
-        division_ids = (DB.session.query(Division.id.distinct().label('id'))
-                        .join(Game)
-                        .filter(Game.league_id == league_id)
-                        .filter(Game.date.between(start, end))).all()
-        divisions_result = [Division.query.get(division[0]).json()
-                            for division in division_ids]
-        return Response(dumps(divisions_result), status=200,
+        result = get_divisions_for_league_and_year(year, league_id)
+        return Response(dumps(result), status=200,
                         mimetype="application/json")

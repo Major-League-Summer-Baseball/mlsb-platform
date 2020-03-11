@@ -10,8 +10,9 @@ from sqlalchemy.sql.expression import and_
 from datetime import date, datetime, time
 from api import cache, DB
 from api.advanced.game_stats import post as game_summary
-from api.model import Team, Sponsor, League, Espys, Fun, Sponsor, Game
-from api.errors import LeagueDoesNotExist
+from api.model import Team, Sponsor, League, Espys, Fun, Sponsor, Game,\
+    Division
+from api.errors import LeagueDoesNotExist, DivisionDoesNotExist
 from api.variables import LONG_TERM_CACHE
 from api.advanced.team_stats import team_stats
 from api.advanced.league_leaders import get_leaders,\
@@ -58,9 +59,13 @@ def handle_table_change(table_changed: 'Tables', item=None):
     # update the league mape if league changed
     if table_changed == Tables.LEAGUE:
         cache.delete_memoized(get_league_map)
+        cache.delete_memoized(get_divisions_for_league_and_year)
 
     if table_changed == Tables.FUN:
         cache.delete_memoized(get_fun_counts)
+
+    if table_changed == Tables.GAME:
+        cache.delete_memoized(get_divisions_for_league_and_year)
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
@@ -89,6 +94,21 @@ def get_league_map():
     for league in leagues:
         league_map[league.id] = league.json()
     return league_map
+
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def get_divisions_for_league_and_year(year, league_id):
+    """Get a list of divisions that associated with the league for that year"""
+    if get_league_map().get(league_id, None) is None:
+        raise LeagueDoesNotExist(payload={'details': league_id})
+    start = datetime.combine(date(year, 1, 1), time(0, 0))
+    end = datetime.combine(date(year, 12, 30), time(23, 0))
+    division_ids = (DB.session.query(Division.id.distinct().label('id'))
+                    .join(Game)
+                    .filter(Game.league_id == league_id)
+                    .filter(Game.date.between(start, end))).all()
+    return [Division.query.get(division[0]).json()
+            for division in division_ids]
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
