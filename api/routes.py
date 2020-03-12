@@ -96,8 +96,12 @@ Routes['dbottransaction'] = "/documentation/bot/transaction"
 # static pages
 Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
-Routes['logo'] = "/logo"
 Routes["privacy"] = "/privacy-policy"
+
+# stuff that changes each year
+Routes['logo'] = "/logo"
+Routes['favicon'] = "/favicon"
+Routes['accents'] = "/accents"
 
 # sponsors pages
 Routes['sponsorspicture'] = "/website/sponsor/picture"

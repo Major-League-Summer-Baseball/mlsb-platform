@@ -8,7 +8,7 @@
             </li>
             {% for division in divisions %}
                 <li role="presentation" class="presentation">
-                {% if division.divisions_shortname is not none %}
+                {% if division.division_shortname is not none %}
                     <a data-toggle="pill" href="#{{league.league_id}}" onclick="filterByDivision({{division.division_id}});" title="{{division.division_name}}">
                         {{division.division_shortname}}
                     </a>

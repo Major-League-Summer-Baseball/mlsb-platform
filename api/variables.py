@@ -38,7 +38,9 @@ EVENTS = {
         "Rafting": "July 9th",
         "Hitting_for_the_Cycle": "July 16th",
         "Beerwell_Classic": "July 23rd",
-        "Tournaments": "May 21st, May27th, July 15th, July 22nd"},
+        "Tournaments": "May 21st, May27th, July 15th, July 22nd",
+        "MLSB_Alumni": "August 13th"
+    },
     2017: {
         "Beerfest": "May 17th",
         "ESPYS_Awards": "July 28th",
@@ -48,7 +50,8 @@ EVENTS = {
         "Rafting": "July 7-9th",
         "Hitting_for_the_Cycle": "July 16th",
         "Beerwell_Classic": "?",
-        "Tournaments": "May 19th, June 9th, July 14th, July 21st"
+        "Tournaments": "May 19th, June 9th, July 14th, July 21st",
+        "MLSB_Alumni": "August 12th"
     },
     2018: {
         "Beerlympics": "June 9th",
@@ -58,7 +61,8 @@ EVENTS = {
         "Rafting": "July 6-8th",
         "Grand Bender": "July 28th",
         "Tournaments": "June 1st, June 8th, June 29th, July 20th",
-        "Chainsaw Idol": "July 13th"
+        "Chainsaw Idol": "July 13th",
+        "MLSB_Alumni": "July 21st"
     },
     2019: {
         "Beerlympics": "TBD",
@@ -68,7 +72,8 @@ EVENTS = {
         "Rafting": "July 5th-7th",
         "Grand Bender": "July 29th",
         "Tournaments": "June 28th, July 12th, July 19th",
-        "Chainsaw Idol": "???"
+        "Chainsaw Idol": "???",
+        "MLSB_Alumni": "July 20th"
     },
     2020: {
         "Beerlympics": "TBD",
@@ -78,7 +83,8 @@ EVENTS = {
         "Rafting": "TBD",
         "Grand Bender": "TBD",
         "Tournaments": "TBD, TBD, TBD, TBD",
-        "Chainsaw Idol": "TBD"
+        "Chainsaw Idol": "TBD",
+        "MLSB_Alumni": "July 25th"
     }
 }
 

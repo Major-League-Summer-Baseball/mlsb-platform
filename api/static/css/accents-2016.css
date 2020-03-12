@@ -1,0 +1,110 @@
+.sponsor-banner {
+    background-color: rgba(132, 176, 220, 0.5);
+}
+
+.games-container {
+    background-color: rgba(36, 44, 132, 0.61);
+}
+
+.navbar .icon-bar {
+    background-color: #84b0dc;
+}
+
+.fun-div {
+    color: #8FBCE6;
+}
+
+.fun-meter {
+    color: #8FBCE6;
+}
+
+.fun-meter .CircleColor {
+  fill: #092C5C;
+}
+
+.fun-meter .WaveColor {
+  fill: #8FBCE6;
+}
+
+.fun-meter .liquidUnfilledGaugeText {
+  fill: #000;
+}
+
+.fun-meter .liquidFilledGaugeText {
+  fill: #FFF;
+}
+
+p.accent{
+  color: #092C5C;
+}
+
+.leaderTitle{
+  color: #092C5C;
+}
+
+.btn-primary {
+  background: #8FbCE6;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #8FBCE6;
+}
+
+li.presentation a{
+  background-color: #092C5C;
+  color: #8FBCE6;
+}
+
+li.presentation a:hover{
+  background-color: #8FBCE6;
+  color: #092C5C;
+}
+
+.active .presentation a{
+  background-color: #8FbCE6;
+  color: #006400;
+}
+
+#listing>li.active>a{
+  background-color: #8FBCE6;
+  color: #092C5C;
+}
+
+.footer {
+  border-top: 5px solid #8FBCE6;
+}
+
+nav.accent{
+  background-color: #092C5C;
+  border-color: #092C5C;
+}
+
+div.accent{
+  background-color: #092C5C;
+}
+
+
+div.secondary{
+  background-color: #8FBCE6;
+}
+
+a {
+  color: #8FBCE6;
+}
+
+a:hover, a:focus {
+  color: #8FBCE6;
+}
+
+#bottom {
+  border-bottom: 5px solid #092C5C;
+}
+
+#bottom ul li a {
+  color: #8FbCE6  ;
+}
+
+#footer a:hover {
+  color: #8FbCE6;
+}

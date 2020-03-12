@@ -9,6 +9,8 @@
 	<!-- core CSS -->
     <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
+    <!-- A css file that contains all the accent colors -->
+    <link href="{{route.accents}}/{{year}}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/flickity.css") }}" rel="stylesheet">
     <!-- Datatables include -->
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -18,12 +20,13 @@
     <script src="{{ url_for('static', filename="js/html5shiv.js") }}""></script>
     <script src="{{ url_for('static', filename="js/respond.js") }}""></script>
     <![endif]-->
-    <link rel="icon" href="{{ url_for('static', filename="mlsb-favicon.png") }}">
-    <link rel="shortcut icon"  href="{{ url_for('static', filename="mlsb-favicon.png") }}">
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ url_for('static', filename="mlsb-favicon.png") }}">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ url_for('static', filename="mlsb-favicon.png") }}">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ url_for('static', filename="mlsb-favicon.png") }}">
-    <link rel="apple-touch-icon-precomposed" href="{{ url_for('static', filename="mlsb-favicon.png") }}">
+    <link rel="icon" href="{{route.favicon}}/{{year}}">
+    <link rel="shortcut icon"  href="{{route.favicon}}/{{year}}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{route.favicon}}/{{year}}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{route.favicon}}/{{year}}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{route.favicon}}/{{year}}">
+    <link rel="apple-touch-icon-precomposed" href="{{route.favicon}}/{{year}}">
+
 </head><!--/head-->
 
 <body class="homepage">
@@ -80,7 +83,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="{{route.homepage}}/{{year}}">
-                        <img src="{{ url_for('static', filename="banner.png")}}">
+                        <img src="{{route.logo}}/{{year}}">
                     </a>
 
                     <div class="collapse navbar-collapse navbar-left">
@@ -186,14 +189,29 @@
                         <h4 id="funMeter">
                           Fun Meter {{year}}
                         </h4>
-                        <svg id="fillgauge2" width="19%" height="200" onclick="updateGauge();"></svg>
+                        <svg id="fillgauge2" width="100%" height="200" onclick="updateGauge();"></svg>
                         
                     </div>
                     <div class="social">
-                        <a href="https://www.facebook.com/MLSB{{year}}/" target="_blank" class="social-link">
+                      <!-- This is a hack for now there was a general pattern
+                          but it seems that 2016 and 2020 now break that pattern. A longer term solution maybe needed.
+                      -->
+                        {% if year == 2016 %}
+                          <a href="https://www.facebook.com/MLSB-2016-1511418369154082/" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
-                        </a>
-                        <a href="https://www.instagram.com/mlsb{{year}}/" target="_blank" class="social-link">
+                          </a>
+                        {% elif year == 2020 %}
+                          <a href="https://www.facebook.com/MLSB-2020-105916120893092/" target="_blank" class="social-link">
+                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                          </a>
+                        {% else %}
+                          <a href="https://www.facebook.com/MLSB{{year}}/" target="_blank" class="social-link">
+                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                          </a>
+                        {% endif %}
+                        
+                        <!-- The general pattern is for the convenors to update the instagram handle to current year -->
+                        <a href="https://www.instagram.com/mlsb{{base.current_year}}/" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
                         </a>
                         <!--
@@ -237,10 +255,6 @@
     <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
     <script>
     var config1 = liquidFillGaugeDefaultSettings();
-    config1.circleColor = "#006400";
-    config1.textColor = "#696969";
-    config1.waveTextColor = "#A9A9A9";
-    config1.waveColor = "#FFE100";
     config1.circleThickness = 0.2;
     config1.textVertPosition = 0.5;
     config1.waveAnimateTime = 1000;
