@@ -10,6 +10,18 @@
     background-color: #EAAA00;
 }
 
+#header .navbar-nav a {
+  color: #EAAA00 ;
+  text-shadow: -1px 0 #002855 , 0 1px #002855 , 1px 0 #002855 , 0 -1px #002855 ;
+}
+
+#header .navbar-nav a:hover,
+#header .navbar-nav a:focus,
+ {
+  color: #002855 ;
+  text-shadow: -1px 0  #CE1141, 0 1px #CE1141 , 1px 0 #CE1141 , 0 -1px #CE1141 ;
+}
+
 .fun-div {
     color: #002855;
 }
@@ -19,11 +31,11 @@
 }
 
 .fun-meter .CircleColor {
-  fill: #092C5C;
+  fill: #002855 ;
 }
 
 .fun-meter .WaveColor {
-  fill: #8FBCE6;
+  fill: #EAAA00;
 }
 
 .fun-meter .liquidUnfilledGaugeText {
@@ -35,11 +47,11 @@
 }
 
 p.accent{
-  color: #092C5C;
+  color: #002855;
 }
 
 .leaderTitle{
-  color: #092C5C;
+  color: #EAAA00;
 }
 
 .btn-primary {
@@ -52,23 +64,25 @@ p.accent{
 }
 
 li.presentation a{
-  background-color: #092C5C;
-  color: #8FBCE6;
+  background-color: #002855
+  color: #EAAA00;
 }
 
 li.presentation a:hover{
-  background-color: #8FBCE6;
-  color: #092C5C;
+  background-color: #002855;
+  color: #EAAA00;
 }
 
 .active .presentation a{
-  background-color: #8FbCE6;
-  color: #006400;
+  background-color: #002855;
+  color: #CE1141;
 }
 
 #listing>li.active>a{
-  background-color: #8FBCE6;
-  color: #092C5C;
+  background-color: #CE1141;
+  color: #002855;
+  font-weight: bold;
+
 }
 
 .footer {
@@ -76,38 +90,46 @@ li.presentation a:hover{
 }
 
 nav.accent{
-  background-color: #092C5C;
-  border-color: #092C5C;
+  background-color: #002855;
+  border-color: #002855;
 }
 
 div.accent{
-  background-color: #092C5C;
+  background-color: #002855;
 }
 
 
 div.secondary{
-  background-color: #8FBCE6;
+  background-color: #CE1141;
 }
 
 a {
-  size: 12px;
+  color: #002855;
+}
+
+a:hover, a:focus {
+  color: #CE1141;
+}
+
+#header  .dropdown-menu>li>a {
+ color: #EAAA00 ;
+ text-shadow: -1px 0 #002855 , 0 1px #002855 , 1px 0 #002855 , 0 -1px #002855 ;
+}
+
+#header  .dropdown-menu>li>a:hover,
+#header  .dropdown-menu>li>a:focus{
   color: #002855 ;
   text-shadow: -1px 0  #CE1141, 0 1px #CE1141 , 1px 0 #CE1141 , 0 -1px #CE1141 ;
 }
 
-a:hover, a:focus {
-  color: #EAAA00 ;
-  text-shadow: -1px 0 #002855 , 0 1px #002855 , 1px 0 #002855 , 0 -1px #002855 ;
-}
-
 #bottom {
-  border-bottom: 5px solid #092C5C;
+  border-bottom: 5px solid #002855;
 }
 
 #bottom ul li a {
-  color: #8FbCE6  ;
+  color: #EAAA00  ;
 }
 
 #footer a:hover {
-  color: #8FbCE6;
+  color: #EAAA00;
 }
