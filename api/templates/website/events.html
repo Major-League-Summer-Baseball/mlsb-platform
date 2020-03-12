@@ -1,6 +1,7 @@
 {% extends "website/new-base.html" %}
 {% block content %}
     <ul class="nav nav-pills" id="listing">
+
         <li role="presentation" class="presentation active"><a data-toggle="pill" href="#mb">Mystery Bus</a></li>
         <li role="presentation" class="presentation"><a data-toggle="pill" href="#bjg" >Blue Jays Game</a></li>
         <li role="presentation" class="presentation"><a data-toggle="pill" href="#bf">Beerfest</a></li>
@@ -8,6 +9,7 @@
         <li role="presentation" class="presentation"><a data-toggle="pill" href="#bc">Beerwell Classic</a></li>
         <li role="presentation" class="presentation"><a data-toggle="pill" href="#hftc">Hitting for the Cycle</a></li>
         <li role="presentation" class="presentation"><a data-toggle="pill" href="#sw">Summerween</a></li>
+        <li role="presentation" class="presentation"><a data-toggle="pill" href="#ma">MLSB Alumni</a></li>
         <li role="presentation" class="presentation"><a data-toggle="pill" href="#ea">ESPY Awards</a></li>
         
 
@@ -76,6 +78,16 @@
             </p>
             <h4> Date: {{dates.Summerween}} </h4>
         </div>
+        <div id="ma" class="tab-pane fade in">
+            <p>
+                A tourney for everyone even those who have graduated.
+            </p>
+            <img class="eventImage" src="{{ url_for('static', filename="images/events/mlsb_alumni.jpg") }}">
+            <p>
+                One of the best weekends of the summer.
+            </p>
+            <h4> Date: {{dates.MLSB_Alumni}} </h4>
+        </div>
         <div id="ea" class="tab-pane fade in">
             <p>
                 The final ESPY awards take place at the end of the summer. The team who collects the most points throughout the summer will win the ESPY’s, a prize, and some well deserved glory.
@@ -99,23 +111,6 @@
             <h4> Date: {{dates.ESPYS_Awards}}</h4>
         </div>
 
-        <div id="fields" class="tab-pane fade in">
-            <p>
-            All regular season games take place on WP fields 1 through 4. Hillside upper and lower are used during tournaments. click on the maps for directions if you’re still lost
-            </p>
-            <p style="text-align: center">
-                <strong>Waterloo Park fields 1 & 2</strong>
-                <iframe src="http://maps.google.ca/maps?hl=en&amp;ie=UTF8&amp;t=h&amp;ll=43.4665363,-80.5344405&amp;spn=0.002725,0.00456&amp;z=17&amp;output=embed" width="400" height="400"></iframe>
-            </p>
-            <p style="text-align: center">
-                <strong>Waterloo Park fields 3 & 4</strong>
-                <iframe src="http://maps.google.ca/maps?hl=en&amp;ie=UTF8&amp;t=h&amp;ll=43.468992,-80.532671&amp;spn=0.002725,0.00456&amp;z=17&amp;output=embed" width="400" height="400"></iframe>
-            </p>
-            <p style="text-align: center">
-                <strong>Hillside upper and lower</strong>
-                <iframe src="https://maps.google.ca/maps?hl=en&amp;ie=UTF8&amp;ll=43.484306,-80.517163&amp;spn=0.002324,0.005681&amp;t=h&amp;z=18&amp;output=embed" width="400" height="400"></iframe>
-            </p>
-        </div>
     </div>
 
 
