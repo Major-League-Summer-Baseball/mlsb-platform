@@ -6,6 +6,7 @@
 '''
 from flask import Response
 from flask_restful import Resource, request
+from json import dumps
 from api.cached_items import pull_schedule
 
 
@@ -37,8 +38,6 @@ class ScheduleAPI(Resource):
                     ]
         """
         page = request.args.get('page', 1, type=int)
-        print(page)
         data = pull_schedule(year, league_id, page=page)
-        print(data)
         return Response(dumps(data), status=200,
                         mimetype="application/json")
