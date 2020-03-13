@@ -34,7 +34,7 @@
         <header id="header">
            <div class="sponsor-banner js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false, "autoPlay": true}'>
                {% for sponsor in base.sponsors %}
-                 {% if sponsor.sponsor_name is defined and sponsor.sponsor_name.strip()|length%}
+                 {% if sponsor.sponsor_name is defined and sponsor.sponsor_name is not none and sponsor.sponsor_name.strip()|length%}
                    <div class="sponsor-cell" data-cy="sponsor-cell">
                      <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}" target="_blank">
                        <img src="{{route.sponsorspicture}}/{{sponsor.sponsor_name}}"  alt="">
