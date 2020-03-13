@@ -4,6 +4,7 @@
 @organization: MLSB API
 @summary: The views for game schedule
 '''
+from flask import Response
 from flask_restful import Resource, request
 from api.cached_items import pull_schedule
 
@@ -36,4 +37,6 @@ class ScheduleAPI(Resource):
                     ]
         """
         page = request.args.get('page', 1, type=int)
-        return pull_schedule(year, league_id, page=page)
+        data = pull_schedule(year, league_id, page=page)
+        return Response(dumps(data), status=200,
+                        mimetype="application/json")
