@@ -51,6 +51,10 @@ However, if they are missing is will just defaults but will use redis and postgr
 (instead of in-memory database / simple cache).
 The flask app will restart anytime changes are made to the app source code since docker-compose use a volume
 between the docker container and the code repository.
+Just a note about the DATABASE_URL if using docker and want your database
+to be some database on your local machine then do not use localhost but
+instead use your local IP address. 
+
 
 To bring the docker stack down just use the following:
 ```
