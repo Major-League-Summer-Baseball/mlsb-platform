@@ -8,11 +8,9 @@ from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
-from api.model import Team, Player
-from api.errors import LeagueDoesNotExist, PlayerNotOnTeam, PlayerDoesNotExist
+from api.errors import LeagueDoesNotExist
 from api.test.advanced.mock_league import MockLeague
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-    SUCCESSFUL_DELETE_CODE
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")

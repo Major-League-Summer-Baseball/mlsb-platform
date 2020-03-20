@@ -14,9 +14,8 @@ from api.variables import EVENTS, NOTFOUND
 from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_league_map, get_team_map, get_sponsor_map,\
-    get_league_standings, get_league_schedule, get_league_leaders,\
-    get_espys_breakdown, get_upcoming_games,\
-    get_divisions_for_league_and_year, single_team
+    get_league_schedule, get_league_leaders, get_espys_breakdown,\
+    get_upcoming_games, get_divisions_for_league_and_year, single_team
 
 from api.cached_items import get_website_base_data as base_data
 import os.path
