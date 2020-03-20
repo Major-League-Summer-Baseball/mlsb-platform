@@ -5,12 +5,10 @@
 @summary: Holds the model for the database
 """
 from sqlalchemy.orm import column_property
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import and_, select, func, or_
 from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime
-from api.variables import HITS
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, PlayerNotOnTeam, DivisionDoesNotExist

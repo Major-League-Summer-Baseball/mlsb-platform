@@ -7,10 +7,6 @@
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api import DB
-from api.errors import LeagueDoesNotExist
-from api.model import Game, League, Division
-from datetime import datetime, date, time, timedelta
 from api.cached_items import get_divisions_for_league_and_year
 parser = reqparse.RequestParser()
 parser.add_argument('league_id', type=int, required=True)

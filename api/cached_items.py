@@ -5,19 +5,15 @@
 @summary: Holds various cached items that allow API and website to speed up
 '''
 
-from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import undefer
-from sqlalchemy.sql.expression import and_, or_, not_
+from sqlalchemy.sql.expression import and_, or_
 from datetime import date, datetime, time
 from api import cache, DB
 from api.advanced.game_stats import post as game_summary
-from api.model import Team, Sponsor, League, Espys, Fun, Sponsor, Game,\
-    Division
-from api.errors import LeagueDoesNotExist, DivisionDoesNotExist
+from api.model import Team, Sponsor, League, Espys, Fun, Game, Division
+from api.errors import LeagueDoesNotExist
 from api.variables import LONG_TERM_CACHE
-from api.advanced.league_leaders import get_leaders,\
-    get_leaders_not_grouped_by_team
 from api.tables import Tables
 from api.advanced.league_leaders import get_leaders,\
     get_leaders_not_grouped_by_team
