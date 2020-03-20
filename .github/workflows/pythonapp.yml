@@ -39,6 +39,20 @@ jobs:
       with:
         name: coverage-report
         path: htmlcov
+    - name: Set up npm
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: UI Test with cypress
+      run: |
+        export ADMIN="admin"
+        export PASSWORD="password"
+        # run the server just in-memory
+        nohup python runserver.py  2>&1 &
+        # now run the cypres tests against it
+        cd cypress-testing
+        npm install
+        npx cypress run --record --key ${{ secrets.CYPRESS_KEY }} --spec "**/*.features" --env ADMIN=admin,PASSWORD=password
     - name: Upload Video Run
       uses: actions/upload-artifact@v1
       with:
