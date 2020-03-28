@@ -51,6 +51,10 @@ However, if they are missing is will just defaults but will use redis and postgr
 (instead of in-memory database / simple cache).
 The flask app will restart anytime changes are made to the app source code since docker-compose use a volume
 between the docker container and the code repository.
+Just a note about the DATABASE_URL if using docker and want your database
+to be some database on your local machine then do not use localhost but
+instead use your local IP address. 
+
 
 To bring the docker stack down just use the following:
 ```
@@ -81,7 +85,7 @@ following commands can help get feedback about any incorrect styling issues.
 ```
 pip install flake8
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=api/__init__.py,api/website/views.py
+flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,venv/*,cypress-testing/* --ignore=E712,W503,W504
 ```
 
 # Github Actions

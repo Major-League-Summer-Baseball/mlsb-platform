@@ -2,7 +2,7 @@
 {% block content %}
 <style type="text/css">
     svg {
-      font-size: 14px;
+      font-size: 12px;
     }
 
     rect.background {
@@ -27,13 +27,28 @@
             {{league.league_name}}
           </a>
         </li>
+        {% for division in divisions %}
+        <li role="presentation" class="presentation">
+          {% if division.division_shortname is not none %}
+            <a data-toggle="pill" title="{{division_division_name}}" href="#division{{division.division_id}}">
+              {{division.division_shortname}}
+            </a>
+          {% else %}
+            <a data-toggle="pill" href="#division{{division.division_id}}">
+              {{division.division_name}}
+            </a>
+          {% endif %}
+        </li>
+        
+        {% endfor %}
     </ul>
     <div class="tab-content">
         <div id="whole" class="tab-pane fade in active">
-            <h4>
+            <h4 id="league_header_{{league.league_id}}">
               {{league.league_name}}
             </h4>
-            <table id="league_{{league.league_id}}" width="100%" class="display">
+            <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="leagueloader{{league.league_id}}" />
+            <table id="league_table_{{league.league_id}}" width="100%" class="display">
                 <thead>
                     <tr>
                         <th data-priority="1">
@@ -66,42 +81,53 @@
                     </tr>
                 </thead>
                 <tbody>
-                  {% for team in league.teams %}
-                      <tr>
-                          <td>
-                            <a href="{{route.teampage}}/{{year}}/{{team.id}}">
-                              {{team.name}}
-                            </a>
-                          </td>
-                          <td>
-                            {{team.espys}}
-                          </td>
-                          <td>
-                            {{team.games}}
-                          </td>
-                          <td>
-                            {{team.wins}}
-                          </td>
-                          <td>
-                            {{team.losses}}
-                          </td>
-                          <td>
-                            {{team.ties}}
-                          </td>
-                          <td>
-                            {{team.runs_for}}
-                          </td>
-                          <td>
-                            {{team.runs_against}}
-                          </td>
-                          <td>
-                            {{team.plus_minus}}
-                          </td>
-                      </tr>
-                  {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        {% for division in divisions %}
+          <div id="division{{division.division_id}}" class="tab-pane fade in">
+              <h4 id="division_header_{{division.division_id}}">
+                {{division.division_name}}
+              </h4>
+              <img src="{{url_for('static', filename="ajax-loader.gif")}}" id="divisionloader{{division. division_id}}" />
+              <table id="division_table_{{division.division_id}}" width="100%" class="display">
+                  <thead>
+                      <tr>
+                          <th data-priority="1">
+                            Team
+                          </th>
+                          <th data-priority="2">
+                            Espys
+                          </th>
+                          <th data-priority="4">
+                            GP
+                          </th>
+                          <th data-priority="3">
+                            W
+                          </th>
+                          <th data-priority="5">
+                            L
+                          </th>
+                          <th>
+                            T
+                          </th>
+                          <th data-priority="6">
+                            RF
+                          </th>
+                          <th>
+                            RA
+                          </th>
+                          <th>
+                            +/-
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+              </table>
+          </div>
+        {% endfor %}
     </div>
 
       <div class="tab-content" id="graph">
@@ -121,12 +147,112 @@
 {% block script %}
 <script>
 $(document).ready(ready());
-function ready(){
-    $('#league_{{league.league_id}}').DataTable({
-        "order": [[1, "desc"]],
-        "responsive": true,
-    });
+function ready() {
+    // load the whole league and then each of its divisions
+    loadLeague({{year}}, {{league.league_id}});
+
+    {% for division in divisions %}
+    loadDivision({{year}}, {{league.league_id}},
+      {{division.division_id}});
+    {% endfor %}
+    
 }
+
+function loadDivision(year, league_id, division_id) {
+  var rest_data = JSON.stringify({
+      'year': year,
+      'league_id': league_id,
+      'division_id': division_id
+  });
+  $.ajax ({
+        type: "POST",
+        url: "{{route.vteam}}",
+        contentType: "application/json",
+        dataType: 'json',
+        data: rest_data,
+        async: true,
+        success: function (teams) {
+          display_table(teams, '#division_table_' + division_id);
+          $('#divisionloader' + division_id).hide();
+        }, error: function(request, error){
+            console.error(request);
+            console.error(error);
+
+        }
+    })
+}
+
+function loadLeague(year, league_id){
+  var rest_data = JSON.stringify({
+      'year': year,
+      'league_id': league_id,
+  });
+  $.ajax ({
+        type: "POST",
+        url: "{{route.vteam}}",
+        contentType: "application/json",
+        dataType: 'json',
+        data: rest_data,
+        async: true,
+        success: function (teams) {
+          display_table(teams, '#league_table_' + league_id);
+          $('#leagueloader' + league_id).hide();
+        }, error: function(request, error){
+            console.error(request);
+            console.error(error);
+
+        }
+    })
+}
+
+function convert_teams_formatting(teams_map) {
+  var teams = []
+  for (var prop in teams_map) {
+    if (Object.prototype.hasOwnProperty.call(teams_map, prop)) {
+      team = teams_map[prop];
+      team['team_id'] = prop;
+      teams.push(team);
+    }
+  }
+  return teams;
+}
+
+function display_table(teams, selector) {
+  var table = $(selector).DataTable({
+                  "data": convert_teams_formatting(teams),
+                  "responsive": true,
+                  "order": [[1, "desc"]],
+                  "columns": [
+                      {"data": "name", "render": renderTeamLink},
+                      {"data": "espys"},
+                      {"data": "games"},
+                      {"data": "wins"},
+                      {"data": "losses"},
+                      {"data": "ties"},
+                      {"data": "runs_for"},
+                      {"data": "runs_against"},
+                      {"data": "runs_for", "render": renderPlusMinus}
+                  ]
+                  
+  });
+}
+
+/** Renders a team link*/
+function renderTeamLink(data, type, row, meta) {
+    if (type === 'display') {
+        data = '<a href="{{route.teampage}}/{{year}}/' + row.team_id + '">' + row.name + '</a>';
+    }
+    return data;
+}
+
+/**Render the plus/mins of a given row*/
+function renderPlusMinus(data, type, row, meta) {
+  if (type === 'display') {
+    data = (row.runs_for - row.runs_against);
+  }
+  return data;
+}
+
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename="d3/d3.js") }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename="d3/d3.layout.js") }}"></script>

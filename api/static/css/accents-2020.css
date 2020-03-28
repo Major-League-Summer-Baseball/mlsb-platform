@@ -1,0 +1,135 @@
+.sponsor-banner {
+    background-color: #CE1141;
+}
+
+.games-container {
+    background-color: #002855;
+}
+
+.navbar .icon-bar {
+    background-color: #EAAA00;
+}
+
+#header .navbar-nav a {
+  color: #EAAA00 ;
+  text-shadow: -1px 0 #002855 , 0 1px #002855 , 1px 0 #002855 , 0 -1px #002855 ;
+}
+
+#header .navbar-nav a:hover,
+#header .navbar-nav a:focus,
+ {
+  color: #002855 ;
+  text-shadow: -1px 0  #CE1141, 0 1px #CE1141 , 1px 0 #CE1141 , 0 -1px #CE1141 ;
+}
+
+.fun-div {
+    color: #002855;
+}
+
+.fun-meter {
+    color: #002855;
+}
+
+.fun-meter .CircleColor {
+  fill: #002855 ;
+}
+
+.fun-meter .WaveColor {
+  fill: #EAAA00;
+}
+
+.fun-meter .liquidUnfilledGaugeText {
+  fill: #000;
+}
+
+.fun-meter .liquidFilledGaugeText {
+  fill: #FFF;
+}
+
+p.accent{
+  color: #002855;
+}
+
+.leaderTitle{
+  color: #EAAA00;
+}
+
+.btn-primary {
+  background: #8FbCE6;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #8FBCE6;
+}
+
+li.presentation a{
+  background-color: #002855
+  color: #EAAA00;
+}
+
+li.presentation a:hover{
+  background-color: #002855;
+  color: #EAAA00;
+}
+
+.active .presentation a{
+  background-color: #002855;
+  color: #CE1141;
+}
+
+#listing>li.active>a{
+  background-color: #CE1141;
+  color: #002855;
+  font-weight: bold;
+
+}
+
+.footer {
+  border-top: 5px solid #8FBCE6;
+}
+
+nav.accent{
+  background-color: #002855;
+  border-color: #002855;
+}
+
+div.accent{
+  background-color: #002855;
+}
+
+
+div.secondary{
+  background-color: #CE1141;
+}
+
+a {
+  color: #002855;
+}
+
+a:hover, a:focus {
+  color: #CE1141;
+}
+
+#header  .dropdown-menu>li>a {
+ color: #EAAA00 ;
+ text-shadow: -1px 0 #002855 , 0 1px #002855 , 1px 0 #002855 , 0 -1px #002855 ;
+}
+
+#header  .dropdown-menu>li>a:hover,
+#header  .dropdown-menu>li>a:focus{
+  color: #002855 ;
+  text-shadow: -1px 0  #CE1141, 0 1px #CE1141 , 1px 0 #CE1141 , 0 -1px #CE1141 ;
+}
+
+#bottom {
+  border-bottom: 5px solid #002855;
+}
+
+#bottom ul li a {
+  color: #EAAA00  ;
+}
+
+#footer a:hover {
+  color: #EAAA00;
+}

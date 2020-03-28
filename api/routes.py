@@ -30,6 +30,8 @@ Routes['vfun'] = "/api/view/fun"
 Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
 Routes['vleagueleaders'] = "/api/view/league_leaders"
 Routes['vschedule'] = "/api/view/schedule"
+Routes['vdivisions'] = "/api/view/divisions"
+
 
 # Bot APIS
 Routes['botsubmitscore'] = "/api/bot/submit_score"
@@ -76,6 +78,7 @@ Routes['dvplayerLookup'] = "/documentation/view/player_lookup"
 Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 Routes['dvschedule'] = "/documentation/views/schedule"
+Routes['dvdivisions'] = "/documentation/views/divisions"
 
 # bot documentation
 Routes['dbotsubscribe'] = "/documentation/bot/subscribe"
@@ -93,8 +96,12 @@ Routes['dbottransaction'] = "/documentation/bot/transaction"
 # static pages
 Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
-Routes['logo'] = "/logo"
 Routes["privacy"] = "/privacy-policy"
+
+# stuff that changes each year
+Routes['logo'] = "/logo"
+Routes['favicon'] = "/favicon"
+Routes['accents'] = "/accents"
 
 # sponsors pages
 Routes['sponsorspicture'] = "/website/sponsor/picture"
@@ -124,6 +131,7 @@ Routes['postpicture'] = "/website/post/pictures"
 # Captain help
 Routes['espysbreakdown'] = "/website/espysbreakdown"
 Routes['sponsorbreakdown'] = "/website/sponsorbreakdown"
+Routes['schedulecache'] = "/website/cache/view/schedule"
 
 # -----------------------------------------------------------------------------
 # Admin

@@ -5,16 +5,17 @@
 @summary: The basic bat API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
+from json import dumps
 from api import DB
 from api.model import Bat
-from json import dumps
 from api.authentication import requires_admin
 from api.errors import BatDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int)
 parser.add_argument('rbi', type=int)
@@ -85,6 +86,7 @@ class BatAPI(Resource):
         response = Response(dumps(None),
                             status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.BAT, item=bat.json())
         return response
 
     @requires_admin
@@ -140,6 +142,7 @@ class BatAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.BAT, item=bat.json())
         return response
 
     def option(self):
@@ -232,6 +235,7 @@ class BatListAPI(Resource):
         DB.session.commit()
         bat_id = bat.id
         resp = Response(dumps(bat_id), status=201, mimetype="application/json")
+        handle_table_change(Tables.BAT, item=bat.json())
         return resp
 
     def option(self):

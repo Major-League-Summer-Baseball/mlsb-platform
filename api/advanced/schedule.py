@@ -4,22 +4,14 @@
 @organization: MLSB API
 @summary: The views for game schedule
 '''
-from sqlalchemy.sql.expression import and_
-
-from flask_restful import Resource
-from api.model import Game, League
-from datetime import datetime, date, time
-from api.errors import LeagueDoesNotExist
-from api.routes import Routes
-from flask import request
-from api import cache
-from api.variables import PAGE_SIZE, CACHE_TIMEOUT
-from api.helper import pagination_response_items
+from flask import Response
+from flask_restful import Resource, request
+from json import dumps
+from api.cached_items import pull_schedule
 
 
 class ScheduleAPI(Resource):
 
-    @cache.memoize(timeout=CACHE_TIMEOUT)
     def get(self, year, league_id):
         """
             Get request for schedule data
@@ -46,24 +38,6 @@ class ScheduleAPI(Resource):
                     ]
         """
         page = request.args.get('page', 1, type=int)
-        league = League.query.get(league_id)
-        start = datetime.combine(date(year, 1, 1), time(0, 0))
-        end = datetime.combine(date(year, 12, 30), time(23, 0))
-        if league is None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
-        games = (Game.query.filter(and_(Game.league_id == league.id,
-                                        Game.date.between(start, end)))
-                 ).order_by("date").paginate(page, PAGE_SIZE, False)
-        data = []
-        for game in games.items:
-            result = game.json()
-            if game.date.date() <= datetime.today().date():
-                scores = game.summary()
-                result['score'] = (str(scores['home_score']) + '-' +
-                                   str(scores['away_score']))
-            else:
-                result['score'] = ""
-            data.append(result)
-        url_route = (Routes['vschedule'] + "/" + str(year) + "/" +
-                     str(league_id))
-        return pagination_response_items(games, url_route, data)
+        data = pull_schedule(year, league_id, page=page)
+        return Response(dumps(data), status=200,
+                        mimetype="application/json")

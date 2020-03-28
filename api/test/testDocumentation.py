@@ -5,10 +5,7 @@
 @summary: Tests all the advanced fun APIs
 '''
 from api.routes import Routes
-from api.test.BaseTest import TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID,\
-    NOT_FOUND_CODE
-from datetime import datetime
-import uuid
+from api.test.BaseTest import TestSetup, SUCCESSFUL_GET_CODE
 START_OF_PLATFORM = 2016
 YEAR_WITH_NO_DATA = 1992
 

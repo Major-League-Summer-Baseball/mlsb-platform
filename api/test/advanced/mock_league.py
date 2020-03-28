@@ -128,6 +128,9 @@ class MockLeague():
     def get_teams(self):
         return self.teams
 
+    def get_division(self):
+        return self.division
+
     def get_player_email(self, index):
         name = self.players[index]['player_name'].replace(" ", "")
         return name + "@testing.ca"

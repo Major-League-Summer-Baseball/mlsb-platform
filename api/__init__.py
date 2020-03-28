@@ -60,6 +60,7 @@ api.decorators = [cors.crossdomain(origin='*',
                                    headers=['accept',
                                             'Content-Type'])]
 PICTURES = join(getcwd(), "api", "static", "pictures")
+CSS_FOLDER = join(getcwd(), "api", "static", "css")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] = "./static"
 
@@ -93,6 +94,7 @@ from api.advanced.fun import AdvancedFunAPI
 from api.advanced.player_teams import PlayerTeamLookupAPI
 from api.advanced.league_leaders import LeagueLeadersAPI
 from api.advanced.schedule import ScheduleAPI
+from api.advanced.divisions_in_league import DivisionsLeagueAPI
 
 # imports for bot apis
 from api.bot.submit_scores import SubmitScoresAPI as BotSubmitScoresAPI
@@ -195,6 +197,10 @@ api.add_resource(LeagueLeadersAPI, Routes['vleagueleaders'],
 api.add_resource(ScheduleAPI,
                  Routes['vschedule'] + "/<int:year>" + "/<int:league_id>",
                  endpoint='vSchedule')
+api.add_resource(DivisionsLeagueAPI,
+		 Routes['vdivisions'] + "/<int:year>/<int:league_id>",
+		 endpoint='vDivisions')
+
 
 # add bot routes
 api.add_resource(BotAuthenticateCaptainAPI,

@@ -5,16 +5,17 @@
 @summary: The basic player API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
-from api.model import Player
 from api import DB
+from api.model import Player
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
@@ -76,6 +77,7 @@ class PlayerAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None),
                             status=200, mimetype="application/json")
+        handle_table_change(Tables.PLAYER, item=player.json())
         return response
 
     @requires_admin
@@ -130,6 +132,7 @@ class PlayerAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.PLAYER, item=player.json())
         return response
 
     def option(self):
@@ -212,6 +215,7 @@ class PlayerListAPI(Resource):
         DB.session.add(player)
         DB.session.commit()
         result = player.id
+        handle_table_change(Tables.PLAYER, item=player.json())
         return Response(dumps(result), status=201,
                         mimetype="application/json")
 

@@ -4,7 +4,6 @@
 @organization: MLSB API
 @summary: The basic espys API
 '''
-
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
@@ -16,6 +15,8 @@ from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
 from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('team_id', type=int)
@@ -89,6 +90,7 @@ class EspyAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.ESPYS, item=espy.json())
         return response
 
     @requires_admin
@@ -149,6 +151,7 @@ class EspyAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.ESPYS, item=espy.json())
         return response
 
     def option(self):
@@ -240,6 +243,7 @@ class EspyListAPI(Resource):
         DB.session.add(espy)
         DB.session.commit()
         result = espy.id
+        handle_table_change(Tables.ESPYS, item=espy.json())
         return Response(dumps(result), status=201, mimetype="application/json")
 
     def option(self):

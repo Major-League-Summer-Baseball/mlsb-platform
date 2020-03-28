@@ -115,16 +115,15 @@ function loadLiquidFillGauge(elementId, value, config) {
         .innerRadius(gaugeCircleY(radius-circleThickness));
     gaugeGroup.append("path")
         .attr("d", gaugeCircleArc)
-        .style("fill", config.circleColor)
+        .attr("class", "CircleColor")
         .attr('transform','translate('+radius+','+radius+')');
 
     // Text where the wave does not overlap.
     var text1 = gaugeGroup.append("text")
         .text(textRounder(textStartValue) + percentText)
-        .attr("class", "liquidFillGaugeText")
+        .attr("class", "liquidFillGaugeText liquidUnfilledGaugeText")
         .attr("text-anchor", "middle")
         .attr("font-size", textPixels + "px")
-        .style("fill", config.textColor)
         .attr('transform','translate('+radius+','+textRiseScaleY(config.textVertPosition)+')');
 
     // The clipping wave area.
@@ -147,15 +146,14 @@ function loadLiquidFillGauge(elementId, value, config) {
         .attr("cx", radius)
         .attr("cy", radius)
         .attr("r", fillCircleRadius)
-        .style("fill", config.waveColor);
+        .attr("class", "WaveColor");
 
     // Text where the wave does overlap.
     var text2 = fillCircleGroup.append("text")
         .text(textRounder(textStartValue) + percentText)
-        .attr("class", "liquidFillGaugeText")
+        .attr("class", "liquidFillGaugeText liquidFilledGaugeText")
         .attr("text-anchor", "middle")
         .attr("font-size", textPixels + "px")
-        .style("fill", config.waveTextColor)
         .attr('transform','translate('+radius+','+textRiseScaleY(config.textVertPosition)+')');
 
     // Make the value count up.

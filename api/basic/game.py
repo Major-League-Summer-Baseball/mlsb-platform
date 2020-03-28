@@ -5,7 +5,7 @@
 @summary: The basic game API
 '''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
 from api import DB
 from api.model import Game
@@ -14,7 +14,8 @@ from api.errors import GameDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('home_team_id', type=int)
 parser.add_argument('away_team_id', type=int)
@@ -92,6 +93,7 @@ class GameAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.GAME, item=game.json())
         return response
 
     @requires_admin
@@ -132,6 +134,7 @@ class GameAPI(Resource):
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
+        handle_table_change(Tables.GAME, item=game.json())
         return response
 
     def option(self):
@@ -212,6 +215,7 @@ class GameListAPI(Resource):
         DB.session.add(game)
         DB.session.commit()
         result = game.id
+        handle_table_change(Tables.GAME, item=game.json())
         return Response(dumps(result), status=201, mimetype="application/json")
 
     def option(self):

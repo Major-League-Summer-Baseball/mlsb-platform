@@ -12,6 +12,8 @@ from api.model import Player, Espys, Sponsor, Team
 from api.authentication import requires_admin
 from api.errors import PlayerNotOnTeam, SponsorDoesNotExist,\
     PlayerDoesNotExist, TeamDoesNotExist
+from api.cached_items import handle_table_change
+from api.tables import Tables
 parser = reqparse.RequestParser()
 parser.add_argument('player_id', type=int, required=True)
 parser.add_argument('amount', type=int, required=True)
@@ -68,6 +70,7 @@ class SubmitTransactionAPI(Resource):
                      description="Bot transaction")
         DB.session.add(espy)
         DB.session.commit()
+        handle_table_change(Tables.ESPYS)
         return Response(dumps(espy.id),
                         status=200,
                         mimetype="application/json")
