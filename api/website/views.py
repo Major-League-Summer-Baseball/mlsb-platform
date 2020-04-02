@@ -547,8 +547,12 @@ def get_teams(year):
               .order_by(Sponsor.nickname).all())
     teams = []
     for team in result:
+        if (team[2] is None):
+            name = team[1]
+        else:
+            name = team[2] + " " + team[1]
         teams.append({'id': team[0],
-                      'name': team[2] + " " + team[1]})
+                      'name': name})
     return teams
 
 
