@@ -223,7 +223,7 @@ def random_value_lookup(lookup):
 
 def random_value_list(some_list):
     """Returns a random value for the given list l."""
-    return some_list[random.randint(0, len(some_list) - some_list)]
+    return some_list[random.randint(0, len(some_list) - 1)]
 
 
 def add_random_score(game_id, team_id, players):
