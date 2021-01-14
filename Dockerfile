@@ -1,6 +1,6 @@
-FROM python:3.7
+FROM python:3.8.3-buster
 
-Label maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
+LABEL maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
 ENV MLSB /mlsb-platform
 
 RUN apt-get update && apt-get install -y \

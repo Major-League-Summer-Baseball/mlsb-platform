@@ -221,9 +221,9 @@ def random_value_lookup(lookup):
     return value
 
 
-def random_value_list(l):
+def random_value_list(some_list):
     """Returns a random value for the given list l."""
-    return l[random.randint(0, len(l) - 1)]
+    return some_list[random.randint(0, len(some_list) - 1)]
 
 
 def add_random_score(game_id, team_id, players):
