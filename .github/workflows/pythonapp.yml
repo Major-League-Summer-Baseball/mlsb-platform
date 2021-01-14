@@ -34,6 +34,10 @@ jobs:
         coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py -m unittest discover -s api/test
         coverage report --fail-under=80
         coverage html
+    - uses: codecov/codecov-action@v1
+      with:
+        files: ./coverage1.xml,./coverage2.xml # optional
+        flags: unittests # optional
     - name: Upload Coverage report
       uses: actions/upload-artifact@v1
       with:
