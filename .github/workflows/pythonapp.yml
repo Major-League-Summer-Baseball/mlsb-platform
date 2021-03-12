@@ -31,14 +31,20 @@ jobs:
     - name: Test with python unittest
       run: |
         pip install coverage
-        coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py -m unittest discover -s api/test
+        coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/* -m unittest discover -s api/test
         coverage report --fail-under=80
+        coverage xml
         coverage html
-    - name: Upload Coverage report
+    - name: Create Coverage report Artifact
       uses: actions/upload-artifact@v1
       with:
         name: coverage-report
         path: htmlcov
+    - name: Upload Coverage report to CodeCov
+      uses: codecov/codecov-action@v1
+      with:
+        files: ./coverage.xml
+        flags: unittests # optional
     - name: Set up npm
       uses: actions/setup-node@v1
       with:
