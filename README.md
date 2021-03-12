@@ -1,100 +1,93 @@
-# mlsb-platform
-A platform for mlsb
 
-See the the Wiki Pages for [help](https://github.com/fras2560/mlsb-platform/wiki)
+[![codecov](https://codecov.io/gh/fras2560/flask-pytest-cypress-ci-template/branch/main/graph/badge.svg?token=VLX345TQ0C)](https://codecov.io/gh/fras2560/flask-pytest-cypress-ci-template)
 
+# flask-pytest-cypress-ci-template
+A template to help someone get started developing simple flask apps quickly.
+
+## Development Locally
 **Assumed Dependencies**:
-* python 3
-* pip
+* python
+* npm
 
-# Getting Started
 **TLDR**
 ```
+# install all python requirements
 pip install -r requirements.txt
+# export following if plan on testing locally
+export TESTING=True
+export DEBUG=True
 python runserver.py
-# to run unittests
-python -m unittest discover -s api/test
-# want to run one suite
-python -m unittest discover -s api/test -p <TEST_SUITE>.py
 ```
-This will use an in-memory database and in-memory cache. To actually test
-with a PostGres database or Redis cache one just needs to setup the appropriate
-environment variables. Additionally one could use docker as well.
+This will use an in-memory database. To actually test with a PostGres database one just needs to setup the appropriate environment variables.
 
-# Environment Variables
-The following variables are used by mlsb-platform and the defaults are in
-brackets:
-* ADMIN: the admin's user name ("admin") 
-* PASSWORD: the admin password ("password")
-* DATABASE_URL: the postgres database to connect to ("sqlite://")
-* SECRET_KEY:a secret key used by Flask (randomly generated uuid)
-* REDIS_URL: the redis database to use for caching (uses simple cache)
-
-The app does expect the the postgres database has had the tables initiated. To intiated the datbase can use
+### Virtual Environment
+It is recommend to use a virtual environment when developing different apps. This allows for dependencies to be kept separate from each other. `virtualenv` is one good choice when using a virtual environment. See [how to install](https://virtualenv.pypa.io/en/latest/installation.html). Once install one can use the following:
 ```
-python initDB.py -createDB -mock
+# Linux
+virtualenv venv # create virutal environment, usually do this inside app folder
+source venv/bin/activate # activate the virtual environment
+... # use virtual environment - install depenendencies and start flask server
+deactivate # to deactivate the virtual environment
 ```
-# Developing Using Docker
-The platform can also be developed locally with Docker. For a simple docker setup one can do
 ```
-# build the docker image
-docker-compose build
-# bring the container up
-docker-compose up -d
-# wait a few seconds and then init the database
-docker-compose exec mlsb python initDB.py -createDB -mock
-```
-The app should be available at `http://localhost:8080`. If you need to chage the port change
-in the `docker-compose.yml` line 13 from 8080:8080 to <PORT>:8080.
-The docker-compose will use the above specified environment variables if they are present.
-However, if they are missing is will just defaults but will use redis and postgres
-(instead of in-memory database / simple cache).
-The flask app will restart anytime changes are made to the app source code since docker-compose use a volume
-between the docker container and the code repository.
-Just a note about the DATABASE_URL if using docker and want your database
-to be some database on your local machine then do not use localhost but
-instead use your local IP address. 
-
-
-To bring the docker stack down just use the following:
-```
-docker-compose down
-# (remove volumes)
-docker system prune --volumes --force
+# windows
+virtualenv venv # create virutal environment, usually do this inside app folder
+venv\Scripts\activate.bat # activate the virtual environment
+... # use virtual environment - install depenendencies and start flask server
+deactivate # to deactivate the virtual environment
 ```
 
-## Running unit tests in docker
-To run the whole suite of tests use:
-```
-docker-compose exec mlsb python -m unittest discover -s api/test -p test*.py
-```
-To run a particular test suite use:
-```
-docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>.py
-```
+### Environment Variables
+The following variables are used by the app and the defaults are in brackets:
+* DATABASE_URL: the database url to connect to ("sqlite://")
+* SECRET_KEY: the secret key for the app (random uuid1)
+* TESTING: True if testing setup (default False)
+* DEBUG: True if debugging is to be enabled (default False)
+* LOGGING: the level of logging - debug, info, warning, error, critical (default info)
 
-# Documentation/Style
-All APIs are document in html and can be found by going to
-"http://localhost:5000/documentation". If one is to add an API then it
-is expected they add an HTML page that documents it.
-The style for how one is to be documented is still open for discussion.
+### Database
+**Assumed Dependencies**:
+* psql
 
-As for style it is recommended that one uses flake8 for checking style. The
-following commands can help get feedback about any incorrect styling issues.
-
+**TLDR**
 ```
-pip install flake8
-flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,venv/*,cypress-testing/* --ignore=E712,W503,W504
+createdb hello-world
+export DATABASE_URL=postgresql://postgres:postgres@localhost/hello-world
+python initDB.py
+# now start/restart the server and it should use Postgres database
 ```
+To use a Postgres database first install [Postgres](https://www.postgresql.org/download/) and would recommend [PgAdmin](https://www.pgadmin.org/download/). Create a database with some name `createdb hello-world`. Export your database URL using something like `export DATABASE_URL=postgresql://postgres:postgres@localhost/hello-world`. If you used a different user and password protected then using the following form `postgresql://<user>:<password>@localhost/<database-name>`. Now just need to initiate the database using `python initDB.py` and the table entity should be created. Should be able to verify using PgAdmin or from command line: `psql hello-world` and `select * from entity;`.
 
-# Github Actions
-Working on Github actions. For now it will run unittests and styling issues
-on PRs to Development and Master. Additionally, might work on a Cypress project
-for ensuring checkin whether development server on Heroku is working as
-expected.
+### Testing
+```
+# unit-tests
+pytest --cov-report=html --cov=app app/testing
+#cypress tests
+cd cypress-testing
+npm install
+npm run test:all
+# manually run cypress file
+npm run open
+```
+**Pytest**
+For unit testing [Pytest](https://docs.pytest.org/en/latest/) is being used. [Coverage](https://coverage.readthedocs.io/en/coverage-5.3.1/) is used to generate code coverage report. To run the unit tests use `pytest --cov-report=html --cov=app app/testing` and it will produce a HTML code coverage report as well.
 
-Docker images are push for commits to master and development
+**Cypress Testing**
+There is a `README` in cypress-testing folder that dives into all the details.
 
-# Additional Sources
-TODO
+# Github CI
+A Github action is run on pull requests to the main branch. This action could be used as CI to ensure testing is ran and code consistency using linting. The following is performed on
+1.  [flake8](https://flake8.pycqa.org/en/latest/) is used to lint the files to ensure code consistency
+2. Unit tests are ran - all tests must pass and code coverage criteria level met
+3. code coverage report uploaded to codecov
+4. Starts the flask server and cypress tests against it
+5. Upload cypress testing video as an artifact
+
+# Heroku Production
+Setup using Heroku UI
+1. Create a new app
+2. Integrate with Github for automatic deployments from main
+3. Add Heroku Postgres
+	Run console -> `python initDB.py`
+4. Add Environment variables in Settings tab:
+`SECRET_KEY`: to some secret
