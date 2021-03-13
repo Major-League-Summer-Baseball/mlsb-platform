@@ -213,6 +213,15 @@ def sponsors_page(year):
                            year=year)
 
 
+@app.route(Routes['promos'] + "/<int:year>")
+def promos_page(year):
+    return render_template("website/promos.html",
+                           route=Routes,
+                           base=base_data(year),
+                           title="Pump-Up Videos",
+                           year=year)
+
+
 @app.route(Routes['sponsorspage'] + "/<int:year>" + "/<int:sponsor_id>")
 def sponsor_page(year, sponsor_id):
     sponsor = get_sponsor_map().get(sponsor_id, None)

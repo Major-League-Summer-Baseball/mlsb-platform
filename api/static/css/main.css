@@ -646,3 +646,11 @@ a {
   display: inline-block;
   margin-left: 15px;
 }
+
+
+@media (max-width: 576px) {
+  .mobile-video {
+    height: 250px !important;
+    width: 300px !important;
+  }
+ }
