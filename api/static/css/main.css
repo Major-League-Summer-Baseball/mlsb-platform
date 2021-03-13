@@ -104,7 +104,6 @@ body {
 .navbar .container .navbar-brand img {
     width: auto;
     height: 100%;
-    margin-right:5px;
 }
 
 .navbar .container .navbar-nav {
@@ -116,8 +115,11 @@ body {
 }
 
 @media screen and (max-width: 992px) {
-    .navbar .container .navbar-nav>li>a {
-        padding: 15px 10px;
+    .navbar .container .navbar-nav > li {
+      font-size: 16px;
+    }
+    .navbar .container .navbar-nav > li > a {
+        padding: 10px 5px;
     }
 }
 
