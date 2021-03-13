@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Major-League-Summer-Baseball/mlsb-platform/branch/master/graph/badge.svg?token=NeZW0H7wRa)](https://codecov.io/gh/Major-League-Summer-Baseball/mlsb-platform)
+
 # mlsb-platform
 A platform for mlsb
 
@@ -7,7 +9,8 @@ See the the Wiki Pages for [help](https://github.com/fras2560/mlsb-platform/wiki
 * python 3
 * pip
 
-# Getting Started
+
+## Getting Started
 **TLDR**
 ```
 pip install -r requirements.txt
@@ -21,7 +24,24 @@ This will use an in-memory database and in-memory cache. To actually test
 with a PostGres database or Redis cache one just needs to setup the appropriate
 environment variables. Additionally one could use docker as well.
 
-# Environment Variables
+### Virtual Environment
+It is recommend to use a virtual environment when developing different apps. This allows for dependencies to be kept separate from each other. `virtualenv` is one good choice when using a virtual environment. See [how to install](https://virtualenv.pypa.io/en/latest/installation.html). Once install one can use the following:
+```
+# Linux
+virtualenv venv # create virutal environment, usually do this inside app folder
+source venv/bin/activate # activate the virtual environment
+... # use virtual environment - install depenendencies and start flask server
+deactivate # to deactivate the virtual environment
+```
+```
+# windows
+virtualenv venv # create virutal environment, usually do this inside app folder
+venv\Scripts\activate.bat # activate the virtual environment
+... # use virtual environment - install depenendencies and start flask server
+deactivate # to deactivate the virtual environment
+```
+
+## Environment Variables
 The following variables are used by mlsb-platform and the defaults are in
 brackets:
 * ADMIN: the admin's user name ("admin") 
@@ -34,7 +54,7 @@ The app does expect the the postgres database has had the tables initiated. To i
 ```
 python initDB.py -createDB -mock
 ```
-# Developing Using Docker
+## Developing Using Docker
 The platform can also be developed locally with Docker. For a simple docker setup one can do
 ```
 # build the docker image
@@ -63,7 +83,7 @@ docker-compose down
 docker system prune --volumes --force
 ```
 
-## Running unit tests in docker
+### Running unit tests in docker
 To run the whole suite of tests use:
 ```
 docker-compose exec mlsb python -m unittest discover -s api/test -p test*.py
@@ -73,7 +93,7 @@ To run a particular test suite use:
 docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>.py
 ```
 
-# Documentation/Style
+## Documentation/Style
 All APIs are document in html and can be found by going to
 "http://localhost:5000/documentation". If one is to add an API then it
 is expected they add an HTML page that documents it.
@@ -88,13 +108,10 @@ flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,venv/*,cypress-testing/* --ignore=E712,W503,W504
 ```
 
-# Github Actions
+## Github Actions
 Working on Github actions. For now it will run unittests and styling issues
 on PRs to Development and Master. Additionally, might work on a Cypress project
 for ensuring checkin whether development server on Heroku is working as
 expected.
 
 Docker images are push for commits to master and development
-
-# Additional Sources
-TODO
