@@ -177,7 +177,8 @@ class TestWebsiteViews(TestSetup):
             'alltimeleaderspage',
             'eventspage',
             'espysbreakdown',
-            'sponsorbreakdown'
+            'sponsorbreakdown',
+            'promos'
         ]
         current_year = datetime.now().year
         for route in other_routes:
