@@ -104,7 +104,7 @@
                             </li>
                             <li>
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  PBR Power Rankings <b class="caret"></b>
+                                  Standings <b class="caret"></b>
                               </a>
                               <ul class="dropdown-menu">
                                 {% for league in base.leagues %}
@@ -123,25 +123,26 @@
                             </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  League Leaders <b class="caret"></b>
+                                  Stats<b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                   <li>
-                                      <a href="{{route.leagueleaderpage}}/{{year}}">
-                                        This Season
-                                      </a>
+                                    <a href="{{route.leagueleaderpage}}/{{year}}">
+                                      Leaders
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a href="{{route.statspage}}/{{year}}">
+                                      Players
+                                    </a>
                                   </li>
                                   <li>
                                       <a href="{{route.alltimeleaderspage}}/{{year}}">
-                                        All-Time
+                                        Legends
                                       </a>
                                   </li>
+                                  
                                 </ul>
-                            </li>
-                            <li>
-                                <a href="{{route.statspage}}/{{year}}">
-                                  Player Stats
-                                </a>
                             </li>
                             <li>
                               <a href="{{route.fieldsrulespage}}/{{year}}">
