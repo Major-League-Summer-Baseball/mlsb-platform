@@ -1,0 +1,3 @@
+# ignore the generated documents
+docs/**
+build/**

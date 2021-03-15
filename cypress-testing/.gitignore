@@ -1,0 +1,10 @@
+node_modules/
+docs/
+cypress/videos/**
+cypress/screenshots/**
+
+.project
+.settings/**
+.vscode/**
+
+build/**
