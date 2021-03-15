@@ -1,5 +1,3 @@
-/// <reference types="../../support" />
-
 import { Given } from 'cypress-cucumber-preprocessor/steps';
 
 /**

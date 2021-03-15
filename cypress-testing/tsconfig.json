@@ -6,14 +6,15 @@
     "downlevelIteration": true,
     "strict": true,
     "skipLibCheck": true,
-    "typeRoots": ["./support"],
+    "typeRoots": ["./node_modules/@type", "./cypress"],
     "types": [
         // load Cypress global type
         "cypress",
         "node",
         "cypress-axe",
         "axe-core",
-        "@types/testing-library__cypress"
+        "@types/testing-library__cypress",
+        "support"
     ],
     "esModuleInterop": true,
     "baseUrl": ".",
