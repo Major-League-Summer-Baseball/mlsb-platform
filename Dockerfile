@@ -1,4 +1,4 @@
-FROM python:3.8.3-buster
+FROM python:3.9.2-buster
 
 LABEL maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
 ENV MLSB /mlsb-platform
