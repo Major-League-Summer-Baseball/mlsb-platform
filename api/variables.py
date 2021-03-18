@@ -76,6 +76,17 @@ EVENTS = {
         "MLSB_Alumni": "July 20th"
     },
     2020: {
+        "Beerlympics": "Cancelled",
+        "Jays_Game": "Cancelled",
+        "Summerween": "Cancelled",
+        "Mystery_Bus": "March 7th",
+        "Rafting": "Cancelled",
+        "Grand Bender": "Cancelled",
+        "Tournaments": "Cancelled",
+        "Chainsaw Idol": "Cancelled",
+        "MLSB_Alumni": "July 25th"
+    },
+    2021: {
         "Beerlympics": "TBD",
         "Jays_Game": "TBD",
         "Summerween": "TBD",
