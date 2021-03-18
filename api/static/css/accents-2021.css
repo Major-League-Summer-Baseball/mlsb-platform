@@ -1,41 +1,44 @@
 .sponsor-banner {
-    background-color: #F8B800;
+    background-color: white;
 }
 
 .games-container {
-    background-color: #2F3780;
+    background-color: #371572;
 }
 
 .navbar .icon-bar {
-    background-color: #FDDA72;
+    background-color: #371572;
 }
 
+#header .navbar {
+  background-color: white;
+}
 #header .navbar-nav a {
-  color: #FDDA72 ;
-  text-shadow: -1px 0 #2F3780 , 0 1px #2F3780 , 1px 0 #2F3780 , 0 -1px #2F3780 ;
+  color: #371572 ;
+  text-shadow: -1px 0 #ECE3BF  , 0 1px #ECE3BF , 1px 0 #ECE3BF , 0 -1px #ECE3BF ;
 }
 
 #header .navbar-nav a:hover,
-#header .navbar-nav a:focus,
- {
-  color: #2F3780 ;
-  text-shadow: -1px 0  #FDDA72, 0 1px #FDDA72 , 1px 0 #FDDA72 , 0 -1px #FDDA72 ;
+#header .navbar-nav a:focus {
+  color: #371572 ;
+  background-color: #E7BF42;
+  text-shadow: -1px 0  #ECE3BF, 0 1px #ECE3BF , 1px 0 #ECE3BF , 0 -1px #ECE3BF ;
 }
 
 .fun-div {
-    color: #2F3780;
+    color: #371572;
 }
 
 .fun-meter {
-    color: #2F3780;
+    color: #371572;
 }
 
 .fun-meter .CircleColor {
-  fill: #2F3780 ;
+  fill: #371572 ;
 }
 
 .fun-meter .WaveColor {
-  fill: #FDDA72;
+  fill: #E7BF42;
 }
 
 .fun-meter .liquidUnfilledGaugeText {
@@ -47,11 +50,11 @@
 }
 
 p.accent{
-  color: #2F3780;
+  color: #371572;
 }
 
 .leaderTitle{
-  color: #FDDA72;
+  color: #E7BF42;
 }
 
 .btn-primary {
@@ -64,23 +67,23 @@ p.accent{
 }
 
 li.presentation a{
-  background-color: #2F3780
-  color: #FDDA72;
+  background-color: #371572
+  color: #E7BF42;
 }
 
 li.presentation a:hover{
-  background-color: #2F3780;
-  color: #FDDA72;
+  background-color: #371572;
+  color: #E7BF42;
 }
 
 .active .presentation a{
-  background-color: #2F3780;
-  color: #FDDA72;
+  background-color: #371572;
+  color: #E7BF42;
 }
 
 #listing>li.active>a{
-  background-color: #FDDA72;
-  color: #2F3780;
+  background-color: #E7BF42;
+  color: #371572;
   font-weight: bold;
 
 }
@@ -90,46 +93,46 @@ li.presentation a:hover{
 }
 
 nav.accent{
-  background-color: #2F3780;
-  border-color: #2F3780;
+  background-color: #371572;
+  border-color: #371572;
 }
 
 div.accent{
-  background-color: #2F3780;
+  background-color: #371572;
 }
 
 
 div.secondary{
-  background-color: #FDDA72;
+  background-color: #E7BF42;
 }
 
 a {
-  color: #2F3780;
+  color: #371572;
 }
 
 a:hover, a:focus {
-  color: #FDDA72;
+  color: #E7BF42;
 }
 
 #header  .dropdown-menu>li>a {
- color: #FDDA72 ;
- text-shadow: -1px 0 #2F3780 , 0 1px #2F3780 , 1px 0 #2F3780 , 0 -1px #2F3780 ;
+ color: #E7BF42 ;
+ text-shadow: -1px 0 #371572 , 0 1px #371572 , 1px 0 #371572 , 0 -1px #371572 ;
 }
 
 #header  .dropdown-menu>li>a:hover,
 #header  .dropdown-menu>li>a:focus{
-  color: #2F3780 ;
-  text-shadow: -1px 0  #FDDA72, 0 1px #FDDA72 , 1px 0 #FDDA72 , 0 -1px #FDDA72 ;
+  color: #371572 ;
+  text-shadow: -1px 0  #E7BF42, 0 1px #E7BF42 , 1px 0 #E7BF42 , 0 -1px #E7BF42 ;
 }
 
 #bottom {
-  border-bottom: 5px solid #2F3780;
+  border-bottom: 5px solid #371572;
 }
 
 #bottom ul li a {
-  color: #FDDA72  ;
+  color: #E7BF42  ;
 }
 
 #footer a:hover {
-  color: #FDDA72;
+  color: #E7BF42;
 }
