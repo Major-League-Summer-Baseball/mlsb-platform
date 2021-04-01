@@ -9,8 +9,6 @@ from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat,\
     Division
 from api.variables import UNASSIGNED_EMAIL, HITS
 from tqdm import tqdm
-from sys import exit
-import requests
 import os
 import datetime
 import random
