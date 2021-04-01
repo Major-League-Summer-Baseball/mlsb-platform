@@ -9,6 +9,7 @@ from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat,\
     Division
 from api.variables import UNASSIGNED_EMAIL, HITS
 from tqdm import tqdm
+from sys import exit
 import requests
 import os
 import datetime
@@ -248,141 +249,9 @@ def add_random_score(game_id, team_id, players):
     DB.session.commit()
 
 
-def pull_all_pages(url, pagination):
-    """ Pulls the items from all the pages (paginated object)."""
-    data = pagination['items']
-    if(pagination['has_next']):
-        pagination = requests.get(url + pagination['next_url'])
-        data = data + pull_all_pages(url, pagination.json())
-    return data
-
-
-def pull_fun_count(url):
-    """
-    pull_fun_count
-        Adds all the fun objects from website into the local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            None"""
-    # add the fun counts
-    funs = requests.get(url + "/api/fun").json()
-    if isinstance(funs, dict):
-        funs = pull_all_pages(url, funs)
-    for fun in tqdm(funs, desc="Pulling fun from {}".format(url)):
-        DB.session.add(Fun(year=fun['year'], count=fun['count']))
-    DB.session.commit()
-
-
-def pull_sponsors(url):
-    """
-    pull_sponsors
-        Returns a lookup of sponsors that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website sponsor id to local sponsor object
-                e.g. sponsor_lookup = {1: Sponsor(), etc..}
-    """
-    # add all the sponsors
-    _sponsors = requests.get(url + '/api/sponsors').json()
-    if isinstance(_sponsors, dict):
-        _sponsors = pull_all_pages(url, _sponsors)
-    sponsors_lookup = {}
-    for sponsor in tqdm(_sponsors,
-                        desc="Pulling sponsors from {}".format(url)):
-        temp = Sponsor(sponsor['sponsor_name'],
-                       link=sponsor['link'],
-                       description=sponsor['description'])
-        sponsors_lookup[sponsor['sponsor_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return sponsors_lookup
-
-
-def pull_leagues(url):
-    """
-    pull_leagues
-        Returns a lookup of leagues that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website league id to local league object
-                e.g. league_lookup = {1: League(), etc..}
-    """
-    _leagues = requests.get(url + "/api/leagues").json()
-    if isinstance(_leagues, dict):
-        _leagues = pull_all_pages(url, _leagues)
-    leagues_lookup = {}
-    for league in tqdm(_leagues, desc="Pulling leagues from {}".format(url)):
-        temp = League(name=league['league_name'])
-        leagues_lookup[league['league_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return leagues_lookup
-
-
-def pull_divisions(url):
-    """
-    pull_divisions
-        Returns a lookup of divisions that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website division id to local division object
-                e.g. division_lookup = {1: Division(), etc..}
-    """
-    _divisions = requests.get(url + "/api/leagues").json()
-    if isinstance(_divisions, dict):
-        _divisions = pull_all_pages(url, _divisions)
-    divisions_lookup = {}
-    for division in tqdm(_divisions,
-                         desc="Pulling divisions from {}".format(url)):
-        temp = Division(division['division_name'])
-        divisions_lookup[division['league_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return divisions_lookup
-
-
 def create_email(player_name):
     """Returns an email for the given player name."""
     return player_name + str(random.randint(0, 100000)) + "@mlsb.ca",
-
-
-def pull_players(url):
-    """
-    pull_players
-        Returns a lookup of players that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website sponsor id to local player object
-                e.g. player_lookup = {1: Player(), etc..}
-    """
-    _players = requests.get(url + "/api/players").json()
-    if isinstance(_players, dict):
-        _players = pull_all_pages(url, _players)
-    players_lookup = {}
-    for player in tqdm(_players, desc="Pulling players from {}".format(url)):
-        if (player['player_name'].lower() != "unassigned"):
-            temp = Player(player['player_name'],
-                          create_email(player['player_name']),
-                          gender=player['gender'],
-                          active=False
-                          )
-            players_lookup[player['player_id']] = temp
-            DB.session.add(temp)
-    DB.session.commit()
-    return players_lookup
 
 
 def is_player_captain(player, team):
@@ -395,138 +264,13 @@ def is_player_captain(player, team):
     return captain
 
 
-def pull_teams(url, player_lookup, sponsor_lookup, league_lookup):
-    """
-    pull_teams
-        Returns a lookup of teams that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website team id to local team object
-                e.g. team_lookup = {1: Team(), etc..}
-    """
-    _teams = requests.get(url + "/api/teams").json()
-    if isinstance(_teams, dict):
-        _teams = pull_all_pages(url, _teams)
-    team_lookups = {}
-    for team in tqdm(_teams, desc="Pulling teams from {}".format(url)):
-        temp = Team(color=team['color'],
-                    sponsor_id=sponsor_lookup[team['sponsor_id']].id,
-                    league_id=league_lookup[team['league_id']].id,
-                    year=team['year'])
-        # need to add the players from the roster to the team
-        players = requests.get(url +
-                               "/api/teamroster/" +
-                               team['team_id']).json()
-        for player in players:
-            temp.insert_player(player_lookup[player['player_id']].id,
-                               is_player_captain(player, team))
-        team_lookups[team['team_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return team_lookups
-
-
-def pull_games(url, team_lookup, league_lookup):
-    """
-    pull_games
-        Returns a lookup of games that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website game id to local game object
-                e.g. game_lookup = {1: Game(), etc..}
-    """
-    _games = requests.get(url + "/api/games").json()
-    if isinstance(_games, dict):
-        _games = pull_all_pages(url, _games)
-    game_lookup = {}
-    for game in tqdm(_games, desc="Pulling games from {}".format(url)):
-        temp = Game(game['date'],
-                    game['time'],
-                    team_lookup[game['home_team_id']].id,
-                    team_lookup[game['away_team_id']].id,
-                    league_lookup[game['league_id']].id,
-                    status=game['status'],
-                    field=game['field'])
-        game_lookup[game['game_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return game_lookup
-
-
-def pull_bats(url, team_lookup, player_lookup, game_lookup):
-    """
-    pull_bats
-        Returns a lookup of bats that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website bat id to local bat object
-                e.g. bat_lookup = {1: Bat(), etc..}
-    """
-    _bats = requests.get(url + "/api/bats").json()
-    if isinstance(_bats, dict):
-        _bats = pull_all_pages(url, _bats)
-    bat_lookup = {}
-    for bat in tqdm(_bats, desc="Pulling bats from {}".format(url)):
-        temp = Bat(player_lookup[bat['player_id']].id,
-                   team_lookup[bat['team_id']].id,
-                   game_lookup[bat['game_id']].id,
-                   bat['hit'],
-                   bat['inning'],
-                   bat['rbi'])
-        bat_lookup[bat['bat_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return bat_lookup
-
-
-def pull_espys(url, team_lookup, sponsor_lookup):
-    """
-    pull_espys
-        Returns a lookup of espys that were pulled
-        from the website into local DB
-        Parameters:
-            url: the url of the main site
-        Returns:
-            a dictionary lookup
-                for the website espy id to local espy object
-                e.g. bat_lookup = {1: Espys(), etc..}
-    """
-    _espys = requests.get(url + "/api/espys").json()
-    if isinstance(_espys, dict):
-        _espys = pull_all_pages(url, _espys)
-    espy_lookup = {}
-    for espy in tqdm(_espys, desc="Pulling espys from {}".format(url)):
-        temp = Espys(team_lookup[espy['team_id']].id,
-                     sponsor_lookup[espy['sponsor_id']].id,
-                     espy['description'],
-                     espy['points'],
-                     espy['receipt'],
-                     espy['time'],
-                     espy['date'])
-        espy_lookup[espy['espy_id']] = temp
-        DB.session.add(temp)
-    DB.session.commit()
-    return espy_lookup
-
-
-def init_database(mock, copy_locally, url, create_db):
+def init_database(mock, create_db):
     """
     init_database
         Initialize the database either by mocking data or copying main
         website locally
         Parameters:
             mock: whether to mock some data for the current year
-            copy_locally: whether to copy the main website locally
-            url: the main website main url (https://www.mlsb.ca)
             create_db: True if database should be created
         Returns:
             None
@@ -544,20 +288,6 @@ def init_database(mock, copy_locally, url, create_db):
         mock_teams_games(league, mock_division(), sponsor_lookup)
         mock_teams_games(league, mock_division(
             division="Tuesday & Thursday"), sponsor_lookup)
-    else:
-        if(copy_locally):
-            print("Pulling a local copy of the given website")
-            pull_fun_count(url)
-            sponsor_lookup = pull_sponsors(url)
-            player_lookup = pull_players(url)
-            league_lookup = pull_leagues(url)
-            team_lookup = pull_teams(url,
-                                     player_lookup,
-                                     sponsor_lookup,
-                                     league_lookup)
-            game_lookup = pull_games(url, team_lookup, league_lookup)
-            pull_bats(url, team_lookup, player_lookup, game_lookup)
-            pull_espys(url, team_lookup, sponsor_lookup)
     return
 
 
@@ -572,12 +302,11 @@ if __name__ == "__main__":
             os.environ.get("FLASK_ENV").lower() != "docker"):
         print("No FLASK_ENV set or not running on docker")
         print("Just exiting")
-        exit
 
     if ("FLASK_ENV" not in os.environ or
             os.environ.get("FLASK_ENV").lower() == "production"):
         print("Running on Production")
-        exit
+    print(os.environ.get("DATABASE_URL"))
     parser = argparse.ArgumentParser(description=descp)
 
     # use the development serve (just so not touching production)
@@ -593,11 +322,6 @@ if __name__ == "__main__":
                         action="store_true",
                         help=prompt,
                         default=False)
-    parser.add_argument("-localCopy",
-                        dest="localCopy",
-                        action="store_true",
-                        help="Set if one wants to pull all data from url",
-                        default=False)
     parser.add_argument("-createDB",
                         dest="createDB",
                         action="store_true",
@@ -605,4 +329,4 @@ if __name__ == "__main__":
                         default=False)
     args = parser.parse_args()
     print(args)
-    init_database(args.mock, args.localCopy, args.url, args.createDB)
+    init_database(args.mock, args.createDB)

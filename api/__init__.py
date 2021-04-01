@@ -50,7 +50,7 @@ DB = SQLAlchemy(app)
 
 if 'DATABASE_URL' not in os.environ:
     from initDB import init_database
-    init_database(True, False, "", True)
+    init_database(True, True)
 
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
