@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /website/*
+Allow: /documentation/*
+Disallow: /admin/*
