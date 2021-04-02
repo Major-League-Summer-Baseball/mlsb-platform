@@ -68,7 +68,7 @@ app.config['UPLOAD_FOLDER'] = "./static"
 # these imports cannot be at the top right now
 
 # imports for website, documentation, admin
-from api.website import views
+from api.website import *
 from api import admin
 from api import documentation
 from api import errorHandlers
@@ -103,6 +103,15 @@ from api.bot.authenticate_captain import \
 from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
 from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
+
+from api.authentication import github_blueprint, facebook_blueprint,\
+    google_blueprint, login_manager
+
+
+app.register_blueprint(github_blueprint, url_prefix="/login")
+app.register_blueprint(facebook_blueprint, url_prefix="/login")
+app.register_blueprint(google_blueprint, url_prefix="/login")
+login_manager.init_app(app)
 
 
 @app.after_request
@@ -218,4 +227,3 @@ api.add_resource(BotUpcomingGamesAPI,
 api.add_resource(BotSubmitTransactionAPI,
                  Routes['bottransaction'],
                  endpoint="bottransaction")
-

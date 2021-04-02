@@ -1,0 +1,19 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<h1>
+    League Request
+</h1>
+
+<h2>
+    {% if is_pending %}
+    Your request is still pending
+    {% else %}
+    Your request has been rejected. Try contacting the league for why.
+    {% endif%}
+</h2>
+
+<a href="mailto:convenors@mlsb.info">
+    Contact for help
+</a>
+
+{% endblock %}
