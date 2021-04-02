@@ -19,14 +19,10 @@ import logging
 import sys
 import os
 
-if "SECRET_KEY" not in os.environ:
-    SECRET_KEY = str(uuid.uuid1())
-else:
-    SECRET_KEY = os.environ['SECRET_KEY']
-if 'DATABASE_URL' not in os.environ:
-    URL = "sqlite://"
-else:
-    URL = os.environ['DATABASE_URL']
+SECRET_KEY = os.environ.get('SECRET_KEY', str(uuid.uuid1()))
+URL = os.environ.get('DATABASE_URL', "sqlite://")
+# Heroku uses postgres but SQL Alchhemy requires full dialect of postgresql
+URL = URL.replace("postgres://", "postgresql://") if URL.startswith("postgres://") else URL
 
 if "REDIS_URL" not in os.environ:
     cache = Cache(config={'CACHE_TYPE': 'simple'})
