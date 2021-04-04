@@ -6,7 +6,7 @@ from flask_login import current_user, logout_user, login_required,\
 from sqlalchemy import func
 from datetime import date
 from api import app, DB
-from api.errors import HaveLeagueRequestException, NotFoundException,\
+from api.errors import HaveLeagueRequestException, TeamDoesNotExist,\
     OAuthException
 from api.authentication import is_facebook_supported, is_github_supported,\
     is_gmail_supported
@@ -75,10 +75,10 @@ def join_league():
     team_id = request.form.get("team", None)
     print(team_id)
     if team_id is None:
-        raise NotFoundException(f"Team does not exist - {team_id}")
+        raise TeamDoesNotExist(f"Team does not exist - {team_id}")
     team = Team.query.get(team_id)
     if team is None:
-        raise NotFoundException(f"Team does not exist - {team_id}")
+        raise TeamDoesNotExist(f"Team does not exist - {team_id}")
 
     # save the request
     player_name = request.form.get("name", None)
