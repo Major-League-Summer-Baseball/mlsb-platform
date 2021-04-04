@@ -66,16 +66,22 @@ def handle_not_part_of_league():
 @app.errorhandler(FunDoesNotExist)
 @app.errorhandler(TeamNotPartOfLeague)
 @app.errorhandler(OAuthException)
-@app.errorhandler(OAuthException)
-@app.errorhandler(Exception)
+@app.errorhandler(HaveLeagueRequestException)
+@app.errorhandler(NotPartOfLeagueException)
 def handle_generic_error(error):
     if isinstance(error, NotPartOfLeagueException):
         return redirect(url_for("handle_not_part_of_league"))
     elif isinstance(error, HaveLeagueRequestException):
         return redirect(url_for("handle_existing_league_request"))
-    LOGGER.error("Unhandled exception")
+    response = Response(dumps(error.to_dict()), status=error.status_code,
+                        mimetype="application/json")
+    return response
+
+
+@app.errorhandler(NotPartOfLeagueException)
+def unhandled_generic_error(error):
     LOGGER.error(error)
     traceback.print_exc()
-    response = Response(dumps(error.to_dict()), status=error.status_code,
+    response = Response(dumps(str(error)), status=400,
                         mimetype="application/json")
     return response

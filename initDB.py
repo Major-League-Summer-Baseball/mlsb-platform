@@ -301,12 +301,10 @@ if __name__ == "__main__":
     if ("FLASK_ENV" not in os.environ or
             os.environ.get("FLASK_ENV").lower() != "docker"):
         print("No FLASK_ENV set or not running on docker")
-        print("Just exiting")
 
     if ("FLASK_ENV" not in os.environ or
             os.environ.get("FLASK_ENV").lower() == "production"):
         print("Running on Production")
-    print(os.environ.get("DATABASE_URL"))
     parser = argparse.ArgumentParser(description=descp)
 
     # use the development serve (just so not touching production)
@@ -328,5 +326,4 @@ if __name__ == "__main__":
                         help="Set if want to create DB (delete if exists)",
                         default=False)
     args = parser.parse_args()
-    print(args)
     init_database(args.mock, args.createDB)

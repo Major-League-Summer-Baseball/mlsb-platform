@@ -73,7 +73,6 @@ def join_league():
         raise HaveLeagueRequestException("Double submit on form")
     # ensure the selected team exists
     team_id = request.form.get("team", None)
-    print(team_id)
     if team_id is None:
         raise TeamDoesNotExist(f"Team does not exist - {team_id}")
     team = Team.query.get(team_id)
@@ -83,7 +82,6 @@ def join_league():
     # save the request
     player_name = request.form.get("name", None)
     gender = "F" if request.form.get("is_female", False) else "M"
-    print(gender)
     league_request = JoinLeagueRequest(email, player_name, team, gender)
     DB.session.add(league_request)
     DB.session.commit()
