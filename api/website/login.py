@@ -6,7 +6,8 @@ from flask_login import current_user, logout_user, login_required,\
 from sqlalchemy import func
 from datetime import date
 from api import app, DB
-from api.errors import HaveLeagueRequestException
+from api.errors import HaveLeagueRequestException, NotFoundException,\
+    OAuthException
 from api.authentication import is_facebook_supported, is_github_supported,\
     is_gmail_supported
 from api.model import JoinLeagueRequest, Player, Team
