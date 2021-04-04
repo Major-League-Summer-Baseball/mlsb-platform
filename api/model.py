@@ -12,7 +12,7 @@ from datetime import date, datetime
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, PlayerNotOnTeam, DivisionDoesNotExist,\
-    HaveLeagueRequestException 
+    HaveLeagueRequestException
 from api.validators import rbi_validator, hit_validator, inning_validator,\
     string_validator, date_validator, time_validator,\
     field_validator, year_validator, gender_validator,\

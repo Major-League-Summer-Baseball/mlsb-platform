@@ -11,11 +11,9 @@ from api.errors import HaveLeagueRequestException, NotFoundException,\
 from api.authentication import is_facebook_supported, is_github_supported,\
     is_gmail_supported
 from api.model import JoinLeagueRequest, Player, Team
-from api.variables import EVENTS
 from api.routes import Routes
 from api.logging import LOGGER
 from api.cached_items import get_website_base_data as get_base_data
-import json
 
 
 @app.route("/authenticate")
