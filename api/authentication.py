@@ -6,7 +6,7 @@
 '''
 from typing import TypedDict
 from functools import wraps
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, and_
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import make_github_blueprint
 from flask_dance.contrib.facebook import make_facebook_blueprint
@@ -16,7 +16,7 @@ from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
 from flask import request, Blueprint, session, Response
 from api.model import DB, Player, OAuth, JoinLeagueRequest
-from api.errors import OAuthException, PlayerDoesNotExist,\
+from api.errors import OAuthException, NotPartOfLeagueException,\
     HaveLeagueRequestException
 from api.logging import LOGGER
 import os
@@ -86,7 +86,9 @@ def oauth_service_provider_logged_in(blueprint: Blueprint, token: str) -> bool:
         session["oauth_email"] = user_info["email"]
         # check if they have a pending request
         is_pending = JoinLeagueRequest.query.filter(
-            JoinLeagueRequest.email == session["oauth_email"]).first()
+            and_(JoinLeagueRequest.email == session["oauth_email"],
+                 JoinLeagueRequest.pending == True
+                )).first()
         if is_pending is not None:
             raise HaveLeagueRequestException()
         # see if they part of the legaue
@@ -204,7 +206,7 @@ def find_player(user_info: UserInfo) -> Player:
         func.lower(Player.email) == email.lower()).all()
     if len(players) == 0:
         LOGGER.info(f"{email} is not part of league right now")
-        raise PlayerDoesNotExist(
+        raise NotPartOfLeagueException(
             "Sorry, looks like you are not in the league")
     return players[0]
 

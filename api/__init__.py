@@ -10,41 +10,22 @@ from flask_restful import Api
 from flask_restful.utils import cors
 from flask_sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
+from api.config import Config
 from flask_caching import Cache
 from os import getcwd
 from os.path import join
 from api.routes import Routes
-import uuid
 import logging
 import sys
 import os
 
-if "SECRET_KEY" not in os.environ:
-    SECRET_KEY = str(uuid.uuid1())
-else:
-    SECRET_KEY = os.environ['SECRET_KEY']
-if 'DATABASE_URL' not in os.environ:
-    URL = "sqlite://"
-else:
-    URL = os.environ['DATABASE_URL']
-
-if "REDIS_URL" not in os.environ:
-    cache = Cache(config={'CACHE_TYPE': 'simple'})
-    print("Using a simple cache")
-else:
-    # on a machine use a real cache
-    cache = Cache(config={'CACHE_TYPE': 'redis',
-                          'CACHE_REDIS_URL': os.environ['REDIS_URL']})
-
 
 # create the application
 app = Flask(__name__)
-app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = URL
-app.config['SECRET_KEY'] = SECRET_KEY
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
-# setup caching
+# setup caching and database
+cache = Cache(config=Config.REDIS_CACHE)
 cache.init_app(app)
 DB = SQLAlchemy(app)
 

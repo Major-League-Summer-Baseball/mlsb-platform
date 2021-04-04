@@ -14,6 +14,17 @@ import os.path
 import json
 
 
+@app.route(Routes["homepage"] + "/<int:year>")
+def index(year):
+    return render_template("website/index.html",
+                           route=Routes,
+                           base=base_data(year),
+                           title="Recent news",
+                           year=year,
+                           games=get_upcoming_games(year),
+                           news=get_summaries(year))
+
+
 @app.route(Routes['posts'] + "/<int:year>")
 def posts_json(year):
     return json.dumps(get_all_descriptions(year))

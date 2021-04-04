@@ -12,7 +12,6 @@ from api import app
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
 from api.cached_items import get_upcoming_games
-from api.website.articles import get_summaries
 import pkgutil
 import inspect
 
@@ -24,17 +23,6 @@ import inspect
 def reroute():
     year = date.today().year
     return redirect(url_for("index", year=year))
-
-
-@app.route(Routes["homepage"] + "/<int:year>")
-def index(year):
-    return render_template("website/index.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Recent news",
-                           year=year,
-                           games=get_upcoming_games(year),
-                           news=get_summaries(year))
 
 
 @app.route("/about/<int:year>")

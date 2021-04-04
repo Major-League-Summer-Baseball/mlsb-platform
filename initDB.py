@@ -201,6 +201,8 @@ def create_fresh_tables():
     """Creates fresh tables and deletes any previous information."""
     # delete old information
     DB.session.commit()
+    DB.engine.execute("DROP TABLE IF EXISTS join_league_request;")
+    DB.engine.execute("DROP TABLE IF EXISTS flask_dance_oauth;")
     DB.engine.execute("DROP TABLE IF EXISTS fun;")
     DB.engine.execute("DROP TABLE IF EXISTS roster;")
     DB.engine.execute("DROP TABLE IF EXISTS bat;")

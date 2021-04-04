@@ -1,0 +1,45 @@
+{% extends "website/new-base.html" %}
+
+{% block header %}
+<link href="{{ url_for('static', filename="css/login.css") }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+<div class="kpx_login" id="loginWrapper">
+    {% if message %}
+        <p class="message">
+            {{message}}
+        </p>
+    {% endif %}
+    <div class="row kpx_row-sm-offset-3 kpx_socialButtons">
+      {% if facebook_enabled %}
+      <div class="col-xs-2 col-sm-2">
+        <a href="{{url_for('facebook.login') }}" class="btn btn-lg btn-block kpx_btn-facebook" data-toggle="tooltip" data-placement="top" title="Facebook">
+          <i class="fa fa-facebook fa-2x"></i>
+          <span class="hidden-xs"></span>
+        </a>
+      </div>
+      {% endif %}
+      {% if github_enabled %}
+      <div class="col-xs-2 col-sm-2">
+        <a href="{{url_for('github.authorized') }}" class="btn btn-lg btn-block kpx_btn-github" data-toggle="tooltip" data-placement="top" title="GitHub">
+          <i class="fa fa-github fa-2x"></i>
+          <span class="hidden-xs"></span>
+        </a>
+      </div>
+      {% endif %}
+      {% if gmail_enabled %}
+      <div class="col-xs-2 col-sm-2">
+        <a href="{{url_for('google.login') }}" class="btn btn-lg btn-block kpx_btn-google-plus" data-toggle="tooltip" data-placement="top" title="Gmail">
+          <i class="fa fa-google-plus fa-2x"></i>
+          <span class="hidden-xs"></span>
+        </a>
+      </div>
+      {% endif %}
+    </div><br>
+</div>
+
+
+
+{% endblock %}
