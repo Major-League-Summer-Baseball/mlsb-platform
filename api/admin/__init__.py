@@ -89,18 +89,18 @@ def admin_import_game_list():
 def admin_view_league_requests(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
-    league_requests = [request.json() 
-        for request in JoinLeagueRequest.query.filter(
-            JoinLeagueRequest.pending == True).all()]
+    league_requests = JoinLeagueRequest.query.filter(
+        JoinLeagueRequest.pending == True).all()
+    league_requests = [request.json() for request in league_requests]
     return render_template("admin/joinLeagueRequests.html",
-        year=year,
-        route=Routes,
-        title="Players who request to join teams",
-        league_requests=league_requests)
+                           year=year,
+                           route=Routes,
+                           title="Players who request to join teams",
+                           league_requests=league_requests)
 
 
 @app.route(Routes['respond_league_requests'] + "/<int:request_id>",
-    methods=["POST"])
+           methods=["POST"])
 def admin_respond_league_request(request_id):
     if not logged_in():
         return dumps(False)
