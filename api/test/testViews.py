@@ -113,8 +113,8 @@ class TestWebsiteViews(TestSetup):
         route = (Routes['postpicture'] + "/{}".format('picDoesNotExist.png'))
         error_message = ("Get non-existent post picture at {}"
                          .format(route))
-        self.assertGetRequest(route, error_message,
-                              expected_status=NOT_FOUND_CODE)
+        # will send back not found png
+        self.assertGetRequest(route, error_message)
 
         # get a single post plain or json format
         for extension in ["plain", "json"]:
