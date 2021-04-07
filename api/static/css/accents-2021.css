@@ -58,12 +58,12 @@ p.accent{
 }
 
 .btn-primary {
-  background: #8FbCE6;
+  background: #371572;
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
-  background: #8FBCE6;
+  background: #6000fa;
 }
 
 li.presentation a{

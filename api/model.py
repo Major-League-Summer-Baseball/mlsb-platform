@@ -1121,6 +1121,7 @@ class JoinLeagueRequest(DB.Model):
     def decline_request(self) -> None:
         """Decline the request."""
         self.pending = False
+        DB.session.commit()
 
     def json(self) -> dict:
         return {

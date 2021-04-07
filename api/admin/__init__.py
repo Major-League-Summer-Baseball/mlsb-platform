@@ -15,7 +15,8 @@ from api.routes import Routes
 from api import app
 from api import DB
 from api.errors import InvalidField
-from api.model import Team, Player, Sponsor, League, Game, Espys, Fun, Division
+from api.model import Team, Player, Sponsor, League, Game, Espys, Fun,\
+    Division, JoinLeagueRequest
 from api.variables import BATS
 from api.authentication import check_auth
 from datetime import date, time, datetime
@@ -82,6 +83,36 @@ def admin_import_game_list():
         results['errors'] = "File should be a CSV"
         results['success'] = False
     return dumps(results)
+
+
+@app.route(Routes['view_league_requests'] + "/<int:year>")
+def admin_view_league_requests(year):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    league_requests = [request.json() 
+        for request in JoinLeagueRequest.query.filter(
+            JoinLeagueRequest.pending == True).all()]
+    return render_template("admin/joinLeagueRequests.html",
+        year=year,
+        route=Routes,
+        title="Players who request to join teams",
+        league_requests=league_requests)
+
+
+@app.route(Routes['respond_league_requests'] + "/<int:request_id>",
+    methods=["POST"])
+def admin_respond_league_request(request_id):
+    if not logged_in():
+        return dumps(False)
+    league_request = JoinLeagueRequest.query.get(request_id)
+    if league_request is None:
+        return dumps(False)
+    accept = request.get_json()['accept']
+    if accept:
+        league_request.accept_request()
+    else:
+        league_request.decline_request()
+    return dumps(True)
 
 
 @app.route(Routes['importteam'])

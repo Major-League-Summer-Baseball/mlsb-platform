@@ -78,7 +78,7 @@ def handle_generic_error(error):
     return response
 
 
-@app.errorhandler(NotPartOfLeagueException)
+@app.errorhandler(Exception)
 def unhandled_generic_error(error):
     LOGGER.error(error)
     traceback.print_exc()
