@@ -210,6 +210,15 @@ def find_player(user_info: UserInfo) -> Player:
     return players[0]
 
 
+def get_user_information() -> dict:
+    """Returns information about the logged in user."""
+    return {
+        'logged_in': are_logged_in(),
+        'email': get_login_email(),
+        'player_information': get_player_information()
+    }
+
+
 def are_logged_in() -> bool:
     """Returns whether the person is logged in."""
     return current_user.get_id() is not None
@@ -218,6 +227,12 @@ def are_logged_in() -> bool:
 def get_login_email() -> str:
     """Returns the email based whichever app they have authorized with."""
     return None if not are_logged_in() else current_user.email
+
+
+def get_player_information() -> dict:
+    """Returns the email based whichever app they have authorized with."""
+    return None if not are_logged_in() else current_user.json()
+
 
 
 def is_gmail_supported() -> bool:

@@ -6,6 +6,7 @@ from flask import render_template, send_from_directory
 from api import app, PICTURES, CSS_FOLDER
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
+from api.authentication import get_user_information
 import os.path
 
 
@@ -15,7 +16,8 @@ def promos_page(year):
                            route=Routes,
                            base=base_data(year),
                            title="Pump-Up Videos",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['accents'])

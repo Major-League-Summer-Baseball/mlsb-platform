@@ -8,6 +8,7 @@ from api.cached_items import get_league_map, get_league_schedule,\
     get_divisions_for_league_and_year
 
 from api.cached_items import get_website_base_data as base_data
+from api.authentication import get_user_information
 import json
 
 
@@ -25,7 +26,8 @@ def schedule(league_id, year):
                            title="Schedule",
                            league=league,
                            divisions=divisions,
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['schedulecache'] + "/<int:year>/<int:league_id>")

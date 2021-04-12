@@ -5,6 +5,7 @@ from api import app
 from api.variables import EVENTS
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
+from api.authentication import get_user_information
 import json
 
 
@@ -24,10 +25,12 @@ def events_page(year):
                                route=Routes,
                                base=base_data(year),
                                title="Events",
-                               year=year)
+                               year=year,
+                               user_info=get_user_information())
     else:
         return render_template("website/notFound.html",
                                year=year,
                                route=Routes,
                                base=base_data(year),
-                               title="Not Found")
+                               title="Not Found",
+                               user_info=get_user_information())

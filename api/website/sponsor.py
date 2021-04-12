@@ -9,7 +9,7 @@ from api.variables import NOTFOUND
 from api.routes import Routes
 from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map
-
+from api.authentication import get_user_information
 from api.cached_items import get_website_base_data as base_data
 import os.path
 import json
@@ -40,7 +40,8 @@ def sponsors_page(year):
                            route=Routes,
                            base=base_data(year),
                            title="Sponsors",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['sponsorspage'] + "/<int:year>" + "/<int:sponsor_id>")
@@ -51,7 +52,8 @@ def sponsor_page(year, sponsor_id):
                                route=Routes,
                                base=base_data(year),
                                title="Not Found",
-                               year=year)
+                               year=year,
+                               user_info=get_user_information())
     else:
         page = render_template("website/sponsor.html",
                                route=Routes,
@@ -59,7 +61,8 @@ def sponsor_page(year, sponsor_id):
                                sponsor=sponsor,
                                title="Sponsor | " + sponsor.get('sponsor_name',
                                                                 'No Name'),
-                               year=year)
+                               year=year,
+                               user_info=get_user_information())
     return page
 
 
@@ -70,7 +73,8 @@ def sponsor_breakdown(year):
                            base=base_data(year),
                            title="ESPYS Breakdown by Sponsor",
                            year=year,
-                           teams=get_teams(year))
+                           teams=get_teams(year),
+                           user_info=get_user_information())
 
 
 @app.route(Routes['sponsorbreakdown'] + "/<int:year>" + "/<int:garbage>")

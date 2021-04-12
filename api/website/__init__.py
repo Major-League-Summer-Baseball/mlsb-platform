@@ -12,6 +12,7 @@ from api import app
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
 from api.cached_items import get_upcoming_games
+from api.authentication import get_user_information
 import pkgutil
 import inspect
 
@@ -22,7 +23,8 @@ import inspect
 @app.route("/website/")
 def reroute():
     year = date.today().year
-    return redirect(url_for("index", year=year))
+    return redirect(url_for(
+        "index", year=year, user_info=get_user_information()))
 
 
 @app.route("/about/<int:year>")
@@ -32,7 +34,8 @@ def about(year):
                            base=base_data(year),
                            title="About",
                            year=year,
-                           games=get_upcoming_games(year))
+                           games=get_upcoming_games(year),
+                           user_info=get_user_information())
 
 
 @app.route(Routes["privacy"])
@@ -52,7 +55,8 @@ def league_not_found(year):
                            route=Routes,
                            base=base_data(year),
                            title="League not found",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['fieldsrulespage'] + "/<int:year>")
@@ -61,7 +65,8 @@ def rules_fields(year):
                            route=Routes,
                            base=base_data(year),
                            title="Fields & Rules",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):

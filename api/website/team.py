@@ -9,6 +9,7 @@ from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_team_map
 from api.cached_items import get_website_base_data as base_data
+from api.authentication import get_user_information
 import os.path
 
 
@@ -41,14 +42,16 @@ def team_page(year, team_id):
                                base=base_data(year),
                                team=team,
                                title="Team - " + str(team['name']),
-                               year=year)
+                               year=year,
+                               user_info=get_user_information())
     else:
         return render_template("website/notFound.html",
                                route=Routes,
                                base=base_data(year),
                                team=team,
                                title="Team not found",
-                               year=year)
+                               year=year,
+                               user_info=get_user_information())
 
 
 @app.route(Routes['playerpage'] + "/<int:year>/<int:player_id>")
@@ -59,7 +62,8 @@ def player_page(year, player_id):
                                route=Routes,
                                base=base_data(year),
                                title="Player not found",
-                               year=year)
+                               year=year,
+                               user_info=get_user_information())
     name = player.name
     years = []
     for team in player.teams:
@@ -98,4 +102,5 @@ def player_page(year, player_id):
                            stats=stats,
                            title="Player Stats",
                            name=name,
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())

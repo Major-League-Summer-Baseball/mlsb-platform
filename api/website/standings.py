@@ -7,6 +7,7 @@ from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_league_map, get_league_leaders,\
     get_espys_breakdown, get_divisions_for_league_and_year
 from api.cached_items import get_website_base_data as base_data
+from api.authentication import get_user_information
 
 
 @app.route(Routes['standingspage'] + "/<int:league_id>/<int:year>")
@@ -23,7 +24,8 @@ def standings(league_id, year):
                            league=league,
                            divisions=divisions,
                            title="Standings",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['statspage'] + "/<int:year>")
@@ -34,8 +36,8 @@ def stats_page(year):
                            base=base_data(year),
                            title="Players Stats",
                            year=year,
-                           players=players
-                           )
+                           players=players,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['leagueleaderpage'] + "/<int:year>")
@@ -48,7 +50,8 @@ def leaders_page(year):
                            men=men,
                            women=women,
                            title="League Leaders",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['alltimeleaderspage'] + "/<int:year>")
@@ -65,7 +68,8 @@ def all_time_leaders_page(year):
                            hrAllSeason=hrAllSeason,
                            ssAllSeason=ssAllSeason,
                            title="League Leaders",
-                           year=year)
+                           year=year,
+                           user_info=get_user_information())
 
 
 @app.route(Routes['espysbreakdown'] + "/<int:year>")

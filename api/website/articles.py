@@ -10,6 +10,7 @@ from api.variables import NOTFOUND
 from api.routes import Routes
 from api.cached_items import get_upcoming_games
 from api.cached_items import get_website_base_data as base_data
+from api.authentication import get_user_information
 import os.path
 import json
 
@@ -22,7 +23,8 @@ def index(year):
                            title="Recent news",
                            year=year,
                            games=get_upcoming_games(year),
-                           news=get_summaries(year))
+                           news=get_summaries(year),
+                           user_info=get_user_information())
 
 
 @app.route(Routes['posts'] + "/<int:year>")
@@ -58,14 +60,16 @@ def checkout_post(year, date, file_name):
                                base=base_data(year),
                                title="Posts",
                                year=year,
-                               games=get_upcoming_games(year))
+                               games=get_upcoming_games(year),
+                               user_info=get_user_information())
     else:
         return render_template("website/notFound.html",
                                route=Routes,
                                base=base_data(year),
                                title="Posts not Found",
                                year=year,
-                               games=get_upcoming_games(year))
+                               games=get_upcoming_games(year),
+                               user_info=get_user_information())
 
 
 @app.route(Routes['postpicture'] + "/<name>")

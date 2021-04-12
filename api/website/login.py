@@ -14,6 +14,7 @@ from api.model import JoinLeagueRequest, Player, Team
 from api.routes import Routes
 from api.logging import LOGGER
 from api.cached_items import get_website_base_data as get_base_data
+from api.authentication import get_user_information
 
 
 @app.route("/authenticate")
@@ -27,7 +28,8 @@ def need_to_login():
                            base=get_base_data(year),
                            github_enabled=is_github_supported(),
                            facebook_enabled=is_facebook_supported(),
-                           gmail_enabled=is_gmail_supported())
+                           gmail_enabled=is_gmail_supported(),
+                           user_info=get_user_information())
 
 
 @app.route("/login")
@@ -40,7 +42,8 @@ def loginpage():
                            year=year,
                            github_enabled=is_github_supported(),
                            facebook_enabled=is_facebook_supported(),
-                           gmail_enabled=is_gmail_supported())
+                           gmail_enabled=is_gmail_supported(),
+                           user_info=get_user_information())
 
 
 @app.route("/logout")
@@ -49,7 +52,7 @@ def logout():
     """A route to log out the user."""
     LOGGER.info(f"{current_user} has logged out")
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("index", year=date.today().year))
 
 
 @app.route("/join_league", methods=["POST"])
@@ -97,4 +100,5 @@ def league_request_sent():
                            route=Routes,
                            year=year,
                            base=get_base_data(year),
-                           message=message)
+                           message=message,
+                           user_info=get_user_information())

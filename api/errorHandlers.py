@@ -19,6 +19,7 @@ from api.logging import LOGGER
 from api.routes import Routes
 from flask import Response, session, render_template, redirect, url_for
 from api.cached_items import get_website_base_data as get_base_data
+from api.authentication import get_user_information
 from json import dumps
 import traceback
 
@@ -32,7 +33,8 @@ def handle_existing_league_request():
                            base=get_base_data(year),
                            route=Routes,
                            year=year,
-                           is_pending=is_pending.pending)
+                           is_pending=is_pending.pending,
+                           user_info=get_user_information())
 
 
 @app.route("/want_to_join")
@@ -45,7 +47,8 @@ def handle_not_part_of_league():
                            base=get_base_data(year),
                            route=Routes,
                            year=year,
-                           teams=teams)
+                           teams=teams,
+                           user_info=get_user_information())
 
 
 @app.errorhandler(BatDoesNotExist)
