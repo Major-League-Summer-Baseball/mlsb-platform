@@ -234,7 +234,6 @@ def get_player_information() -> dict:
     return None if not are_logged_in() else current_user.json()
 
 
-
 def is_gmail_supported() -> bool:
     """Returns whether current setup support Gmail authentication."""
     return os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "") != ""
