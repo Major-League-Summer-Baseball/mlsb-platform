@@ -42,6 +42,7 @@ def get_team(year, tid: int) -> dict:
         team = {'name': str(result),
                 'league': str(League.query.get(result.league_id)),
                 'captain': str(captain),
+                'captain_id': result.player_id,
                 'players': players,
                 'record': record,
                 'wins': record[tid]['wins'],

@@ -181,9 +181,7 @@
                                   {% endfor %}
                                 </ul>
                             </li>
-                            
                             <li>
-                              {{ user_info }}
                               {% if user_info.logged_in %}
                                 <a href="{{ url_for('logout') }}">
                                   Logout

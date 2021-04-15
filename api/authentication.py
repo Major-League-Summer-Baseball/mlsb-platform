@@ -4,7 +4,7 @@
 @organization: MLSB API
 @summary: Holds the authentication functions
 '''
-from typing import TypedDict
+from typing import TypedDict, Callable
 from functools import wraps
 from sqlalchemy.sql import func, and_
 from sqlalchemy.orm.exc import NoResultFound
@@ -14,10 +14,11 @@ from flask_dance.contrib.google import make_google_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
-from flask import request, Blueprint, session, Response
-from api.model import DB, Player, OAuth, JoinLeagueRequest
+from flask import request, Blueprint, session, Response, redirect,\
+    url_for
+from api.model import DB, Player, OAuth, JoinLeagueRequest, Team
 from api.errors import OAuthException, NotPartOfLeagueException,\
-    HaveLeagueRequestException
+    HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist
 from api.logging import LOGGER
 import os
 
@@ -47,6 +48,14 @@ class UserInfo(TypedDict):
     """The required user info from a ouath provider"""
     name: str
     email: str
+
+
+class TeamAuthorization(TypedDict):
+    """The authorization the user has relative to a team."""
+    on_team: bool
+    is_convenor: bool
+    is_captain: bool
+    pending_request: bool
 
 
 @oauth_authorized.connect_via(facebook_blueprint)
@@ -221,6 +230,7 @@ def get_user_information() -> dict:
 
 def are_logged_in() -> bool:
     """Returns whether the person is logged in."""
+
     return current_user.get_id() is not None
 
 
@@ -249,14 +259,13 @@ def is_facebook_supported() -> bool:
     return os.environ.get("FACEBOOK_OAUTH_CLIENT_ID", "") != ""
 
 
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
+def check_auth(username: str, password: str) -> bool:
+    """Returns if a username password combination is valid.
     """
     return username == ADMIN and password == PASSWORD
 
 
-def authenticate():
+def authenticate() -> 'Response':
     """Sends a 401 response that enables basic auth"""
     return Response(
         'Could not verify your access level for that URL.\n'
@@ -264,7 +273,69 @@ def authenticate():
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
-def requires_admin(f):
+def get_team_authorization(team: 'Team') -> TeamAuthorization:
+    """Get the user authorization relative to the team"""
+    is_captain = are_logged_in() and team.player_id == current_user.id
+    on_team = (are_logged_in() and
+               bool([player for player in team.players
+                    if player.id == current_user.id]))
+    can_join = are_logged_in() and not on_team and not is_captain
+    has_pending_request = False
+    if can_join:
+        requests = JoinLeagueRequest.query.filter(
+            JoinLeagueRequest.team_id == team.id).all()
+        has_pending_request = bool([True for request in requests
+                                    if request.email == current_user.email])
+    return {'on_team': on_team,
+            'is_convenor': False,
+            'is_captain': is_captain,
+            'pending_request': has_pending_request}
+
+
+def api_require_login(f: Callable) -> Callable:
+    """Api requires that user it logged in"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return Response("Not logged in", 401)
+        return f(*args, **kwargs)
+    return decorated
+
+
+def api_require_captain(f: Callable) -> Callable:
+    """Api that requires the current user be a captain of the team"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return Response("Not logged in", 401)
+        return f(*args, **kwargs)
+        team_id = args[0]
+        team = Team.query.get(team_id)
+        if team is None:
+            return Response("Team does not exist", 404)
+        if team.player_id != current_user.id:
+            return Response("Player is not captain of team", 403)
+        return f(*args, **kwargs)
+    return decorated
+
+
+def require_captain(f: Callable) -> Callable:
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return redirect(url_for("loginpage"))
+        return f(*args, **kwargs)
+        team_id = args[0]
+        team = Team.query.get(team_id)
+        if team is None:
+            raise TeamDoesNotExist(payload={"details": team_id})
+        if team.player_id != current_user.id:
+            raise NotTeamCaptain(payload={"details": team_id})
+        return f(*args, **kwargs)
+    return decorated
+
+
+def requires_admin(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
