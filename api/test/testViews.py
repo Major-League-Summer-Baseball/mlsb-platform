@@ -5,11 +5,8 @@
 @summary: Tests some views at least do not respond with application error
 '''
 from api.routes import Routes
-from flask import url_for
-from flask_login import login_user
 from api.test.BaseTest import TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID,\
     REDIRECT_CODE
-from api.authentication import load_user
 from datetime import datetime
 import uuid
 START_OF_PLATFORM = 2016
@@ -28,8 +25,7 @@ class TestWebsiteViews(TestSetup):
     def testLoginPages(self):
         self.assertGetRequest("/authenticate", "Need to login")
         self.assertGetRequest("/login", "Login page")
-        self.assertGetRequest("/request_sent",
-                            "League request sent page")
+        self.assertGetRequest("/request_sent", "League request sent page")
 
     def testSponsorsPages(self):
         sponsor_name = str(uuid.uuid1())
