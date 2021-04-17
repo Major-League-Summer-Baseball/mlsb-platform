@@ -1086,7 +1086,7 @@ class JoinLeagueRequest(DB.Model):
     gender = DB.Column(DB.String(1))
 
     def __init__(self, email: str, name: str, team: 'Team', gender: str):
-        if team is None:
+        if team is None or not isinstance(team, Team) or team.id is None:
             raise TeamDoesNotExist("Given team does not exist")
         if not gender_validator(gender):
             raise InvalidField(payload={
@@ -1105,7 +1105,7 @@ class JoinLeagueRequest(DB.Model):
         """Accept the request and add the player to the team"""
         # create a player if they do not exit already
         if not self.pending:
-            HaveLeagueRequestException("Request already submitted")
+            raise HaveLeagueRequestException("Request already submitted")
         player = Player.query.filter(
             func.lower(Player.email) == self.email.lower()).first()
         if player is None:
@@ -1124,8 +1124,11 @@ class JoinLeagueRequest(DB.Model):
         DB.session.commit()
 
     def json(self) -> dict:
+        """Get a json version of the model"""
+        team = (None if self.team_id is None
+                   else Team.query.get(self.team_id).json())
         return {
-            "team": self.team.json(),
+            "team": team,
             "email": self.email,
             "id": self.id,
             "pending": self.pending,

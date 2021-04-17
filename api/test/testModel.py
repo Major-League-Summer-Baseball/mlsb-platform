@@ -4,10 +4,12 @@
 @organization: MLSB API
 @summary: Holds the tests for the model
 '''
-from api.model import Player, Team, Bat, Sponsor, League, Game, Division
+from api.model import Player, Team, Bat, Sponsor, League, Game, Division,\
+    JoinLeagueRequest
 from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
     LeagueDoesNotExist, SponsorDoesNotExist,\
-    NonUniqueEmail, GameDoesNotExist, DivisionDoesNotExist
+    NonUniqueEmail, GameDoesNotExist, DivisionDoesNotExist,\
+    HaveLeagueRequestException
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
 from sqlalchemy.orm import undefer
 from datetime import datetime
@@ -525,6 +527,115 @@ class GameModelTest(TestSetup):
         except LeagueDoesNotExist:
             pass
 
+class JoinLeagueRequestTest(TestSetup):
+    """Test the join league request model"""
+
+    def testJoinLeagueRequestInit(self):
+        """ Test the constructor validates the given data"""
+        player = str(uuid.uuid1())
+        email = player + "@mlsb.ca"
+        some_gender = "m"
+        color = str(uuid.uuid1())
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        no_team = Team(color="Black",
+                       sponsor_id=sponsor['sponsor_id'],
+                       league_id=league['league_id'])
+        
+        team_json = self.add_team(color, sponsor=sponsor, league=league)
+        team = Team.query.get(team_json['team_id'])
+        league_request = JoinLeagueRequest(email, player, team, some_gender)
+        league_request.json()
+        # bad stuff
+        try:
+            JoinLeagueRequest(1, player, team, some_gender)
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+        try:
+            JoinLeagueRequest(email, 1, team, some_gender)
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+        try:
+            JoinLeagueRequest(email, player, "wrong team", some_gender)
+            self.assertEqual(False, True, "Should raise team does not exist")
+        except TeamDoesNotExist:
+            pass
+        try:
+            JoinLeagueRequest(email, player, no_team, some_gender)
+            self.assertEqual(False, True, "Should raise team does not exist")
+        except TeamDoesNotExist:
+            pass
+        try:
+            JoinLeagueRequest(email, player, team, "XX")
+            self.assertEqual(False, True, "Should raise invalid field")
+        except InvalidField:
+            pass
+
+    def testAcceptJoinLeagueRequestNewPlayer(self):
+        player = str(uuid.uuid1())
+        email = player + "@mlsb.ca"
+        some_gender = "m"
+        color = str(uuid.uuid1())
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team_json = self.add_team(color, sponsor=sponsor, league=league)
+        team = Team.query.get(team_json['team_id'])
+        league_request = JoinLeagueRequest(email, player, team, some_gender)
+        accepted_player = league_request.accept_request()
+
+        # check player is one team now
+        self.assertTrue(accepted_player.id is not None,
+                         "Create player account when joining team")
+        team = Team.query.get(team_json['team_id'])
+        self.assertTrue(
+                        bool([True
+                              for p in team.players
+                              if p.email == email and p.id is not None]),
+                        "New player added was not added to team")
+
+    def testAcceptJoinLeagueRequestExistingPlayer(self):
+        name = str(uuid.uuid1())
+        email = name + "@mlsb.ca"
+        some_gender = "m"
+        player = self.add_player(name, email, gender=some_gender)
+        color = str(uuid.uuid1())
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team_json = self.add_team(color, sponsor=sponsor, league=league)
+        team = Team.query.get(team_json['team_id'])
+        league_request = JoinLeagueRequest(email, player, team, some_gender)
+        accepted_player = league_request.accept_request()
+
+        # check player is one team now
+        self.assertEqual(accepted_player.id, player['player_id'],
+                         "Use player account when joining team")
+        team = Team.query.get(team_json['team_id'])
+        self.assertTrue(
+                        bool([True
+                              for p in team.players
+                              if p.id == player['player_id']]),
+                        "Existing player added was not added to team")
+
+    def testAcceptJoinLeagueRequestTwice(self):
+        name = str(uuid.uuid1())
+        email = name + "@mlsb.ca"
+        some_gender = "m"
+        player = self.add_player(name, email, gender=some_gender)
+        color = str(uuid.uuid1())
+        league = self.add_league(str(uuid.uuid1()))
+        sponsor = self.add_sponsor(str(uuid.uuid1()))
+        team_json = self.add_team(color, sponsor=sponsor, league=league)
+        team = Team.query.get(team_json['team_id'])
+        league_request = JoinLeagueRequest(email, player, team, some_gender)
+        league_request.accept_request()
+        try:
+            league_request.accept_request()
+            self.assertTrue(False,
+                            "Should not be able to accept request league twice")
+        except HaveLeagueRequestException:
+            pass
 
 class BatModelTest(TestSetup):
 
