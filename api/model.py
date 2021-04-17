@@ -1126,7 +1126,7 @@ class JoinLeagueRequest(DB.Model):
     def json(self) -> dict:
         """Get a json version of the model"""
         team = (None if self.team_id is None
-                   else Team.query.get(self.team_id).json())
+                else Team.query.get(self.team_id).json())
         return {
             "team": team,
             "email": self.email,

@@ -527,6 +527,7 @@ class GameModelTest(TestSetup):
         except LeagueDoesNotExist:
             pass
 
+
 class JoinLeagueRequestTest(TestSetup):
     """Test the join league request model"""
 
@@ -541,11 +542,13 @@ class JoinLeagueRequestTest(TestSetup):
         no_team = Team(color="Black",
                        sponsor_id=sponsor['sponsor_id'],
                        league_id=league['league_id'])
-        
         team_json = self.add_team(color, sponsor=sponsor, league=league)
         team = Team.query.get(team_json['team_id'])
+
+        # good request and test json method
         league_request = JoinLeagueRequest(email, player, team, some_gender)
         league_request.json()
+
         # bad stuff
         try:
             JoinLeagueRequest(1, player, team, some_gender)
@@ -587,10 +590,9 @@ class JoinLeagueRequestTest(TestSetup):
 
         # check player is one team now
         self.assertTrue(accepted_player.id is not None,
-                         "Create player account when joining team")
+                        "Create player account when joining team")
         team = Team.query.get(team_json['team_id'])
-        self.assertTrue(
-                        bool([True
+        self.assertTrue(bool([True
                               for p in team.players
                               if p.email == email and p.id is not None]),
                         "New player added was not added to team")
@@ -612,8 +614,7 @@ class JoinLeagueRequestTest(TestSetup):
         self.assertEqual(accepted_player.id, player['player_id'],
                          "Use player account when joining team")
         team = Team.query.get(team_json['team_id'])
-        self.assertTrue(
-                        bool([True
+        self.assertTrue(bool([True
                               for p in team.players
                               if p.id == player['player_id']]),
                         "Existing player added was not added to team")
@@ -636,6 +637,7 @@ class JoinLeagueRequestTest(TestSetup):
                             "Should not be able to accept request league twice")
         except HaveLeagueRequestException:
             pass
+
 
 class BatModelTest(TestSetup):
 
