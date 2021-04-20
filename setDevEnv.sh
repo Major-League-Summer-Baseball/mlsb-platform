@@ -1,5 +1,5 @@
 #!/bin/bash
-export ARE_TESTING=True
+export FLASK_ENV=development
 # Make oauth accept http instead of only https
 export OAUTHLIB_INSECURE_TRANSPORT=1
 export OAUTHLIB_RELAX_TOKEN_SCOPE=1

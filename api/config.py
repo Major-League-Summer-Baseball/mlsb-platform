@@ -24,7 +24,6 @@ class Config(object):
     GITHUB_OAUTH_CLIENT_SECRET = os.environ.get(
         "GITHUB_OAUTH_CLIENT_SECRET", "")
     USE_SESSION_FOR_NEXT = True
-    ARE_TESTING = os.environ.get("ARE_TESTING", False)
     REDIS_CACHE = ({'CACHE_TYPE': 'simple'}
                    if os.environ.get("REDIS_URL", None) is None
                    else {'CACHE_TYPE': 'redis',

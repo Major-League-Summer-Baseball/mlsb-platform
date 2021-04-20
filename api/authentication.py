@@ -230,7 +230,6 @@ def get_user_information() -> dict:
 
 def are_logged_in() -> bool:
     """Returns whether the person is logged in."""
-
     return current_user.get_id() is not None
 
 

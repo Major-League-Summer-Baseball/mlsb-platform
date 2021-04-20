@@ -8,7 +8,7 @@
 
 <h4>
     Roster
-    {% if not team_authorization.pending_request %}
+    {% if not team_authorization.pending_request and not team_authorization.on_team %}
         <button class="btn btn-success" id="join_team" onclick="joinTeam('{{ url_for ('request_to_join_team', team_id=team_id) }}')">
             Join Team
         </button>
@@ -41,6 +41,7 @@
             <div class="col-xs-4">
                 <button
                     class="btn btn-info"
+                    id="acceptRequest{{league_request.id}}"
                     onclick="respondToRequest('{{ url_for ('captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', true, 'league_request{{request.id}}')">
                     Accept
                 </button>
@@ -48,6 +49,7 @@
             <div class="col-xs-4">
                 <button
                     class="btn btn-warning"
+                    id="rejectRequest{{league_request.id}}"
                     onclick="respondToRequest('{{ url_for ('captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', false, 'league_request{{request.id}}');">
                     Decline
                 </button>

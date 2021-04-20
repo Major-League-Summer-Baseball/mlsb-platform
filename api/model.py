@@ -1132,6 +1132,6 @@ class JoinLeagueRequest(DB.Model):
             "email": self.email,
             "id": self.id,
             "pending": self.pending,
-            "name": self.name,
+            "player_name": self.name,
             "gender": self.gender
         }
