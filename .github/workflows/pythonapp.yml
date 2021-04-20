@@ -58,6 +58,7 @@ jobs:
       run: |
         export ADMIN="admin"
         export PASSWORD="password"
+        export FLASK_ENV="development"
         # run the server just in-memory
         nohup python runserver.py  2>&1 &
         # now run the cypres tests against it

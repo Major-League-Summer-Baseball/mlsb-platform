@@ -4,7 +4,7 @@ from flask import Response, request
 from flask_login import login_user
 from functools import wraps
 from api import app
-from api.model import Player, DB, JoinLeagueRequest, Team, Sponsor
+from api.model import Player, DB, JoinLeagueRequest, Team
 from api.logging import LOGGER
 import json
 import uuid
@@ -30,8 +30,7 @@ def create_and_login():
         Player.email == player_info.get('email')).first()
     if player is None:
         LOGGER.info(f"Adding player to league: {player_info}")
-        player = Player(
-                        player_info.get("player_name", str(uuid.uuid1())),
+        player = Player(player_info.get("player_name", str(uuid.uuid1())),
                         player_info.get("email"),
                         gender=player_info.get("gender", "m"))
         DB.session.add(player)
@@ -52,7 +51,7 @@ def make_player_captain():
     team.insert_player(data.get('player_id'), captain=True)
     DB.session.commit()
     return Response(json.dumps(True), 200)
-    
+
 
 @app.route("/testing/api/create_league_request", methods=["POST"])
 @requires_testing
