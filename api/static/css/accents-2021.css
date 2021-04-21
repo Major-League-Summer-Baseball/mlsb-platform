@@ -114,15 +114,16 @@ a:hover, a:focus {
   color: #E7BF42;
 }
 
-#header  .dropdown-menu>li>a {
- color: #E7BF42 ;
- text-shadow: -1px 0 #371572 , 0 1px #371572 , 1px 0 #371572 , 0 -1px #371572 ;
+#header  .dropdown-menu > li > a {
+ color: #371572 ;
+ font-size: 16px;
+ text-shadow: -1px 0  #ECE3BF, 0 1px #ECE3BF , 1px 0 #ECE3BF , 0 -1px #ECE3BF ;
 }
 
-#header  .dropdown-menu>li>a:hover,
-#header  .dropdown-menu>li>a:focus{
+#header  .dropdown-menu > li > a:hover,
+#header  .dropdown-menu > li > a:focus{
   color: #371572 ;
-  text-shadow: -1px 0  #E7BF42, 0 1px #E7BF42 , 1px 0 #E7BF42 , 0 -1px #E7BF42 ;
+  text-shadow: -1px 0  #ECE3BF, 0 1px #ECE3BF , 1px 0 #ECE3BF , 0 -1px #ECE3BF ;
 }
 
 #bottom {

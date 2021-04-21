@@ -182,16 +182,34 @@
                                 </ul>
                             </li>
                             <li>
-                              {% if user_info.logged_in %}
-                                <a href="{{ url_for('logout') }}">
-                                  Logout
-                                </a>
-                              {% else %}
+                              {% if not user_info.logged_in %}
                                 <a href="{{ url_for('loginpage') }}">
                                   Login
                                 </a>
                               {% endif %}
                             </li>
+                            {% if user_info.logged_in %}
+                            <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                Profile <b class="caret"></b>
+                              </a>
+                              <ul class="dropdown-menu">
+                                <li>
+                                  <a href="{{ url_for('logout') }}">
+                                    Logout
+                                  </a>
+                                </li>
+                                {% for team in user_info.teams %}
+                                  <li>
+                                    <a href="{{ url_for('team_page', year=year, team_id=team.team_id) }}">
+                                      {{team.team_name}}
+                                    </a>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+                            </li>
+                            {% endif %}
+                            
 
                         </ul>
                     </div>
@@ -204,6 +222,7 @@
             <div class="container">
                 <div class="row content-row">
                     <div class="col-xs-12 mainBlock" >
+                      {{user_info}}
                         <h2 class="main-header" id="MainHeader">
                             {{title}}
                         </h2>
