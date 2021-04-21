@@ -243,8 +243,13 @@ def get_player_information() -> dict:
     """Returns the email based whichever app they have authorized with."""
     return None if not are_logged_in() else current_user.json()
 
+
 def get_player_teams() -> list[dict]:
-    return None if not are_logged_in() else [team.json() for team in current_user.teams]
+    """Returns a list of teams associated with the player"""
+    return (None
+            if not are_logged_in()
+            else [team.json() for team in current_user.teams])
+
 
 def is_gmail_supported() -> bool:
     """Returns whether current setup support Gmail authentication."""
