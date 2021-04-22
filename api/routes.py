@@ -156,6 +156,9 @@ Routes['editfun'] = "/admin/edit/fun"
 Routes['nonactiveplayers'] = "/admin/edit/non_active_players"
 Routes['adeactivateplayer'] = "/admin/edit/player/deactivate"
 Routes['adeactivatesponsor'] = "/admin/edit/sponsor/deactivate"
+Routes['view_league_requests'] = "/admin/edit/league_requests"
+Routes['respond_league_requests'] = "/admin/edit/league_requests/respond"
+
 
 # imports from csv
 Routes['importteam'] = "/admin/import/team"

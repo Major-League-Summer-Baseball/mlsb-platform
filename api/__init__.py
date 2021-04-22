@@ -10,37 +10,22 @@ from flask_restful import Api
 from flask_restful.utils import cors
 from flask_sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
+from api.config import Config
 from flask_caching import Cache
 from os import getcwd
 from os.path import join
 from api.routes import Routes
-import uuid
 import logging
 import sys
 import os
 
-SECRET_KEY = os.environ.get('SECRET_KEY', str(uuid.uuid1()))
-URL = os.environ.get('DATABASE_URL', "sqlite://")
-# Heroku uses postgres but SQL Alchhemy requires full dialect of postgresql
-URL = URL.replace("postgres://", "postgresql://") if URL.startswith("postgres://") else URL
-
-if "REDIS_URL" not in os.environ:
-    cache = Cache(config={'CACHE_TYPE': 'simple'})
-    print("Using a simple cache")
-else:
-    # on a machine use a real cache
-    cache = Cache(config={'CACHE_TYPE': 'redis',
-                          'CACHE_REDIS_URL': os.environ['REDIS_URL']})
-
 
 # create the application
 app = Flask(__name__)
-app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = URL
-app.config['SECRET_KEY'] = SECRET_KEY
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
-# setup caching
+# setup caching and database
+cache = Cache(config=Config.REDIS_CACHE)
 cache.init_app(app)
 DB = SQLAlchemy(app)
 
@@ -64,7 +49,7 @@ app.config['UPLOAD_FOLDER'] = "./static"
 # these imports cannot be at the top right now
 
 # imports for website, documentation, admin
-from api.website import views
+from api.website import *
 from api import admin
 from api import documentation
 from api import errorHandlers
@@ -99,6 +84,15 @@ from api.bot.authenticate_captain import \
 from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
 from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
+
+from api.authentication import github_blueprint, facebook_blueprint,\
+    google_blueprint, login_manager
+
+
+app.register_blueprint(github_blueprint, url_prefix="/login")
+app.register_blueprint(facebook_blueprint, url_prefix="/login")
+app.register_blueprint(google_blueprint, url_prefix="/login")
+login_manager.init_app(app)
 
 
 @app.after_request
@@ -214,4 +208,3 @@ api.add_resource(BotUpcomingGamesAPI,
 api.add_resource(BotSubmitTransactionAPI,
                  Routes['bottransaction'],
                  endpoint="bottransaction")
-

@@ -1,4 +1,7 @@
 export interface Player {
-    name: string;
-    email: string;
+    player_id: number | null;
+    email: string | null;
+    player_name: string;
+    gender: string;
+    active: boolean;
 }
