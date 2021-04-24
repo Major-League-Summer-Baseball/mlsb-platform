@@ -46,7 +46,7 @@ CSS_FOLDER = join(getcwd(), "api", "static", "css")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] = "./static"
 if app.config["ENV"] != "development":
-    Talisman(app)
+    Talisman(app, content_security_policy=None)
 
 # these imports cannot be at the top right now
 
