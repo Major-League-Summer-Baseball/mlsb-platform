@@ -6,6 +6,7 @@
 '''
 # imports for normal things
 from flask import Flask, g, request
+from flask_talisman import Talisman
 from flask_restful import Api
 from flask_restful.utils import cors
 from flask_sqlalchemy import SQLAlchemy
@@ -44,7 +45,8 @@ PICTURES = join(getcwd(), "api", "static", "pictures")
 CSS_FOLDER = join(getcwd(), "api", "static", "css")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] = "./static"
-
+if app.config["ENV"] != "development":
+    Talisman(app)
 
 # these imports cannot be at the top right now
 
