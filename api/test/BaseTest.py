@@ -90,7 +90,6 @@ class TestSetup(unittest.TestCase):
                      self.delete_list(self.fun_to_delete, fun_query))
         final_not_delete = to_delete
         if len(final_not_delete) > 0:
-            print(final_not_delete)
             self.assertFalse(True,
                              "Unable to delete everying upon tear down")
 

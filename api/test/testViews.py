@@ -6,7 +6,7 @@
 '''
 from api.routes import Routes
 from api.test.BaseTest import TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID,\
-    NOT_FOUND_CODE, REDIRECT_CODE
+    REDIRECT_CODE
 from datetime import datetime
 import uuid
 START_OF_PLATFORM = 2016
@@ -21,6 +21,11 @@ class TestWebsiteViews(TestSetup):
                               "Logo page should give a 200")
         self.assertGetRequest(Routes['privacy'],
                               "Privacy page should give a 200")
+
+    def testLoginPages(self):
+        self.assertGetRequest("/authenticate", "Need to login")
+        self.assertGetRequest("/login", "Login page")
+        self.assertGetRequest("/request_sent", "League request sent page")
 
     def testSponsorsPages(self):
         sponsor_name = str(uuid.uuid1())
@@ -113,8 +118,8 @@ class TestWebsiteViews(TestSetup):
         route = (Routes['postpicture'] + "/{}".format('picDoesNotExist.png'))
         error_message = ("Get non-existent post picture at {}"
                          .format(route))
-        self.assertGetRequest(route, error_message,
-                              expected_status=NOT_FOUND_CODE)
+        # will send back not found png
+        self.assertGetRequest(route, error_message)
 
         # get a single post plain or json format
         for extension in ["plain", "json"]:

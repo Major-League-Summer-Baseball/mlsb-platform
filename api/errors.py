@@ -23,6 +23,9 @@ PAST = 400
 PNS = 401
 NTCSC = 401
 BRSC = 400
+OAESC = 400
+HLRESC = 403
+NPOLESC = 403
 
 
 class BaseException(Exception):
@@ -127,6 +130,24 @@ class BadRequestError(BaseException):
     message = "Bad request"
 
 
+class OAuthException(BaseException):
+    """An exception while dealing with oauth provider."""
+    status_code = OAESC
+    message = "Exception when dealing with OAuth Provider"
+
+
+class HaveLeagueRequestException(BaseException):
+    """An exception when same email requests to join twice"""
+    status_code = HLRESC
+    message = "League Request already sent"
+
+
+class NotPartOfLeagueException(BaseException):
+    """An exception when player not part of league yet."""
+    status_code = NPOLESC
+    message = "Not part of the league"
+
+
 ERRORS = {
     'InvalidField': {
         'message': InvalidField.message,
@@ -195,5 +216,17 @@ ERRORS = {
     'BadRequestError': {
         'message': BadRequestError.message,
         'status_code': BadRequestError.status_code
+    },
+    'OAuthException': {
+        'message': OAuthException.message,
+        'status_code': OAuthException.status_code
+    },
+    'NotPartOfLeagueException': {
+        'message': NotPartOfLeagueException.message,
+        'status_code': NotPartOfLeagueException.status_code
+    },
+    'HaveLeagueRequestException': {
+        'message': HaveLeagueRequestException.message,
+        'status_code': HaveLeagueRequestException.status_code
     }
 }

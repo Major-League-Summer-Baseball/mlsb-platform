@@ -49,6 +49,7 @@ brackets:
 * DATABASE_URL: the postgres database to connect to ("sqlite://")
 * SECRET_KEY:a secret key used by Flask (randomly generated uuid)
 * REDIS_URL: the redis database to use for caching (uses simple cache)
+* FLASK_ENV: whether running in development or production (no default)
 
 The app does expect the the postgres database has had the tables initiated. To intiated the datbase can use
 ```

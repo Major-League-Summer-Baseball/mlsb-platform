@@ -15,7 +15,8 @@
     <!-- Datatables include -->
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-
+    {% block header %}
+    {% endblock %}
     <!--[if lt IE 9]>
     <script src="{{ url_for('static', filename="js/html5shiv.js") }}""></script>
     <script src="{{ url_for('static', filename="js/respond.js") }}""></script>
@@ -180,6 +181,34 @@
                                   {% endfor %}
                                 </ul>
                             </li>
+                            <li>
+                              {% if not user_info.logged_in %}
+                                <a href="{{ url_for('loginpage') }}">
+                                  Login
+                                </a>
+                              {% endif %}
+                            </li>
+                            {% if user_info.logged_in %}
+                            <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                Profile <b class="caret"></b>
+                              </a>
+                              <ul class="dropdown-menu">
+                                <li>
+                                  <a href="{{ url_for('logout') }}">
+                                    Logout
+                                  </a>
+                                </li>
+                                {% for team in user_info.teams %}
+                                  <li>
+                                    <a href="{{ url_for('team_page', year=year, team_id=team.team_id) }}">
+                                      {{team.team_name}}
+                                    </a>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div><!--/.container-->
