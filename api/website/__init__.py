@@ -43,6 +43,11 @@ def privacy_policy():
     return render_template("website/privacy-policy.html")
 
 
+@app.route(Routes["termsandconditions"])
+def terms_and_conditions():
+    return render_template("website/terms_and_conditions.html")
+
+
 @app.route("/robots.txt")
 def robot():
     """A route for the google web crawler."""

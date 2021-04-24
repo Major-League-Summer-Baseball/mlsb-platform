@@ -97,6 +97,7 @@ Routes['dbottransaction'] = "/documentation/bot/transaction"
 Routes['fieldsrulespage'] = "/website/rulesAndFields"
 Routes['about'] = "/about"
 Routes["privacy"] = "/privacy-policy"
+Routes["termsandconditions"] = "/terms-and-conditions"
 
 # stuff that changes each year
 Routes['logo'] = "/logo"
