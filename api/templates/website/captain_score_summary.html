@@ -1,0 +1,266 @@
+{% extends "website/new-base.html" %}
+{% block header %}
+    <link href="{{ url_for('static', filename="css/score_app.css") }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div id="submitScoreApp">
+    <div v-if="game_selected == null">
+        <h2>Select a game</h2>
+        <ul>
+            <li v-for="game in games" class="p-1">
+                [[game.home_team]] vs [[game.away_team]] on [[game.date]]
+                <game-button :game="game" @clicked="gameWasSelected(game)"></game-button>
+            </li>
+        </ul>
+    </div>
+    <div v-if="game_selected">
+        <h2>[[game_selected.home_team]] vs [[game_selected.away_team]]</h2>
+        <div class="form-inline">
+            <label for="scoreInput">
+                Score:
+            </label>
+            <input
+                id="scoreInput"
+                v-model="score"
+                placeholder="Your team score"
+                class="form-control input--sm"
+                type="number"
+                aria-describedby="scoreInput"
+                min=0>
+            <p class="error" v-if="score < 0" id="negativeScoreError">
+                *Score cannot be negative
+            </p>
+            <p class="error" v-if="score < hr" id="homerunError">
+                *Can't be more homeruns than runs scored
+            </p>
+        </div>
+        
+        <h3>
+            Homeruns
+        </h3>
+        <ul>   
+            <li
+             v-for="player in players"
+             v-bind:id="'li-hr-' + player.player_id">
+                <player-stat :player.sync="player" :stat="'hr'" :number.sync="player.hr" @clicked="statChange"></player-stat>
+            </li>
+        </ul>
+        <h3>
+            Sapporo Singles
+        </h3>
+        <ul>   
+            <li
+             v-for="player in players.filter(p => p.gender == 'f')"
+             v-bind:id="'li-ss-' + player.player_id">
+                <player-stat :player.sync="player" :stat="'ss'" :number.sync="player.ss" @clicked="statChange"></player-stat>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-xs-offset-2 col-sm-offset-5 col-xs-10 col-sm-4 col-centered">
+                <button
+                 class="btn btn-lg btn-success"
+                 v-on:click="submitScore"
+                 :disabled="score < hr || this.submitting"
+                 id="submitButton">
+                    Submit
+                </button>
+                <button
+                 class="btn btn-lg btn-danger"
+                 id="cancelButton">
+                    Cancel
+                </button>
+            </div>
+        </div>
+        <p>
+            [[hr]] to [[ss]]
+        </p>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+    $(document).ready(ready());
+
+    function ready() {
+        $.ajax({
+                type: "GET",
+                url: "{{ url_for('get_captain_info', team_id=team_id) }}",
+                contentType: "application/json",
+                dataType: "json",
+                async: true,
+            success: function(captain_information) {
+                startApp(captain_information);
+                window.appReady = true;
+            }, error: function(request, error) {
+                alert("Un-able to load games that need scores");
+                console.error(request);
+                console.error(error);
+            }
+        });
+    }
+
+    function startApp(captain_information) {
+        const buttonComponent = Vue.component('game-button', {
+            props: {
+                game: Object
+            },
+            template: `
+                <button
+                 class="btn btn-sm btn-info"
+                 v-on:click="selectGame(game)"
+                 v-bind:id="'game-'  + game.id">
+                    Select
+                </button>
+            `,
+            delimiters: ['[[', ']]'],
+            methods: {
+                selectGame: function() {
+                    this.$emit('clicked', this.game);
+                }
+            }
+
+        })
+        const playerStatComponent = Vue.component('player-stat', {
+            props: {
+                player: Object,
+                stat: String,
+                number: Number
+            },
+            template: `
+                <div class="form-inline">
+                    <label>[[player.player_name]]</label>
+                    <div class="input-group ml-5">
+                        <span class="input-group-btn ">
+                            <button
+                             type="button"
+                             class="btn btn-default btn-number"
+                             data-type="minus"
+                             v-on:click="changeNumber(-1)"
+                             :disabled="number <= 0"
+                             v-bind:id="'minus-'  + stat + '-' + player.player_id">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                        </span>
+                        <input
+                         type="text"
+                         type="number"
+                         min=0
+                         v-model="number"
+                         class="form-control input-number"
+                         v-bind:id="'input-'  + stat + '-' + player.player_id"
+                         readonly>
+                        <span class="input-group-btn">
+                            <button
+                             type="button"
+                             class="btn btn-default btn-number"
+                             data-type="plus"
+                             v-on:click="changeNumber(1)"
+                             v-bind:id="'plus-'  + stat + '-' + player.player_id">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            `,
+            delimiters: ['[[', ']]'],
+            methods: {
+                changeNumber: function(direction) {
+                    if ((this.number + direction) >= 0) {
+                        this.number += direction;
+                        if (this.stat == 'ss') {
+                            this.player.ss += direction;
+                        } else if (this.stat == 'hr') {
+                            this.player.hr += direction;
+                        }
+                        this.$emit('update:number', this.number);
+                        this.$emit('update:player', this.player);
+                    }
+
+                    this.$emit('clicked', direction, this.stat);
+                }
+            }
+        })
+        const app = new Vue({
+            el: '#submitScoreApp',
+            data: {
+                game_selected: null,
+                games: captain_information.games,
+                players: captain_information.players,
+                captain_id: captain_information.captain_id,
+                team_id: captain_information.team_id,
+                hr: 0,
+                ss: 0,
+                score: 0,
+                submitting: false,
+            },
+            delimiters: ['[[', ']]'],
+            methods: {
+                gameWasSelected: function(game) {
+                    this.game_selected = game;
+                    this.hr = 0;
+                    this.ss = 0;
+                    this.score = 0;
+                    this.players = this.players.map(function(player) {
+                        player.hr = 0;
+                        player.ss = 0;
+                        return player;
+                    });
+                },
+                statChange: function(change, stat) {
+                    if (stat == 'hr') {
+                        this.hr += change;
+                    } else if (stat == 'ss') {
+                        this.ss += change;
+                    }
+                },
+                submitScore: function() {
+                    this.submitting = true;
+                    let hr = [];
+                    let ss = [];
+                    this.players.forEach(player => {
+                        hr = hr.concat(Array(player.hr).fill(player.player_id));
+                        ss = ss.concat(Array(player.ss).fill(player.player_id));
+                    });
+                    const scoreData = {
+                        'game_id': this.game_selected.game_id,
+                        'player_id': this.captain_id,
+                        'team_id': this.team_id,
+                        'score': this.score,
+                        'hr': hr,
+                        'ss': ss
+                    };
+                    const self = this;
+                    $.ajax({
+                        type: "POST",
+                        data: JSON.stringify(scoreData),
+                        url: "{{ url_for('captain_submit_score', team_id=team_id) }}",
+                        contentType: "application/json",
+                        dataType: "json",
+                        async: true,
+                        success: function(success) {
+                            if (success) {
+                                self.games = self.games.filter(g => g.game_id != self.game_selected.game_id);
+                            } else {
+                                alert("Un-able to submit score");    
+                            }
+                            self.game_selected = null;
+                            self.submitting = false;
+                        }, error: function(request, error) {
+                            alert("Un-able to submit score");
+                            self.game_selected = null;
+                            self.submitting = false;
+                            console.error(request);
+                            console.error(error);
+                        }
+                    });
+                }
+
+            }
+        });
+        if (window.Cypress) {
+            window.scoreApp = app;
+        }
+    }
+</script>
+{% endblock %}

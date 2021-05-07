@@ -315,8 +315,7 @@ def api_require_captain(f: Callable) -> Callable:
     def decorated(*args, **kwargs):
         if not are_logged_in():
             return Response("Not logged in", 401)
-        return f(*args, **kwargs)
-        team_id = args[0]
+        team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
         team = Team.query.get(team_id)
         if team is None:
             return Response("Team does not exist", 404)
@@ -331,8 +330,7 @@ def require_captain(f: Callable) -> Callable:
     def decorated(*args, **kwargs):
         if not are_logged_in():
             return redirect(url_for("loginpage"))
-        return f(*args, **kwargs)
-        team_id = args[0]
+        team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
         team = Team.query.get(team_id)
         if team is None:
             raise TeamDoesNotExist(payload={"details": team_id})

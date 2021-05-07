@@ -18,6 +18,26 @@ parser.add_argument('team', type=int, required=True)
 parser.add_argument('player_id', type=int, required=True)
 
 
+def games_without_scores(team_id: int) -> list[Game]:
+    """Returns a list of games without scores for the given team"""
+    bats = (DB.session.query(Bat.game_id)
+                .filter(Bat.team_id == team_id)).all()
+    if (len(bats) > 0):
+        games = (DB.session.query(Game)
+                    .filter(or_(Game.away_team_id == team_id,
+                                Game.home_team_id == team_id))
+                    .filter(Game.date <= datetime.today()))
+        for bat in bats:
+            games = games.filter(Game.id != bat.game_id)
+        games = games.all()
+    else:
+        games = (DB.session.query(Game)
+                    .filter(or_(Game.away_team_id == team_id,
+                                Game.home_team_id == team_id))
+                    .filter(Game.date <= datetime.today())).all()
+    return games
+
+
 class CaptainGamesAPI(Resource):
 
     @requires_admin
@@ -47,24 +67,6 @@ class CaptainGamesAPI(Resource):
             # something fishy is going on
             raise NotTeamCaptain(payload={'details': player_id})
         # captain is authenticated
-        # get all the bats for that team and its game id
-        bats = (DB.session.query(Bat.game_id)
-                .filter(Bat.team_id == team_id)).all()
-        if (len(bats) > 0):
-            games = (DB.session.query(Game)
-                     .filter(or_(Game.away_team_id == team_id,
-                                 Game.home_team_id == team_id))
-                     .filter(Game.date <= datetime.today()))
-            for bat in bats:
-                games = games.filter(Game.id != bat.game_id)
-            games = games.all()
-        else:
-            games = (DB.session.query(Game)
-                     .filter(or_(Game.away_team_id == team_id,
-                                 Game.home_team_id == team_id))
-                     .filter(Game.date <= datetime.today())).all()
         # now get the teams games, that have past game date and have no bats
-        result = []
-        for game in games:
-            result.append(game.json())
+        result = [game.json() for game in games_without_scores(team_id)]
         return Response(dumps(result), status=200, mimetype="application/json")

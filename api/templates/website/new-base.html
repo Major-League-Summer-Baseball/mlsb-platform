@@ -196,18 +196,23 @@
                                 Profile <b class="caret"></b>
                               </a>
                               <ul class="dropdown-menu">
-                                <li>
-                                  <a href="{{ url_for('logout') }}">
-                                    Logout
-                                  </a>
-                                </li>
                                 {% for team in user_info.teams %}
                                   <li>
+                                    {% if team.captain is not none and team.captain.player_id ==  user_info.player_information.player_id %}
+                                      <a href=" {{ url_for('captain_score_games', team_id=team.team_id) }}">
+                                        Submit Scores
+                                      </a>
+                                    {% endif %}
                                     <a href="{{ url_for('team_page', year=year, team_id=team.team_id) }}">
                                       {{team.team_name}}
                                     </a>
                                   </li>
                                 {% endfor %}
+                                <li>
+                                  <a href="{{ url_for('logout') }}">
+                                    Logout
+                                  </a>
+                                </li>
                               </ul>
                             </li>
                             {% endif %}
