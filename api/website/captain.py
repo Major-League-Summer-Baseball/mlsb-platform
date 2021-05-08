@@ -21,7 +21,7 @@ import json
 def captain_score_games(team_id: int):
     """Navigate to the captain score app"""
     year = datetime.now().year
-    return render_template("website/captain_score_summary.html",
+    return render_template("website/captain_score_app.html",
                            route=Routes,
                            base=base_data(year),
                            title="Captain Submit Score",

@@ -528,9 +528,13 @@ class Team(DB.Model):
         else:
             return f"Team: {self.id}"
 
-    def json(self) -> dict:
+    def json(self, admin: bool = False) -> dict:
         """Returns a jsonserializable object."""
-        captain = (None if self.player_id is None
+        if admin:
+            captain = (None if self.player_id is None
+                   else Player.query.get(self.player_id).admin_json())
+        else: 
+            captain = (None if self.player_id is None
                    else Player.query.get(self.player_id).json())
         return{
             'team_id': self.id,
