@@ -3,9 +3,13 @@
 from flask import Response, request
 from flask_login import login_user
 from functools import wraps
+from sqlalchemy import and_
 from api import app
-from api.model import Player, DB, JoinLeagueRequest, Team
+from api.model import Player, DB, JoinLeagueRequest, Team, Game, Division
+from api.bot.get_captain_games import games_without_scores
 from api.logging import LOGGER
+from api.errors import TeamDoesNotExist
+from datetime import datetime
 import json
 import uuid
 
@@ -36,7 +40,7 @@ def create_and_login():
         DB.session.add(player)
         DB.session.commit()
     login_user(player)
-    return Response(json.dumps(player.json()), 200)
+    return Response(json.dumps(player.json()), 200, mimetype='application/json')
 
 
 @app.route("/testing/api/make_captain", methods=["POST"])
@@ -50,7 +54,7 @@ def make_player_captain():
         return Response(json.dumps(None), 404)
     team.insert_player(data.get('player_id'), captain=True)
     DB.session.commit()
-    return Response(json.dumps(True), 200)
+    return Response(json.dumps(True), 200, mimetype='application/json')
 
 
 @app.route("/testing/api/create_league_request", methods=["POST"])
@@ -65,4 +69,46 @@ def create_league_request():
     LOGGER.info(f"Creating join league request: {request_info}")
     DB.session.add(league_request)
     DB.session.commit()
-    return Response(json.dumps(league_request.json()), 200)
+    return Response(
+        json.dumps(league_request.json()),
+        200, mimetype='application/json')
+
+
+@app.route("/testing/api/get_current_team", methods=["GET"])
+@requires_testing
+def get_active_team():
+    """Get some active team."""
+    year = datetime.now().year
+    team = Team.query.filter(and_(Team.year == year,
+                                  Team.player_id is not None)).first()
+    if team is None:
+        raise TeamDoesNotExist("No team for current year")
+    return Response(
+        json.dumps(team.json(admin=True)),
+        200, mimetype='application/json')
+
+
+@app.route("/testing/api/team/<int:team_id>/game_without_score", methods=["POST"])
+@requires_testing
+def game_without_score(team_id: int):
+    """Ensure the given team has a game today"""
+    games = games_without_scores(team_id)
+    if len(games) == 0:
+        today = datetime.now()
+        other_team = Team.query.filter(and_(Team.year == today.year,
+                                            Team.id != team_id)).first()
+        division = Division.query.first()
+        game = Game(
+            today.strftime("%Y-%m-%d"),
+            "12:00",
+            team_id,
+            other_team.id,
+            other_team.league_id,
+            division.id,
+            'today game',
+            'WP1')
+        DB.session.add(game)
+        DB.session.commit()
+    else:
+        game = games[0]
+    return Response(json.dumps(game.json()), 200, mimetype='application/json')
