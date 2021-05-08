@@ -3,13 +3,13 @@
 from flask import Response, request
 from flask_login import login_user
 from functools import wraps
-from sqlalchemy import and_, or_
+from sqlalchemy import and_
 from api import app
 from api.model import Player, DB, JoinLeagueRequest, Team, Game, Division
 from api.bot.get_captain_games import games_without_scores
 from api.logging import LOGGER
 from api.errors import TeamDoesNotExist
-from datetime import datetime, date
+from datetime import datetime
 import json
 import uuid
 
@@ -70,8 +70,8 @@ def create_league_request():
     DB.session.add(league_request)
     DB.session.commit()
     return Response(
-                    json.dumps(league_request.json()),
-                    200, mimetype='application/json')
+        json.dumps(league_request.json()),
+        200, mimetype='application/json')
 
 
 @app.route("/testing/api/get_current_team", methods=["GET"])
@@ -84,30 +84,29 @@ def get_active_team():
     if team is None:
         raise TeamDoesNotExist("No team for current year")
     return Response(
-                    json.dumps(team.json(admin=True)),
-                    200, mimetype='application/json')
+        json.dumps(team.json(admin=True)),
+        200, mimetype='application/json')
 
 
 @app.route("/testing/api/team/<int:team_id>/game_without_score", methods=["POST"])
 @requires_testing
 def game_without_score(team_id: int):
     """Ensure the given team has a game today"""
-    today = date.today()
     games = games_without_scores(team_id)
     if len(games) == 0:
-        other_team = Team.query.filter(and_(Team.year == year,
-                                            Team.id!= team_id)).first()
+        today = datetime.now()
+        other_team = Team.query.filter(and_(Team.year == today.year,
+                                            Team.id != team_id)).first()
         division = Division.query.first()
         game = Game(
-                    today.strftime("%Y-%m-%d"),
-                    "12:00",
-                    team_id,
-                    other_team.id,
-                    other_team.league_id,
-                    division.id,
-                    'today game',
-                    'WP1'
-                    )
+            today.strftime("%Y-%m-%d"),
+            "12:00",
+            team_id,
+            other_team.id,
+            other_team.league_id,
+            division.id,
+            'today game',
+            'WP1')
         DB.session.add(game)
         DB.session.commit()
     else:

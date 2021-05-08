@@ -23,17 +23,19 @@ parser.add_argument('score', type=int, required=True)
 parser.add_argument('hr', type=int, action="append")
 parser.add_argument('ss', type=int, action="append")
 
+
 def submit_score(game_id: int, captain_id: int, score: int,
                  homeruns: List[int], ss: List[int]) -> bool:
+    """Captain submit a score"""
     unassigned_player = Player.query.filter_by(
-            email=UNASSIGNED_EMAIL).first()
+        email=UNASSIGNED_EMAIL).first()
     unassigned_id = UNASSIGNED
     if unassigned_player is not None:
         unassigned_id = unassigned_player.id
     game = Game.query.get(game_id)
     captain = Player.query.get(captain_id)
     if captain is None:
-            raise PlayerNotSubscribed(payload={'details': captain_id})
+        raise PlayerNotSubscribed(payload={'details': captain_id})
     if game is None:
         raise GameDoesNotExist(payload={'details': game_id})
     # find the team
@@ -50,31 +52,31 @@ def submit_score(game_id: int, captain_id: int, score: int,
     if score <= 0:
         # hmm that is so sad
         DB.session.add(Bat(unassigned_id,
-                            team.id,
-                            game.id,
-                            "fo",
-                            inning=1,
-                            rbi=0))
+                           team.id,
+                           game.id,
+                           "fo",
+                           inning=1,
+                           rbi=0))
     if homeruns is not None:
         for player_id in homeruns:
             # add the homeruns
             DB.session.add(Bat(player_id,
-                                team.id,
-                                game.id,
-                                "hr",
-                                inning=1,
-                                rbi=1))
+                               team.id,
+                               game.id,
+                               "hr",
+                               inning=1,
+                               rbi=1))
             score -= 1
     if ss is not None:
         for player_id in ss:
             # add the special singles
             try:
                 bat = Bat(player_id,
-                            team.id,
-                            game.id,
-                            "ss",
-                            inning=1,
-                            rbi=0)
+                          team.id,
+                          game.id,
+                          "ss",
+                          inning=1,
+                          rbi=0)
                 DB.session.add(bat)
             except InvalidField:
                 pass
@@ -82,11 +84,11 @@ def submit_score(game_id: int, captain_id: int, score: int,
         raise InvalidField(payload={'details': "More hr than score"})
     while score > 0:
         bat = Bat(unassigned_id,
-                    team.id,
-                    game.id,
-                    "s",
-                    inning=1,
-                    rbi=1)
+                  team.id,
+                  game.id,
+                  "s",
+                  inning=1,
+                  rbi=1)
         DB.session.add(bat)
         score -= 1
     DB.session.commit()  # good to add the submission
@@ -112,6 +114,7 @@ class SubmitScoresAPI(Resource):
                 mimetype: application/json
                 data: True
         """
+        args = parser.parse_args()
         submit_score(
             args.get('game_id', UNASSIGNED),
             args.get('player_id', UNASSIGNED),

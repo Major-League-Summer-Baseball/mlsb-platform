@@ -3,15 +3,15 @@
 from flask import render_template, Response, request
 from flask_login import current_user
 from api import app
-from api.variables import EVENTS, UNASSIGNED
+from api.variables import UNASSIGNED
 from api.routes import Routes
 from api.bot.get_captain_games import games_without_scores
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information, require_captain,\
     api_require_captain
 from api.bot.submit_scores import submit_score
-from api.model import Team, Game
-from api.errors import NotTeamCaptain, GameDoesNotExist
+from api.model import Team
+from api.errors import NotTeamCaptain
 from datetime import datetime
 import json
 

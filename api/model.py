@@ -532,11 +532,11 @@ class Team(DB.Model):
         """Returns a jsonserializable object."""
         if admin:
             captain = (None if self.player_id is None
-                   else Player.query.get(self.player_id).admin_json())
-        else: 
+                       else Player.query.get(self.player_id).admin_json())
+        else:
             captain = (None if self.player_id is None
-                   else Player.query.get(self.player_id).json())
-        return{
+                       else Player.query.get(self.player_id).json())
+        return {
             'team_id': self.id,
             'team_name': str(self),
             'color': self.color,
