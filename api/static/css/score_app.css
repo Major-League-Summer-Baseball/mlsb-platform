@@ -1,0 +1,33 @@
+.submitScoreApp {
+
+}
+
+#submitScoreApp li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.input--sm {
+    width: 25%;
+    min-width: 200px;
+}
+
+.error {
+    padding-top: 5px;
+    font-weight: bold;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    pointer-events: all !important;
+    background-color: grey !important;
+}
+
+.center {
+    float: none;
+    margin: 0 auto;
+}
+
+.ml-5 {
+    margin-left: 15px;
+}

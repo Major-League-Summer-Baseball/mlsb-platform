@@ -1,4 +1,5 @@
 /** The team interface. */
+import { Player } from '@Interfaces/player';
 export interface Team {
     team_id: number;
     sponsor_id: number;
@@ -7,4 +8,5 @@ export interface Team {
     year: number;
     espys: number | null;
     team_name: string | null;
+    captain: Player | null;
 };
