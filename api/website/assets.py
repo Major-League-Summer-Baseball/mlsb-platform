@@ -22,14 +22,14 @@ def promos_page(year):
 
 @app.route(Routes['accents'])
 def mlsb_colors():
-    return send_from_directory(CSS_FOLDER, filename="baseAccents.css")
+    return send_from_directory(CSS_FOLDER, "baseAccents.css")
 
 
 @app.route(Routes['accents'] + "/<int:year>")
 def mlsb_colors_year(year):
     filename = f"accents-{year}.css"
     if os.path.isfile(os.path.join(CSS_FOLDER, filename)):
-        return send_from_directory(CSS_FOLDER, filename=filename)
+        return send_from_directory(CSS_FOLDER, filename)
     return mlsb_colors()
 
 
@@ -50,7 +50,7 @@ def mlsb_logo_year(year):
     fp = os.path.join(PICTURES, 'logos')
     filename = f"mlsb-logo-{year}.png"
     if os.path.isfile(os.path.join(fp, filename)):
-        return send_from_directory(fp, filename=filename)
+        return send_from_directory(fp, filename)
     return mlsb_logo()
 
 
@@ -59,5 +59,5 @@ def mlsb_favicon_year(year):
     fp = os.path.join(PICTURES, 'logos')
     filename = f"mlsb-favicon-{year}.png"
     if os.path.isfile(os.path.join(fp, filename)):
-        return send_from_directory(fp, filename=filename)
+        return send_from_directory(fp, filename)
     return mlsb_favicon()
