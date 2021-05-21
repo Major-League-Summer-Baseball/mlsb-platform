@@ -36,13 +36,13 @@ def mlsb_colors_year(year):
 @app.route(Routes["logo"])
 def mlsb_logo():
     fp = os.path.dirname(PICTURES)
-    return send_from_directory(fp, filename="banner.png")
+    return send_from_directory(fp, "banner.png")
 
 
 @app.route(Routes["favicon"])
 def mlsb_favicon():
     fp = os.path.dirname(PICTURES)
-    return send_from_directory(fp, filename="mlsb-favicon.png")
+    return send_from_directory(fp, "mlsb-favicon.png")
 
 
 @app.route(Routes["logo"] + "/<int:year>")
