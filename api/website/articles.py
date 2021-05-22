@@ -77,9 +77,9 @@ def post_picture(name):
     f = os.path.join(PICTURES, "posts", name)
     fp = os.path.join(PICTURES, "posts")
     if os.path.isfile(f):
-        return send_from_directory(fp, filename=name)
+        return send_from_directory(fp, name)
     else:
-        return send_from_directory(fp, filename=NOTFOUND)
+        return send_from_directory(fp, NOTFOUND)
 
 
 def get_all_descriptions(year: int) -> list[dict]:

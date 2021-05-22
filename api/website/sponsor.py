@@ -29,9 +29,9 @@ def sponsor_picture(name):
     f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
-        return send_from_directory(fp, filename=name)
+        return send_from_directory(fp, name)
     else:
-        return send_from_directory(fp, filename=NOTFOUND)
+        return send_from_directory(fp, NOTFOUND)
 
 
 @app.route(Routes['sponsorspage'] + "/<int:year>")
