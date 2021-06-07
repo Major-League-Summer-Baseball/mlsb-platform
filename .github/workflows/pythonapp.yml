@@ -68,6 +68,7 @@ jobs:
         npm install
         npx cypress run --spec "**/*.features" --env ADMIN=admin,PASSWORD=password
     - name: Upload Video Run
+      if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
         name: cypress-videos

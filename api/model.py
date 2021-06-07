@@ -1084,7 +1084,7 @@ class JoinLeagueRequest(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     team_id = DB.Column(DB.Integer, DB.ForeignKey(Team.id), nullable=False)
     team = DB.relationship(Team)
-    email = DB.Column(DB.String(120), unique=True, nullable=False)
+    email = DB.Column(DB.String(120), nullable=False)
     name = DB.Column(DB.String(120), nullable=False)
     pending = DB.Column(DB.Boolean)
     gender = DB.Column(DB.String(1))
