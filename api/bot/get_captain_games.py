@@ -22,19 +22,23 @@ def games_without_scores(team_id: int) -> list[Game]:
     """Returns a list of games without scores for the given team"""
     bats = (DB.session.query(Bat.game_id)
             .filter(Bat.team_id == team_id)).all()
+    today = datetime.today()
+    end_of_today = datetime(
+        today.year, today.month, today.day, hour=23, minute=59)
     if (len(bats) > 0):
         games = (DB.session.query(Game)
                  .filter(or_(Game.away_team_id == team_id,
                              Game.home_team_id == team_id))
-                 .filter(Game.date <= datetime.today()))
+                 .filter(Game.date <= end_of_today))
         for bat in bats:
             games = games.filter(Game.id != bat.game_id)
         games = games.all()
     else:
+        today = 
         games = (DB.session.query(Game)
                  .filter(or_(Game.away_team_id == team_id,
                              Game.home_team_id == team_id))
-                 .filter(Game.date <= datetime.today())).all()
+                 .filter(Game.date <= end_of_today)).all()
     return games
 
 
