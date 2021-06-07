@@ -34,7 +34,6 @@ def games_without_scores(team_id: int) -> list[Game]:
             games = games.filter(Game.id != bat.game_id)
         games = games.all()
     else:
-        today = 
         games = (DB.session.query(Game)
                  .filter(or_(Game.away_team_id == team_id,
                              Game.home_team_id == team_id))
