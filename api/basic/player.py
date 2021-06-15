@@ -8,7 +8,7 @@ from flask_restful import Resource, reqparse
 from flask import Response, request
 from json import dumps
 from api import DB
-from api.model import Player
+from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
 from api.variables import PAGE_SIZE
@@ -72,6 +72,12 @@ class PlayerAPI(Resource):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+        oauths = OAuth.query.filter(OAuth.player_id == player_id).all()
+        for oauth in oauths:
+            DB.session.delete(oauth)
+        query = TeamRequest.query.filter(TeamRequest.email == player.email)
+        for team_request in query.all():
+            DB.session.delete(team_request)
         # delete a single user
         DB.session.delete(player)
         DB.session.commit()
