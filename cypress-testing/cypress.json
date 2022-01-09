@@ -7,10 +7,6 @@
   "$schema": "https://on.cypress.io/cypress.schema.json",
   "commonPath": "cypress/testing/common",
   "supportFile": "cypress/support/index.ts",
-  "firefoxGcInterval": {
-    "runMode": null,
-    "openMode": null
-  },
   "retries": {
     "runMode": 2,
     "openMode": 0

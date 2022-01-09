@@ -10,7 +10,7 @@ const CAPTAIN_APP_PAGE = 'captain/game_summary/';
 /** Hook for the score app. */
 const scoreappHook = (): void => {
     cy.intercept({
-        url: '/captain/api/submit_score/',
+        url: '/captain/api/submit_score/**',
         method: 'POST',
     }).as('scoreSubmission');
 };
