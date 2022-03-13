@@ -1,0 +1,129 @@
+pink
+#e2badb
+#8c5583
+
+turq
+#10c9c9
+#0c5d5e
+
+grey
+#5e535c
+
+.sponsor-banner {
+    background-color: rgba(12,93,94, 0.5);
+}
+
+.games-container {
+    background-color: rgba(16,201,201, 1);
+}
+
+.navbar .icon-bar {
+    background-color: #10c9c9;
+}
+
+.fun-div {
+    color: #e2badb;
+}
+
+.fun-meter {
+    color: #e2badb;
+}
+
+.fun-meter text.liquidFillGaugeText {
+  fill: #5e535c;
+}
+
+.fun-meter circle {
+  fill: #e2badb;
+}
+
+.fun-meter .CircleColor {
+  fill: #e2badb;
+}
+
+.fun-meter .WaveColor {
+  fill: #10c9c9;
+}
+
+.fun-meter .liquidUnfilledGaugeText {
+  fill: #5e535c;
+}
+
+.fun-meter .liquidFilledGaugeText {
+  fill: #A9A9A9;
+}
+
+p.accent{
+  color:#e2badb;
+}
+
+.leaderTitle{
+  color: #e2badb;
+}
+
+.btn-primary {
+  background: #10c9c9;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #10c9c9;
+}
+
+li.presentation a{
+  background-color: #e2badb;
+  color: white;
+}
+
+li.presentation a:hover{
+  background-color: rgba(168, 168, 168, 0.3);
+  color: #10c9c9;
+}
+
+.active .presentation a{
+  background-color: #10c9c9;
+  color: #e2badb;
+}
+
+#listing>li.active>a{
+  background-color: #10c9c9;
+  color: #5e535c;
+}
+
+.footer {
+  border-top: 5px solid #10c9c9;
+}
+
+nav.accent{
+  background-color: #e2badb;
+  border-color: #e2badb;
+}
+
+div.accent{
+  background-color:#e2badb;
+}
+
+
+div.secondary{
+  background-color: #10c9c9;
+}
+
+a {
+  color: #8c5583;
+}
+
+a:hover, a:focus {
+  color: #e2badb;
+}
+
+#bottom {
+  border-bottom: 5px solid #e2badb;
+}
+
+#bottom ul li a {
+  color: #10c9c9  ;
+}
+
+#footer a:hover {
+  color: #10c9c9;
+}
