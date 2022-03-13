@@ -13,9 +13,8 @@ Examples: Events
 | eventName             | eventDescription  |
 | Mystery Bus           | school buses      |
 | Blue Jays Game        | boys of summer    |
-| Beerfest              | various countries |
+| Beerlympics           | various countries |
 | Rafting               | rafting           |
-| Beerwell Classic      | All Star          |
-| Hitting for the Cycle | pub crawl         |
+| Grand Bender          | All Star          |
 | Summerween            | Halloween         |
 | ESPY Awards           | end of the summer |
