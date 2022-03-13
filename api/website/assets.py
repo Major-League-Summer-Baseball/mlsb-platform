@@ -63,5 +63,4 @@ def mlsb_favicon_year(year):
     filename = f"mlsb-favicon-{year}.png"
     if os.path.isfile(os.path.join(fp, filename)):
         return send_from_directory(fp, filename)
-    
     return mlsb_favicon()
