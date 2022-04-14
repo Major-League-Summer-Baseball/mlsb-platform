@@ -32,7 +32,7 @@ class testCaptainGames(TestSetup):
         # valid request
         data = {'player_id': player['player_id'],
                 'team': team['team_id']}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(game)
         error = Routes['botcaptaingames'] + " POST: Valid Captain's games"
@@ -47,7 +47,7 @@ class testCaptainGames(TestSetup):
         data = {'player_id': player['player_id'],
                 'team': team['team_id']}
         expect = []
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botcaptaingames'] + " POST: Invalid Captain's games"

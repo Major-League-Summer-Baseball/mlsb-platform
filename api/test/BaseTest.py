@@ -128,7 +128,7 @@ class TestSetup(unittest.TestCase):
     def add_fun(self, count, year=date.today().year):
         """Returns a fun json object that was created with a post request."""
         params = {"year": year, "count": count}
-        rv = self.app.post(Routes['fun'], data=params, headers=headers)
+        rv = self.app.post(Routes['fun'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add fun object")
@@ -150,7 +150,7 @@ class TestSetup(unittest.TestCase):
                   "description": description,
                   "active": active,
                   "nickname": nickname}
-        rv = self.app.post(Routes['sponsor'], data=params, headers=headers)
+        rv = self.app.post(Routes['sponsor'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add sponsor object")
@@ -162,7 +162,7 @@ class TestSetup(unittest.TestCase):
     def add_division(self, division_name):
         """Returns" division json object the result of a post request"""
         params = {"division_name": division_name}
-        rv = self.app.post(Routes['division'], data=params, headers=headers)
+        rv = self.app.post(Routes['division'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add divsion object")
@@ -174,7 +174,7 @@ class TestSetup(unittest.TestCase):
     def add_league(self, league_name):
         """Returns league json object that was created with a post request."""
         params = {"league_name": league_name}
-        rv = self.app.post(Routes['league'], data=params, headers=headers)
+        rv = self.app.post(Routes['league'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add league object")
@@ -197,7 +197,7 @@ class TestSetup(unittest.TestCase):
                   "password": password,
                   "active": active
                   }
-        rv = self.app.post(Routes['player'], data=params, headers=headers)
+        rv = self.app.post(Routes['player'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add player object")
@@ -217,7 +217,7 @@ class TestSetup(unittest.TestCase):
                   "color": color,
                   "year": year
                   }
-        rv = self.app.post(Routes['team'], data=params, headers=headers)
+        rv = self.app.post(Routes['team'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add team object")
@@ -244,7 +244,7 @@ class TestSetup(unittest.TestCase):
                   "division_id": int(division['division_id']),
                   "status": status
                   }
-        rv = self.app.post(Routes['game'], data=params, headers=headers)
+        rv = self.app.post(Routes['game'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add game object")
@@ -261,7 +261,7 @@ class TestSetup(unittest.TestCase):
                   "hit": classification,
                   "team_id": int(team['team_id']),
                   "game_id": int(game["game_id"])}
-        rv = self.app.post(Routes['bat'], data=params, headers=headers)
+        rv = self.app.post(Routes['bat'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add bat object")
@@ -286,7 +286,7 @@ class TestSetup(unittest.TestCase):
                   "receipt": receipt,
                   "date": date,
                   "time": time}
-        rv = self.app.post(Routes['espy'], data=params, headers=headers)
+        rv = self.app.post(Routes['espy'], json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add espy object")
@@ -301,7 +301,7 @@ class TestSetup(unittest.TestCase):
         if captain:
             params['captain'] = 1
         rv = self.app.post(Routes['team_roster'] + "/" + str(team['team_id']),
-                           data=params, headers=headers)
+                           json=params, headers=headers)
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add player to team")
@@ -333,7 +333,7 @@ class TestSetup(unittest.TestCase):
                 'ss': ss}
 
         rv = self.app.post(Routes['botsubmitscore'],
-                           data=data,
+                           json=data,
                            headers=headers)
         self.assertEqual(SUCCESSFUL_GET_CODE,
                          rv.status_code,
@@ -431,7 +431,7 @@ class TestSetup(unittest.TestCase):
                         expect,
                         error_message=""):
         """Used to test an invalid post test."""
-        rv = self.app.post(route, data=params, headers=headers)
+        rv = self.app.post(route, json=params, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         self.assertEqual(expected_status_code, rv.status_code, error_message)
@@ -445,7 +445,7 @@ class TestSetup(unittest.TestCase):
                 expected_object,
                 error_message=""):
         """Used to test a put request."""
-        rv = self.app.put(route, data=params, headers=headers)
+        rv = self.app.put(route, json=params, headers=headers)
         self.output(loads(rv.data))
         self.output(expected_object)
         self.assertEqual(expected_status_code, rv.status_code, error_message)

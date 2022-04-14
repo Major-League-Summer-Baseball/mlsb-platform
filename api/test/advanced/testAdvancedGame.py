@@ -26,7 +26,7 @@ class GameTest(TestSetup):
         """Test the year parameter"""
         # test an invalid year
         MockLeague(self)
-        rv = self.app.post(Routes['vgame'], data={"year": INVALID_YEAR})
+        rv = self.app.post(Routes['vgame'], json={"year": INVALID_YEAR})
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
@@ -34,7 +34,7 @@ class GameTest(TestSetup):
                          Routes['vgame'] + " Post: invalid year")
 
         # test a valid year
-        rv = self.app.post(Routes['vgame'], data={"year": VALID_YEAR})
+        rv = self.app.post(Routes['vgame'], json={"year": VALID_YEAR})
         expect = 3
         self.output(loads(rv.data))
         self.output(expect)
@@ -45,7 +45,7 @@ class GameTest(TestSetup):
         """Test league id parameter"""
         # test an invalid league id
         mocker = MockLeague(self)
-        rv = self.app.post(Routes['vgame'], data={"league_id": INVALID_ID})
+        rv = self.app.post(Routes['vgame'], json={"league_id": INVALID_ID})
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
@@ -54,7 +54,7 @@ class GameTest(TestSetup):
 
         # test a valid league id
         data = {"league_id": mocker.get_league()['league_id']}
-        rv = self.app.post(Routes['vgame'], data=data)
+        rv = self.app.post(Routes['vgame'], json=data)
         expect = 3
         self.output(loads(rv.data))
         self.output(expect)
@@ -65,7 +65,7 @@ class GameTest(TestSetup):
         """Test game id parameter"""
         # test an invalid league id
         mocker = MockLeague(self)
-        rv = self.app.post(Routes['vgame'], data={"game_id": INVALID_ID})
+        rv = self.app.post(Routes['vgame'], json={"game_id": INVALID_ID})
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
@@ -74,7 +74,7 @@ class GameTest(TestSetup):
 
         # test a valid league id
         data = {"game_id": mocker.get_games()[0]['game_id']}
-        rv = self.app.post(Routes['vgame'], data=data)
+        rv = self.app.post(Routes['vgame'], json=data)
         games_data = loads(rv.data)
         game_data = games_data[0]
         expect = 1

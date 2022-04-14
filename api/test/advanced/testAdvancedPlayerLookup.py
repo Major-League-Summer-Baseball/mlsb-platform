@@ -29,7 +29,7 @@ class PlayerLookupTest(TestSetup):
         # non existent player name
         expect = []
         name = "NAME DOES NOT EXISTS FOR REASONS"
-        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': name})
+        rv = self.app.post(Routes['vplayerLookup'], json={'player_name': name})
         self.output(expect)
         self.output(loads(rv.data))
         self.assertEqual(expect,
@@ -39,7 +39,7 @@ class PlayerLookupTest(TestSetup):
         # a valid player
         expect = [mocker.get_players()[0]]
         name = mocker.get_players()[0]['player_name']
-        rv = self.app.post(Routes['vplayerLookup'], data={'player_name': name})
+        rv = self.app.post(Routes['vplayerLookup'], json={'player_name': name})
         self.output(expect)
         self.output(loads(rv.data))
         self.assertEqual(expect,
@@ -53,7 +53,7 @@ class PlayerLookupTest(TestSetup):
         # non existent player name
         expect = []
         email = "EMAILDOESNOTEXISTSFOR@reasons.com"
-        rv = self.app.post(Routes['vplayerLookup'], data={'email': email})
+        rv = self.app.post(Routes['vplayerLookup'], json={'email': email})
         self.output(expect)
         self.output(loads(rv.data))
         self.assertEqual(expect,
@@ -63,7 +63,7 @@ class PlayerLookupTest(TestSetup):
         # a valid email
         expect = [mocker.get_players()[0]]
         email = mocker.get_player_email(0)
-        rv = self.app.post(Routes['vplayerLookup'], data={'email': email})
+        rv = self.app.post(Routes['vplayerLookup'], json={'email': email})
         self.output(expect)
         self.output(loads(rv.data))
         self.assertEqual(expect,
@@ -80,7 +80,7 @@ class PlayerLookupTest(TestSetup):
         active = 0
 
         name = player['player_name']
-        rv = self.app.post(Routes['vplayerLookup'], data={'active': active,
+        rv = self.app.post(Routes['vplayerLookup'], json={'active': active,
                                                           'player_name': name})
         self.output(expect)
         self.output(loads(rv.data))
@@ -95,7 +95,7 @@ class PlayerLookupTest(TestSetup):
 
         # only active players
         active = 1
-        rv = self.app.post(Routes['vplayerLookup'], data={'active': active,
+        rv = self.app.post(Routes['vplayerLookup'], json={'active': active,
                                                           'player_name': name})
         expect = []
         self.output(expect)
