@@ -32,7 +32,7 @@ class TestPlayerTeamLookup(TestSetup):
 
         # test a test player emails
         params = {'email': mocker.get_player_email(0)}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        rv = self.app.post(Routes['vplayerteamLookup'], json=params)
         expect = [{'captain': player,
                    'color': team['color'],
                    'espys': 0,
@@ -57,7 +57,7 @@ class TestPlayerTeamLookup(TestSetup):
 
         # test a test player names
         params = {'player_name': player['player_name']}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        rv = self.app.post(Routes['vplayerteamLookup'], json=params)
         expect = [{'captain': player,
                    'color': team['color'],
                    'espys': 0,
@@ -74,7 +74,7 @@ class TestPlayerTeamLookup(TestSetup):
 
         # test a test player names
         params = {'player_name': "Not a player"}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        rv = self.app.post(Routes['vplayerteamLookup'], json=params)
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
@@ -92,7 +92,7 @@ class TestPlayerTeamLookup(TestSetup):
 
         # test a test player names
         params = {'player_id': mocker.get_players()[0]['player_id']}
-        rv = self.app.post(Routes['vplayerteamLookup'], data=params)
+        rv = self.app.post(Routes['vplayerteamLookup'], json=params)
         expect = [{'captain': player,
                    'color': team['color'],
                    'espys': 0,

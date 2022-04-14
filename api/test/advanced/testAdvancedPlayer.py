@@ -27,7 +27,7 @@ class PlayerTest(TestSetup):
         mocker = MockLeague(self)
 
         # test an invalid player id
-        rv = self.app.post(Routes['vplayer'], data={'player_id': INVALID_ID})
+        rv = self.app.post(Routes['vplayer'], json={'player_id': INVALID_ID})
         expect = {}
         self.output(expect)
         self.output(loads(rv.data))
@@ -38,7 +38,7 @@ class PlayerTest(TestSetup):
         # test an valid player id
         player = mocker.get_players()[0]
         player_id = player['player_id']
-        rv = self.app.post(Routes['vplayer'], data={"player_id": player_id})
+        rv = self.app.post(Routes['vplayer'], json={"player_id": player_id})
         expect = {player['player_name']: {'avg': 0.5,
                                           'bats': 2,
                                           'd': 0,
@@ -62,7 +62,7 @@ class PlayerTest(TestSetup):
         MockLeague(self)
 
         # test an invalid year
-        rv = self.app.post(Routes['vplayer'], data={'year': INVALID_YEAR})
+        rv = self.app.post(Routes['vplayer'], json={'year': INVALID_YEAR})
         expect = {}
         self.output(expect)
         self.output(loads(rv.data))
@@ -71,7 +71,7 @@ class PlayerTest(TestSetup):
                          Routes['vplayer'] + " Post: invalid year")
 
         # test an valid year
-        rv = self.app.post(Routes['vplayer'], data={"year": VALID_YEAR})
+        rv = self.app.post(Routes['vplayer'], json={"year": VALID_YEAR})
         self.output(loads(rv.data))
         self.assertTrue(len(loads(rv.data).keys()) > 0,
                         Routes['vplayer'] + " Post: valid year")
@@ -80,7 +80,7 @@ class PlayerTest(TestSetup):
         mocker = MockLeague(self)
 
         # test an invalid league id
-        rv = self.app.post(Routes['vplayer'], data={'league_id': INVALID_ID})
+        rv = self.app.post(Routes['vplayer'], json={'league_id': INVALID_ID})
         expect = {}
         self.output(expect)
         self.output(loads(rv.data))
@@ -104,7 +104,7 @@ class PlayerTest(TestSetup):
                   's': 0,
                   'ss': 0}
         player_check = mocker.get_players()[0]
-        rv = self.app.post(Routes['vplayer'], data={"league_id": league_id})
+        rv = self.app.post(Routes['vplayer'], json={"league_id": league_id})
         self.output(loads(rv.data))
         self.assertTrue(len(loads(rv.data).keys()) == 4,
                         Routes['vplayer'] + " Post: valid league id")
@@ -116,7 +116,7 @@ class PlayerTest(TestSetup):
         mocker = MockLeague(self)
 
         # test an invalid team id
-        rv = self.app.post(Routes['vplayer'], data={'team_id': INVALID_ID})
+        rv = self.app.post(Routes['vplayer'], json={'team_id': INVALID_ID})
         expect = {}
         self.output(expect)
         self.output(loads(rv.data))
@@ -140,7 +140,7 @@ class PlayerTest(TestSetup):
                   's': 0,
                   'ss': 0}
         player_check = mocker.get_players()[0]
-        rv = self.app.post(Routes['vplayer'], data={"team_id": team_id})
+        rv = self.app.post(Routes['vplayer'], json={"team_id": team_id})
         self.output(loads(rv.data))
         self.assertTrue(len(loads(rv.data).keys()) == 2,
                         Routes['vplayer'] + " Post: valid team id")
