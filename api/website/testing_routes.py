@@ -24,9 +24,8 @@ def requires_testing(f):
         return f(*args, **kwargs)
     return decorated
 
-
-@app.route("/testing/api/create_and_login", methods=["POST"])
 @requires_testing
+@app.post("/testing/api/create_and_login")
 def create_and_login():
     """Creates a player if they do not exist and login them in."""
     player_info = request.get_json(silent=True)
@@ -43,8 +42,8 @@ def create_and_login():
     return Response(json.dumps(player.json()), 200, mimetype='application/json')
 
 
-@app.route("/testing/api/make_captain", methods=["POST"])
 @requires_testing
+@app.post("/testing/api/make_captain")
 def make_player_captain():
     """Make a given player a captain of some team."""
     data = request.get_json(silent=True)
@@ -57,8 +56,8 @@ def make_player_captain():
     return Response(json.dumps(True), 200, mimetype='application/json')
 
 
-@app.route("/testing/api/create_league_request", methods=["POST"])
 @requires_testing
+@app.post("/testing/api/create_league_request")
 def create_league_request():
     """Creates a league request for testing purposes."""
     request_info = request.get_json(silent=True)
@@ -74,8 +73,8 @@ def create_league_request():
         200, mimetype='application/json')
 
 
-@app.route("/testing/api/get_current_team", methods=["GET"])
 @requires_testing
+@app.route("/testing/api/get_current_team", methods=["GET"])
 def get_active_team():
     """Get some active team."""
     year = datetime.now().year
@@ -88,8 +87,8 @@ def get_active_team():
         200, mimetype='application/json')
 
 
-@app.route("/testing/api/team/<int:team_id>/game_without_score", methods=["POST"])
 @requires_testing
+@app.post("/testing/api/team/<int:team_id>/game_without_score")
 def game_without_score(team_id: int):
     """Ensure the given team has a game today"""
     games = games_without_scores(team_id)
