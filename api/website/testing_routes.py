@@ -24,6 +24,7 @@ def requires_testing(f):
         return f(*args, **kwargs)
     return decorated
 
+
 @requires_testing
 @app.post("/testing/api/create_and_login")
 def create_and_login():
