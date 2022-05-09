@@ -32,7 +32,7 @@ class TestFun(TestSetup):
         fun_count = 100
         self.add_fun(fun_count, year=SOME_YEAR)
         params = {'year': SOME_YEAR}
-        first = self.app.post(Routes['vfun'], data=params)
+        first = self.app.post(Routes['vfun'], json=params)
         expect = {'count': fun_count, 'year': SOME_YEAR}
         self.output(loads(first.data))
         self.output(expect)
@@ -42,7 +42,7 @@ class TestFun(TestSetup):
 
         # get all the years
         params = {}
-        second = self.app.post(Routes['vfun'], data=params)
+        second = self.app.post(Routes['vfun'], json=params)
         expect = {'count': fun_count, 'year': SOME_YEAR}
         self.output(loads(second.data))
         self.output(expect)

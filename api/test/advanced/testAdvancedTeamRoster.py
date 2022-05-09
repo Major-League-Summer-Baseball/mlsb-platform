@@ -34,7 +34,7 @@ class TeamRosterTest(TestSetup):
         # invalid update
         params = {"player_id": player_id}
         rv = self.app.post(Routes['team_roster'] + "/" + str(INVALID_ID),
-                           data=params,
+                           json=params,
                            headers=headers)
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
@@ -47,7 +47,7 @@ class TeamRosterTest(TestSetup):
         # invalid player
         params = {"player_id": INVALID_ID}
         rv = self.app.post(Routes['team_roster'] + "/" + str(team_id),
-                           data=params,
+                           json=params,
                            headers=headers)
         expect = {'details': INVALID_ID, 'message': PlayerDoesNotExist.message}
         self.output(loads(rv.data))
@@ -68,9 +68,9 @@ class TeamRosterTest(TestSetup):
         player_two_id = mocker.get_players()[2]['player_id']
 
         # invalid combination
-        query = "?player_id=" + str(player_two_id)
-        url_request = Routes['team_roster'] + "/" + str(team_id) + query
-        rv = self.app.delete(url_request, headers=headers)
+        data = {"player_id": player_two_id}
+        url_request = Routes['team_roster'] + "/" + str(team_id)
+        rv = self.app.delete(url_request, json=data, headers=headers)
         expect = {'details': player_two_id, 'message': PlayerNotOnTeam.message}
         self.output(loads(rv.data))
         self.output(expect)
@@ -82,9 +82,10 @@ class TeamRosterTest(TestSetup):
                          Routes['team_roster'] + " PUT: invalid data")
 
         # team does not exists
-        query = "?player_id=" + str(player_id)
-        url_request = Routes['team_roster'] + "/" + str(INVALID_ID) + query
+        data = {"player_id": player_id}
+        url_request = Routes['team_roster'] + "/" + str(INVALID_ID)
         rv = self.app.delete(url_request,
+                             json=data,
                              headers=headers)
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
         self.output(loads(rv.data))
@@ -97,9 +98,9 @@ class TeamRosterTest(TestSetup):
                          Routes['team_roster'] + " PUT: invalid player id")
 
         # player does not exist
-        query = "?player_id=" + str(INVALID_ID)
-        url_request = Routes['team_roster'] + "/" + str(team_id) + query
-        rv = self.app.delete(url_request, headers=headers)
+        data = {"player_id": INVALID_ID}
+        url_request = Routes['team_roster'] + "/" + str(team_id)
+        rv = self.app.delete(url_request, json=data, headers=headers)
         expect = {'details': INVALID_ID, 'message': PlayerNotOnTeam.message}
         self.output(loads(rv.data))
         self.output(expect)
@@ -111,9 +112,9 @@ class TeamRosterTest(TestSetup):
                          Routes['team_roster'] + " PUT: invalid player id")
 
         # proper deletion
-        query = "?player_id=" + str(player_id)
-        url_request = Routes['team_roster'] + "/" + str(team_id) + query
-        rv = self.app.delete(url_request, headers=headers)
+        data = {"player_id": + player_id}
+        url_request = Routes['team_roster'] + "/" + str(team_id)
+        rv = self.app.delete(url_request, json=data, headers=headers)
         expect = None
         self.output(loads(rv.data))
         self.output(expect)

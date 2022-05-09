@@ -41,7 +41,7 @@ class testSubmitTransaction(TestSetup):
                 "amount": 1}
         expect = {'details': INVALID_ID,
                   'message': PlayerDoesNotExist.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         m = route + " Post: transaction for non-existent player"
@@ -57,7 +57,7 @@ class testSubmitTransaction(TestSetup):
         }
         expect = {'details': NON_EXISTENT_SPONSOR,
                   'message': SponsorDoesNotExist.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         m = route + " Post: sponsor does not exist"
@@ -71,7 +71,7 @@ class testSubmitTransaction(TestSetup):
                 "amount": 1}
         expect = {'details': INVALID_ID,
                   'message': TeamDoesNotExist.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         m = route + " Post: transaction for non-existent team"
@@ -85,7 +85,7 @@ class testSubmitTransaction(TestSetup):
                 "amount": 1}
         expect = {'details': player['player_id'],
                   'message': PlayerNotOnTeam.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         m = route + " Post: transaction player not on team"
@@ -98,7 +98,7 @@ class testSubmitTransaction(TestSetup):
                 "sponsor": sponsor['sponsor_name'],
                 "team_id": team['team_id'],
                 "amount": 1}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         m = route + " Post: successful espy transaction player"

@@ -35,7 +35,7 @@ class testUpcomingGames(TestSetup):
         data = {'player_id': INVALID_ID}
         expect = {'details': INVALID_ID,
                   'message': PlayerDoesNotExist.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = route + " POST: Player DNE for upcoming games"
@@ -56,7 +56,7 @@ class testUpcomingGames(TestSetup):
                    'status': game['status'],
                    'time': game['time']}]
         rv = self.app.post(Routes['botupcominggames'],
-                           data=data,
+                           json=data,
                            headers=headers)
         self.output(loads(rv.data))
         self.output(expect)

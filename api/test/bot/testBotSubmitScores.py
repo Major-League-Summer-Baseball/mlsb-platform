@@ -38,7 +38,7 @@ class testSubmitScores(TestSetup):
                 'ss': []}
         expect = {'details': INVALID_ID,
                   'message': PlayerNotSubscribed.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botsubmitscore'] + " POST: invalid bot user name"
@@ -53,7 +53,7 @@ class testSubmitScores(TestSetup):
                 'hr': [player['player_id']],
                 'ss': []}
         expect = {'details': INVALID_ID, 'message': GameDoesNotExist.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botsubmitscore'] + " POST: invalid game id"
@@ -68,7 +68,7 @@ class testSubmitScores(TestSetup):
                 'ss': []}
         expect = {'details': 'More hr than score',
                   'message': InvalidField.message}
-        rv = self.app.post(route, data=data, headers=headers)
+        rv = self.app.post(route, json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botsubmitscore'] + " POST: more hr than runs"

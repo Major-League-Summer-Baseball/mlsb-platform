@@ -33,7 +33,7 @@ class testAuthenticateCaptain(TestSetup):
         data = {'player_id': player['player_id'],
                 'team': team['team_id']}
         expect = team['team_id']
-        rv = self.app.post(Routes['botcaptain'], data=data, headers=headers)
+        rv = self.app.post(Routes['botcaptain'], json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botcaptain'] + " POST: Authenticate Captain"
@@ -44,7 +44,7 @@ class testAuthenticateCaptain(TestSetup):
         data = {'player_id': player['player_id'],
                 'team': INVALID_ID}
         expect = {'details': INVALID_ID, 'message': TeamDoesNotExist.message}
-        rv = self.app.post(Routes['botcaptain'], data=data, headers=headers)
+        rv = self.app.post(Routes['botcaptain'], json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botcaptain'] + " POST: invalid team"
@@ -57,7 +57,7 @@ class testAuthenticateCaptain(TestSetup):
                 'team': team['team_id']}
         expect = {'details': player['player_name'],
                   'message': NotTeamCaptain.message}
-        rv = self.app.post(Routes['botcaptain'], data=data, headers=headers)
+        rv = self.app.post(Routes['botcaptain'], json=data, headers=headers)
         self.output(loads(rv.data))
         self.output(expect)
         error = Routes['botcaptain'] + " POST: name of captain does not match"
@@ -69,6 +69,6 @@ class testAuthenticateCaptain(TestSetup):
         # invalid credentials
         data = {'player_id': player['player_id'],
                 'team': team['team_id']}
-        rv = self.app.post(Routes['botcaptain'], data=data, headers={})
+        rv = self.app.post(Routes['botcaptain'], json=data, headers={})
         error = Routes['botcaptain'] + " POST: invalid credentials"
         self.assertEqual(rv.status_code, UNAUTHORIZED, error)
