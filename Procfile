@@ -1,1 +1,1 @@
-web:gunicorn --bin 0.0.0.0:$PORT runserver:app	
+web: gunicorn --bin 0.0.0.0:$PORT runserver:app	
