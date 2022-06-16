@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related a team. """
 from flask import render_template, send_from_directory
+from sqlalchemy import func
 
 from api import app, PICTURES
 from api.model import Team, Player, JoinLeagueRequest, DB
-from api.variables import NOTFOUND
+from api.variables import NOTFOUND, UNASSIGNED_EMAIL
 from api.website.helpers import get_team
 from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
@@ -53,6 +54,37 @@ def request_to_join_team(team_id):
 
 @api_require_captain
 @app.route(Routes['teampage'] +
+           "/<int:team_id>/drop_player/<int:player_id>",
+           methods=["POST"])
+def team_remove_player(team_id, player_id):
+    team = Team.query.get(team_id)
+    if team is None:
+        return Response(
+            json.dumps("Team not found"), status=404, mimetype="application/json")
+    team.remove_player(player_id)
+    DB.session.commit()
+    return Response(json.dumps(player_id), status=200, mimetype="application/json")
+
+
+@api_require_captain
+@app.route(Routes['teampage'] +
+           "/<int:team_id>/add_player/<int:player_id>",
+           methods=["POST"])
+def team_add_player(team_id, player_id):
+    team = Team.query.get(team_id)
+    if team is None:
+        return Response(
+            json.dumps("Team not found"), status=404, mimetype="application/json")
+    success = team.insert_player(player_id)
+    if not success:
+        return Response(
+            json.dumps("Player already on team"), status=404, mimetype="application/json")
+    DB.session.commit()
+    return Response(json.dumps(player_id), status=200, mimetype="application/json")
+
+
+@api_require_captain
+@app.route(Routes['teampage'] +
            "/<int:team_id>/request_response/<int:request_id>",
            methods=["POST"])
 def captain_respond_league_request(team_id, request_id):
@@ -80,11 +112,16 @@ def team_page(year, team_id):
                                user_info=get_user_information())
     team_authorization = get_team_authorization(Team.query.get(team_id))
     team_requests = []
+    all_players = []
     if team_authorization['is_captain']:
         team_requests = (JoinLeagueRequest.query
                          .filter(JoinLeagueRequest.team_id == team_id)
                          .filter(JoinLeagueRequest.pending == True)).all()
         team_requests = [request.json() for request in team_requests]
+        all_players = [
+            player.admin_json()
+            for player in Player.query.filter(
+                func.lower(Player.email) != func.lower(UNASSIGNED_EMAIL)).all()]
     return render_template("website/team.html",
                            route=Routes,
                            base=base_data(year),
@@ -94,6 +131,7 @@ def team_page(year, team_id):
                            year=year,
                            user_info=get_user_information(),
                            team_requests=team_requests,
+                           all_players=all_players,
                            team_authorization=team_authorization)
 
 
