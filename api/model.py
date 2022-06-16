@@ -595,8 +595,10 @@ class Team(DB.Model):
             raise PlayerDoesNotExist(payload={'details': player_id})
         if not self.is_player_on_team(player):
             self.players.append(player)
+            valid = True
         if captain:
             self.player_id = player_id
+            valid = True
         return valid
 
     def remove_player(self, player_id: int) -> None:
