@@ -26,7 +26,7 @@ class TestLeagueLeaders(TestSetup):
         """Test a stat that is not valid"""
         MockLeague(self)
         params = {'stat': "XXX"}
-        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        rv = self.app.post(Routes['vleagueleaders'], json=params)
         expect = {}
         self.output(loads(rv.data))
         self.output(expect)
@@ -38,7 +38,7 @@ class TestLeagueLeaders(TestSetup):
         """Test a stat that is not empty"""
         MockLeague(self)
         params = {'stat': "hr"}
-        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        rv = self.app.post(Routes['vleagueleaders'], json=params)
         self.output(loads(rv.data))
         self.assertTrue(len(loads(rv.data)) > 0, Routes['vleagueleaders'] +
                         " View: hr stat was empty for all years")
@@ -47,7 +47,7 @@ class TestLeagueLeaders(TestSetup):
         """Test an empty year"""
         MockLeague(self)
         params = {'stat': "hr", 'year': INVALID_YEAR}
-        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        rv = self.app.post(Routes['vleagueleaders'], json=params)
         expect = []
         self.output(loads(rv.data))
         self.output(expect)
@@ -58,7 +58,7 @@ class TestLeagueLeaders(TestSetup):
         """Test a non-empty year"""
         MockLeague(self)
         params = {'stat': "k", 'year': VALID_YEAR}
-        rv = self.app.post(Routes['vleagueleaders'], data=params)
+        rv = self.app.post(Routes['vleagueleaders'], json=params)
         self.output(loads(rv.data))
         self.assertTrue(len(loads(rv.data)) > 0, Routes['vleagueleaders'] +
                         " View: hr stat was empty")
@@ -67,9 +67,9 @@ class TestLeagueLeaders(TestSetup):
         """Test a non-empty year"""
         MockLeague(self)
         params = {'stat': "hr", 'year': VALID_YEAR}
-        not_grouped = self.app.post(Routes['vleagueleaders'], data=params)
+        not_grouped = self.app.post(Routes['vleagueleaders'], json=params)
         params = {'stat': "hr", 'year': VALID_YEAR, 'group_by_team': 0}
-        grouped = self.app.post(Routes['vleagueleaders'], data=params)
+        grouped = self.app.post(Routes['vleagueleaders'], json=params)
         self.output(loads(not_grouped.data))
         self.output(loads(grouped.data))
         self.assertFalse(loads(not_grouped.data) == loads(grouped.data),

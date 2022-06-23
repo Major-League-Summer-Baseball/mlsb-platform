@@ -14,10 +14,16 @@
         </button>
     {% endif %}
 </h4>
-<ul class="listgroup leadersList">
+<ul class="listgroup leadersList" id="teamPlayers">
     {% for player in team.players %}
-        <li class="list-group-item leaderPoint">
-            {{player}}
+        <li class="list-group-item leaderPoint" id="player{{player.player_id}}">
+            {{player.player_name}}
+            {% if team_authorization.is_captain %}
+                &nbsp;    
+                <button class="btn btn-danger" alt="Remove player" onclick="dropPlayer('{{ url_for ('team_remove_player', team_id=team_id, player_id=player.player_id)}}', {{player.player_id}} )">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            {% endif %}
         </li>
     {% endfor %}
 </ul>
@@ -56,6 +62,22 @@
             </div>
         </div>
     {% endfor %}
+{% endif %}
+
+{% if team_authorization.is_captain %}
+<div style="padding-top: 20px; padding-bottom: 20px;">
+    <h4>Add existing player</h4>
+    <select id="addPlayer" class="form form-control">
+        {% for player in all_players %}
+            <option value="{{ player.player_id }}" id="playerOption{{player.player_id}}">
+                {{player.player_name}} ({{player.email}})
+            </option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-success" style="margin-top: 20px;" onclick="addPlayer({{team_id}});")>
+        Add
+    </button>
+</div>
 {% endif %}
 
 <h4>
@@ -129,6 +151,49 @@
                     $('#join_team').hide();
                 }, error: function(request, error){
                     alert("Failed while trying to make team request");
+                    console.log(request);
+                    console.log(error);
+                }
+        });
+    }
+
+    function dropPlayer(url, player_id) {
+        $.ajax({
+            type: "POST",
+                url: url,
+                contentType: "application/json",
+                dataType: 'json',
+                async: false,
+                success: function (success){
+                    $('#player' + player_id).hide();
+                }, error: function(request, error){
+                    alert("Failed to remove player from team");
+                    console.log(request);
+                    console.log(error);
+                }
+        });
+    }
+
+    function addPlayer(team_id) {
+        var player_id = $('#addPlayer').val();
+        var player_name = $('#addPlayer option:selected').text();
+        console.log({player_id: player_id, player_name: player_name, team_id: team_id});
+        var url = "{{url_for('team_add_player', team_id=1, player_id=2)}}".replace("1", team_id.toString()).replace("2", player_id.toString());
+        $.ajax({
+            type: "POST",
+                url: url,
+                contentType: "application/json",
+                dataType: 'json',
+                async: false,
+                success: function (success){
+                    $('#addPlayer' + player_id).hide();
+                    $('#teamPlayers').append('<li class="list-group-item leaderPoint" id="player'+ player_id + '">'+ player_name +'</li>');
+                }, error: function(request, error){
+                    if (request.responseText) {
+                        alert("Failed to add player to team" + request.responseText);
+                    } else {
+                        alert("Failed to add player to team");
+                    }
                     console.log(request);
                     console.log(error);
                 }

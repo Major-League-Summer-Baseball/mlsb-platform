@@ -57,6 +57,9 @@ def mlsb_logo_year(year):
 @app.route(Routes["favicon"] + "/<int:year>")
 def mlsb_favicon_year(year):
     fp = os.path.join(PICTURES, 'logos')
+    filename = f"mlsb-favicon-{year}.ico"
+    if os.path.isfile(os.path.join(fp, filename)):
+        return send_from_directory(fp, filename)
     filename = f"mlsb-favicon-{year}.png"
     if os.path.isfile(os.path.join(fp, filename)):
         return send_from_directory(fp, filename)

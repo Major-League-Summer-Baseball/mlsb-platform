@@ -27,7 +27,7 @@ class TeamTest(TestSetup):
         mocker = MockLeague(self)
 
         # invalid team id
-        rv = self.app.post(Routes['vteam'], data={'team_id': INVALID_ID})
+        rv = self.app.post(Routes['vteam'], json={'team_id': INVALID_ID})
         expect = {}
         self.output(loads(rv.data))
         self.output(expect)
@@ -37,7 +37,7 @@ class TeamTest(TestSetup):
         # valid team id
         team = mocker.get_teams()[0]
         team_id = team['team_id']
-        rv = self.app.post(Routes['vteam'], data={'team_id': team_id})
+        rv = self.app.post(Routes['vteam'], json={'team_id': team_id})
         expect = {'games': 3,
                   'hits_allowed': 3,
                   'hits_for': 2,
@@ -60,7 +60,7 @@ class TeamTest(TestSetup):
         mocker = MockLeague(self)
 
         # invalid year
-        rv = self.app.post(Routes['vteam'], data={'year': INVALID_YEAR})
+        rv = self.app.post(Routes['vteam'], json={'year': INVALID_YEAR})
         expect = {}
         self.output(loads(rv.data))
         self.output(expect)
@@ -70,7 +70,7 @@ class TeamTest(TestSetup):
         # valid year
         team = mocker.get_teams()[0]
         team_id = team['team_id']
-        rv = self.app.post(Routes['vteam'], data={'year': VALID_YEAR})
+        rv = self.app.post(Routes['vteam'], json={'year': VALID_YEAR})
         expect = {'games': 1,
                   'hits_allowed': 3,
                   'hits_for': 2,
@@ -94,7 +94,7 @@ class TeamTest(TestSetup):
         mocker = MockLeague(self)
 
         # invalid league id
-        rv = self.app.post(Routes['vteam'], data={'league_id': INVALID_ID})
+        rv = self.app.post(Routes['vteam'], json={'league_id': INVALID_ID})
         expect = {}
         self.output(loads(rv.data))
         self.output(expect)
@@ -105,7 +105,7 @@ class TeamTest(TestSetup):
         league_id = mocker.get_league()['league_id']
         team = mocker.get_teams()[0]
         team_id = team['team_id']
-        rv = self.app.post(Routes['vteam'], data={'league_id': league_id})
+        rv = self.app.post(Routes['vteam'], json={'league_id': league_id})
         expect = {'games': 1,
                   'hits_allowed': 3,
                   'hits_for': 2,
@@ -137,7 +137,7 @@ class TeamTest(TestSetup):
         league_id = mocker.get_league()['league_id']
         team = mocker.get_teams()[0]
         team_id = team['team_id']
-        rv = self.app.post(Routes['vteam'], data={'league_id': league_id})
+        rv = self.app.post(Routes['vteam'], json={'league_id': league_id})
         expect = {'games': 1,
                   'hits_allowed': 3,
                   'hits_for': 2,
