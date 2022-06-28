@@ -66,7 +66,7 @@ jobs:
         # now run the cypres tests against it
         cd ui-testing
         npm install
-        npx cypress run --spec "**/*.feature" --env ADMIN=admin,PASSWORD=password
+        npm run cypress:run
     - name: Upload Video Run
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
