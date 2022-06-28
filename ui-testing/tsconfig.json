@@ -12,6 +12,7 @@
     },
     "include": [
       "**/*.ts",
+      "cypress/features/global/**/*{ts,js}",
       "cypress/support/e2e.{ts,js}",
       "cypress/support/commands.{ts,js}"
     ],

@@ -1,5 +1,6 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import { randomName } from '../../global/helper';
+import "../../global/login";
 
 /**
  * A step to navigate to the login page.
