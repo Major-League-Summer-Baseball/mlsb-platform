@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "lib": ["es5", "dom"],
+      "types": [
+        "cypress",
+        "cypress-axe",
+        "axe-core",
+        "@testing-library/cypress",
+        "node"
+      ]
+    },
+    "include": [
+      "**/*.ts",
+      "cypress/support/e2e.{ts,js}",
+      "cypress/support/commands.{ts,js}"
+    ],
+    "exclude": [
+      "node_modules",
+    ]
+}
