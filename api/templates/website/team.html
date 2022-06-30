@@ -8,7 +8,7 @@
 
 <h4>
     Roster
-    {% if not team_authorization.pending_request and not team_authorization.on_team %}
+    {% if team_authorization.logged_in and not team_authorization.pending_request and not team_authorization.on_team %}
         <button class="btn btn-success" id="join_team" onclick="joinTeam('{{ url_for ('request_to_join_team', team_id=team_id) }}')">
             Join Team
         </button>
