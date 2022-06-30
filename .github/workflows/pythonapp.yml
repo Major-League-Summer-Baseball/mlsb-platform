@@ -55,7 +55,7 @@ jobs:
     - name: Set up npm
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: '16.x'
     - name: UI Test with cypress
       run: |
         export ADMIN="admin"
@@ -64,12 +64,12 @@ jobs:
         # run the server just in-memory
         nohup python runserver.py  2>&1 &
         # now run the cypres tests against it
-        cd cypress-testing
+        cd ui-testing
         npm install
-        npx cypress run --spec "**/*.features" --env ADMIN=admin,PASSWORD=password
+        npm run cypress:test
     - name: Upload Video Run
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
       with:
         name: cypress-videos
-        path: cypress-testing/cypress/videos
+        path: ui-testing/cypress/videos
