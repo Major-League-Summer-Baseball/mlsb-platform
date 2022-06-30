@@ -23,3 +23,17 @@ Scenario: Players can request to join a team
      When I navigate to the team page
      Then I can make a request to join
 
+Scenario: Captain can add a player to their team
+    Given there is some player
+      And I am the Captain
+     When I navigate to the team page
+      And I add the player
+     Then the player is part of the team
+
+Scenario: Captain can remove a player from their team
+    Given there is a player on my team
+      And I am the Captain
+     When I navigate to the team page
+      And I remove the player
+     Then the player is not part of the team
+
