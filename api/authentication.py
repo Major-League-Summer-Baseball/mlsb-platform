@@ -296,7 +296,8 @@ def get_team_authorization(team: 'Team') -> TeamAuthorization:
     return {'on_team': on_team,
             'is_convenor': False,
             'is_captain': is_captain,
-            'pending_request': has_pending_request}
+            'pending_request': has_pending_request,
+            'logged_in': are_logged_in()}
 
 
 def api_require_login(f: Callable) -> Callable:

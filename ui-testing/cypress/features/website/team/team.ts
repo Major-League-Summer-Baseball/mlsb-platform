@@ -37,6 +37,32 @@ const create_captain_of_team = (): void => {
 };
 Given(`I am the Captain`, create_captain_of_team);
 
+/** Create a player with no team. */
+const create_some_player = (): void => {
+    create_player(generate_player()).then((player: Player) => {
+        expect(player.player_id).to.be.greaterThan(0);
+        cy.wrap(player).as('player');
+    });
+};
+Given(`there is some player`, create_some_player);
+
+/** Create a player on the team. */
+const create_player_to_team = (): void => {
+    create_some_player();
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get<Team>('@team').then((team: Team) => {
+            cy.request(
+                'POST',
+                `/testing/api/${team.team_id}/add_player/${player.player_id}`)
+            .then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+                expect(response.body).to.be.true;
+            });
+        });
+    });
+};
+Given(`there is a player on my team`, create_player_to_team);
+
 /** Create a request to join some team for a player. */
 const create_request_join_team = (): void => {
     const player = generate_player(); 
@@ -72,6 +98,26 @@ const accept_join_league_request = (): void => {
     });
 };
 When(`accept the request`, accept_join_league_request);
+
+/** Add a player to the team. */
+const add_player_to_team = (): void => {
+    cy.get<Player>("@player").then((player) => {-
+        cy.get("#selectPlayer")
+            .select(`${player.player_id}`)
+            .should("have.value", player.player_id);
+        cy.get("#addPlayer").click();
+    });
+};
+When(`I add the player`, add_player_to_team);
+
+/** Remove a player from the team. */
+const remove_player_from_team = (): void => {
+    cy.get<Player>("@player").then((player) => {-
+        cy.get(`#removePlayer${player.player_id}`)
+            .click();
+    });
+};
+When(`I remove the player`, remove_player_from_team);
 
 /** Assert that currently on the team page for some team. */
 const assert_team_page = (): void => {
@@ -109,6 +155,21 @@ const assert_player_on_team = (): void => {
 };
 Then(`the player is part of the team`, assert_player_on_team);
 
+/** Assert the player is not on a team. */
+const assert_player_not_on_team = (): void => {
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get<Team>('@team').then((team: Team) => {
+            cy.get(`#player${player.player_id}`).should("not.be.visible");
+            cy.request('POST', `/api/view/players/team_lookup`, {player_id: player.player_id}).then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+                expect(response.body.length).length.to.equal(0);
+            });
+        })
+        
+    });
+};
+Then(`the player is not part of the team`, assert_player_not_on_team);
+
 
 /** Click the button to join team. */
 const request_to_join = (): void => {
@@ -123,3 +184,9 @@ const request_to_join = (): void => {
     });
 };
 Then(`I can make a request to join`, request_to_join);
+
+/** Assert unable to join a team. */
+const unable_to_join = (): void => {
+    cy.get('#join_team').should("not.exist");
+};
+Then(`I can not make a request to join`, unable_to_join);

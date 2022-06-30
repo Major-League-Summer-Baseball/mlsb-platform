@@ -8,7 +8,7 @@
 
 <h4>
     Roster
-    {% if not team_authorization.pending_request and not team_authorization.on_team %}
+    {% if team_authorization.logged_in and not team_authorization.pending_request and not team_authorization.on_team %}
         <button class="btn btn-success" id="join_team" onclick="joinTeam('{{ url_for ('request_to_join_team', team_id=team_id) }}')">
             Join Team
         </button>
@@ -20,7 +20,7 @@
             {{player.player_name}}
             {% if team_authorization.is_captain %}
                 &nbsp;    
-                <button class="btn btn-danger" alt="Remove player" onclick="dropPlayer('{{ url_for ('team_remove_player', team_id=team_id, player_id=player.player_id)}}', {{player.player_id}} )">
+                <button class="btn btn-danger" id="removePlayer{{player.player_id}}" alt="Remove player" onclick="dropPlayer('{{ url_for ('team_remove_player', team_id=team_id, player_id=player.player_id)}}', {{player.player_id}} )">
                     <span class="glyphicon glyphicon-remove"></span>
                 </button>
             {% endif %}
@@ -67,14 +67,18 @@
 {% if team_authorization.is_captain %}
 <div style="padding-top: 20px; padding-bottom: 20px;">
     <h4>Add existing player</h4>
-    <select id="addPlayer" class="form form-control">
+    <select id="selectPlayer" class="form form-control">
         {% for player in all_players %}
             <option value="{{ player.player_id }}" id="playerOption{{player.player_id}}">
                 {{player.player_name}} ({{player.email}})
             </option>
         {% endfor %}
     </select>
-    <button class="btn btn-success" style="margin-top: 20px;" onclick="addPlayer({{team_id}});")>
+    <button
+        id="addPlayer"
+        class="btn btn-success"
+        style="margin-top: 20px;"
+        onclick="addPlayer({{team_id}});")>
         Add
     </button>
 </div>
@@ -175,8 +179,8 @@
     }
 
     function addPlayer(team_id) {
-        var player_id = $('#addPlayer').val();
-        var player_name = $('#addPlayer option:selected').text();
+        var player_id = $('#selectPlayer').val();
+        var player_name = $('#selectPlayer option:selected').text();
         console.log({player_id: player_id, player_name: player_name, team_id: team_id});
         var url = "{{url_for('team_add_player', team_id=1, player_id=2)}}".replace("1", team_id.toString()).replace("2", player_id.toString());
         $.ajax({
