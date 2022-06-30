@@ -8,6 +8,7 @@ Background:
 Scenario: Anonymous users can view a team homepage
     When I navigate to the team page
     Then I see the team page
+     And I can not make a request to join
 
 Scenario: Captain can respond to requests to join their team 
     Given I am the Captain

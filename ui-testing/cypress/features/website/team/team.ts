@@ -123,3 +123,9 @@ const request_to_join = (): void => {
     });
 };
 Then(`I can make a request to join`, request_to_join);
+
+/** Assert unable to join a team. */
+const unable_to_join = (): void => {
+    cy.get('#join_team').should("not.exist");
+};
+Then(`I can not make a request to join`, unable_to_join);
