@@ -15,10 +15,10 @@ export function getCurrentYear(): number {
  * const firstName = randomName();
  */
 export function randomName(): string {
-    return 'xxxxxxxx'.replace(/[xy]/g, function (c) {
+    return 'test-xxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = (Math.random() * 16) | 0,
             v = c == 'x' ? r : (r & 0x3) | 0x8;
-        return 'test' + v.toString(16);
+        return  v.toString(16);
     });
 }
 
