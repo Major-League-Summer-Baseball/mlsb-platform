@@ -44,6 +44,19 @@ def create_and_login():
 
 
 @requires_testing
+@app.post("/testing/api/<int:team_id>/add_player/<int:player_id>")
+def add_player_to_team(team_id: int, player_id: int):
+    """Add a player to the given team."""
+    player = Player.query.get(player_id)
+    team = Team.query.get(team_id)
+    if player is None or team is None:
+        return Response(json.dumps(None), 404)
+    team.insert_player(player.id, captain=False)
+    DB.session.commit()
+    return Response(json.dumps(True), 200, mimetype='application/json')
+
+
+@requires_testing
 @app.post("/testing/api/make_captain")
 def make_player_captain():
     """Make a given player a captain of some team."""
