@@ -1,0 +1,63 @@
+.action-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.gameHeading {
+    text-align: center;
+}
+
+.bases-column {
+    margin-bottom: 10px;
+}
+
+.submitGameControls {
+    margin-top: 40px;
+}
+
+#battingScoreApp li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+
+.bases-column {
+    
+}
+
+.bases {
+    background-image: url("/static/pictures/batting_app/field.png");
+    background-size: cover;
+    padding-top: 80%;
+}
+
+.first-base {
+    position: absolute;
+    left: 75%;
+    top: 55%;
+}
+
+.second-base {
+    position: absolute;
+    left: 47.5%;
+    top: 22.5%;
+}
+.third-base {
+    position: absolute;
+    left: 20%;
+    top: 55%;
+}
+
+.battingScoreApp__container {
+    width: 100%;
+}
+
+
+.battingScoreApp__controls {
+    justify-content: space-between;
+    align-items: center;
+}

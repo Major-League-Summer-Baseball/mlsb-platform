@@ -30,6 +30,20 @@ def captain_score_games(team_id: int):
                            user_info=get_user_information())
 
 
+@app.route("/captain/batting_app/<int:team_id>")
+@require_captain
+def captain_batting_app(team_id: int):
+    """Navigate to the captain score app"""
+    year = datetime.now().year
+    return render_template("website/captain_batting_app.html",
+                           route=Routes,
+                           base=base_data(year),
+                           title="Captain In-Game Batting App",
+                           year=year,
+                           team_id=team_id,
+                           user_info=get_user_information())
+
+
 @app.route("/captain/api/games/<int:team_id>")
 @api_require_captain
 def get_captain_info(team_id: int):
