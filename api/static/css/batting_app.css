@@ -19,12 +19,29 @@
     margin-top: 40px;
 }
 
+.submitGameControls__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+@media screen and (max-width: 500px) {
+    .submitGameControls__container {
+        flex-direction: column;
+     }
+}
+
 #battingScoreApp li {
     margin-top: 5px;
     margin-bottom: 5px;
 }
 .glyphicon--info {
     color: #5bc0de;
+}
+
+.glyphicon--danger {
+    color: #c9302c;
 }
 .bases-column {
     
@@ -66,6 +83,10 @@
 }
 
 .runner-icon {
+    font-size: 18px;
+}
+
+.glyphicon--lg {
     font-size: 18px;
 }
 
