@@ -9,8 +9,8 @@ from api.bot.get_captain_games import games_without_scores
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information, require_captain,\
     api_require_captain
-from api.bot.submit_scores import submit_score
-from api.model import Team
+from api.bot.submit_scores import submit_bats, submit_score
+from api.model import Bat, Team
 from api.errors import NotTeamCaptain
 from datetime import datetime
 import json
@@ -73,3 +73,22 @@ def captain_submit_score(team_id: int):
         sheet.get('hr', []),
         sheet.get('ss', []))
     return Response(json.dumps(True), status=200, mimetype="application/json")
+
+
+@app.route("/captain/api/submit_batting/<int:team_id>", methods=["POST"])
+@api_require_captain
+def captain_submit_full_game(team_id: int):
+    """Submit a complete game batting information for some game"""
+    bats = request.get_json(silent=True)
+    result = submit_bats([Bat(
+        bat.get('player_id', UNASSIGNED),
+        bat.get('team_id'),
+        bat.get('game_id'),
+        bat.get('classification'),
+        inning=bat.get('inning'),
+        rbi=bat.get('rbi')
+    ) for bat in bats])
+    return Response(json.dumps(result), status=200, mimetype="application/json")
+
+
+

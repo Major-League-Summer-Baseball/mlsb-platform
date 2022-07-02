@@ -24,6 +24,15 @@ parser.add_argument('hr', type=int, action="append")
 parser.add_argument('ss', type=int, action="append")
 
 
+def submit_bats(bats: List[Bat]) -> bool:
+    """Submits a list of bats"""
+    for bat in bats:
+        DB.session.add(bat)
+    DB.session.commit()  # good to add the submission
+    handle_table_change(Tables.GAME)
+    return True
+
+
 def submit_score(game_id: int, captain_id: int, score: int,
                  homeruns: List[int], ss: List[int]) -> bool:
     """Captain submit a score"""
