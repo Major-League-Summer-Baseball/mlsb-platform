@@ -1,117 +1,205 @@
-.action-column {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+.glyphicon--disabled,
+span.glyphicon:disabled {
+    color: grey !important;
+    opacity: 0.5;
 }
 
-.gameHeading {
-    text-align: center;
-}
-
-.bases-column {
-    margin-bottom: 10px;
-}
-
-.submitGameControls {
-    margin-top: 40px;
-}
-
-.submitGameControls__container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-@media screen and (max-width: 500px) {
-    .submitGameControls__container {
-        flex-direction: column;
-     }
-}
-
-#battingScoreApp li {
-    margin-top: 5px;
-    margin-bottom: 5px;
+.glyphicon--disabled:hover{
+    cursor: not-allowed;
 }
 .glyphicon--info {
     color: #5bc0de;
 }
 
-.glyphicon--danger {
-    color: #c9302c;
-}
-.bases-column {
-    
-}
-
-.bases {
-    background-image: url("/static/pictures/batting_app/field.png");
-    background-size: cover;
-    padding-top: 80%;
-}
-
-.first-base {
-    position: absolute;
-    left: 72.5%;
-    top: 55%;
-}
-
-.second-base {
-    position: absolute;
-    left: 44.0%;
-    top: 22.5%;
-}
-.third-base {
-    position: absolute;
-    left: 17.5%;
-    top: 55%;
-}
-
-.advance-base {
+.glyphicon--success {
     color:#449d44;
 }
 
-.base-runner {
-    color: #31b0d5;
-}
-
-.runner-out {
+.glyphicon--danger {
     color: #c9302c;
-}
-
-.runner-icon {
-    font-size: 18px;
 }
 
 .glyphicon--lg {
     font-size: 18px;
 }
 
-.advance-base:hover,
-.runner-out:hover {
+.glyphicon--actionable:hover {
     cursor: pointer;
+}
+
+.player-bats__summary {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.summary__player span {
+    font-size: 10px;
+}
+
+
+
+.battingScoreApp__heading {
+    text-align: center;
+}
+
+.battingScoreApp__games {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .battingScoreApp__container {
     width: 100%;
 }
 
+.battingScoreApp__game {
+    
+}
+    .game__container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+    }
+    .game__column {
+
+    }
+        .game__column.column__actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
+        }
+            .actions__group {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        .game__column.column__roster {
+            width: 50%;
+            max-width: 500px;
+        }
+
+        .game__column.column__status {
+            width: 40%;
+            max-width: 800px;
+            min-width: 250px;
+        }
+            
+            .game__column.column__status .status__text {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                gap: 20px;
+            }
+            .game__column.column__status .status__bases {
+                background-image: url("/static/pictures/batting_app/field.png");
+                background-size: cover;
+                position: relative;
+            }
+            .bases__spacing {
+                padding-top: 85%;
+            }
+            .bases__first {
+                position: absolute;
+                left: 70.0%;
+                top: 55%;
+            }
+            .bases__second {
+                position: absolute;
+                left: 42.5%;
+                top: 22.5%;
+            }
+            .bases__second.bases__base--runner {
+                left: 38.0%;
+            }
+            .bases__third {
+                position: absolute;
+                right: 76.0%;
+                top: 55%;
+            }
+    
+
 .battingScoreApp__controls {
+    margin-top: 40px;
     justify-content: space-between;
     align-items: center;
 }
+    .battingScoreApp__controls .controls__container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+    }
 
-.gameStatusContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 20px;
+@media screen and (max-width: 300px) {
+    .actions__group {
+        flex-wrap: wrap;
+    }
 }
 
-@media screen and (max-width: 500px) {
-    .gameStatusContainer {
+@media screen and (max-width: 550px) {
+    .battingScoreApp__controls .controls__container {
+        flex-direction: column;
     }
+
+    .game__column {}
+        .game__column.column__status {
+            width: 90%;
+        }
+            .game__column.column__status .status__bases {
+            }
+                .bases__spacing {
+                    padding-top: 70%;
+                }
+
+}
+
+@media screen and (max-width: 750px) {
+    .game__container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+    .game__column {
+
+    }
+        .game__column.column__actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
+        }
+            .actions__group {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        .game__column.column__roster {
+            width: 90%;
+        }
+        .game__column.column__status .status__bases {
+        }
+            .bases__spacing {
+                padding-top: 70%;
+            }
+}
+
+@media screen and (max-width: 1600px) {
+    .game__column {}
+        .game__column.column__status .status__bases {
+        }
+            .bases__spacing {
+                padding-top: 80%;
+            }
 }
