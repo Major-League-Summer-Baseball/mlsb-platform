@@ -500,6 +500,7 @@
                     },
                     gameWasSelected: function(game) {
                         /** Handle when a game was selected. */
+                        game = JSON.parse(JSON.stringify(game));
                         game.game_state = this.getFreshGame();
                         game.game_states = [];
                         this.game_selected = game;
