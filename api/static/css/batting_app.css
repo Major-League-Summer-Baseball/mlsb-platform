@@ -103,3 +103,15 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.gameStatusContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+}
+
+@media screen and (max-width: 500px) {
+    .gameStatusContainer {
+    }
+}

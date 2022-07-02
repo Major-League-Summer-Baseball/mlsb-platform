@@ -15,10 +15,7 @@
             </ul>
         </div>
         <div v-if="game_selected">
-            <h2 class="gameHeading">[[game_selected.home_team]] vs [[game_selected.away_team]]</h2>
-            <h4>Score: [[total_score]]</h4>
-            <h5>Inning: [[game_selected.game_state.inning]]</h5>
-            <h5>Outs: [[game_selected.game_state.outs]]</h5>
+            <h2 class="gameHeading">[[game_selected.home_team]] vs [[game_selected.away_team]]</h2>            
             <div class="container battingScoreApp__container">
                 <div class="battingScoreApp__controls row">
                     <div class="col-xs-8 col-sm-5 bases-column">
@@ -26,54 +23,67 @@
                             <div class="first-base">
                                 <span
                                     title="Advance first-base runner"
-                                    class="glyphicon glyphicon-arrow-left runner-icon advance-base"
+                                    class="glyphicon glyphicon-arrow-left glyphicon--lg runner-icon advance-base"
                                     v-if="getBase(0)"
-                                    @click="moveBaseRunner(0)"></span>
+                                    @click="moveBaseRunner(0)"
+                                    :disabled="submitting"></span>
                                 <span
                                     title="First-base runner"
-                                    class="glyphicon glyphicon-user runner-icon base-runner"
-                                    v-if="getBase(0)"></span>
+                                    class="glyphicon glyphicon-user glyphicon--lg runner-icon base-runner"
+                                    v-if="getBase(0)"
+                                    :disabled="submitting"></span>
                                 <span
                                     title="First-base runner is out"
-                                    class="glyphicon glyphicon-remove runner-icon runner-out"
+                                    class="glyphicon glyphicon-remove glyphicon--lg runner-icon runner-out"
                                     v-if="getBase(0)"
-                                    @click="baseRunnerOut(0)"></span>
+                                    @click="baseRunnerOut(0)"
+                                    :disabled="submitting"></span>
                                 <span v-if="!getBase(0)">1st</span>
                             </div>
                             <div class="second-base">
                                 <span
                                     title="Advance second-base runner"
-                                    class="glyphicon glyphicon-arrow-left runner-icon advance-base"
+                                    class="glyphicon glyphicon-arrow-left glyphicon--lg runner-icon advance-base"
                                     v-if="getBase(1)"
-                                    @click="moveBaseRunner(1)"></span>
+                                    @click="moveBaseRunner(1)"
+                                    :disabled="submitting"></span>
                                 <span
                                     title="Second-base runner"
-                                    class="glyphicon glyphicon-user runner-icon base-runner"
-                                    v-if="getBase(1)"></span>
+                                    class="glyphicon glyphicon-user glyphicon--lg runner-icon base-runner"
+                                    v-if="getBase(1)"
+                                    :disabled="submitting"></span>
                                 <span
                                     title="Second-base runner is out"
-                                    class="glyphicon glyphicon-remove runner-icon runner-out"
+                                    class="glyphicon glyphicon-remove glyphicon--lg runner-icon runner-out"
                                     v-if="getBase(1)"
-                                    @click="baseRunnerOut(1)"></span>
+                                    @click="baseRunnerOut(1)"
+                                    :disabled="submitting"></span>
                                 <span v-if="!getBase(1)">2nd</span>
                             </div>
                             <div class="third-base">
                                 <span
                                     title="Advance third-base runner"
-                                    class="glyphicon glyphicon-arrow-left runner-icon advance-base"
+                                    class="glyphicon glyphicon-arrow-left glyphicon--lg runner-icon advance-base"
                                     v-if="getBase(2)"
-                                    @click="moveBaseRunner(2)"></span>
+                                    @click="moveBaseRunner(2)"
+                                    :disabled="submitting"></span>
                                 <span
                                     title="Third-base runner"
-                                    class="glyphicon glyphicon-user runner-icon base-runner"
+                                    class="glyphicon glyphicon-user glyphicon--lg runner-icon base-runner"
                                     v-if="getBase(2)"></span>
                                 <span
                                     title="Third-base runner is out"
-                                    class="glyphicon glyphicon-remove runner-icon runner-out"
+                                    class="glyphicon glyphicon-remove glyphicon--lg runner-icon runner-out"
                                     v-if="getBase(2)"
-                                    @click="baseRunnerOut(2)"></span>
+                                    @click="baseRunnerOut(2)"
+                                    :disabled="submitting"></span>
                                 <span v-if="!getBase(2)">3rd</span>
                             </div>
+                        </div>
+                        <div class="gameStatusContainer">
+                            <h4>Score: [[total_score]]</h4>
+                            <h4>Inning: [[game_selected.game_state.inning]]</h4>
+                            <h4>Outs: [[game_selected.game_state.outs]]</h4>
                         </div>
                     </div>
                     <div class="col-xs-4 col-sm-2 action-column">
@@ -82,7 +92,8 @@
                             id="singleBat"
                             class="btn btn-info"
                             @click="submitBat(SINGLE)"
-                            :disabled="submittingBat" >
+                            :disabled="submitting" >
+                            <span class="glyphicon glyphicon-plus-sign"></span>
                             S
                         </button>
                         <button
@@ -91,7 +102,8 @@
                             class="btn btn-info"
                             v-if="isBatterEligible()"
                             @click="submitBat(SPECIAL_SINGLE)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
                             SS
                         </button>
                         <button
@@ -99,7 +111,8 @@
                             id="doubleBat"
                             class="btn btn-info"
                             @click="submitBat(DOUBLE)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
                             D
                         </button>
                         <button
@@ -107,7 +120,8 @@
                             id="tripleBat"
                             class="btn btn-info"
                             @click="submitBat(TRIPLE)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
                             T
                         </button>
                         <button
@@ -115,7 +129,8 @@
                             id="homerunBat"
                             class="btn btn-info"
                             @click="submitBat(HOMERUN)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-fire"></span>
                             HR
                         </button>
                         <button
@@ -123,7 +138,8 @@
                             id="errorBat"
                             class="btn btn-warning"
                             @click="submitBat(ERROR)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
                             E
                         </button>
                         <button
@@ -132,7 +148,9 @@
                             class="btn btn-warning"
                             @click="submitBat(FIELDER_CHOICE)"
                             v-if="game_selected.game_state.bases[0] || game_selected.game_state.bases[1] || game_selected.game_state.bases[2]"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                            
                             FC
                         </button>
                         <button
@@ -141,7 +159,8 @@
                             class="btn btn-warning"
                             @click="submitBat(SACRIFICE_FLY)"
                             v-if="game_selected.game_state.bases[2] && game_selected.game_state.outs < 2"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-minus-sign"></span>
                             SF
                         </button>
                         <button
@@ -149,7 +168,8 @@
                             id="flyoutBat"
                             class="btn btn-danger"
                             @click="submitBat(FLY_OUT)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-minus-sign"></span>
                             FO
                         </button>
                         <button
@@ -157,7 +177,8 @@
                             id="groundoutBat"
                             class="btn btn-danger"
                             @click="submitBat(GROUND_OUT)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-minus-sign"></span>
                             GO
                         </button>
                         <button
@@ -165,16 +186,27 @@
                             id="strikeoutBat" 
                             class="btn btn-danger"
                             @click="submitBat(STRIKE_OUT)"
-                            :disabled="submittingBat">
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-minus-sign"></span>
                             K
                         </button>
                         <button
                             title="Skip the batter"
                             id="SkipBatter"
-                            class="btn btn-light"
+                            class="btn btn-default"
                             @click="nextBatter()"
-                            :disabled="submittingBat">
-                            Skip batter
+                            :disabled="submitting">
+                            <span class="glyphicon glyphicon-step-forward"></span>
+                            Skip
+                        </button>
+                        <button
+                            title="Undo recent bat"
+                            class="btn btn-default"
+                            id="undoButton"
+                            @click="undo()"
+                            :disabled="!can_undo">
+                            <span class="glyphicon glyphicon-step-backward"></span>
+                            Undo
                         </button>
                     </div>
                     <div class="col-xs-12 col-sm-5 players-bats">
@@ -187,40 +219,45 @@
                                     <span class="glyphicon glyphicon-arrow-left"></span>
                                 </span>
                                 <player-row
-                                    :player="player"
-                                    :bats="game_selected.game_state.bats"
-                                    :batters="game_selected.game_state.batters"
-                                    @move-batter-up="movePlayerSpot"
-                                    @move-batter-down="movePlayerSpot"
+                                    :player.sync="player"
+                                    :bats.sync="game_selected.game_state.bats"
+                                    :batters.sync="game_selected.game_state.batters"
+                                    @batterdown="movePlayerSpot(player, false)"
+                                    @batterup="movePlayerSpot(player, true)"
+                                    @removebatter="removeBatter(player)"
                                     ></player-row>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="row submitGameControls">
-                    <div class="col-xs-offset-2 col-sm-offset-4 col-xs-10 col-sm-6 col-centered">
-                        <button
-                            class="btn btn-lg btn-success"
-                            @click="gameOver()"
-                            id="gameOverButton">
-                            <span class="glyphicon glyphicon-ok"></span>
-                            Submit game
-                        </button>
-                        <button
-                            class="btn btn-lg btn-danger"
-                            v-on:click="restartGame()"
-                            id="cancelButton">
-                            <span class="glyphicon glyphicon-refresh"></span>
-                            Restart game
-                        </button>
-                        <button
-                            class="btn btn-lg btn-light "
-                            @click="undo()"
-                            id="undoButton"
-                            :disabled="!can_undo">
-                            <span class="glyphicon glyphicon-step-backward"></span>
-                            Undo
-                       </button>
+                    <div class="col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-centered">
+                        <div class="submitGameControls__container">
+                            <button
+                                class="btn btn-lg btn-success"
+                                @click="gameOver()"
+                                id="gameOverButton"
+                                :disabled="submitting">
+                                <span class="glyphicon glyphicon-ok"></span>
+                                Submit game
+                            </button>
+                            <button
+                                class="btn btn-lg btn-warning"
+                                v-on:click="restartGame()"
+                                id="restartButton"
+                                :disabled="submitting">
+                                <span class="glyphicon glyphicon-refresh"></span>
+                                Restart game
+                            </button>
+                            <button
+                                class="btn btn-lg btn-danger"
+                                v-on:click="quitGame()"
+                                id="quitButton"
+                                :disabled="submitting">
+                                <span class="glyphicon glyphicon-remove"></span>
+                                Quit game
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -302,44 +339,46 @@
                     batters: Array
                 },
                 template: `
-                    <div
-                        @move-batter-up="moveBatter(true)"
-                        @move-batter-down="moveBatter(false)"
-                        @clicked="moveBatter(true)">
+                    <div>
                         <span
-                            class="glyphicon glyphicon-circle-arrow-up glyphicon--info"
-                            v-if="!firstBatter()"
-                            @click="$moveBatter(true)"></span>
+                            class="glyphicon glyphicon-circle-arrow-up glyphicon--lg glyphicon--info"
+                            v-if="!firstBatter() && bats.length == 0"
+                            v-on:click="$emit('batterup', player)"></span>
                         <span
-                            class="glyphicon glyphicon-circle-arrow-down glyphicon--info"
-                            v-if="!lastBatter()"
-                            @click="$emit('clicked', player)"></span>
+                            class="glyphicon glyphicon-circle-arrow-down glyphicon--lg glyphicon--info"
+                            v-if="!lastBatter() && bats.length == 0"
+                            v-on:click="$emit('batterdown', player)"></span>
                         [[player.player_name]] -  (AVG: [[calcualteBattingAverage()]], HR: [[countHomeruns()]] RBI: [[countRbis()]])
+                        <span
+                            class="glyphicon glyphicon glyphicon-remove glyphicon--lg glyphicon--danger"
+                            v-if="bats.length == 0"
+                            v-on:click="$emit('removebatter', player)"></span>
                     </div>
                 `,
                 delimiters: ['[[', ']]'],
                 methods: {
                     calcualteBattingAverage: function() {
+                        /** Calculate the batting average in the game. */
                         bats = this.bats.filter(bat => bat.player_id == this.player.player_id);
                         hits = bats.filter(bat => HITS.includes(bat.classification));
                         ave = hits.length / bats.length
                         return isNaN(ave) ? "---" : ave.toFixed(3);
                     },
                     countHomeruns: function() {
+                        /** Count the total number of homeruns. */
                         return this.bats.filter(bat => bat.player_id == this.player.player_id && bat.classification == HOMERUN).length;
                     },
                     countRbis: function() {
+                        /** Count the number of total runs batted in the game. */
                         return this.bats.reduce((partialSum, bat) => partialSum + ((bat.player_id == this.player.player_id) ? bat.rbi: 0), 0);
                     },
                     firstBatter: function() {
+                        /** Is the batter the first in the lineup */
                         return this.batters[0].player_id == this.player.player_id;
                     },
                     lastBatter: function() {
+                        /** Is the batter the last in the lineup */
                         return this.batters[this.batters.length - 1].player_id == this.player.player_id;
-                    },
-                    moveBatter: function(up) {
-                        console.log(`Emit event: ${up}`);
-                        this.$emit("clicked", this.player);
                     }
                 }
             });
@@ -352,41 +391,10 @@
                     captain_id: captain_information.captain_id,
                     team_id: captain_information.team_id,
                     batter: 0,
-                    submittingBat: false,
+                    submitting: false,
                 },
                 delimiters: ['[[', ']]'],
                 methods: {
-                    gameWasSelected: function(game) {
-                        /** Handle when a game was selected. */
-                        this.players = this.players.map(function(player) {
-                            player.bats = [];
-                            return player;
-                         });
-                        game.game_state = this.getFreshGame();
-                        game.game_states = [];
-                        this.game_selected = game;
-                        this.submittingBat = false;
-                    },
-                    getFreshGame: function() {
-                        /** Return a new game */
-                        return JSON.parse(JSON.stringify({
-                            bats: [],
-                            batter: 0,
-                            inning: 1,
-                            outs: 0,
-                            batters: this.players,
-                            bases: [false, false, false]
-                        }));
-                    },
-                    getBase: function(base) {
-                        return this.game_selected.game_state.bases[base];
-                    },
-                    moveBaseRunner: function(base) {
-                        /** Move the base runner and saves the state. */
-                        this.game_selected.game_states.push(JSON.parse(JSON.stringify(this.game_selected.game_state)));
-                        this.advanceBaseRunner(base);
-                        saveGame(this.game_selected);
-                    },
                     advanceBaseRunner: function(base) {
                         /** Advances the base runner on the given base and runners ahead of them. */
                         if (!this.game_selected.game_state.bases[base]) {
@@ -405,49 +413,6 @@
                             Vue.set(this.game_selected.game_state.bases, base, false);
                             Vue.set(this.game_selected.game_state.bases, base + 1, true);
                         }
-                        console.log(this.game_selected.game_state.bases);
-                        
-                    },
-                    isBatterEligible: function() {
-                        const batter = this.game_selected.game_state.batters[this.game_selected.game_state.batter];
-                        return batter.gender == SPECIAL_SINGLE_ELIGIBLE;
-                    },
-                    runScored: function() {
-                        /** Record that a run was scored. */
-                        const bats = this.game_selected.game_state.bats.length;
-                        this.game_selected.game_state.bats[bats - 1].rbi += 1;
-                    },
-                    movePlayerSpot: function(player, up) {
-                        /** Move the player either up or down in roster */
-                        const current_spot = this.batters.findIndex((p) => p.player_id  == this.player.player_id);
-                        console.log(this.batters);
-                        console.log(this.player);
-                        console.log(current_spot);
-                        if (up) {
-                            var batter = this.batters[current_spot];
-                            var previous_batter = this.batters[current_spot - 1];
-                            this.batters[current_spot] = previous_batter;
-                            this.batters[current_spot - 1] = batter;
-                        } else {
-                            var batter = this.batters[current_spot];
-                            var next_batter = this.batters[current_spot + 1];
-                            this.batters[current_spot] = next_batter;
-                            this.batters[current_spot + 1] = batter;
-                        }
-                        console.log(this.batters);
-                    },
-                    clearBases: function() {
-                        /** Clear all the bases. */
-                        this.game_selected.game_state.bases = [false, false, false];
-                    },
-                    gotAnOut: function() {
-                        /** Updates the out and the inning if max outs were reached. */
-                        this.game_selected.game_state.outs += 1;
-                        if (this.game_selected.game_state.outs >= 3) {
-                            this.clearBases();
-                            this.game_selected.game_state.inning += 1;
-                            this.game_selected.game_state.outs = 0;
-                        }
                     },
                     baseRunnerOut: function(base) {
                         /** A base runner got out either on running or field's choice. */
@@ -460,16 +425,134 @@
                         this.game_selected.game_state.bases[base] = false;
                         
                     },
+                    clearBases: function() {
+                        /** Clear all the bases. */
+                        this.game_selected.game_state.bases = [false, false, false];
+                    },
                     currentBatter: function(player) {
                         /** Whether the given player is the current batter up. */
                         return this.game_selected.game_state.batters[this.game_selected.game_state.batter].player_id == player.player_id;
                     },
+                    gameOver: function() {
+                        /** The game is over. */
+                        this.submitting = true;
+                        const self = this;
+                        $.ajax({
+                            type: "POST",
+                            data: JSON.stringify(this.game_selected.game_state.bats),
+                            url: "{{ url_for('captain_submit_full_game', team_id=team_id) }}",
+                            contentType: "application/json",
+                            dataType: "json",
+                            async: true,
+                            success: function(success) {
+                                if (success) {
+                                    self.games = self.games.filter(g => g.game_id != self.game_selected.game_id);
+                                } else {
+                                    alert("Un-able to submit game");    
+                                }
+                                self.game_selected = null;
+                                removeSavedGame();
+                                self.game_selected = null;
+                                self.submitting = false;
+                            }, error: function(request, error) {
+                                alert("Un-able to submit game");
+                                self.game_selected = null;
+                                self.submitting = false;
+                                console.error(request);
+                                console.error(error);
+                            }
+                        });
+                    },
+                    gameWasSelected: function(game) {
+                        /** Handle when a game was selected. */
+                        this.players = this.players.map(function(player) {
+                            player.bats = [];
+                            return player;
+                         });
+                        game.game_state = this.getFreshGame();
+                        game.game_states = [];
+                        this.game_selected = game;
+                        this.submitting = false;
+                    },
+                    getBase: function(base) {
+                        /** Get the status of the given base. */
+                        return this.game_selected.game_state.bases[base];
+                    },
+                    getFreshGame: function() {
+                        /** Return a new game */
+                        return JSON.parse(JSON.stringify({
+                            bats: [],
+                            batter: 0,
+                            inning: 1,
+                            outs: 0,
+                            batters: this.players,
+                            bases: [false, false, false]
+                        }));
+                    },
+                    gotAnOut: function() {
+                        /** Updates the out and the inning if max outs were reached. */
+                        this.game_selected.game_state.outs += 1;
+                        if (this.game_selected.game_state.outs >= 3) {
+                            this.clearBases();
+                            this.game_selected.game_state.inning += 1;
+                            this.game_selected.game_state.outs = 0;
+                        }
+                    },
+                    isBatterEligible: function() {
+                        /** Is the batter eligible for special singles. */
+                        const batter = this.game_selected.game_state.batters[this.game_selected.game_state.batter];
+                        return batter.gender == SPECIAL_SINGLE_ELIGIBLE;
+                    },
+                    moveBaseRunner: function(base) {
+                        /** Move the base runner and saves the state. */
+                        this.game_selected.game_states.push(JSON.parse(JSON.stringify(this.game_selected.game_state)));
+                        this.advanceBaseRunner(base);
+                        saveGame(this.game_selected);
+                    },
+                    movePlayerSpot: function(player, up) {
+                        /** Move the player either up or down in roster */
+                        const current_spot = this.game_selected.game_state.batters.findIndex((p) => p.player_id  == player.player_id);
+                        if (up) {
+                            var batter = this.game_selected.game_state.batters[current_spot];
+                            var previous_batter = this.game_selected.game_state.batters[current_spot - 1];
+                            Vue.set(this.game_selected.game_state.batters, current_spot, previous_batter);
+                            Vue.set(this.game_selected.game_state.batters, current_spot - 1, batter);
+                        } else {
+                            var batter = this.game_selected.game_state.batters[current_spot];
+                            var next_batter = this.game_selected.game_state.batters[current_spot + 1];
+                            Vue.set(this.game_selected.game_state.batters, current_spot, next_batter);
+                            Vue.set(this.game_selected.game_state.batters, current_spot + 1, batter);
+                        }
+                    },
+                    nextBatter: function() {
+                        /** Move to the next batter. */
+                        this.game_selected.game_state.batter = (this.game_selected.game_state.batter + 1) % this.game_selected.game_state.batters.length;
+                    },
+                    quitGame: function() {
+                        this.game_selected.states = [];
+                        this.game_selected = null;
+                    },
+                    removeBatter: function(player) {
+                        /** Remove the given player from the batting lineup.*/
+                        this.game_selected.game_state.batters.splice(this.game_selected.game_state.batters.indexOf(player), 1);
+                    },
+                    restartGame: function() {
+                        /** Restart the game. */
+                        this.game_selected.states = [];
+                        this.game_selected.state = this.getFreshGame();
+                        this.gameWasSelected(this.game_selected);
+                    },
+                    runScored: function() {
+                        /** Record that a run was scored. */
+                        const bats = this.game_selected.game_state.bats.length;
+                        this.game_selected.game_state.bats[bats - 1].rbi += 1;
+                    },
                     submitBat: function(stat) {
                         /** Handle a bat submission. */
-                        if (this.submittingBat) {
+                        if (this.submitting) {
                             return;
                         }
-                        this.submittingBat = true;
+                        this.submitting = true;
                         this.game_selected.game_states.push(JSON.parse(JSON.stringify(this.game_selected.game_state)));
                         this.game_selected.game_state.bats.push({
                             game_id: this.game_selected.game_id,
@@ -507,32 +590,19 @@
                             this.game_selected.game_state.bases[0] = true;
                         }
                         saveGame(this.game_selected);
-                        console.log(this.game_selected);
-                        this.submittingBat = false;
-                    },
-                    nextBatter: function() {
-                        this.game_selected.game_state.batter = (this.game_selected.game_state.batter + 1) % this.game_selected.game_state.batters.length;
-                    },
-                    gameOver: function() {
-                        removeSavedGame();
-                        this.game_selected = null;
-                        this.submittingBat = false;
-                    },
-                    restartGame: function() {
-                        this.game_selected.states = [];
-                        this.game_selected.state = this.getFreshGame();
-                        this.gameWasSelected(this.game_selected);
+                        this.submitting = false;
                     },
                     undo: function() {
+                        /** Undo the the previous action. */
                         this.game_selected.game_state = this.game_selected.game_states.pop();
                     }
                 },
                 computed: {
+                    can_undo(){
+                        return this.game_selected.game_states.length > 0 && !this.submitting;
+                    },
                     total_score(){
                         return this.game_selected.game_state.bats.reduce((partialSum, bat) => partialSum + bat.rbi, 0);
-                    },
-                    can_undo(){
-                        return this.game_selected.game_states.length > 0;
                     }
                 }
             });
