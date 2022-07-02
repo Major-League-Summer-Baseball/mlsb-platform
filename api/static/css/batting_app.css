@@ -23,8 +23,9 @@
     margin-top: 5px;
     margin-bottom: 5px;
 }
-
-
+.glyphicon--info {
+    color: #5bc0de;
+}
 .bases-column {
     
 }
@@ -37,25 +38,45 @@
 
 .first-base {
     position: absolute;
-    left: 75%;
+    left: 72.5%;
     top: 55%;
 }
 
 .second-base {
     position: absolute;
-    left: 47.5%;
+    left: 44.0%;
     top: 22.5%;
 }
 .third-base {
     position: absolute;
-    left: 20%;
+    left: 17.5%;
     top: 55%;
+}
+
+.advance-base {
+    color:#449d44;
+}
+
+.base-runner {
+    color: #31b0d5;
+}
+
+.runner-out {
+    color: #c9302c;
+}
+
+.runner-icon {
+    font-size: 18px;
+}
+
+.advance-base:hover,
+.runner-out:hover {
+    cursor: pointer;
 }
 
 .battingScoreApp__container {
     width: 100%;
 }
-
 
 .battingScoreApp__controls {
     justify-content: space-between;
