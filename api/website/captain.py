@@ -57,7 +57,7 @@ def get_captain_info(team_id: int):
         "games": [game.json() for game in games],
         "players": sorted(
             [player.json() for player in team.players],
-            key=lambda x: x.player_id),
+            key=lambda x: x['player_id']),
         "team_id": team_id,
         "captain_id": team.player_id
     }), status=200, mimetype="application/json")
