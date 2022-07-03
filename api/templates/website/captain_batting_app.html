@@ -48,7 +48,7 @@
                                     <button
                                         title="Single"
                                         id="singleBat"
-                                        class="btn btn-info"
+                                        class="btn btn-info actions__bat"
                                         @click="submitBat(SINGLE)"
                                         :disabled="submitting" >
                                         <span class="glyphicon glyphicon-plus-sign"></span>
@@ -57,7 +57,7 @@
                                     <button
                                         title="Sapporo Single"
                                         id="specialSingeBat"
-                                        class="btn btn-info"
+                                        class="btn btn-info actions__bat"
                                         v-if="isBatterEligible()"
                                         @click="submitBat(SPECIAL_SINGLE)"
                                         :disabled="submitting">
@@ -67,7 +67,7 @@
                                     <button
                                         title="Double"
                                         id="doubleBat"
-                                        class="btn btn-info"
+                                        class="btn btn-info actions__bat"
                                         @click="submitBat(DOUBLE)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-plus-sign"></span>
@@ -76,7 +76,7 @@
                                     <button
                                         title="Triple"
                                         id="tripleBat"
-                                        class="btn btn-info"
+                                        class="btn btn-info actions__bat"
                                         @click="submitBat(TRIPLE)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-plus-sign"></span>
@@ -85,7 +85,7 @@
                                     <button
                                         title="Homerun"
                                         id="homerunBat"
-                                        class="btn btn-info"
+                                        class="btn btn-info actions__bat"
                                         @click="submitBat(HOMERUN)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-fire"></span>
@@ -96,7 +96,7 @@
                                     <button
                                         title="Fielder error"
                                         id="errorBat"
-                                        class="btn btn-warning"
+                                        class="btn btn-warning actions__bat"
                                         @click="submitBat(ERROR)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-plus-sign"></span>
@@ -105,7 +105,7 @@
                                     <button
                                         title="Fielder's Choice"
                                         id="fielderChoiceBat"
-                                        class="btn btn-warning"
+                                        class="btn btn-warning actions__bat"
                                         @click="submitBat(FIELDER_CHOICE)"
                                         v-if="game_selected.game_state.bases[0] || game_selected.game_state.bases[1] || game_selected.game_state.bases[2]"
                                         :disabled="submitting">
@@ -116,7 +116,7 @@
                                     <button
                                         title="Sacrifice-Fly"
                                         id="sacrificeFlyBat"
-                                        class="btn btn-warning"
+                                        class="btn btn-warning actions__bat"
                                         @click="submitBat(SACRIFICE_FLY)"
                                         v-if="game_selected.game_state.bases[2] && game_selected.game_state.outs < 2"
                                         :disabled="submitting">
@@ -128,7 +128,7 @@
                                     <button
                                         title="Fly-out"
                                         id="flyoutBat"
-                                        class="btn btn-danger"
+                                        class="btn btn-danger actions__bat"
                                         @click="submitBat(FLY_OUT)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-minus-sign"></span>
@@ -137,7 +137,7 @@
                                     <button
                                         title="Ground-out"
                                         id="groundoutBat"
-                                        class="btn btn-danger"
+                                        class="btn btn-danger actions__bat"
                                         @click="submitBat(GROUND_OUT)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-minus-sign"></span>
@@ -146,7 +146,7 @@
                                     <button
                                         title="Strike out"
                                         id="strikeoutBat" 
-                                        class="btn btn-danger"
+                                        class="btn btn-danger actions__bat"
                                         @click="submitBat(STRIKE_OUT)"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-minus-sign"></span>
@@ -155,7 +155,7 @@
                                     <button
                                         title="Auto out"
                                         id="autoOutBat" 
-                                        class="btn btn-danger"
+                                        class="btn btn-danger actions__bat"
                                         @click="gotAnOut()"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-minus-sign"></span>
@@ -166,7 +166,7 @@
                                     <button
                                         title="Skip the batter"
                                         id="SkipBatter"
-                                        class="btn btn-default"
+                                        class="btn btn-default actions__bat"
                                         @click="nextBatter()"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-step-forward"></span>
@@ -174,7 +174,7 @@
                                     </button>
                                     <button
                                         title="Undo recent bat"
-                                        class="btn btn-default"
+                                        class="btn btn-default actions__bat"
                                         id="undoButton"
                                         @click="undo()"
                                         :disabled="!can_undo">
@@ -391,17 +391,19 @@
                     batters: Array
                 },
                 template: `
-                    <div class="player-bats__summary">
+                    <div v-bind:id="'roster-' + player.player_id" class="player-bats__summary">
                         <div v-if="bats.length == 0">
                             <span
                                 class="glyphicon glyphicon-circle-arrow-up glyphicon--lg glyphicon--info"
                                 v-if="bats.length == 0"
+                                v-bind:id="'rosterUp-' + player.player_id"
                                 :disabled="firstBatter()"
                                 :class="{'glyphicon--disabled':firstBatter()}"
                                 v-on:click="!firstBatter() && $emit('batterup', player)"></span>
                             <span
                                 class="glyphicon glyphicon-circle-arrow-down glyphicon--lg glyphicon--info"
                                 v-if="bats.length == 0"
+                                v-bind:id="'rosterDown-' + player.player_id"
                                 :disabled="lastBatter()"
                                 :class="{'glyphicon--disabled':lastBatter()}"
                                 v-on:click="!lastBatter() && $emit('batterdown', player)"></span>
@@ -413,6 +415,7 @@
                         <span
                             class="glyphicon glyphicon glyphicon-remove glyphicon--lg glyphicon--danger"
                             v-if="bats.length == 0"
+                            v-bind:id="'rosterRemove-' + player.player_id"
                             v-on:click="$emit('removebatter', player)"></span>
                     </div>
                 `,
