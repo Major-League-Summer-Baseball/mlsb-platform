@@ -4,14 +4,15 @@ import { randomName, randomEmail } from './helper';
 
 /**
  * Generates a random player.
+ * @params gender if given otherwise m
  * @returns a player
  */
-export const generate_player = (): Player => {
+export const generate_player = (gender?: string): Player => {
     return {
         player_name: randomName(),
         email: randomEmail(),
         active: true,
-        gender: "m",
+        gender: gender || "m",
         player_id: null
     } as Player;
 };
