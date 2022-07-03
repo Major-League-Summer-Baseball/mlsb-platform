@@ -55,7 +55,9 @@ def get_captain_info(team_id: int):
     games = games_without_scores(team.id)
     return Response(json.dumps({
         "games": [game.json() for game in games],
-        "players": [player.json() for player in team.players],
+        "players": sorted(
+            [player.json() for player in team.players],
+            key=lambda x: x.player_id),
         "team_id": team_id,
         "captain_id": team.player_id
     }), status=200, mimetype="application/json")
@@ -89,6 +91,3 @@ def captain_submit_full_game(team_id: int):
         rbi=bat.get('rbi')
     ) for bat in bats])
     return Response(json.dumps(result), status=200, mimetype="application/json")
-
-
-
