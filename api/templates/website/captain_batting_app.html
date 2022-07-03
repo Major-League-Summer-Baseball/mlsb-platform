@@ -295,6 +295,7 @@
     <script>
         $(document).ready(ready());
         const GAME_SAVE_ID = 'mlsbGameInformation';
+        const PREVIOUS_ROSTER_ID = 'mlsbRoster';
         const HOMERUN = 'hr';
         const TRIPLE = 't';
         const DOUBLE = 'd';
@@ -326,12 +327,38 @@
                 }
             });
         }
+        function loadPreviousRoster(players) {
+            const roster = JSON.parse(localStorage.getItem(PREVIOUS_ROSTER_ID));
+            players = JSON.parse(JSON.stringify(players));
+            if (roster != null) {
+                combined_roster = [];
+                roster.forEach(player => {
+                    const found_player = players.find(p => player.player_id == p.player_id);
+                    if (found_player) {
+                        combined_roster.push(found_player);
+                    }
+                });
+                // add players for who did not play in the last game
+                players.forEach(player => {
+                    const already_in_lineup = combined_roster.find(p => player.player_id == p.player_id);
+                    if (!already_in_lineup) {
+                        combined_roster.push(player);
+                    }
+                });
+            } else {
+                combined_roster = players;
+            }
+            return combined_roster;
+        }
+        function savePreviousRoster(roster) {
+            localStorage.setItem(PREVIOUS_ROSTER_ID, JSON.stringify(roster))
+        }
         function saveGame(game) {
             localStorage.setItem(GAME_SAVE_ID,  JSON.stringify(game));
         }
         function getSavedGame() {
-            const g = localStorage.getItem(GAME_SAVE_ID)
-            return (g != null) ? JSON.parse(g) : null;
+            const game = localStorage.getItem(GAME_SAVE_ID)
+            return (game != null) ? JSON.parse(game) : null;
         }
         function removeSavedGame() {
             return localStorage.removeItem(GAME_SAVE_ID);
@@ -422,7 +449,7 @@
                 data: {
                     game_selected: previous_game,
                     games: captain_information.games,
-                    players: captain_information.players,
+                    players: loadPreviousRoster(captain_information.players),
                     captain_id: captain_information.captain_id,
                     team_id: captain_information.team_id,
                     batter: 0,
@@ -485,8 +512,10 @@
                                 } else {
                                     alert("Un-able to submit game");    
                                 }
+                                savePreviousRoster(self.game_selected.game_state.batters);
                                 self.game_selected = null;
                                 removeSavedGame();
+                                
                                 self.game_selected = null;
                                 self.submitting = false;
                             }, error: function(request, error) {
