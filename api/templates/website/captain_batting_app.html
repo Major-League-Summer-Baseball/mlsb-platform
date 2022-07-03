@@ -442,7 +442,6 @@
                     },
                     lastBatter: function() {
                         /** Is the batter the last in the lineup */
-                        console.log(this.batters)
                         return this.batters[this.batters.length - 1].player_id == this.player.player_id;
                     }
                 }
@@ -466,7 +465,7 @@
                             // prevent double click
                             return;
                         }
-                        if (base == 3) {
+                        if (base == 2) {
                             // made it home
                             Vue.set(this.game_selected.game_state.bases, base, false);
                             this.runScored();
@@ -598,7 +597,6 @@
                     },
                     removeBatter: function(player) {
                         /** Remove the given player from the batting lineup.*/
-                        console.log("Remove player");
                         Vue.delete(this.game_selected.game_state.batters, this.game_selected.game_state.batters.indexOf(player));
                     },
                     restartGame: function() {
