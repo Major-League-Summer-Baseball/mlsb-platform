@@ -1,0 +1,77 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<h3>Batting App - Keep track of stats</h3>
+<p>
+    Announcing a new feature for MLSB and MLSB-Alumni. It will allow captains to keep track of everyone stats on their team.
+    This will hopefully allows those great hitters who don't hit homeruns to highlight their skills. Captains can still submit their game summaries as before but now have the option of keeping track of the whole game.
+    
+    The feature is available to captains under their profile as "Batting App"
+    <br>
+    <img src="{{ url_for('static', filename="pictures/posts/batting-app/batting-feature.png") }}"  alt="" class="postImage" style="">
+</p>
+    
+<h4>
+    Set your roster
+</h4>
+<p>
+    Once you select the game you want to keep track off you need to first set the order of your lineup.
+    Use the up and down arrows you can re-adjust the order of the lineup.
+    If you need to remove a player you simple need to click on the X next to their name.
+    The app will load your previous used roster to help make things easier for you.
+    Currently there is not support for substitute players.
+    <br>
+    <img src="{{ url_for('static', filename="pictures/posts/batting-app/setting-roster.png") }}"  alt="" class="postImage" style="">
+</p>
+<h4>
+    Tracking Game
+</h4>
+<p>
+    After your roster is set you can proceed to select one the batting options.
+    <ul>
+        <li>S - Single: batter made it to first base and there were no outs</li>
+        <li>SS - Sapporo Single: eligible batter hit ball to grass</li>
+        <li>D - Double: batter made it to second base and there were no outs</li>
+        <li>T - Triple: batter made it to third base and there were no outs</li>
+        <li>HR - Home-run: batter made it around the bases and there were no outs</li>
+        <li>E - Error: batter made it to a base but a fielder made an error on the play</li>
+        <li>SF - Sacrifice-fly: batter hit the ball far enough for runner on third to make it home. Batter is out</li>
+        <li>FC - Fielder's choice: Fieler choose to get out runner instead of batter</li>
+        <li>FO - Fly-out: Batter hit ball but it was caught</li>
+        <li>GO - Ground-out: Batter hit on the ground and thrown out at first</li>
+        <li>K - Strike-out: Batter strike-out at the plate</li>
+        <li>Auto-out - due to league rules the team needs to take an auto-out</li>
+        <li>Skip - Skip the current batter</li>
+        <li>Undo - undo the previous bat</li>
+    </ul>
+    <br>
+    <img src="{{ url_for('static', filename="pictures/posts/batting-app/batting-options.png") }}"  alt="" class="postImage" style="">
+</p>
+<h4>
+    Runners on base
+</h4>
+<p>
+    The app has a outline of the bases and keeps tracks of runners on base.
+    The app will attempt to move runners forward but sometimes runners are able to take extra bases or sometimes they get thrown out.
+    <br>
+    <strong>
+        Advancing runner:
+    </strong>
+    <br>
+    To advance a runner click the green arrow next to the base they are on.
+    <br>
+    <strong>
+        Running gets out:
+    </strong>
+    <br>
+    If the runners gets out due to a lead-off or a fielder's choice just click the red X next to the base they are on.
+    The same option could be used for double plays.
+    <br>
+    <img src="{{ url_for('static', filename="pictures/posts/batting-app/base-runners.png") }}"  alt="" class="postImage" style="">
+</p>
+<h4>
+    End of a Inning
+</h4>
+<p>
+    Once you there is three outs in a inning the bases will be cleared and the next inning will start.
+</p>
+{% endblock %}

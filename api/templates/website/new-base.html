@@ -202,6 +202,9 @@
                                       <a href=" {{ url_for('captain_score_games', team_id=team.team_id) }}">
                                         Submit Scores
                                       </a>
+                                      <a href="{{ url_for('captain_batting_app', team_id=team.team_id) }}">
+                                        Batting app
+                                      </a>
                                     {% endif %}
                                     <a href="{{ url_for('team_page', year=year, team_id=team.team_id) }}">
                                       {{team.team_name}}

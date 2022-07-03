@@ -116,8 +116,8 @@
                     this.$emit('clicked', this.game);
                 }
             }
+        });
 
-        })
         const playerStatComponent = Vue.component('player-stat', {
             props: {
                 player: Object,
@@ -177,7 +177,7 @@
                     this.$emit('clicked', direction, this.stat);
                 }
             }
-        })
+        });
         const app = new Vue({
             el: '#submitScoreApp',
             data: {
