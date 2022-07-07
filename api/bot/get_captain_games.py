@@ -29,11 +29,11 @@ def games_without_scores(team_id: int) -> list[Game]:
                             .filter(Bat.team_id == team_id)
                             .distinct())]
     games = (DB.session.query(Game)
-                .filter(or_(Game.away_team_id == team_id,
-                            Game.home_team_id == team_id))
-                .filter(Game.date <= end_of_today)
-                .filter(Game.id.notin_(game_ids))
-                ).order_by(asc(Game.date)).all()
+             .filter(or_(Game.away_team_id == team_id,
+                         Game.home_team_id == team_id))
+             .filter(Game.date <= end_of_today)
+             .filter(Game.id.notin_(game_ids))
+             .order_by(asc(Game.date))).all()
     return games
 
 
