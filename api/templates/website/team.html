@@ -177,8 +177,7 @@
     function addPlayer(team_id) {
         var player_id = $('#addPlayer').val();
         var player_name = $('#addPlayer option:selected').text();
-        console.log({player_id: player_id, player_name: player_name, team_id: team_id});
-        var url = "{{url_for('team_add_player', team_id=1, player_id=2)}}".replace("1", team_id.toString()).replace("2", player_id.toString());
+        var url = `/website/teams/${team_id}/add_player/${player_id}`;
         $.ajax({
             type: "POST",
                 url: url,
