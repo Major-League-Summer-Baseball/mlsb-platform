@@ -20,10 +20,10 @@ UNASSIGNED = 1
 UNASSIGNED_EMAIL = "unassignedBats@mlsb.ca"
 
 # the hits that are available
-HITS = ["s", "ss", "d", "hr"]
+HITS = ["s", "ss", "d", "hr", "t"]
 
 # all the possible results from a bat
-BATS = ['s', 'd', 'ss', 'hr', 'k', 'e', 'fc', 'fo', 'go']
+BATS = ['s', 'd', 'ss', 'hr', "t", 'k', 'e', 'fc', 'fo', 'go', 'sf']
 # the genders currently supported
 GENDERS = ["f", "m"]
 

@@ -1,0 +1,39 @@
+{
+  "name": "ui-testing",
+  "version": "1.0.0",
+  "description": "End to end testing",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:test": "cypress run --spec \"**/*.feature\""
+  },
+  "keywords": [
+    "mlsb",
+    "testing",
+    "softball",
+    "cypress",
+    "cucumber"
+  ],
+  "author": "dallas.fraser.waterloo@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "latest",
+    "@babel/preset-env": "latest",
+    "@badeball/cypress-cucumber-preprocessor": "latest",
+    "@cypress/webpack-preprocessor": "latest",
+    "@testing-library/cypress": "latest",
+    "axe-core": "^4.4.2",
+    "babel-loader": "latest",
+    "cypress": "latest",
+    "cypress-axe": "^1.0.0",
+    "ts-loader": "latest",
+    "typescript": "latest",
+    "webpack": "latest"
+  },
+  "stepDefinitions": [
+    "[filepath]/**/*.{js,ts}",
+    "[filepath].{js,ts}",
+    "cypress/features/global/**/*.{js,ts}",
+    "cypress/features/global/login.{js,ts}"
+  ]
+}

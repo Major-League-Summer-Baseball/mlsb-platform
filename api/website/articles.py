@@ -128,6 +128,12 @@ def rip_summary(f: str, year: int) -> dict:
             if "<h" in line:
                 line = line.replace("<h4>", "")
                 line = line.replace("</h4>", "")
+                line = line.replace("<h3>", "")
+                line = line.replace("</h3>", "")
+                line = line.replace("<h2>", "")
+                line = line.replace("</h2>", "")
+                line = line.replace("<h1>", "")
+                line = line.replace("</h1>", "")
                 if result['title'] is None:
                     result['title'] = line.strip()
             elif "<img" in line:
