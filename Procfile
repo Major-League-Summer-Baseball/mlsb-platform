@@ -1,1 +1,1 @@
-web: gunicorn runserver:app	
+web: gunicorn runserver:app	-b :8080
