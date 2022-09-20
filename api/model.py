@@ -822,7 +822,7 @@ class Bat(DB.Model):
 
     def json(self) -> dict:
         """Returns a jsonserializable object."""
-        return{
+        return {
             'bat_id': self.id,
             'game_id': self.game_id,
             'team_id': self.team_id,
