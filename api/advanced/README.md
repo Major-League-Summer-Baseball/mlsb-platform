@@ -5,4 +5,4 @@ This API are mainly for viewing information and querying
 
 Read more at [documentation] 
 
-[documentation]:http://mlsb-platform.herokuapp.com/documentation
+[documentation]:http://mlsb.fly.dev/documentation

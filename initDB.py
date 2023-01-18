@@ -308,7 +308,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=descp)
 
     # use the development serve (just so not touching production)
-    default_url = "https://mlsb-platform-development.herokuapp.com"
+    default_url = "https://mlsb-devlopment.fly.dev"
     parser.add_argument("-url",
                         dest="url",
                         action="store",
