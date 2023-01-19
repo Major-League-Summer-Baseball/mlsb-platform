@@ -10,4 +10,4 @@ All routes implement four main type of requests
 
 Read more at [documentaiton] 
 
-[documentation]: http://mlsb-platform.herokuapp.com/documentation
+[documentation]: http://mlsb.fly.dev/documentation

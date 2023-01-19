@@ -47,7 +47,7 @@ class PlayerTeamLookupAPI(Resource):
         if players is not None:
             for player in players:
                 for team in player.teams:
-                    if(team.id not in data_lookup):
+                    if (team.id not in data_lookup):
                         data_lookup[team.id] = True
                         data.append(team.json())
         return Response(dumps(data), status=200, mimetype="application/json")
