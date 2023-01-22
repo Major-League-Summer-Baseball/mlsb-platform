@@ -656,3 +656,13 @@ a {
     width: 300px !important;
   }
  }
+
+ .font-subtext {
+  font-size: 12px;
+  color: #808080;
+ }
+
+ .max-width-450 {
+  margin: 0 auto;
+  max-width: 450px;
+ }
