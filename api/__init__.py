@@ -13,6 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 from api.errors import ERRORS
 from api.config import Config
 from flask_caching import Cache
+from werkzeug.middleware.proxy_fix import ProxyFix
 from os import getcwd
 from os.path import join
 from api.routes import Routes
@@ -47,6 +48,7 @@ POSTS = join(getcwd(), "api", "templates", "website", "posts")
 app.config['UPLOAD_FOLDER'] = "./static"
 if app.config["ENV"] != "development":
     Talisman(app, content_security_policy=None)
+    app.wsgi_app = ProxyFix(app.wsgi_app)
 
 # these imports cannot be at the top right now
 

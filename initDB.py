@@ -242,7 +242,7 @@ def add_random_score(game_id, team_id, players):
             rbis = random.randint(1, 4)
 
         # just make sure not submitting a guy hitting ss
-        if(batter.gender.lower() == "m" and bat.lower() == "ss"):
+        if (batter.gender.lower() == "m" and bat.lower() == "ss"):
             bat = "s"
         score = score - rbis
         DB.session.add(Bat(batter.id, team_id, game_id, bat, rbi=rbis))
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=descp)
 
     # use the development serve (just so not touching production)
-    default_url = "https://mlsb-platform-development.herokuapp.com"
+    default_url = "https://mlsb-devlopment.fly.dev"
     parser.add_argument("-url",
                         dest="url",
                         action="store",

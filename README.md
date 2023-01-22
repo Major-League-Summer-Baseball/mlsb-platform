@@ -110,9 +110,25 @@ flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclud
 ```
 
 ## Github Actions
-Working on Github actions. For now it will run unittests and styling issues
-on PRs to Development and Master. Additionally, might work on a Cypress project
-for ensuring checkin whether development server on Heroku is working as
-expected.
+There is one Github action that runs against pushes to main and development. Additionlly ran when a pull-request is open targeting main and development. It does the following:
+* Checks lint issues with flake8
+* Runs unittests and creates a coverage report (artifact)
+* Runs Cypress UI Tests and video report (artifact)
+ 
+Additionally there are two Github actions for main and development that deploys them on a commit. They are currently being deployed to fly.IO
 
-Docker images are push for commits to master and development
+Finally, there is a Github action for creating a docker image for pushes to main and development. No real use of the docker images at this moment.
+
+## Fly IO Commands
+```
+# connect to production app database
+flyctl proxy 15432:5432 -a mlsb-development-db
+# set environment variable (development - change for production)
+flyctl secrets set SOMEVARIABLE=SOMEVALUE --config ./deployments/fly-development.toml
+# deploy to some enviroment(development - change for production)
+flyctl deploy --config ./deployments/fly-development.toml
+# check production certificates
+flyctl certs list --config ./deployments/fly-production.toml
+# check specific certificate
+flyctl certs show mlsb.ca --config ./deployments/fly-production.toml
+```
