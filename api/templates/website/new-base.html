@@ -6,6 +6,8 @@
     <meta name="description" content="">
     <meta name="author" content="MLSB">
     <meta name="google-site-verification" content="qSt9jjuYZUBY4xLaVzVWozeFLlZ9_Gy9GB3fChNzSmw" />
+    <meta name="google-site-verification" content="tkL16jUVVvkLG3CLF-2r0-XVLQTR4JeLjrs4OA1ZGXI" />
+    <meta name="google-site-verification" content="WtIwssAfgRo0FQDNR27UsjJnKAX_qiYH8l6uQfskI9w" />
     <title>{{title}}</title>
 	  <!-- core CSS -->
     <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
@@ -22,6 +24,7 @@
     <script src="{{ url_for('static', filename="js/html5shiv.js") }}""></script>
     <script src="{{ url_for('static', filename="js/respond.js") }}""></script>
     <![endif]-->
+    
     <link rel="icon" href="{{route.favicon}}/{{year}}">
     <link rel="shortcut icon"  href="{{route.favicon}}/{{year}}">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{route.favicon}}/{{year}}">
@@ -29,6 +32,10 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{route.favicon}}/{{year}}">
     <link rel="apple-touch-icon-precomposed" href="{{route.favicon}}/{{year}}">
     
+    <!-- Google Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
 
 </head><!--/head-->
 
@@ -267,7 +274,7 @@
                         {% endif %}
                         
                         <!-- The general pattern is for the convenors to update the instagram handle to current year -->
-                        <a href="https://www.instagram.com/{{base.current_year}}mlsb/" target="_blank" class="social-link">
+                        <a href="https://www.instagram.com/mlsb{{base.current_year}}/" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
                         </a>
                         <!--
@@ -285,7 +292,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-4">
-                    &copy; MLSB 2019. All Rights Reserved.
+                    &copy; MLSB 2023. All Rights Reserved.
+                </div>
+                <div class="col-sm-8">
+                  <ul class="pull-right">
+                    <li><a class="btn btn-mini btn-link " href="{{route.about}}/{{base.current_year}}">About</a></li>
+                  </ul>
+                  <ul class="pull-right">
+                    <li><a class="btn btn-mini btn-link " href="{{route.privacy}}">Privacy Policy</a></li>
+                  </ul>
                 </div>
                 <!-- <div class="col-sm-8">
                     <ul class="pull-right">

@@ -16,8 +16,7 @@
 }
 
 #header .navbar-nav a:hover,
-#header .navbar-nav a:focus,
- {
+#header .navbar-nav a:focus {
   color: #002855 ;
   text-shadow: -1px 0  #CE1141, 0 1px #CE1141 , 1px 0 #CE1141 , 0 -1px #CE1141 ;
 }
@@ -64,7 +63,7 @@ p.accent{
 }
 
 li.presentation a{
-  background-color: #002855
+  background-color: #002855;
   color: #EAAA00;
 }
 
@@ -128,8 +127,4 @@ a:hover, a:focus {
 
 #bottom ul li a {
   color: #EAAA00  ;
-}
-
-#footer a:hover {
-  color: #EAAA00;
 }
