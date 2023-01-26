@@ -635,8 +635,13 @@ a {
 }
 
 #footer a {
-  color: #fff;
+  color: #808080;
 }
+
+#footer a:hover {
+  color: #4e4e4e;
+}
+
 
 #footer ul {
   list-style: none;

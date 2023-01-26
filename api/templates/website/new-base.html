@@ -267,7 +267,7 @@
                         {% endif %}
                         
                         <!-- The general pattern is for the convenors to update the instagram handle to current year -->
-                        <a href="https://www.instagram.com/{{base.current_year}}mlsb/" target="_blank" class="social-link">
+                        <a href="https://www.instagram.com/mlsb{{base.current_year}}/" target="_blank" class="social-link">
                             <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
                         </a>
                         <!--
@@ -285,7 +285,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-4">
-                    &copy; MLSB 2019. All Rights Reserved.
+                    &copy; MLSB 2023. All Rights Reserved.
+                </div>
+                <div class="col-sm-8">
+                  <ul class="pull-right">
+                    <li><a class="btn btn-mini btn-link " href="{{route.about}}/{{base.current_year}}">About</a></li>
+                  </ul>
+                  <ul class="pull-right">
+                    <li><a class="btn btn-mini btn-link " href="{{route.privacy}}">Privacy Policy</a></li>
+                  </ul>
                 </div>
                 <!-- <div class="col-sm-8">
                     <ul class="pull-right">
