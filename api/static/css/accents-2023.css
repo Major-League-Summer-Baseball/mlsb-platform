@@ -1,9 +1,9 @@
 .sponsor-banner {
-    background-color: rgba(244,167,7, 0.44);
+    background-color: rgba(244,167,7, 0.5);
 }
 
 .games-container {
-    background-color: rgba(42,106,196, 0.5);
+    background-color: rgba(42,106,196, 0.75);
 }
 
 .navbar .icon-bar {
@@ -47,7 +47,11 @@ p.accent{
 }
 
 .leaderTitle{
-  color: #f5a417;
+  color: #2d68c4;
+}
+
+.leaderTitle.sapporo {
+    color: #f5a417;
 }
 
 .btn-primary {
