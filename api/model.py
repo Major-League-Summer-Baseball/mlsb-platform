@@ -12,7 +12,7 @@ from datetime import date, datetime
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist,\
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist,\
     NonUniqueEmail, PlayerNotOnTeam, DivisionDoesNotExist,\
-    HaveLeagueRequestException
+    HaveLeagueRequestException, LeagueEventDoesNotExist
 from api.validators import rbi_validator, hit_validator, inning_validator,\
     string_validator, date_validator, time_validator,\
     field_validator, year_validator, gender_validator,\
@@ -27,8 +27,174 @@ roster = DB.Table('roster',
                             DB.ForeignKey('player.id')),
                   DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
                   )
+attendance = DB.Table('attendance', DB.Column('player_id',
+                                              DB.Integer,
+                                              DB.ForeignKey('player.id')),
+                      DB.Column('league_event_date_id',
+                                DB.Integer,
+                                DB.ForeignKey('league_event_date.id'))
+                      )
 SUBSCRIBED = "{} SUBSCRIBED"
 AWARD_POINTS = "{} awarded espy points for subscribing: {}"
+
+
+class LeagueEvent(DB.Model):
+    """
+        A class used to store league events like Summerween.
+        Columns:
+            id: the unique id
+            name: the name of the event
+            description: the description of the
+    """
+    id = DB.Column(DB.Integer, primary_key=True)
+    name = DB.Column(DB.String(80))
+    description = DB.Column(DB.Text())
+    active = DB.Column(DB.Boolean())
+
+    def __init__(self, name: str, description: str, active: bool = True):
+        """ League event constructor. """
+        self.name = name
+        self.description = description
+        self.active = active
+
+    def update(self, name=None, description=None, active=None) -> None:
+        """Update a league event.
+
+            Parameters:
+                name: the league event new name (optional str)
+                description: the league event new description (optional str)
+                active: is the event active or not (optional str)
+        """
+        if name is not None:
+            if not string_validator(name):
+                raise InvalidField(payload={"details": "League event - name"})
+            self.name = name
+        if description is not None:
+            if not string_validator(description):
+                load = {"details": "League event - description"}
+                raise InvalidField(payload=load)
+            self.description = description
+        if active is not None:
+            if not boolean_validator(active):
+                raise InvalidField(payload={'detail': "League Event - active"})
+            self.active = active
+
+    def json(self) -> dict:
+        """Returns a jsonserializable object."""
+        return {"league_event_id": self.id,
+                "name": self.name,
+                "description": self.description,
+                "active": self.active}
+
+
+class LeagueEventDate(DB.Model):
+    """
+        A class used to store the dates of league events.
+        Columns:
+            id: the unique id
+            league_event_id: the league event
+            date: the date of the event for some year
+    """
+    id = DB.Column(DB.Integer, primary_key=True)
+    event = DB.relationship('LeagueEvent',
+                            backref=DB.backref('event', uselist=False))
+    league_event_id = DB.Column(DB.Integer, DB.ForeignKey('league_event.id'))
+    date = DB.Column(DB.DateTime)
+    players = DB.relationship('Player',
+                              secondary=attendance,
+                              backref=DB.backref('events', lazy='dynamic'))
+
+    def __init__(self, date: str, time: str, league_event_id: int):
+        """ League event date constructor. """
+        if not date_validator(date):
+            raise InvalidField(payload={'details': "League Event Date - date"})
+        if not time_validator(time):
+            raise InvalidField(payload={'details': "League Event Date - time"})
+        self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
+        if LeagueEvent.query.get(league_event_id) is None:
+            raise LeagueEventDoesNotExist(payload={'details': league_event_id})
+        self.league_event_id = league_event_id
+
+    def update(self,
+               date: str = None,
+               time: str = None,
+               league_event_id: int = None) -> None:
+        """ League event date constructor. """
+        d = self.date.strftime("%Y-%m-%d")
+        t = self.date.strftime("%H:%M")
+        if date is not None:
+            if not date_validator(date):
+                payload = {'details': "League Event Date - date"}
+                raise InvalidField(payload=payload)
+            d = date
+        if time is not None:
+            if not time_validator(time):
+                payload = {'details': "League Event Date - time"}
+                raise InvalidField(payload=payload)
+            t = time
+        if league_event_id is not None:
+            if LeagueEvent.query.get(league_event_id) is None:
+                payload = {'details': league_event_id}
+                raise LeagueEventDoesNotExist(payload=payload)
+            self.league_event_id = league_event_id
+        self.date = datetime.strptime(d + "-" + t, '%Y-%m-%d-%H:%M')
+
+    def signup_player(self, player_id: int) -> bool:
+        """The player wants to signup for the given event.
+
+        Parameter:
+            player_id: the id of the player to add
+        Returns:
+            True if player was added
+            False otherwise
+        Raises:
+            PlayerDoesNotExist
+        """
+        valid = False
+        player = Player.query.get(player_id)
+        if player is None:
+            raise PlayerDoesNotExist(payload={'details': player_id})
+        if not self.is_player_attending(player):
+            self.players.append(player)
+            valid = True
+        return valid
+
+    def remove_player(self, player_id: int) -> None:
+        """Removes a player from a team.
+
+        Parameter:
+            player_id: the id of the player to remove
+        Raises:
+            MissingPlayer
+        """
+        player = Player.query.get(player_id)
+        if not self.is_player_attending(player):
+            raise PlayerNotOnTeam(payload={'details': player_id})
+        self.players.remove(player)
+
+    def is_player_attending(self, player: 'Player') -> bool:
+        """Returns whether the given player is attending the event.
+
+        Parameter:
+            player: the player model
+        Returns:
+            True if player on team otherwise False (boolean)
+        """
+        if player is None:
+            return False
+        return player.id in [p.id for p in self.players]
+
+    def json(self) -> dict:
+        """Returns a jsonserializable object."""
+        return {'league_event_date_id': self.id,
+                'league_event_id': self.event.id,
+                'date': self.date.strftime("%Y-%m-%d"),
+                'time': self.date.strftime("%H:%M"),
+                'description': self.event.description,
+                'name': self.event.name,
+                'active': self.event.active,
+                'attendance': len(self.players)
+                }
 
 
 class Fun(DB.Model):

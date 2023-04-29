@@ -6,7 +6,7 @@
 '''
 from api import DB
 from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat,\
-    Division
+    Division, LeagueEvent, LeagueEventDate
 from api.variables import UNASSIGNED_EMAIL, HITS
 from tqdm import tqdm
 import os
@@ -15,10 +15,131 @@ import random
 import argparse
 
 
+CURRENT_YEAR = datetime.datetime.now().year
+MOCK_EVENTS = [
+    (
+        'Beerlympics',
+        True,
+        """
+        <p>
+            Beerlympics (formerly called Beerfest). Ever seen the movie?
+            Well this is even better.
+            Teams dressed up as various countries competing under the hot sun coupled with several awesome drinking
+            games makes for a day that you will never forget.
+        </p>
+        """,
+        f"{CURRENT_YEAR}-07-01"
+    ),
+    (
+        'Jays Game',
+        True,
+        """
+        <p>
+            What better way to get ready for the MLSB season than to drive down
+            buses full of party animals like yourselves to T.O.
+            to watch the boys of summer?
+        </p>
+        """,
+        None
+    ),
+    (
+        'Summerween',
+        True,
+        """
+        <p>
+            We all know Halloween during university is the best holiday for
+            several obvious reasons. At MLSB, you get to partake in celebrating
+            this joyous day twice a year.
+        </p>
+        """,
+        f"{CURRENT_YEAR}-06-01"
+    ),
+    (
+        'Mystery Bus',
+        True,
+        """
+        <p>
+            What do you get when you cram over a hundred students on to school
+            buses and send them to a bar in the middle of nowhere? A hell of a
+            good time! This event marks the start of
+            MLSB every year and takes place in the winter.
+        </p>
+        """,
+        f"{CURRENT_YEAR}-04-01"
+    ),
+    (
+        'Rafting',
+        True,
+        """
+        <p>
+            Rafting is the most hyped MLSB event of the summer! It is a
+            whirlwind of a weekend with rafting, camping, tanning, and drinking
+            events on the Ottawa river with our
+            friends at OWL Rafting.
+        </p>
+        <p>
+            If there is one MLSB event you shouldn’t miss, it is definitely
+            this one because it is going to be a wild weekend!
+        </p>
+        """,
+        f"{CURRENT_YEAR}-07-08"
+    ),
+    (
+        'Grand Bender',
+        True,
+        """
+        <p>
+            MLSB hosts their annual All Star tournament, and what could be
+            better than playing it in a baseball field in the middle of
+            nowhere!  Those not participating in the All Star Game are in for
+            a treat, as they get the entertainment of watching the All-Stars
+            get clumsy on the field.
+        </p>
+        <p>
+            Bring your tents because we will be camping out for the night!
+        </p>
+        """,
+        f"{CURRENT_YEAR}-07-28"
+    ),
+    (
+        'MLSB Alumni',
+        True,
+        """
+        <p>
+            A weekend for those who have graduated to relive the glory days.
+            The tournemant is welcome to both current players and alumni.
+            It really is the tournament where legends are born.
+
+        </p>
+        <p>
+            One of the best weekends of the summer.
+            <a href="mailto:mlsbalumni@gmail.com?Subject=MLSB Alumni">
+                Sign up
+            </a>
+        </p>
+        """,
+        f"{CURRENT_YEAR}-06-22"
+    )
+]
+
+
+def mock_events():
+    """Mock the events"""
+    for event in tqdm(MOCK_EVENTS):
+        league_event = LeagueEvent(event[0], event[2], event[1])
+        DB.session.add(league_event)
+        DB.session.commit()
+        if event[3] is not None:
+            event_date = LeagueEventDate(event[3],
+                                         '12:00',
+                                         league_event.id)
+            DB.session.add(event_date)
+            DB.session.commit()
+
+
 def mock_fun_count():
     """Mock the fun count"""
-    current_year = datetime.datetime.now().year
-    for year in range(2016, current_year):
+    for year in range(2016, CURRENT_YEAR):
         DB.session.add(Fun(year=year, count=random.randint(300, 500)))
     DB.session.commit()
 
@@ -201,6 +322,9 @@ def create_fresh_tables():
     """Creates fresh tables and deletes any previous information."""
     # delete old information
     DB.session.commit()
+    DB.engine.execute("DROP TABLE IF EXISTS attendance;")
+    DB.engine.execute("DROP TABLE IF EXISTS league_event_date;")
+    DB.engine.execute("DROP TABLE IF EXISTS league_event;")
     DB.engine.execute("DROP TABLE IF EXISTS join_league_request;")
     DB.engine.execute("DROP TABLE IF EXISTS flask_dance_oauth;")
     DB.engine.execute("DROP TABLE IF EXISTS fun;")
@@ -282,6 +406,7 @@ def init_database(mock, create_db):
     if (mock):
         print("Adding mock data ...")
         # add the unassigned bats player
+        mock_events()
         mock_fun_count()
         sponsor_lookup = mock_sponsors()
         league = mock_league()
