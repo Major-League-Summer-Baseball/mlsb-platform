@@ -59,6 +59,20 @@ def league_object_doc():
                            errors=ERRORS)
 
 
+@app.route(Routes["doleagueevent"])
+def league_event_object_doc():
+    return render_template('documentation/leagueEventObject.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes["doleagueeventdate"])
+def league_event_date_object_doc():
+    return render_template('documentation/leagueEventDateObject.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
 @app.route(Routes["dodivision"])
 def division_object_doc():
     return render_template('documentation/divisionObject.html',
@@ -150,6 +164,20 @@ def league_route_doc():
                            errors=ERRORS)
 
 
+@app.route(Routes["dbleagueevent"])
+def league_event_route_doc():
+    return render_template('documentation/leagueEventRoute.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes["dbleagueeventdate"])
+def league_event__dateroute_doc():
+    return render_template('documentation/leagueEventDateRoute.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
 @app.route(Routes["dbdivision"])
 def division_route_doc():
     return render_template('documentation/divisionRoute.html',
@@ -167,6 +195,13 @@ def team_view_doc():
 @app.route(Routes["dvgame"])
 def game_view_doc():
     return render_template('documentation/gameView.html',
+                           route=Routes,
+                           errors=ERRORS)
+
+
+@app.route(Routes["dvleagueevent"])
+def league_event_view_doc():
+    return render_template('documentation/leagueEventView.html',
                            route=Routes,
                            errors=ERRORS)
 
