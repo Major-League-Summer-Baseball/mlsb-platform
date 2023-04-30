@@ -70,6 +70,7 @@ def signup_event(league_event_date_id):
 
 @app.route(Routes['eventspage'] + "/<int:year>")
 def events_page(year):
+    """The events page for a given year"""
     events = get_year_events(year)
     if are_logged_in():
         for i in range(0, len(events)):
@@ -77,7 +78,6 @@ def events_page(year):
                 events[i]['league_event_date_id']
             )
             events[i]['registered'] = event.is_player_signed_up(get_player_id())
-    print(events)
     return render_template("website/events.html",
                            dates=events,
                            route=Routes,
