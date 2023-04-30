@@ -10,7 +10,7 @@ from json import dumps
 from api import DB
 from api.model import LeagueEventDate
 from api.authentication import requires_admin
-from api.errors import LeagueEventDoesNotExist, LeagueEventDateDoesNotExist
+from api.errors import LeagueEventDateDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response

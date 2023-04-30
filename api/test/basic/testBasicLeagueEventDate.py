@@ -12,8 +12,7 @@ from api.errors import \
 from uuid import uuid1
 from base64 import b64encode
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-    INVALID_ID, SUCCESSFUL_PUT_CODE, addGame,\
-    VALID_YEAR
+    INVALID_ID, SUCCESSFUL_PUT_CODE
 
 
 headers = {
@@ -142,9 +141,6 @@ class TestLeagueEventDate(TestSetup):
             "2014-02-10",
             "22:40"
         )
-        print("=================")
-        print(league_event_date)
-        print("=================")
 
         # invalid id
         expect = {
@@ -221,7 +217,6 @@ class TestLeagueEventDate(TestSetup):
 
     def testLeagueEventDatePut(self):
         route = Routes['league_event_date']
-
 
         # add a league event
         league_event = self.add_league_event(

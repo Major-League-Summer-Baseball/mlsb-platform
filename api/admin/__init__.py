@@ -265,6 +265,7 @@ def admin_edit_fun(year):
                            funs=get_funs(),
                            title="Edit Fun")
 
+
 @app.route(Routes['editleagueevent'] + "/<int:year>")
 def admin_edit_league_event(year):
     if not logged_in():
@@ -294,7 +295,6 @@ def admin_edit_league_event_date(year, league_event_id):
                            event=LeagueEvent.query.get(league_event_id).json(),
                            dates=dates,
                            title="Edit League Event Dates")
-
 
 
 @app.route(Routes['editdivision'] + "/<int:year>")

@@ -8,8 +8,7 @@ from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
-from api.test.advanced.mock_league import MockLeague
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID
+from api.test.BaseTest import TestSetup, ADMIN, PASSWORD
 
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
@@ -20,6 +19,7 @@ CURRENT_YEAR = date.today().year
 INVALID_YEAR = 100
 
 ROUTE_VIEW = Routes['vleagueevents']
+
 
 class LeagueEventTest(TestSetup):
 
@@ -33,7 +33,7 @@ class LeagueEventTest(TestSetup):
         )
 
         rv = self.app.get(f"{ROUTE_VIEW}/{CURRENT_YEAR}")
-        
+
         events = loads(rv.data)
         my_event = [
             event
@@ -79,14 +79,14 @@ class LeagueEventTest(TestSetup):
             "<p>test</p>",
             active=True
         )
-        league_event_date = self.add_league_event_date(
+        self.add_league_event_date(
             league_event,
             event_date,
             "10:00"
         )
 
         rv = self.app.get(f"{ROUTE_VIEW}/{CURRENT_YEAR}")
-        
+
         events = loads(rv.data)
         my_event = [
             event
@@ -111,7 +111,7 @@ class LeagueEventTest(TestSetup):
             "<p>test</p>",
             active=False
         )
-        league_event_date = self.add_league_event_date(
+        self.add_league_event_date(
             league_event,
             event_date,
             "10:00"
@@ -119,7 +119,7 @@ class LeagueEventTest(TestSetup):
 
         # test an invalid player id
         rv = self.app.get(f"{ROUTE_VIEW}/{CURRENT_YEAR}")
-        
+
         events = loads(rv.data)
         my_event = [
             event

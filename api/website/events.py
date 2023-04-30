@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ MLSB Summer Events. """
-from flask import render_template, send_from_directory, Response, request
+from flask import render_template, send_from_directory, Response
 from api import app, PICTURES, DB
 from api.model import LeagueEvent, LeagueEventDate
 from api.routes import Routes
@@ -73,7 +73,7 @@ def events_page(year):
     events = get_year_events(year)
     if are_logged_in():
         for i in range(0, len(events)):
-            event  = LeagueEventDate.query.get(
+            event = LeagueEventDate.query.get(
                 events[i]['league_event_date_id']
             )
             events[i]['registered'] = event.is_player_signed_up(get_player_id())
