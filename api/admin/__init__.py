@@ -270,7 +270,6 @@ def admin_edit_league_event(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
     events = [event.json() for event in LeagueEvent.query.all()]
-    print(events)
     return render_template("admin/editLeagueEvent.html",
                            year=year,
                            route=Routes,
@@ -289,7 +288,6 @@ def admin_edit_league_event_date(year, league_event_id):
             LeagueEventDate.league_event_id == league_event_id
         ).all()
     ]
-    print(dates)
     return render_template("admin/editLeagueEventDate.html",
                            year=year,
                            route=Routes,
