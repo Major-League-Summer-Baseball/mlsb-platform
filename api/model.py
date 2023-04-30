@@ -53,6 +53,13 @@ class LeagueEvent(DB.Model):
 
     def __init__(self, name: str, description: str, active: bool = True):
         """ League event constructor. """
+        if not string_validator(name):
+            raise InvalidField(payload={"details": "League event - name"})
+        if not string_validator(description):
+            payload = {"details": "League event - description"}
+            raise InvalidField(payload=payload)
+        if not boolean_validator(active):
+            raise InvalidField(payload={"details": "League event - active"})
         self.name = name
         self.description = description
         self.active = active
