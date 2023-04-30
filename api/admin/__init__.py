@@ -297,6 +297,21 @@ def admin_edit_league_event_date(year, league_event_id):
                            title="Edit League Event Dates")
 
 
+attendance_route = "/<int:year>/attendance/<int:league_event_date_id>"
+@app.route(Routes['editleagueevent'] + attendance_route)
+def admin_league_event_date_attendance(year, league_event_date_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    event = LeagueEventDate.query.get(league_event_date_id)
+    players = [player.admin_json() for player in event.players]
+    return render_template("admin/editLeagueEventAttendance.html",
+                           year=year,
+                           route=Routes,
+                           event=event.json(),
+                           players=players,
+                           title="League Event Attendance")
+
+
 @app.route(Routes['editdivision'] + "/<int:year>")
 def admin_edit_division(year):
     if not logged_in():

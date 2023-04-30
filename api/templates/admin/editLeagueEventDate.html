@@ -42,6 +42,11 @@
                     <button type="button" class="btn btn-danger" onclick="deleteLeagueEventDate('{{entry.league_event_date_id}}');">
                         Delete
                     </button>
+                    <br>
+                    <br>
+                    <a type="button" class="btn btn-primary" href="{{route.editleagueevent}}/{{year}}/attendance/{{entry.league_event_date_id}}">
+                        See Attendance
+                    </a>
                 </td>
             </tr>
         {% endfor %}

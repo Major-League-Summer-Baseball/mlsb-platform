@@ -77,7 +77,13 @@ def events_page(year):
             event = LeagueEventDate.query.get(
                 events[i]['league_event_date_id']
             )
-            events[i]['registered'] = event.is_player_signed_up(get_player_id())
+            if event is None:
+                events[i]['registered'] = False
+            else:
+                events[i]['registered'] = event.is_player_signed_up(
+                    get_player_id()
+                )
+            
     return render_template("website/events.html",
                            dates=events,
                            route=Routes,
