@@ -30,9 +30,11 @@ class TestWebsiteViews(TestSetup):
 
     def testLoadUser(self):
         """Test able to load existing player"""
-        load_user(self.add_player(str(uuid.uuid1()),
-                                  str(uuid.uuid1()) + "@mlsb.ca",
-                                  gender="m")["player_id"])
+        email = str(uuid.uuid1()) + "@mlsb.ca"
+        player = self.add_player(str(uuid.uuid1()),
+                                 email,
+                                 gender="m")
+        load_user(player["player_id"])
 
     def testGetOauth(self):
         """Test a helper function that looks up OAuth"""

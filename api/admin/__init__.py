@@ -16,7 +16,7 @@ from api import app
 from api import DB
 from api.errors import InvalidField
 from api.model import Team, Player, Sponsor, League, Game, Espys, Fun,\
-    Division, JoinLeagueRequest
+    Division, JoinLeagueRequest, LeagueEvent, LeagueEventDate
 from api.variables import BATS
 from api.authentication import check_auth
 from datetime import date, time, datetime
@@ -264,6 +264,39 @@ def admin_edit_fun(year):
                            route=Routes,
                            funs=get_funs(),
                            title="Edit Fun")
+
+@app.route(Routes['editleagueevent'] + "/<int:year>")
+def admin_edit_league_event(year):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    events = [event.json() for event in LeagueEvent.query.all()]
+    print(events)
+    return render_template("admin/editLeagueEvent.html",
+                           year=year,
+                           route=Routes,
+                           events=events,
+                           title="Edit League Events")
+
+
+@app.route(Routes['editleagueevent'] + "/<int:year>/<int:league_event_id>")
+def admin_edit_league_event_date(year, league_event_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    query = LeagueEventDate.query
+    dates = [
+        d.json()
+        for d in query.filter(
+            LeagueEventDate.league_event_id == league_event_id
+        ).all()
+    ]
+    print(dates)
+    return render_template("admin/editLeagueEventDate.html",
+                           year=year,
+                           route=Routes,
+                           event=LeagueEvent.query.get(league_event_id).json(),
+                           dates=dates,
+                           title="Edit League Event Dates")
+
 
 
 @app.route(Routes['editdivision'] + "/<int:year>")
