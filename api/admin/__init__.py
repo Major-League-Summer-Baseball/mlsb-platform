@@ -298,6 +298,8 @@ def admin_edit_league_event_date(year, league_event_id):
 
 
 attendance_route = "/<int:year>/attendance/<int:league_event_date_id>"
+
+
 @app.route(Routes['editleagueevent'] + attendance_route)
 def admin_league_event_date_attendance(year, league_event_date_id):
     if not logged_in():

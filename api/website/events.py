@@ -83,7 +83,6 @@ def events_page(year):
                 events[i]['registered'] = event.is_player_signed_up(
                     get_player_id()
                 )
-            
     return render_template("website/events.html",
                            dates=events,
                            route=Routes,
