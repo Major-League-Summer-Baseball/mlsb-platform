@@ -146,6 +146,13 @@ class LeagueEventDate(DB.Model):
             self.league_event_id = league_event_id
         self.date = datetime.strptime(d + "-" + t, '%Y-%m-%d-%H:%M')
 
+    def is_player_signed_up(self, player_id: int) -> bool:
+        """Is the given player signed up."""
+        for player in self.players:
+            if player.id == player_id:
+                return True
+        return False
+
     def signup_player(self, player_id: int) -> bool:
         """The player wants to signup for the given event.
 
