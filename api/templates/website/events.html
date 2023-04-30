@@ -43,10 +43,50 @@
                 <div class="event">
                     {{event.description|safe}}
                 </div>
-                <h4> Date: {{event.date}}</h4>        
+                <h4> Date: {{event.date}}</h4>
+
+                {% if user_info.logged_in and event.league_event_date_id  is not none %}
+                    {% if event.registered %}
+                        <p>You are registered!</p>
+                    {% else %}
+                        <div id="eventSignup{{event.league_event_date_id}}">
+                            <button
+                                type="button"
+                                class="btn btn-primary btn-sign-up"
+                                onclick="signUp({{event.league_event_date_id}});"
+                                id="signupButton{{event.league_event_date_id}}">
+                            Sign-up
+                            </button>
+                        </div>
+                    {% endif %}    
+                {% endif %}
             </div>
         {% endfor %}
     </div>
+{% endblock %}
 
-
+{% block script %}
+<script>
+function signUp(league_event_date_id) {
+    $.ajax
+    ({
+      type: "POST",
+      url: `{{route.eventspage}}/signup/${league_event_date_id}`,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      dataType: "json",
+      success: function (league_event_id){
+          var newEntry = `
+            <p>You are registered</p>
+          `;
+          $(`#eventSignup${league_event_date_id}`).empty();
+          $(`#eventSignup${league_event_date_id}`).append(newEntry);
+      }, error: function(request, error){
+          console.error(request);
+          console.error(error);
+      } 
+    });
+}
+</script>
 {% endblock %}

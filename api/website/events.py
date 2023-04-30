@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """ MLSB Summer Events. """
-from flask import render_template, send_from_directory
-from api import app, PICTURES
-from api.model import LeagueEvent
+from flask import render_template, send_from_directory, Response, request
+from api import app, PICTURES, DB
+from api.model import LeagueEvent, LeagueEventDate
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
-from api.authentication import get_user_information
+from api.authentication import get_user_information, api_require_login,\
+    are_logged_in, get_player_id
 from api.advanced.league_event import get_year_events
 import os.path
 import json
@@ -43,9 +44,40 @@ def events_page_json(year):
     return json.dumps(get_year_events())
 
 
+@app.route(
+    Routes['eventspage'] + "/signup/<int:league_event_date_id>",
+    methods=["POST"]
+)
+@api_require_login
+def signup_event(league_event_date_id):
+    """Signup player for given event date."""
+    league_event_date = LeagueEventDate.query.get(league_event_date_id)
+    if league_event_date is None:
+        return Response(
+            json.dumps(False),
+            status=404,
+            mimetype="application/json"
+        )
+    player_id = get_player_id()
+    success = league_event_date.signup_player(player_id)
+    DB.session.commit()
+    return Response(
+        json.dumps(success),
+        status=200,
+        mimetype="application/json"
+    )
+
+
 @app.route(Routes['eventspage'] + "/<int:year>")
 def events_page(year):
     events = get_year_events(year)
+    if are_logged_in():
+        for i in range(0, len(events)):
+            event  = LeagueEventDate.query.get(
+                events[i]['league_event_date_id']
+            )
+            events[i]['registered'] = event.is_player_signed_up(get_player_id())
+    print(events)
     return render_template("website/events.html",
                            dates=events,
                            route=Routes,
