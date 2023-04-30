@@ -40,7 +40,7 @@ MOCK_EVENTS = [
             to watch the boys of summer?
         </p>
         """,
-        None
+        f"{CURRENT_YEAR}-06-01"
     ),
     (
         'Summerween',

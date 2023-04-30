@@ -12,7 +12,7 @@ Scenario Outline: Clicking the various events
 Examples: Events
 | eventName             | eventDescription  |
 | Mystery Bus           | school buses      |
-| Blue Jays Game        | boys of summer    |
+| Jays Game             | boys of summer    |
 | Beerlympics           | various countries |
 | Rafting               | rafting           |
 | Grand Bender          | All Star          |

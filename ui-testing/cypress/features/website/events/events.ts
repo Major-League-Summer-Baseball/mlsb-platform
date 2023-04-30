@@ -10,7 +10,7 @@ const EVENTS_PAGE = 'website/event/';
  */
 export const navigateToEventsPage = (): void => {
     // using 2016 since guaranteed about its events
-    cy.visit({ url: EVENTS_PAGE + 2016, method: 'GET' });
+    cy.visit({ url: EVENTS_PAGE + new Date().getFullYear() , method: 'GET' });
 };
 Given(`I navigate to the events page`, navigateToEventsPage);
 
