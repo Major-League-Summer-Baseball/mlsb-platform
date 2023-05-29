@@ -6,6 +6,7 @@
 '''
 # imports
 from sqlalchemy import func
+from api.cached_items import handle_table_change
 from api.model import Sponsor, Game, League, Division
 from api import DB
 from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist,\
@@ -97,6 +98,7 @@ class LeagueList():
                 self.warnings.append(INVALID_GAME.format(game_info,
                                                          str(error)))
         self.session.commit()
+        handle_table_change(Tables.GAME)
 
 
 def get_team_lookup(league, year=datetime.datetime.today().year):
