@@ -75,6 +75,16 @@ class LeagueDoesNotExist(BaseException):
     message = "League does not exist"
 
 
+class LeagueEventDoesNotExist(BaseException):
+    status_code = LDNESC
+    message = "League event does not exist"
+
+
+class LeagueEventDateDoesNotExist(BaseException):
+    status_code = LDNESC
+    message = "League event date does not exist"
+
+
 class DivisionDoesNotExist(BaseException):
     status_code = LDNESC
     message = "Division does not exist"
@@ -164,6 +174,14 @@ ERRORS = {
     'LeagueDoesNotExist': {
         'message': LeagueDoesNotExist.message,
         'status_code': LeagueDoesNotExist.status_code,
+    },
+    'LeagueEventDoesNotExist': {
+        'message': LeagueEventDoesNotExist.message,
+        'status_code': LeagueEventDoesNotExist.status_code,
+    },
+    'LeagueEventDateDoesNotExist': {
+        'message': LeagueEventDateDoesNotExist.message,
+        'status_code': LeagueEventDateDoesNotExist.status_code,
     },
     'DivisionDoesNotExist': {
         'message': DivisionDoesNotExist.message,

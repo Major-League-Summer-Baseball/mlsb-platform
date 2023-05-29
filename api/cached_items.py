@@ -243,12 +243,22 @@ def pull_schedule(year, league_id, page=1, page_size=PAGE_SIZE,
 
 
 def game_to_json(game, team_mapper):
+    home_team = (
+        "TBD"
+        if game.home_team_id is None
+        else team_mapper[game.home_team_id]['team_name']
+    )
+    away_team = (
+        "TBD"
+        if game.away_team_id is None
+        else team_mapper[game.away_team_id]['team_name']
+    )
     return {
         'game_id': game.id,
         'home_team_id': game.home_team_id,
-        'home_team': team_mapper[game.home_team_id]['team_name'],
+        'home_team': home_team,
         'away_team_id': game.away_team_id,
-        'away_team': team_mapper[game.away_team_id]['team_name'],
+        'away_team': away_team,
         'league_id': game.league_id,
         'division_id': game.division_id,
         'date': game.date.strftime("%Y-%m-%d"),
@@ -357,6 +367,8 @@ def multiple_teams(year, league_id, division_id=None):
                            'espys': espy_total}
     for game in games:
         # loop through each game (max ~400 for a season)
+        if game.away_team_id is None or game.home_team_id is None:
+            break
         team_map[game.home_team_id] = True
         team_map[game.away_team_id] = True
         score = game.summary()

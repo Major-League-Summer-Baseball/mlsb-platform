@@ -1,0 +1,228 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<h1>
+    {{event.name}}
+</h1>
+<a href="{{route.editleagueevent}}/{{year}}">
+    Go back
+</a>
+<table id="myTable" class="table table-bordered table-striped">
+    <thead>
+        <th>League Event Date Id</td>
+        <th>Date</th>
+        <th>Time</th>
+        <th>
+            <button type="button" class="btn btn-warning" onclick="putLeagueEventDates();" id="updateButton" disabled>
+                Update Dates
+            </button>
+        </th>
+    </thead>
+    <tbody id="leagueEventDateTable" >
+        {% for entry in dates %}
+            
+            <tr class="leagueEventDateEntry" id="{{entry.league_event_date_id}}">
+                <td>
+                    {{entry.league_event_date_id}}
+                </td>
+                <td>
+                    <input 
+                        class="input"
+                        value="{{entry.date}}"
+                        id='{{entry.league_event_date_id}}_date'
+                        onchange="change({{entry.league_event_date_id}}, 'date');">
+                </td>
+                <td>
+                    <input 
+                        class="input"
+                        value="{{entry.time}}"
+                        id='{{entry.league_event_date_id}}_time'
+                        onchange="change({{entry.league_event_date_id}}, 'time');">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="deleteLeagueEventDate('{{entry.league_event_date_id}}');">
+                        Delete
+                    </button>
+                    <br>
+                    <br>
+                    <a type="button" class="btn btn-primary" href="{{route.editleagueevent}}/{{year}}/attendance/{{entry.league_event_date_id}}">
+                        See Attendance
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+                <button  type="button" class="btn btn-info" onclick="postLeagueEventDate('{{event.league_event_id}}')">
+                    Add League Event Date
+                </button>
+            </td>
+            <td>
+                <input
+                    class="newDate"
+                    value=""
+                    id="newDate"
+                    placeholder="YYYY-MM-DD" 
+                >
+            </td>
+            <td>
+                <input
+                    class="newDate"
+                    value=""
+                    id="newTime"
+                    placeholder="HH:MM" 
+                >
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
+<table>
+<!-- the error modal -->
+<div class="modal fade" id="file_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close loadClose" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only" style="display: none;">Close</span></button>
+        <h4 class="modal-title" id="modal-title" ></h4>
+      </div>
+      <div class="modal-body" id="file_modalBody" >
+        <h4 style="display: none;" id="errorsHeader"> Errors</h4>
+        <ul id ="errors" class="list-group">
+        </ul>  
+      </div>
+      <div class="modal-footer" id="footer">
+        <button type="button" class="btn btn-default loadClose" data-dismiss="modal" style="">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.k_modal -->
+{% endblock %}
+
+{% block script %}
+<script>
+var updates = {};
+
+function postLeagueEventDate(league_event_id){
+    var d, t;
+    d = $('#newDate').val();
+    t = $("#newTime").val();
+    var data = { "date": d, "time": t, "league_event_id":  league_event_id };
+    console.log(data);
+    $.ajax
+    ({
+      type: "POST",
+      url: "{{route.league_event_date}}",
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
+      dataType: "json",
+      success: function (league_event_date_id){
+          alert('League Event Date was added successfully');
+          var newEntry = `
+          <tr class="leagueEventDateEntry" id="${league_event_date_id}">
+                <td>
+                    ${league_event_date_id}
+                </td>
+                <td>
+                    <input 
+                        class="input"
+                        value="${d}"
+                        id='${league_event_date_id}}_date'
+                        onchange="change(${league_event_date_id}, 'date');">
+                </td>
+                <td>
+                    <input 
+                        class="input"
+                        value="${t}"
+                        id='${league_event_date_id}}_time'
+                        onchange="change(${league_event_date_id}, 'time');">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="deleteLeagueEventDate(${league_event_date_id});">
+                        Delete
+                    </button>
+                </td>
+        </tr>
+        `;
+          $("#leagueEventDateTable").append(newEntry);
+          $('#newDate').val('');
+          $("#newTime").val('');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request);
+          console.error(error);
+      } 
+    });
+}
+
+function change(id, cat){
+    if (!(id  in updates)){
+        updates[id] = {}
+    }
+    updates[id][cat] = $('#' + id + '_' + cat).val();
+    $('#updateButton').attr('disabled', false);
+}
+
+
+function putLeagueEventDates(){
+    for (var id in updates){
+        putLeagueEventDate(id, updates[id]);
+    }
+}
+
+
+function deleteLeagueEventDate(id){
+    var data = { "id": id};
+    $.ajax
+    ({
+      type: "DELETE",
+      url: "{{route.league_event_date}}/" + id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(data),
+      dataType: "json",
+      success: function (results){
+          alert('League event date was removed successfully');
+          $('#' + id).remove();
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request.text);
+          console.error(error);
+      } 
+    });
+}
+
+function putLeagueEventDate(id, attributes){
+    $.ajax
+    ({
+      type: "PUT",
+      url: "{{route.league_event}}/" + id,
+      contentType: "application/json",
+      dataType: 'json',
+      async: false,
+      data: JSON.stringify(attributes),
+      dataType: "json",
+      success: function (results){
+          alert('League Event Date was updated successfully');
+      }, error: function(request, error){
+          showErrors(request.responseJSON, request.status);
+          console.error(request.text);
+          console.error(error);
+      } 
+    });
+}
+
+function showErrors(response, status_code){
+    $('#file_modal').modal("show");
+    $('#errors').empty();
+    var element;
+    $('#modal-title').text( response.message + " - " + status_code);
+    element = '<li class="list-group-item list-group-item-danger">'+ response.details+'</li>';
+    $('#errors').append(element);    
+}
+
+</script>
+{% endblock %}

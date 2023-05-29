@@ -147,6 +147,10 @@ def rip_summary(f: str, year: int) -> dict:
                     line = line + f.readline().strip()
                 line = line.replace("<p>", "")
                 line = line.replace("</p>", "")
+                line = line.replace("<strong>", "")
+                line = line.replace("</strong>", "")
+                line = line.replace("<center", "")
+                line = line.replace("</center>", "")
                 if len(result['summary']) < 24:
                     words = line.split(" ")
                     i = 0
@@ -178,6 +182,8 @@ def post_json(f: str, year: int) -> dict:
                     lines = lines + fn.readline().strip()
                 lines = lines.replace("<p>", "")
                 lines = lines.replace("</p>", "")
+                lines = lines.replace("<strong>", "")
+                lines = lines.replace("</strong>", "")
                 result.append(lines)
             lines = fn.readline().strip()
     return result

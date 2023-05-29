@@ -20,6 +20,8 @@ Routes['team_roster'] = "/api/teamroster"
 Routes['espy'] = "/api/espys"
 Routes['fun'] = "/api/fun"
 Routes['division'] = "/api/division"
+Routes['league_event'] = "/api/league_event"
+Routes['league_event_date'] = "/api/league_event_date"
 
 # advanced routes
 Routes['vplayer'] = "/api/view/players"
@@ -31,6 +33,7 @@ Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
 Routes['vleagueleaders'] = "/api/view/league_leaders"
 Routes['vschedule'] = "/api/view/schedule"
 Routes['vdivisions'] = "/api/view/divisions"
+Routes['vleagueevents'] = "/api/view/league_events"
 
 
 # Bot APIS
@@ -56,7 +59,10 @@ Routes['doteamroster'] = "/documentation/object/teamroster"
 Routes['doleague'] = "/documentation/object/league"
 Routes['dodivision'] = "/documentation/object/division"
 Routes['dofun'] = "/documentation/object/fun"
+Routes['doleagueevent'] = "/documentation/object/league_event"
+Routes['doleagueeventdate'] = "/documentation/object/league_event_date"
 Routes['dopagination'] = "/documentation/object/pagination"
+
 
 # db = documentation basic
 Routes['dbplayer'] = "/documentation/basic/player"
@@ -66,6 +72,8 @@ Routes['dbsponsor'] = "/documentation/basic/sponsor"
 Routes['dbteam'] = "/documentation/basic/team"
 Routes['dbteamroster'] = "/documentation/basic/teamroster"
 Routes['dbleague'] = "/documentation/basic/league"
+Routes['dbleagueevent'] = "/documentation/basic/league_event"
+Routes['dbleagueeventdate'] = "/documentation/basic/league_event_date"
 Routes['dbdivision'] = "/documentation/basic/division"
 Routes['dbfun'] = "/documentation/basic/fun"
 
@@ -79,6 +87,7 @@ Routes['dvplayerteamLookup'] = "/documentation/views/player/team_lookup"
 Routes['dvleagueleaders'] = "/documentation/views/league_leader"
 Routes['dvschedule'] = "/documentation/views/schedule"
 Routes['dvdivisions'] = "/documentation/views/divisions"
+Routes['dvleagueevent'] = "/documentation/views/league_event"
 
 # bot documentation
 Routes['dbotsubscribe'] = "/documentation/bot/subscribe"
@@ -147,6 +156,8 @@ Routes['alogout'] = "/admin/logout"
 Routes['editplayer'] = "/admin/edit/player"
 Routes['editgame'] = "/admin/edit/game"
 Routes['editleague'] = "/admin/edit/league"
+Routes['editleagueevent'] = "/admin/edit/league-event"
+Routes['editleagueeventdate'] = "/admin/edit/league-event-date"
 Routes['editdivision'] = "/admin/edit/division"
 Routes['editteam'] = "/admin/edit/team"
 Routes['editsponsor'] = "/admin/edit/sponsor"

@@ -16,7 +16,7 @@ from api import app
 from api import DB
 from api.errors import InvalidField
 from api.model import Team, Player, Sponsor, League, Game, Espys, Fun,\
-    Division, JoinLeagueRequest
+    Division, JoinLeagueRequest, LeagueEvent, LeagueEventDate
 from api.variables import BATS
 from api.authentication import check_auth
 from datetime import date, time, datetime
@@ -70,7 +70,7 @@ def admin_import_game_list():
     file = request.files['file']
     if file and allowed_file(file.filename):
         content = (file.read()).decode("UTF-8")
-        lines = content.replace("\r", "")
+        lines = content.replace("\r", "").replace("\ufeff", "")
         lines = lines.split("\n")
         team = LeagueList(lines)
         team.import_league_functional()
@@ -264,6 +264,54 @@ def admin_edit_fun(year):
                            route=Routes,
                            funs=get_funs(),
                            title="Edit Fun")
+
+
+@app.route(Routes['editleagueevent'] + "/<int:year>")
+def admin_edit_league_event(year):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    events = [event.json() for event in LeagueEvent.query.all()]
+    return render_template("admin/editLeagueEvent.html",
+                           year=year,
+                           route=Routes,
+                           events=events,
+                           title="Edit League Events")
+
+
+@app.route(Routes['editleagueevent'] + "/<int:year>/<int:league_event_id>")
+def admin_edit_league_event_date(year, league_event_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    query = LeagueEventDate.query
+    dates = [
+        d.json()
+        for d in query.filter(
+            LeagueEventDate.league_event_id == league_event_id
+        ).all()
+    ]
+    return render_template("admin/editLeagueEventDate.html",
+                           year=year,
+                           route=Routes,
+                           event=LeagueEvent.query.get(league_event_id).json(),
+                           dates=dates,
+                           title="Edit League Event Dates")
+
+
+attendance_route = "/<int:year>/attendance/<int:league_event_date_id>"
+
+
+@app.route(Routes['editleagueevent'] + attendance_route)
+def admin_league_event_date_attendance(year, league_event_date_id):
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    event = LeagueEventDate.query.get(league_event_date_id)
+    players = [player.admin_json() for player in event.players]
+    return render_template("admin/editLeagueEventAttendance.html",
+                           year=year,
+                           route=Routes,
+                           event=event.json(),
+                           players=players,
+                           title="League Event Attendance")
 
 
 @app.route(Routes['editdivision'] + "/<int:year>")

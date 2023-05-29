@@ -7,7 +7,7 @@
 from api import app, DB
 from pprint import PrettyPrinter
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun, \
-    Division
+    Division, LeagueEvent, LeagueEventDate, OAuth
 from base64 import b64encode
 from datetime import date
 from api.helper import loads
@@ -50,10 +50,17 @@ class TestSetup(unittest.TestCase):
         self.players_to_delete = []
         self.sponsors_to_delete = []
         self.leagues_to_delete = []
+        self.league_events_to_delete = []
+        self.league_event_dates_to_delete = []
+        self.leagues_to_delete = []
         self.divisions_to_delete = []
         if (not self.tables_created()):
 
             DB.engine.execute('''
+                                  DROP TABLE IF EXISTS flask_dance_oauth;
+                                  DROP TABLE IF EXISTS attendance;
+                                  DROP TABLE IF EXISTS league_event_date;
+                                  DROP TABLE IF EXISTS league_event;
                                   DROP TABLE IF EXISTS fun;
                                   DROP TABLE IF EXISTS roster;
                                   DROP TABLE IF EXISTS bat;
@@ -76,9 +83,16 @@ class TestSetup(unittest.TestCase):
         team_query = Team.query.get
         sponsor_query = Sponsor.query.get
         league_query = League.query.get
+        league_event_query = LeagueEvent.query.get
+        league_event_date_query = LeagueEventDate.query.get
         fun_query = Fun.query.get
         division_query = Division.query.get
-        to_delete = (self.delete_list(self.espys_to_delete, espy_query) +
+        self.remove_oauth(self.players_to_delete)
+        to_delete = (self.delete_list(self.league_event_dates_to_delete,
+                                      league_event_date_query) +
+                     self.delete_list(self.league_events_to_delete,
+                                      league_event_query) +
+                     self.delete_list(self.espys_to_delete, espy_query) +
                      self.delete_list(self.bats_to_delete, bats_query) +
                      self.delete_list(self.games_to_delete, games_query) +
                      self.delete_list(self.players_to_delete, player_query) +
@@ -92,6 +106,15 @@ class TestSetup(unittest.TestCase):
         if len(final_not_delete) > 0:
             self.assertFalse(True,
                              "Unable to delete everying upon tear down")
+
+    def remove_oauth(self, players):
+        """Remove oauth from the list of player."""
+        for player_id in self.players_to_delete:
+            query = DB.session.query(OAuth)
+            oauth = query.filter(OAuth.player_id == player_id).first()
+            if oauth is not None:
+                DB.session.delete(oauth)
+                DB.session.commit()
 
     def increment_counter(self):
         """Increments the counter by 1."""
@@ -180,6 +203,35 @@ class TestSetup(unittest.TestCase):
                          "Unable to add league object")
         self.assertTrue(loads(rv.data) > 0, "Unable to add league object")
         league = League.query.get(loads(rv.data))
+        self.leagues_to_delete.append(league.id)
+        return league.json()
+
+    def add_league_event(self, name, description, active=True):
+        """Returns league event json that was created with a post request."""
+        active = 1 if active else 0
+        params = {"name": name, "description": description, "active": active}
+        rv = self.app.post(Routes['league_event'], json=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add league event object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add league event object")
+        league = LeagueEvent.query.get(loads(rv.data))
+        self.leagues_to_delete.append(league.id)
+        return league.json()
+
+    def add_league_event_date(self, league_event, date, time):
+        """Returns the created (by post request) league event date json."""
+        params = {
+            "league_event_id": league_event['league_event_id'],
+            "date": date,
+            "time": time
+        }
+        rv = self.app.post(Routes['league_event_date'], json=params, headers=headers)
+        self.assertEqual(SUCCESSFUL_POST_CODE,
+                         rv.status_code,
+                         "Unable to add league event date object")
+        self.assertTrue(loads(rv.data) > 0, "Unable to add league event object")
+        league = LeagueEventDate.query.get(loads(rv.data))
         self.leagues_to_delete.append(league.id)
         return league.json()
 
@@ -370,6 +422,31 @@ class TestSetup(unittest.TestCase):
         """Asserts the two league json objects are equal."""
         self.assertEqual(l1['league_name'], l2['league_name'], error_message)
         self.assertEqual(l1['league_id'], l2['league_id'], error_message)
+
+    def assertLeagueEventModelEqual(self, le1, le2, error_message=""):
+        """Asserts the two league event json objects are equal."""
+        self.assertEqual(le1['name'], le2['name'], error_message)
+        self.assertEqual(le1['description'], le2['description'], error_message)
+        self.assertEqual(
+            le1['league_event_id'],
+            le2['league_event_id'],
+            error_message
+        )
+
+    def assertLeagueEventDateModelEqual(self, led1, led2, error_message=""):
+        """Asserts the two league event date json objects are equal."""
+        self.assertEqual(
+            led1['league_event_id'],
+            led2['league_event_id'],
+            error_message
+        )
+        self.assertEqual(led1['date'], led2['date'], error_message)
+        self.assertEqual(led1['time'], led2['time'], error_message)
+        self.assertEqual(
+            led1['league_event_date_id'],
+            led2['league_event_date_id'],
+            error_message
+        )
 
     def assertGameModelEqual(self, g1, g2, error_message=""):
         """Asserts the two game json objects are equal."""
