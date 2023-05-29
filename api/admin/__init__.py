@@ -70,7 +70,7 @@ def admin_import_game_list():
     file = request.files['file']
     if file and allowed_file(file.filename):
         content = (file.read()).decode("UTF-8")
-        lines = content.replace("\r", "")
+        lines = content.replace("\r", "").replace("\ufeff", "")
         lines = lines.split("\n")
         team = LeagueList(lines)
         team.import_league_functional()
