@@ -11,6 +11,7 @@ from api.model import Sponsor, Game, League, Division
 from api import DB
 from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist,\
     DivisionDoesNotExist
+from api.tables import Tables
 import logging
 import datetime
 
