@@ -1,28 +1,28 @@
-CREATE SEQUENCE public.league_event_id_seq
+CREATE SEQUENCE league_event_id_seq
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 2147483647
     CACHE 1;
 
-CREATE SEQUENCE public.league_event_date_id_seq
+CREATE SEQUENCE league_event_date_id_seq
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 2147483647
     CACHE 1;
 
-CREATE TABLE IF NOT EXISTS public.league_event
+CREATE TABLE IF NOT EXISTS league_event
 (
     id integer NOT NULL DEFAULT nextval('league_event_id_seq'::regclass),
     name character varying(80) COLLATE pg_catalog."default",
     description text COLLATE pg_catalog."default",
     active boolean,
     CONSTRAINT league_event_pkey PRIMARY KEY (id)
-)
+);
 
 
-CREATE TABLE IF NOT EXISTS public.league_event_date
+CREATE TABLE IF NOT EXISTS league_event_date
 (
     id integer NOT NULL DEFAULT nextval('league_event_date_id_seq'::regclass),
     league_event_id integer,
@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS public.league_event_date
         REFERENCES public.league_event (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-)
+);
 
-CREATE TABLE IF NOT EXISTS public.attendance
+CREATE TABLE IF NOT EXISTS attendance
 (
     player_id integer,
     league_event_date_id integer,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS public.attendance
         REFERENCES public.player (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-)
+);
 
 /* Insert all the existing data from previous years. */
 INSERT INTO league_event (name, active, description) VALUES
