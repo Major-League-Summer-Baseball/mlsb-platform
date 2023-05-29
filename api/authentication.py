@@ -239,6 +239,11 @@ def get_login_email() -> str:
     return None if not are_logged_in() else current_user.email
 
 
+def get_player_id() -> int:
+    """Returns the player id of the logged in user"""
+    return None if not are_logged_in() else current_user.id
+
+
 def get_player_information() -> dict:
     """Returns the email based whichever app they have authorized with."""
     return None if not are_logged_in() else current_user.json()
