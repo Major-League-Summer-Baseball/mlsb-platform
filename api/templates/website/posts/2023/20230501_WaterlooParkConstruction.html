@@ -1,0 +1,29 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<h4>Waterloo Park Construction</h4>
+<p>
+    Summer is here and so is the construction. It looks like our Waterloo Park will be affected. In particular Diamond 1 will be affected.
+</p>
+<center>
+    <img src="{{ url_for('static', filename="pictures/posts/waterloo-park-construction.png") }}"  alt="" class="postImage" style="">
+</center>
+<br>
+<ul>
+    <li>
+        Parking will not be available at the Bauer Lot for the duration of the season. Alternate parking locations include the Diamond Lot, Silver Lake Lot, Erb Lot, and Seagram Lot.
+    </li>
+    <li>
+        There will be a pedestrian detour from Father David Bauer Drive on the west side of the Operations Building. Pedestrian access on the east side of the Operations Building will be blocked by construction fencing.
+    </li>
+    <li>
+        Diamond 1 dugout gates will be accessible for the whole season, apart from 2-3 weeks when Diamond 1 will be accessible via the equipment gate only.
+    </li>
+    <li>
+        Diamond 1 bleachers will not be available.
+    </li>
+    <li>
+        Any foul balls landing in the construction area will not be retrievable. They will be returned to staff in the Operations Building and can be picked up the following day.
+    </li>
+</ul>
+
+{% endblock %}
