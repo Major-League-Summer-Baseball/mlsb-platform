@@ -1,27 +1,14 @@
-FROM python:3.9.2-buster
+FROM python:3-alpine
 
+WORKDIR ./mlsb-platform
 LABEL maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
-ENV MLSB /mlsb-platform
 
-RUN apt-get update && apt-get install -y \
-        libmemcached11 \
-        libmemcachedutil2 \
-        libmemcached-dev \
-        libz-dev\
-        unzip
+COPY requirements.txt ./
 
-RUN mkdir $MLSB
-
-WORKDIR $MLSB
-
-ENV PYTHONPATH="$MLSB:${PYTHONPATH}:"
-
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV FLASK_ENV="docker"
-
 EXPOSE 8080
+
+CMD ["python", "./runserver.py"]
