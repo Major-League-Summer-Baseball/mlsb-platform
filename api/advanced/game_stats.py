@@ -54,6 +54,8 @@ def post(
     for game in games:
         aid = game.away_team_id
         hid = game.home_team_id
+        if aid is None or hid is None:
+            break
         g = {
             'status': game.status,
             'game_id': game.id,
