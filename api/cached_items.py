@@ -243,12 +243,20 @@ def pull_schedule(year, league_id, page=1, page_size=PAGE_SIZE,
 
 
 def game_to_json(game, team_mapper):
-    home_team = "TBD" if game.home_team_id is None else team_mapper[game.home_team_id]['team_name']
-    away_team = "TBD" if game.away_team_id is None else team_mapper[game.away_team_id]['team_name']
+    home_team = (
+        "TBD"
+        if game.home_team_id is None
+        else team_mapper[game.home_team_id]['team_name']
+    )
+    away_team = (
+        "TBD"
+        if game.away_team_id is None
+        else team_mapper[game.away_team_id]['team_name']
+    )
     return {
         'game_id': game.id,
         'home_team_id': game.home_team_id,
-        'home_team': home_team ,
+        'home_team': home_team,
         'away_team_id': game.away_team_id,
         'away_team': away_team,
         'league_id': game.league_id,
