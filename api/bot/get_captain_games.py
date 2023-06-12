@@ -24,9 +24,12 @@ def games_without_scores(team_id: int) -> list[Game]:
     today = datetime.today()
     end_of_today = datetime(
         today.year, today.month, today.day, hour=23, minute=59)
+    # all bats should be part of a game
+    # but just in case error in submission filter out
     game_ids = [b.game_id
                 for b in (DB.session.query(Bat.game_id)
                             .filter(Bat.team_id == team_id)
+                            .filter(Bat.game_id != None)  # noqa: E711
                             .distinct())]
     games = (DB.session.query(Game)
              .filter(or_(Game.away_team_id == team_id,
