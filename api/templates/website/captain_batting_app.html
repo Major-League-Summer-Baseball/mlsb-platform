@@ -110,7 +110,6 @@
                                         v-if="game_selected.game_state.bases[0] || game_selected.game_state.bases[1] || game_selected.game_state.bases[2]"
                                         :disabled="submitting">
                                         <span class="glyphicon glyphicon-plus-sign"></span>
-                                        
                                         FC
                                     </button>
                                     <button
@@ -181,6 +180,11 @@
                                         <span class="glyphicon glyphicon-step-backward"></span>
                                         Undo
                                     </button>
+                                    <label>Open inning</label>
+                                    <label class="switch">
+                                        <input type="checkbox" @click="toggleOpen()">
+                                        <div class="slider round"></div>
+                                    </label>
                                 </div>
                             </div>
                             <div class="game__column column__status controls__column">
@@ -310,6 +314,7 @@
         const STRIKE_OUT = 'k';
         const HITS = [SINGLE, SPECIAL_SINGLE, DOUBLE, HOMERUN, TRIPLE];
         const SPECIAL_SINGLE_ELIGIBLE = 'f';
+        const INNING_MAX = 5;
         function ready() {
             $.ajax({
                 type: "GET",
@@ -456,6 +461,7 @@
                     team_id: captain_information.team_id,
                     batter: 0,
                     submitting: false,
+                    open_inning: false,
                 },
                 delimiters: ['[[', ']]'],
                 methods: {
@@ -556,9 +562,7 @@
                         /** Updates the out and the inning if max outs were reached. */
                         this.game_selected.game_state.outs += 1;
                         if (this.game_selected.game_state.outs >= 3) {
-                            this.clearBases();
-                            this.game_selected.game_state.inning += 1;
-                            this.game_selected.game_state.outs = 0;
+                            this.nextInning();
                         }
                     },
                     isBatterEligible: function() {
@@ -591,6 +595,12 @@
                         /** Move to the next batter. */
                         this.game_selected.game_state.batter = (this.game_selected.game_state.batter + 1) % this.game_selected.game_state.batters.length;
                     },
+                    nextInning: function() {
+                        /** Move to the next inning. */
+                        this.clearBases();
+                        this.game_selected.game_state.inning += 1;
+                        this.game_selected.game_state.outs = 0;
+                    },
                     quitGame: function() {
                         this.game_selected = null;
                         removeSavedGame();
@@ -605,10 +615,21 @@
                         this.game_selected.state = this.getFreshGame();
                         this.gameWasSelected(this.game_selected);
                     },
+                    runsThisInning: function() {
+                        const inning = this.game_selected.game_state.inning;
+                        return this.game_selected.game_state.bats.reduce((total, bat) => {
+                            if (bat.inning === inning) {
+                                return total + bat.rbi;
+                            }
+                            return total;
+                        }, 0);
+                    },
                     runScored: function() {
                         /** Record that a run was scored. */
                         const bats = this.game_selected.game_state.bats.length;
-                        this.game_selected.game_state.bats[bats - 1].rbi += 1;
+                        if ((this.runsThisInning() < INNING_MAX && !this.open_inning) || this.open_inning) {
+                            this.game_selected.game_state.bats[bats - 1].rbi += 1;
+                        }
                     },
                     submitBat: function(stat) {
                         /** Handle a bat submission. */
@@ -652,8 +673,14 @@
                             // put a runner on first in case they need one
                             this.game_selected.game_state.bases[0] = true;
                         }
+                        if (this.runsThisInning() == INNING_MAX && !this.open_inning) {
+                            this.nextInning();
+                        }
                         saveGame(this.game_selected);
                         this.submitting = false;
+                    },
+                    toggleOpen: function() {
+                        this.open_inning = !this.open_inning;
                     },
                     undo: function() {
                         /** Undo the the previous action. */
