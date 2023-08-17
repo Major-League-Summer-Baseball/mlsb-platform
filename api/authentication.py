@@ -14,10 +14,10 @@ from flask_dance.contrib.google import make_google_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
-from flask import request, Blueprint, session, Response, redirect,\
+from flask import request, Blueprint, session, Response, redirect, \
     url_for
 from api.model import DB, Player, OAuth, JoinLeagueRequest, Team
-from api.errors import OAuthException, NotPartOfLeagueException,\
+from api.errors import OAuthException, NotPartOfLeagueException, \
     HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist
 from api.logging import LOGGER
 import os

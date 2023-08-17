@@ -8,9 +8,9 @@ from api.routes import Routes
 from api.errors import \
     SponsorDoesNotExist, InvalidField, EspysDoesNotExist, TeamDoesNotExist
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-    INVALID_ID, SUCCESSFUL_PUT_CODE,\
-    addEspy, VALID_YEAR
+from api.test.BaseTest import \
+    TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE, \
+    INVALID_ID, SUCCESSFUL_PUT_CODE, addEspy, VALID_YEAR
 
 
 headers = {

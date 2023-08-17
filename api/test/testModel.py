@@ -4,12 +4,12 @@
 @organization: MLSB API
 @summary: Holds the tests for the model
 '''
-from api.model import Player, Team, Bat, Sponsor, League, Game, Division,\
-    JoinLeagueRequest
-from api.errors import InvalidField, PlayerDoesNotExist, TeamDoesNotExist,\
-    LeagueDoesNotExist, SponsorDoesNotExist,\
-    NonUniqueEmail, GameDoesNotExist, DivisionDoesNotExist,\
-    HaveLeagueRequestException
+from api.model import \
+    Player, Team, Bat, Sponsor, League, Game, Division, JoinLeagueRequest
+from api.errors import \
+    InvalidField, PlayerDoesNotExist, TeamDoesNotExist, LeagueDoesNotExist, \
+    SponsorDoesNotExist, NonUniqueEmail, GameDoesNotExist, \
+    DivisionDoesNotExist, HaveLeagueRequestException
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
 from sqlalchemy.orm import undefer
 from datetime import datetime

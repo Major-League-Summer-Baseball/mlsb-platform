@@ -7,13 +7,13 @@
 from api.helper import loads
 from api.routes import Routes
 from api.errors import \
-    InvalidField, TeamDoesNotExist,\
+    InvalidField, TeamDoesNotExist, \
     LeagueDoesNotExist, GameDoesNotExist, DivisionDoesNotExist
 from uuid import uuid1
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-    INVALID_ID, SUCCESSFUL_PUT_CODE, addGame,\
-    VALID_YEAR
+from api.test.BaseTest import \
+    TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE, \
+    INVALID_ID, SUCCESSFUL_PUT_CODE, addGame, VALID_YEAR
 
 
 headers = {

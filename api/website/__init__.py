@@ -5,8 +5,8 @@
     Contains the index page and other things for crawlers/facebook
 """
 __all__ = []
-from flask import redirect, render_template, send_from_directory,\
-    url_for
+from flask import \
+    redirect, render_template, send_from_directory, url_for
 from datetime import date
 from api import app
 from api.routes import Routes

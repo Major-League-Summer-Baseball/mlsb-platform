@@ -8,11 +8,10 @@ from sqlalchemy import func
 from datetime import date
 from base64 import b64encode
 from api.model import Team
-from api.advanced.import_team import parse_lines, BACKGROUND, HEADERS,\
-    INVALID_ROW, extract_player_information,\
-    extract_players,\
-    extract_column_indices_lookup,\
-    extract_background, TeamList
+from api.advanced.import_team import \
+    parse_lines, BACKGROUND, HEADERS, INVALID_ROW, \
+    extract_player_information, extract_players, \
+    extract_column_indices_lookup, extract_background, TeamList
 from api.test.BaseTest import TestSetup, ADMIN, PASSWORD
 from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 from api.test.importer.testImportMockSession import TestImportMockSession

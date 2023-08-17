@@ -6,14 +6,14 @@
 '''
 from datetime import date
 from api import app
-from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist,\
-    PlayerDoesNotExist, GameDoesNotExist,\
-    LeagueDoesNotExist, SponsorDoesNotExist,\
-    PlayerNotOnTeam, FunDoesNotExist,\
-    EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain,\
-    TeamAlreadyHasCaptain, PlayerNotSubscribed,\
-    BadRequestError, TeamNotPartOfLeague, DivisionDoesNotExist,\
-    OAuthException, HaveLeagueRequestException, NotPartOfLeagueException,\
+from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist, \
+    PlayerDoesNotExist, GameDoesNotExist, \
+    LeagueDoesNotExist, SponsorDoesNotExist, \
+    PlayerNotOnTeam, FunDoesNotExist, \
+    EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain, \
+    TeamAlreadyHasCaptain, PlayerNotSubscribed, \
+    BadRequestError, TeamNotPartOfLeague, DivisionDoesNotExist, \
+    OAuthException, HaveLeagueRequestException, NotPartOfLeagueException, \
     LeagueEventDateDoesNotExist, LeagueEventDoesNotExist
 from api.model import JoinLeagueRequest, Team
 from api.logging import LOGGER

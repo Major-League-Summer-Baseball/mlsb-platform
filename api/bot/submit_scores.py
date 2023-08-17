@@ -11,7 +11,7 @@ from json import dumps
 from api import DB
 from api.model import Player, Bat, Game, Team
 from api.authentication import requires_admin
-from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist,\
+from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist, \
     PlayerNotSubscribed
 from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
 from api.cached_items import handle_table_change

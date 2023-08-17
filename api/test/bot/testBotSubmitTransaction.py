@@ -7,10 +7,10 @@
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-    SUCCESSFUL_GET_CODE
-from api.errors import PlayerDoesNotExist, SponsorDoesNotExist,\
-    TeamDoesNotExist, PlayerNotOnTeam
+from api.test.BaseTest import \
+    TestSetup, ADMIN, PASSWORD, INVALID_ID, SUCCESSFUL_GET_CODE
+from api.errors import \
+    PlayerDoesNotExist, SponsorDoesNotExist, TeamDoesNotExist, PlayerNotOnTeam
 import uuid
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +

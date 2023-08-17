@@ -10,7 +10,7 @@ from json import dumps
 from api import DB
 from api.model import Player, Espys, Sponsor, Team
 from api.authentication import requires_admin
-from api.errors import PlayerNotOnTeam, SponsorDoesNotExist,\
+from api.errors import PlayerNotOnTeam, SponsorDoesNotExist, \
     PlayerDoesNotExist, TeamDoesNotExist
 from api.cached_items import handle_table_change
 from api.tables import Tables

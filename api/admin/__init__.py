@@ -8,14 +8,14 @@ Purpose: Holds the routes for the admin side
 # Imports
 # -----------------------------------------------------------------------------
 from os.path import join
-from flask import render_template, make_response, url_for,\
+from flask import render_template, make_response, url_for, \
     redirect, session, request
 from json import dumps
 from api.routes import Routes
 from api import app
 from api import DB
 from api.errors import InvalidField
-from api.model import Team, Player, Sponsor, League, Game, Espys, Fun,\
+from api.model import Team, Player, Sponsor, League, Game, Espys, Fun, \
     Division, JoinLeagueRequest, LeagueEvent, LeagueEventDate
 from api.variables import BATS
 from api.authentication import check_auth
@@ -191,13 +191,13 @@ def get_captains_games_not_submitted(year):
         if len(away_bats) == 0:
             team = Team.query.get(game.away_team_id)
             player = (Player.query.get(team.player_id))
-            captains.append(player.name + "-" + player.email +
-                            " on " + str(game.date))
+            captains.append(player.name + "-" + player.email
+                            + " on " + str(game.date))
         if len(home_bats) == 0:
             team = Team.query.get(game.home_team_id)
             player = (Player.query.get(team.player_id))
-            captains.append(player.name + "-" + player.email +
-                            " on " + str(game.date))
+            captains.append(player.name + "-" + player.email
+                            + " on " + str(game.date))
     return render_template("admin/viewGamesNotSubmitted.html",
                            route=Routes,
                            title="Captains with games to submit",

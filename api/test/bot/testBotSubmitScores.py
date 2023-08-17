@@ -8,10 +8,10 @@ from api.helper import loads
 from api.routes import Routes
 from api.model import Team
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-    addGame
-from api.errors import PlayerNotSubscribed, GameDoesNotExist,\
-    InvalidField
+from api.test.BaseTest import \
+    TestSetup, ADMIN, PASSWORD, INVALID_ID, addGame
+from api.errors import \
+    PlayerNotSubscribed, GameDoesNotExist, InvalidField
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +
                                                   PASSWORD, "utf-8")

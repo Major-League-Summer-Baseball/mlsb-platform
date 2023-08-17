@@ -7,9 +7,9 @@
 from api.helper import loads
 from api.routes import Routes
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, INVALID_ID,\
-    VALID_YEAR, SUCCESSFUL_GET_CODE,\
-    UNAUTHORIZED
+from api.test.BaseTest import \
+    TestSetup, ADMIN, PASSWORD, INVALID_ID, \
+    VALID_YEAR, SUCCESSFUL_GET_CODE, UNAUTHORIZED
 from api.errors import TeamDoesNotExist, NotTeamCaptain
 headers = {
     'Authorization': 'Basic %s' % b64encode(bytes(ADMIN + ':' +

@@ -11,7 +11,8 @@ from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_team_map
 from api.cached_items import get_website_base_data as base_data
-from api.authentication import get_user_information, api_require_captain,\
+from api.authentication import \
+    get_user_information, api_require_captain, \
     get_team_authorization, api_require_login
 from flask_login import current_user
 from flask import request, Response

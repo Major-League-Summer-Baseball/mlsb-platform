@@ -7,12 +7,11 @@
 '''
 from api.model import League
 from api.test.BaseTest import TestSetup
-from api.advanced.import_league import LeagueList, parse_parts, BACKGROUND,\
-    HEADERS, INVALID_ROW,\
-    extract_column_indices_lookup,\
-    extract_background,\
+from api.advanced.import_league import \
+    LeagueList, parse_parts, BACKGROUND, HEADERS, INVALID_ROW, \
+    extract_column_indices_lookup, extract_background, \
     extract_game, extract_games
-from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist,\
+from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist, \
     DivisionDoesNotExist
 from api.test.importer.testImportMockSession import TestImportMockSession
 import datetime
