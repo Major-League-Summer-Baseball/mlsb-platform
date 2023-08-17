@@ -15,7 +15,7 @@ from api.model import Team, Sponsor, League, Espys, Fun, Game, Division
 from api.errors import LeagueDoesNotExist
 from api.variables import LONG_TERM_CACHE
 from api.tables import Tables
-from api.advanced.league_leaders import get_leaders,\
+from api.advanced.league_leaders import get_leaders, \
     get_leaders_not_grouped_by_team
 from api.routes import Routes
 from api.variables import PAGE_SIZE

@@ -4,7 +4,8 @@ from flask import render_template, url_for, redirect
 from api import app
 from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
-from api.cached_items import get_league_map, get_league_leaders,\
+from api.cached_items import \
+    get_league_map, get_league_leaders, \
     get_espys_breakdown, get_divisions_for_league_and_year
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information

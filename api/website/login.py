@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """Holds views related to login, authentication and join leagues"""
 from flask import render_template, session, request, url_for, redirect
-from flask_login import current_user, logout_user, login_required,\
-    login_user
+from flask_login import \
+    current_user, logout_user, login_required, login_user
 from sqlalchemy import func
 from datetime import date
 from api import app, DB
-from api.errors import HaveLeagueRequestException, TeamDoesNotExist,\
-    OAuthException
-from api.authentication import is_facebook_supported, is_github_supported,\
-    is_gmail_supported
+from api.errors import \
+    HaveLeagueRequestException, TeamDoesNotExist, OAuthException
+from api.authentication import \
+    is_facebook_supported, is_github_supported, is_gmail_supported
 from api.model import JoinLeagueRequest, Player, Team
 from api.routes import Routes
 from api.logging import LOGGER

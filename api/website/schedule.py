@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related to the league schedule. """
-from flask import render_template, url_for, \
-    redirect, request, Response
+from flask import \
+    render_template, url_for, redirect, request, Response
 from api import app
 from api.routes import Routes
-from api.cached_items import get_league_map, get_league_schedule,\
-    get_divisions_for_league_and_year
+from api.cached_items import \
+    get_league_map, get_league_schedule, get_divisions_for_league_and_year
 
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information

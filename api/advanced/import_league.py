@@ -9,7 +9,7 @@ from sqlalchemy import func
 from api.cached_items import handle_table_change
 from api.model import Sponsor, Game, League, Division
 from api import DB
-from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist,\
+from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist, \
     DivisionDoesNotExist
 from api.tables import Tables
 import logging

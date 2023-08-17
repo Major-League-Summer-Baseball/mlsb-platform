@@ -5,8 +5,9 @@
 @summary: A script that initializes the databases and adds some demo data
 '''
 from api import DB
-from api.model import Player, Sponsor, League, Fun, Game, Team, Espys, Bat,\
-    Division, LeagueEvent, LeagueEventDate
+from api.model import \
+    Player, Sponsor, League, Fun, Game, Team, Espys, Bat, Division, \
+    LeagueEvent, LeagueEventDate
 from api.variables import UNASSIGNED_EMAIL, HITS
 from tqdm import tqdm
 import os

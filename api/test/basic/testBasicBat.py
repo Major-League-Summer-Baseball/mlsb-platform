@@ -6,12 +6,12 @@
 '''
 from api.routes import Routes
 from api.errors import \
-    InvalidField, TeamDoesNotExist, PlayerDoesNotExist,\
+    InvalidField, TeamDoesNotExist, PlayerDoesNotExist, \
     GameDoesNotExist, BatDoesNotExist
 from base64 import b64encode
-from api.test.BaseTest import TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE,\
-    INVALID_ID, SUCCESSFUL_PUT_CODE, addBat,\
-    addGame
+from api.test.BaseTest import \
+    TestSetup, ADMIN, PASSWORD, SUCCESSFUL_GET_CODE, \
+    INVALID_ID, SUCCESSFUL_PUT_CODE, addBat, addGame
 
 
 headers = {

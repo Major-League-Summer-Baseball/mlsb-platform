@@ -24,9 +24,9 @@ class TestImportMockSession():
         """Commits all given objects in a session"""
         DB.session.commit()
         for obj in self.objs:
-            if (type(obj) == Game):
+            if (type(obj) is Game):
                 self.tester.games_to_delete.append(obj.id)
-            elif (type(obj) == Player):
+            elif (type(obj) is Player):
                 self.tester.players_to_delete.append(obj.id)
-            elif (type(obj) == Team):
+            elif (type(obj) is Team):
                 self.tester.teams_to_delete.append(obj.id)

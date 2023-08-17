@@ -5,8 +5,8 @@ from api import app, PICTURES, DB
 from api.model import LeagueEvent, LeagueEventDate
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
-from api.authentication import get_user_information, api_require_login,\
-    are_logged_in, get_player_id
+from api.authentication import \
+    get_user_information, api_require_login, are_logged_in, get_player_id
 from api.advanced.league_event import get_year_events
 import os.path
 import json
