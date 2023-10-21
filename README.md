@@ -124,11 +124,11 @@ Finally, there is a Github action for creating a docker image for pushes to main
 # connect to production app database
 flyctl proxy 15432:5432 -a mlsb-development-db
 # set environment variable (development - change for production)
-flyctl secrets set SOMEVARIABLE=SOMEVALUE --config ./deployments/fly-development.toml
+flyctl secrets set SOMEVARIABLE=SOMEVALUE --app mlsb
 # deploy to some enviroment(development - change for production)
 flyctl deploy --config ./deployments/fly-development.toml
 # check production certificates
-flyctl certs list --config ./deployments/fly-production.toml
+flyctl certs list --app mlsb
 # check specific certificate
-flyctl certs show mlsb.ca --config ./deployments/fly-production.toml
+flyctl certs show mlsb.ca --app mlsb
 ```
