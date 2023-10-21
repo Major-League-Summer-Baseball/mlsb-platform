@@ -9,7 +9,7 @@ from api import app, DB
 from api.errors import \
     HaveLeagueRequestException, TeamDoesNotExist, OAuthException
 from api.authentication import \
-    is_facebook_supported, is_github_supported,is_gmail_supported,\
+    is_facebook_supported, is_github_supported, is_gmail_supported, \
     is_azure_supported
 from api.model import JoinLeagueRequest, Player, Team
 from api.routes import Routes

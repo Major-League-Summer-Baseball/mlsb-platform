@@ -11,7 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import make_github_blueprint
 from flask_dance.contrib.facebook import make_facebook_blueprint
 from flask_dance.contrib.google import make_google_blueprint
-from flask_dance.contrib.azure import make_azure_blueprint, azure
+from flask_dance.contrib.azure import make_azure_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
@@ -36,14 +36,16 @@ github_blueprint = make_github_blueprint(
 )
 azure_blueprint = make_azure_blueprint(
     scope=["user.read"],
-    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user),
-    )
+    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
+)
 facebook_blueprint = make_facebook_blueprint(
     scope=["email"],
-    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user))
+    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
+)
 google_blueprint = make_google_blueprint(
     scope=["profile", "email"],
-    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user))
+    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
+)
 FACEBOOK = "facebook"
 GOOGLE = "google"
 GITHUB = "github"
