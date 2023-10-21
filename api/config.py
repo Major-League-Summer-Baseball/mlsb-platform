@@ -14,6 +14,8 @@ class Config(object):
     SECRET_KEY = os.environ.get("SECRET_KEY", str(uuid1()))
     SQLALCHEMY_DATABASE_URI = DB_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    AZURE_OAUTH_CLIENT_ID = os.environ.get("AZURE_OAUTH_CLIENT_ID", "")
+    AZURE_OAUTH_CLIENT_SECRET = os.environ.get("AZURE_OAUTH_CLIENT_SECRET", "")
     GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
     GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get(
         "GOOGLE_OAUTH_CLIENT_SECRET", "")

@@ -13,6 +13,14 @@
         </p>
     {% endif %}
     <div class="row kpx_row-sm-offset-3 kpx_socialButtons">
+      {% if azure_enabled %}
+      <div class="col-xs-12 col-sm-2">
+        <a class="microsoft-holder" href="{{url_for('azure.login') }}">
+          <img src="{{ url_for('static', filename="microsoft-icon.svg") }}">
+          Sign in
+        </a>
+      </div>
+      {% endif %}
       {% if facebook_enabled %}
       <div class="col-xs-12 col-sm-2">
         <a href="{{url_for('facebook.login') }}" class="btn btn-lg btn-block kpx_btn-facebook" data-toggle="tooltip" data-placement="top" title="Facebook">

@@ -9,7 +9,8 @@ from api import app, DB
 from api.errors import \
     HaveLeagueRequestException, TeamDoesNotExist, OAuthException
 from api.authentication import \
-    is_facebook_supported, is_github_supported, is_gmail_supported
+    is_facebook_supported, is_github_supported,is_gmail_supported,\
+    is_azure_supported
 from api.model import JoinLeagueRequest, Player, Team
 from api.routes import Routes
 from api.logging import LOGGER
@@ -27,6 +28,7 @@ def need_to_login():
                            year=year,
                            base=get_base_data(year),
                            github_enabled=is_github_supported(),
+                           azure_enabled=is_azure_supported(),
                            facebook_enabled=is_facebook_supported(),
                            gmail_enabled=is_gmail_supported(),
                            user_info=get_user_information())
@@ -41,6 +43,7 @@ def loginpage():
                            route=Routes,
                            year=year,
                            github_enabled=is_github_supported(),
+                           azure_enabled=is_azure_supported(),
                            facebook_enabled=is_facebook_supported(),
                            gmail_enabled=is_gmail_supported(),
                            user_info=get_user_information())
