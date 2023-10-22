@@ -93,12 +93,13 @@ from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
 
 from api.authentication import github_blueprint, facebook_blueprint,\
-    google_blueprint, login_manager
+    google_blueprint, azure_blueprint, login_manager
 
 
 app.register_blueprint(github_blueprint, url_prefix="/login")
 app.register_blueprint(facebook_blueprint, url_prefix="/login")
 app.register_blueprint(google_blueprint, url_prefix="/login")
+app.register_blueprint(azure_blueprint, url_prefix="/login")
 login_manager.init_app(app)
 
 

@@ -33,6 +33,14 @@ body {
     opacity: 1;
 }
 
+.kpx_login .kpx_socialButtons .kpx_btn-microsfot {background: #3b5998; -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+       transition: all 0.5s ease-in-out;}
+.kpx_login .kpx_socialButtons .kpx_btn-microsfot:hover {background: #172d5e}
+.kpx_login .kpx_socialButtons .kpx_btn-microsfot:focus {background: #fff; color:#3b5998; border-color: #3b5998;}
+
+
 .kpx_login .kpx_socialButtons .kpx_btn-facebook {background: #3b5998; -webkit-transition: all 0.5s ease-in-out;
      -moz-transition: all 0.5s ease-in-out;
        -o-transition: all 0.5s ease-in-out;
@@ -208,6 +216,40 @@ a.google-holder {
   color: #757575 !important;
   font-size: 12px;
   font-weight: 500;
+}
+
+.microsoft-holder {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  background-color: #2F2F2F;
+  padding-right: 12px;
+  padding-left: 12px;
+  height: 60px;
+
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 1px 1px rgba(0, 0, 0, .25);
+}
+
+.microsoft-holder:hover {
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
+}
+.microsoft-holder:active {
+  background-color: #eeeeee;
+}
+
+.microsoft-holder img {
+  height: 18px;
+  width: 18px;
+}
+
+a.microsoft-holder {
+  font-family: "Segoe UI", sans-serif!important;;
+  color: #FFFFFF !important;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 @media (min-width: 768px) {

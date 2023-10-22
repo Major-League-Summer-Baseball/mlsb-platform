@@ -48,6 +48,15 @@ def terms_and_conditions():
     return render_template("website/terms_and_conditions.html")
 
 
+@app.route("/.well-known/microsoft-identity-association.json")
+def azure_verify():
+    """A route for verifying domain to azure."""
+    return send_from_directory(
+        app.static_folder,
+        "microsoft-identity-association.json"
+    )
+
+
 @app.route("/robots.txt")
 def robot():
     """A route for the google web crawler."""

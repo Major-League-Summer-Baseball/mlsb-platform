@@ -11,6 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import make_github_blueprint
 from flask_dance.contrib.facebook import make_facebook_blueprint
 from flask_dance.contrib.google import make_google_blueprint
+from flask_dance.contrib.azure import make_azure_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
@@ -33,15 +34,22 @@ github_blueprint = make_github_blueprint(
     scope=["email"],
     storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
 )
+azure_blueprint = make_azure_blueprint(
+    scope=["user.read"],
+    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
+)
 facebook_blueprint = make_facebook_blueprint(
     scope=["email"],
-    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user))
+    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
+)
 google_blueprint = make_google_blueprint(
     scope=["profile", "email"],
-    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user))
+    storage=SQLAlchemyStorage(OAuth, DB.session, user=current_user)
+)
 FACEBOOK = "facebook"
 GOOGLE = "google"
 GITHUB = "github"
+AZURE = "azure"
 
 
 class UserInfo(TypedDict):
@@ -58,6 +66,7 @@ class TeamAuthorization(TypedDict):
     pending_request: bool
 
 
+@oauth_authorized.connect_via(azure_blueprint)
 @oauth_authorized.connect_via(facebook_blueprint)
 @oauth_authorized.connect_via(github_blueprint)
 @oauth_authorized.connect_via(google_blueprint)
@@ -86,6 +95,8 @@ def oauth_service_provider_logged_in(blueprint: Blueprint, token: str) -> bool:
     user_id = user_info["id"]
 
     # user user info to lookup oauth
+    print(user_info)
+    print(user_id)
     oauth = get_oauth(blueprint.name, user_id, token)
     if oauth.player:
         login_user(oauth.player)
@@ -176,6 +187,8 @@ def get_user_info(blueprint: Blueprint) -> UserInfo:
         resp = blueprint.session.get("/oauth2/v1/userinfo")
     elif blueprint.name == GITHUB:
         resp = blueprint.session.get("user")
+    elif blueprint.name == AZURE:
+        resp = blueprint.session.get("/v1.0/me")
     if resp is None:
         LOGGER.error(f"Unsupported oauth blueprint: {blueprint.name}")
         raise OAuthException(f"Unsupported oauth blueprint: {blueprint.name}")
@@ -185,6 +198,9 @@ def get_user_info(blueprint: Blueprint) -> UserInfo:
         raise OAuthException(
             f"Failed to get user info oauth blueprint: {blueprint.name}")
     user_info = resp.json()
+    if user_info.get("mail"):
+        # azure sets mail instead of email
+        user_info["email"] = user_info.get("mail")
     if user_info.get("email") is None:
         msg = (
             f"Provider did not give email: {blueprint.name}."
@@ -269,6 +285,11 @@ def is_github_supported() -> bool:
 def is_facebook_supported() -> bool:
     """Returns whether current setup support Facebook authentication."""
     return os.environ.get("FACEBOOK_OAUTH_CLIENT_ID", "") != ""
+
+
+def is_azure_supported() -> bool:
+    """Returns whether current setup support Facebook authentication."""
+    return os.environ.get("AZURE_OAUTH_CLIENT_ID", "") != ""
 
 
 def check_auth(username: str, password: str) -> bool:
