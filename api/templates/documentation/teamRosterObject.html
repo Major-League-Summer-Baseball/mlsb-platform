@@ -19,7 +19,7 @@
             <tr>
                 <td class="col-md-3">team_id</td>
                 <td class="col-md-3">Team Object</td>
-                <td class="col-md-3">See more infromation on the <a href="{{route.doteam}}">Team Object</a></td>
+                <td class="col-md-3">See more infromation on the <a href="{{ url_for('team_object_doc') }}">Team Object</a></td>
                 <td class="col-md-3">
                     <code>
                     '0': {'color': 'Black',
@@ -33,7 +33,7 @@
             <tr>
                 <td class="col-md-3">captain</td>
                 <td class="col-md-3">Player Object</td>
-                <td class="col-md-3">The captain of the team. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
+                <td class="col-md-3">The captain of the team. See more infromation on the <a href="{{ url_for('player_object_doc') }}">Player Object</a></td>
                 <td class="col-md-3">
                     <code>
                     'captain': {'email': 'fras2560@mylaurier.ca',
@@ -46,7 +46,7 @@
             <tr>
                 <td class="col-md-3">players</td>
                 <td class="col-md-3">List of Player Object</td>
-                <td class="col-md-3">The players on the team's roster. See more infromation on the <a href="{{route.doplayer}}">Player Object</a></td>
+                <td class="col-md-3">The players on the team's roster. See more infromation on the <a href="{{ url_for('player_object_doc') }}">Player Object</a></td>
                 <td class="col-md-3">
                     <code>
                    'players': [{'email': 'dream@mylaurier.ca',
