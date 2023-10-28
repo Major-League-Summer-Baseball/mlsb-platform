@@ -26,6 +26,12 @@ def reroute():
     return redirect(url_for(
         "index", year=year, user_info=get_user_information()))
 
+@app.route("/about")
+def general_about():
+    year = date.today().year
+    return redirect(url_for(
+        "about", year=year, user_info=get_user_information()))
+
 
 @app.route("/about/<int:year>")
 def about(year):
