@@ -36,7 +36,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@app.route(Routes['import_team_list'], methods=["POST"])
+@app.route("/admin/import/team/list", methods=["POST"])
 def admin_import_team_list():
     results = {'errors': [], 'success': False, 'warnings': []}
     if not logged_in():
@@ -61,7 +61,7 @@ def admin_import_team_list():
     return dumps(results)
 
 
-@app.route(Routes['import_game_list'], methods=["POST"])
+@app.route("/admin/import/game/list", methods=["POST"])
 def admin_import_game_list():
     results = {'errors': [], 'success': False, 'warnings': []}
     if not logged_in():
@@ -85,7 +85,7 @@ def admin_import_game_list():
     return dumps(results)
 
 
-@app.route(Routes['view_league_requests'] + "/<int:year>")
+@app.route("/admin/edit/league_requests/<int:year>")
 def admin_view_league_requests(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -99,7 +99,7 @@ def admin_view_league_requests(year):
                            league_requests=league_requests)
 
 
-@app.route(Routes['respond_league_requests'] + "/<int:request_id>",
+@app.route("/admin/edit/league_requests/respond/<int:request_id>",
            methods=["POST"])
 def admin_respond_league_request(request_id):
     if not logged_in():
@@ -115,7 +115,7 @@ def admin_respond_league_request(request_id):
     return dumps(True)
 
 
-@app.route(Routes['importteam'])
+@app.route("/admin/import/team")
 def admin_import_team():
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -123,12 +123,12 @@ def admin_import_team():
                            year=date.today().year,
                            route=Routes,
                            title="Import Team from CSV",
-                           template=Routes['team_template'],
-                           import_route=Routes['import_team_list'],
+                           template=url_for('admin_team_template'),
+                           import_route=url_for('admin_import_team_list'),
                            type="Team")
 
 
-@app.route(Routes['importgame'])
+@app.route("/admin/import/game")
 def admin_import_game():
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -138,12 +138,12 @@ def admin_import_game():
                            title="Import League's Game from CSV",
                            admin=session['admin'],
                            password=session['password'],
-                           template=Routes['game_template'],
-                           import_route=Routes['import_game_list'],
+                           template=url_for('admin_game_template'),
+                           import_route=url_for('admin_import_game_list'),
                            type="Games")
 
 
-@app.route(Routes['team_template'])
+@app.route("/admin/template/team")
 def admin_team_template():
     uploads = join(app.root_path, "static", "files", "team_template.csv")
     result = ""
@@ -156,7 +156,7 @@ def admin_team_template():
     return response
 
 
-@app.route(Routes['game_template'])
+@app.route("/admin/template/game")
 def admin_game_template():
     uploads = join(app.root_path, "static", "files", "game_template.csv")
     result = ""
@@ -169,7 +169,7 @@ def admin_game_template():
     return response
 
 
-@app.route(Routes['panel_captain_to_submit'] + "/<int:year>")
+@app.route("/admin/views/captains/<int:year>")
 def get_captains_games_not_submitted(year):
     t1 = time(0, 0)
     t2 = time(23, 59)
@@ -205,7 +205,7 @@ def get_captains_games_not_submitted(year):
                            year=year)
 
 
-@app.route(Routes['editroster'] + "/<int:year>" + "/<int:team_id>")
+@app.route("/admin/edit/roster/<int:year>/<int:team_id>")
 def admin_edit_roster(year, team_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -255,7 +255,7 @@ def quick_sort(array):
         return array
 
 
-@app.route(Routes['editfun'] + "/<int:year>")
+@app.route("/admin/edit/fun/<int:year>")
 def admin_edit_fun(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -266,7 +266,7 @@ def admin_edit_fun(year):
                            title="Edit Fun")
 
 
-@app.route(Routes['editleagueevent'] + "/<int:year>")
+@app.route("/admin/edit/league-event/<int:year>")
 def admin_edit_league_event(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -278,7 +278,7 @@ def admin_edit_league_event(year):
                            title="Edit League Events")
 
 
-@app.route(Routes['editleagueevent'] + "/<int:year>/<int:league_event_id>")
+@app.route("/admin/edit/league-event/<int:year>/<int:league_event_id>")
 def admin_edit_league_event_date(year, league_event_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -300,7 +300,9 @@ def admin_edit_league_event_date(year, league_event_id):
 attendance_route = "/<int:year>/attendance/<int:league_event_date_id>"
 
 
-@app.route(Routes['editleagueevent'] + attendance_route)
+@app.route(
+    "/admin/edit/league-event/<int:year>/attendance/<int:league_event_date_id>"
+)
 def admin_league_event_date_attendance(year, league_event_date_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -314,7 +316,7 @@ def admin_league_event_date_attendance(year, league_event_date_id):
                            title="League Event Attendance")
 
 
-@app.route(Routes['editdivision'] + "/<int:year>")
+@app.route("/admin/edit/division/<int:year>")
 def admin_edit_division(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -325,7 +327,7 @@ def admin_edit_division(year):
                            title="Edit Division")
 
 
-@app.route(Routes['editleague'] + "/<int:year>")
+@app.route("/admin/edit/league/<int:year>")
 def admin_edit_league(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -336,7 +338,7 @@ def admin_edit_league(year):
                            title="Edit Leagues")
 
 
-@app.route(Routes['editsponsor'] + "/<int:year>")
+@app.route("/admin/edit/sponsor/<int:year>")
 def admin_edit_sponsor(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -348,7 +350,15 @@ def admin_edit_sponsor(year):
                            title="Edit Leagues")
 
 
-@app.route(Routes['aindex'] + "/<int:year>")
+@app.route("/admin")
+def admin__general_home():
+    if not logged_in():
+        return redirect(url_for('admin_login'))
+    year = date.today().year
+    return redirect(url_for("admin_home", year=year))
+
+
+@app.route("/admin/<int:year>")
 def admin_home(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -358,7 +368,7 @@ def admin_home(year):
                            title="Admin")
 
 
-@app.route(Routes['editplayer'] + "/<int:year>")
+@app.route("/admin/edit/player/<int:year>")
 def admin_edit_player(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -370,7 +380,7 @@ def admin_edit_player(year):
                            title="Edit Players")
 
 
-@app.route(Routes['nonactiveplayers'] + "/<int:year>")
+@app.route("/admin/edit/non_active_players/<int:year>")
 def admin_non_active_players(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -382,7 +392,7 @@ def admin_non_active_players(year):
                            title="Activate Old Players")
 
 
-@app.route(Routes['editteam'] + "/<int:year>")
+@app.route("/admin/edit/team/<int:year>")
 def admin_edit_team(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -400,7 +410,7 @@ def admin_edit_team(year):
                            leagues=get_leagues())
 
 
-@app.route(Routes['editgame'] + "/<int:year>")
+@app.route("/admin/edit/game/<int:year>")
 def admin_edit_game(year):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -432,7 +442,7 @@ def admin_edit_game(year):
                            games=games)
 
 
-@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>")
+@app.route("/admin/edit/player/deactivate/<int:year>/<int:player_id>")
 def admin_activate_player(year, player_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -450,8 +460,10 @@ def admin_activate_player(year, player_id):
                            title="Activate/Deactivate Player")
 
 
-@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>",
-           methods=["POST"])
+@app.route(
+    "/admin/edit/player/deactivate/<int:year>/<int:player_id>",
+    methods=["POST"]
+)
 def admin_activate_player_post(year, player_id):
     if not logged_in():
         return dumps(False)
@@ -467,7 +479,7 @@ def admin_activate_player_post(year, player_id):
     return dumps(True)
 
 
-@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>")
+@app.route("/admin/edit/sponsor/deactivate/<int:year>/<int:sponsor_id>")
 def admin_activate_sponsor(year, sponsor_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -485,8 +497,10 @@ def admin_activate_sponsor(year, sponsor_id):
                            title="Activate/Deactivate Sponsor")
 
 
-@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>",
-           methods=["POST"])
+@app.route(
+    "/admin/edit/sponsor/deactivate/<int:year>/<int:sponsor_id>",
+    methods=["POST"]
+)
 def admin_activate_sponsor_post(year, sponsor_id):
     if not logged_in():
         return dumps(False)
@@ -502,7 +516,7 @@ def admin_activate_sponsor_post(year, sponsor_id):
     return dumps(True)
 
 
-@app.route(Routes['editespys'] + "/<int:year>" + "/<int:team_id>")
+@app.route("/admin/edit/espys/<int:year>/<int:team_id>")
 def admin_edit_espys(year, team_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -519,7 +533,7 @@ def admin_edit_espys(year, team_id):
                            sponsors=get_sponsors(True))
 
 
-@app.route(Routes['editbat'] + "/<int:year>" + "/<int:game_id>")
+@app.route("/admin/edit/bat/<int:year>/<int:game_id>")
 def admin_edit_bat(year, game_id):
     if not logged_in():
         return redirect(url_for('admin_login'))
@@ -558,13 +572,13 @@ def admin_edit_bat(year, game_id):
                            BATS=BATS)
 
 
-@app.route(Routes['alogout'])
+@app.route("/admin/logout")
 def admin_logout():
     logout()
     return redirect(url_for('reroute'))
 
 
-@app.route(Routes['aportal'], methods=['POST'])
+@app.route("/admin/portal", methods=['POST'])
 def admin_portal():
     if 'admin' in session and 'password' in session:
         admin = session['admin']
@@ -581,9 +595,9 @@ def admin_portal():
         return redirect(url_for('admin_login'))
 
 
-@app.route(Routes['alogin'])
+@app.route("/admin/login")
 def admin_login():
-    post_url = Routes['aportal']
+    post_url = url_for('admin_portal')
     error = None
     if 'error' in session:
         error = session.pop('error', None)
@@ -641,6 +655,7 @@ def get_players(active=True):
     players = []
     for player in results:
         players.append(player.admin_json())
+    print(players)
     return players
 
 

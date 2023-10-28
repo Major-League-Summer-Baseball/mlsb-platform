@@ -52,12 +52,12 @@
                     <input class="input" value="{{entry.year}}" id='{{entry.team_id}}_year' onchange="change({{entry.team_id}}, 'year');">
                 </td>
                 <td>
-                    <a type="button" class="btn btn-info" href="{{route.editespys}}/{{year}}/{{entry.team_id}}">
+                    <a type="button" class="btn btn-info" href="{{ url_for('admin_edit_espys', year=year, team_id=entry.team_id) }}">
                         Edit Espys
                     </a>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/{{entry.team_id}}">
+                    <a type="button" class="btn btn-info" href="{{ url_for('admin_edit_roster', year=year, team_id=entry.team_id) }}">
                         Edit Team Roster
                     </a>
                 </td>
@@ -161,6 +161,8 @@ function postTeam(){
                 "league_id":league_id,
                 "year": year,
                 };
+    var espyUrl = "{{ url_for('admin_edit_espys', year=year, team_id=999) }}";
+    var editRosterUrl = "{{ url_for('admin_edit_roster', year=year, team_id=999)}}"
     $.ajax
     ({
       type: "POST",
@@ -177,8 +179,8 @@ function postTeam(){
           i2 = makeSponsors(sponsor_id, team_id);
           i3 = makeLeagues(league_id, team_id);
           i4 = '<input class="input" value="' + year + '" id="' + team_id + 'color" onclick="change('+ team_id+', \'year\')">';
-          i5 = '<a type="button" class="btn btn-info" href="{{route.editespys}}/{{year}}/'+ team_id +'">Edit Espys</a>';
-          i6 = '<a type="button" class="btn btn-info" href="{{route.editroster}}/{{year}}/'+ team_id +'">Edit Team Roster</a>';
+          i5 = `<a type="button" class="btn btn-info" href="${espyUrl.replace(999, team_id)}">Edit Espys</a>`;
+          i6 = `<a type="button" class="btn btn-info" href="${editRosterUrl.replace(999, team_id)}">Edit Team Roster</a>`;
           i7 = '<button type="button" class="btn btn-danger" onclick="deleteTeam('+team_id+');">Delete</button>'
           result = '<tr class="teamEntry" id="'+team_id+'"><td>'+team_id+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td><td>' + i3+'</td><td>'+ i4+'</td><td>' + i5 +'</td><td>'+ i6 + '</td><td>' + i7+'</td></tr>';
           $("#teamTable").append(result);

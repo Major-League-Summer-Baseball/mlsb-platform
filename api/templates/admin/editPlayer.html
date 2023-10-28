@@ -19,13 +19,15 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
         {% for entry in players %}
             <tr class="playerEntry" id="{{entry.player_id}}">
                 <td>
-                    <a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}">{{entry.player_id}}</a>
+                    <a href="{{ url_for('admin_activate_player', year=year, player_id=entry.player_id) }}">
+                        {{entry.player_id}}
+                    </a>
                 </td>
                 <td>
-                    <input class="input" value="{{entry.player_name}}" id='{{entry.player_id}}_player_name' onchange="change({{entry.player_id}}, 'player_name');">
+                    <input class="input" value="{{entry.player_name}}" id='{{entry.player_id}}_player_name' oninput="change({{entry.player_id}}, 'player_name');" autocomplete="off">
                 </td>
                 <td>
-                    <input class="input" value="{{entry.email}}" id='{{entry.player_id}}_email' onchange="change({{entry.player_id}},'email');">
+                    <input class="input" value="{{entry.email}}" id='{{entry.player_id}}_email' oninput="change({{entry.player_id}},'email');" autocomplete="off">
                 </td>
                 <td>
                     <select class="selectpicker" value="" id="{{entry.player_id}}_gender" onclick="change({{entry.player_id}}, 'gender');">
@@ -112,12 +114,12 @@ function postPlayer(){
       success: function (player_id){
           alert('Player was added successfully');
           var i1,i2, i3, iv4;
-          i1 = '<input class="input" value="' + player_name + '" id="' + player_id + '_player_name" onclick="change('+ player_id+', \'player_name\')">';
-          i2 = '<input class="input" value="' + email + '" id="' + player_id + '_email" onclick="change('+ player_id+', \'email\')">';
+          i1 = `<input class="input" value="${player_name}" id="${player_id}_player_name" oninput="change(${player_id}, \'player_name\')" autocomplete="off">`;
+          i2 = `<input class="input" value="${email}" id="${player_id}_email" oninput="change(${player_id}, \'email\')" autocomplete="off">`;
           if (gender == "m"){
-              i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>';
+              i3 = `<select class="selectpicker newPlayer" value="" id="${player_id}_gender" data-style="btn-info" onclick="change(${player_id}, \'gender\')"><option selected="selected" value="m">Male</option><option value="f">Female</option></select>`;
           }else{
-              i3 = '<select class="selectpicker newPlayer" value="" id="newGender" data-style="btn-info" onclick="change('+ player_id+', \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>';
+              i3 = `<select class="selectpicker newPlayer" value="" id="${player_id}_gender" data-style="btn-info" onclick="change(${player_id}, \'gender\')"><option value="m">Male</option><option value="f" selected="selected">Female</option></select>`;
           }
           i4 = '    <button type="button" class="btn btn-danger" onclick="deletePlayer('+player_id+');">Delete</button>'
           
@@ -137,6 +139,7 @@ function change(id, cat){
         updates[id] = {}
     }
     updates[id][cat] = $('#' + id + '_' + cat).val();
+    console.log(updates);
     $('#updateButton').attr('disabled', false);
 }
 
@@ -175,7 +178,7 @@ function putPlayer(id, attributes){
     $.ajax
     ({
       type: "PUT",
-      url: "{{route.player}}/"+id,
+      url: "{{route.player}}/" + id,
       contentType: "application/json",
       dataType: 'json',
       async: false,
@@ -193,11 +196,16 @@ function putPlayer(id, attributes){
 
 function searchPlayer(){
     var search = $('#searchValue').val();
+    if (!search) {
+        return;
+    }
+    search = search.toLowerCase();
     var player;
     $("#myTable tr").each(function(){
             player = $('#'+this.id+"_player_name").val();
+            console.log({id: this.id, player: player});
             if (player != null){
-                if (player.indexOf(search) > -1){
+                if (player.toLowerCase().indexOf(search) > -1){
                     $("#"+this.id).show();
                 }else{
                     $("#"+this.id).hide();

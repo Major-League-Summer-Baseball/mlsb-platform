@@ -37,53 +37,53 @@
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editplayer}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_player', year=year) }}">
                       Edit Players
                     </a>
                 </li>
 
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editgame}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_game', year=year) }}">
                       Edit Games
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editdivision}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_division', year=year) }}">
                       Edit Division
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editleague}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_league_event', year=year) }}">
                       Edit Leagues
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                  <a href="{{route.editleagueevent}}/{{year}}">
+                  <a href="{{ url_for('admin_edit_league_event', year=year) }}">
                     Edit League Events
                   </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editsponsor}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_sponsor', year=year) }}">
                       Edit Sponsors
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editteam}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_team', year=year) }}">
                       Edit Teams
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.editfun}}/{{year}}">
+                    <a href="{{ url_for('admin_edit_fun', year=year) }}">
                       Edit Funs
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{route.nonactiveplayers}}/{{year}}">
+                    <a href="{{ url_for('admin_non_active_players', year=year) }}">
                       Non-Active Players
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                  <a href="{{route.view_league_requests}}/{{year}}">
+                  <a href="{{ url_for('admin_view_league_requests', year=year) }}">
                    Requests to Join League
                   </a>
               </li>
@@ -94,12 +94,12 @@
                     </a>
                 </li>
                 <li class="indent-nav importsSidebar" style="display: none">
-                    <a href="{{route.importteam}}">
+                    <a href="{{ url_for('admin_import_team') }}">
                       Teams
                     </a>
                 </li>
                 <li class="indent-nav importsSidebar" style="display: none">
-                    <a href="{{route.importgame}}">
+                    <a href="{{ url_for('admin_import_game') }}">
                       Games
                     </a>
                 </li>
@@ -109,7 +109,7 @@
                     </a>
                 </li>
                 <li class="indent-nav checkSidebar" style="display: none">
-                    <a href="{{route.panel_captain_to_submit}}/{{year}}">
+                    <a href="{{url_for('get_captains_games_not_submitted', year=year) }}">
                       Captains to submit scores
                     </a>
                 </li>
@@ -122,7 +122,7 @@
                     <div class="col-lg-12">
                         {% block content %}{% endblock %}
                         <p><br/><br/><br/></p>
-                        <a class="btn btn-mini btn-link " href="{{route.about}}">About</a>
+                        <a class="btn btn-mini btn-link " href="{{route.about}}/{{year}}">About</a>
                         <a class="btn btn-mini btn-link " href="{{ url_for('index_doc') }}">Documentation</a>
                         <a class="btn btn-mini btn-link " href="https://github.com/fras2560"> Author</a>
                         <a class="btn btn-mini btn-link " href="http://jquery.com/">jQuery</a>

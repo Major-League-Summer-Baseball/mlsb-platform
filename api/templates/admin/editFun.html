@@ -85,10 +85,10 @@ function postFun(){
       success: function (year){
           alert('Fun was added successfully');
           var i1,i2, i3, iv4;
-          i1 = '<input class="input" value="' + count + '" id="' + year + '_player_name" onchange="change('+ year+', \'year\')">';
-          i2 = '    <button type="button" class="btn btn-danger" onclick="deleteFun('+year+');">Delete</button>'
+          i1 = `<input class="input" value="${count}" id="${year}_count" onchange="change(${year}, \'year\')">`;
+          i2 = `<button type="button" class="btn btn-danger" onclick="deleteFun(${year});">Delete</button>`
           
-          $("#funTable").append('<tr><td>'+year+ '</td><td>'+ i1 +'</td><td>' + i2 + '</td></tr>');
+          $("#funTable").append(`<tr id="${year}"><td>${year}</td><td>${i1}</td><td>${i2}</td></tr>`);
           $('#newYear').val('');
           $("#newCount").val('');
       }, error: function(request, error){
@@ -100,6 +100,7 @@ function postFun(){
 }
 
 function change(id, cat){
+    console.log({id, cat});
     if (!(id  in updates)){
         updates[id] = {}
     }

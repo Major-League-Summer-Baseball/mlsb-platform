@@ -18,13 +18,13 @@
                     {{entry.division_id}}
                 </td>
                 <td>
-                    <input class="input" value="{{entry.division_name}}" id='{{entry.division_id}}_division_name' onchange="change({{entry.division_id}}, 'division_name');">
+                    <input class="input" value="{{entry.division_name}}" id='{{entry.division_id}}_division_name' onchange="change({{entry.division_id}}, 'division_name');" autocomplete="off">
                 </td>
                 <td>
                   {% if entry.division_shortname is not none %}
-                    <input class="input" value="{{entry.division_shortname}}" id='{{entry.division_id}}_division_shortname' onchange="change({{entry.division_id}}, 'division_shortname');">
+                      <input class="input" value="{{entry.division_shortname}}" id='{{entry.division_id}}_division_shortname' onchange="change({{entry.division_id}}, 'division_shortname');" autocomplete="off">
                   {% else %}
-                      <input class="input" value="" id='{{entry.division_id}}_division_shortname' onchange="change({{entry.division_id}}, 'division_shortname');">
+                      <input class="input" value="" id='{{entry.division_id}}_division_shortname' onchange="change({{entry.division_id}}, 'division_shortname');" autocomplete="off">
                   {% endif %}
                 </td>
                 <td>
@@ -114,12 +114,12 @@ function parseData(){
   let division_name, division_shortname;
   division_name = $("#newName").val();
   division_shortname = $("#newShortname").val();
-  if (data.division_name.trim() == ''){
+  if (division_name.trim() == ''){
       alert("Did not set a division name");
       return null;
   }
-  if (data.division_shortname.trim() == ''){
-    data.division_shortname = null;
+  if (division_shortname.trim() == ''){
+    division_shortname = null;
   }
 
   return {
@@ -146,7 +146,7 @@ function postDivision(){
       dataType: "json",
       success: function (division_id){
           alert('division was added successfully');
-          var row = produceRow(division_id, division_name, division_shortname);
+          var row = produceRow(division_id, data);
           console.log(row);
           $("#divisionTable").append(row);
           $("#newName").val('');
