@@ -282,7 +282,6 @@ class Espys(DB.Model):
         if not float_validator(points):
             raise InvalidField(payload={"details": "Game - points"})
         self.points = float(points)
-        self.date = datetime.now()
         sponsor = None
         if sponsor_id is not None:
             sponsor = Sponsor.query.get(sponsor_id)
@@ -300,7 +299,7 @@ class Espys(DB.Model):
             raise InvalidField(payload={'details': "Game - date"})
         if time is not None and not time_validator(time):
             raise InvalidField(payload={'details': "Game - time"})
-        if date is not None and time is None:
+        if date is not None and time is not None:
             self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
         else:
             self.date = datetime.today()
