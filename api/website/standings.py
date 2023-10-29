@@ -55,7 +55,7 @@ def leaders_page(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/leaders/<int:year>/alltime")
+@app.route("/website/leaders/alltime/<int:year>")
 def all_time_leaders_page(year):
     hrSingleSeason = get_league_leaders("hr")
     ssSingleSeason = get_league_leaders("ss")
