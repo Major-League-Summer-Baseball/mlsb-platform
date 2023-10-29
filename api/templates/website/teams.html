@@ -7,7 +7,11 @@
         <tbody>
             {% for team in teams %}
                 <tr>
-                    <td><a href="{{route.teamspage}}/{{year}}/{{team.id}}">{{team.name}}</a></td>
+                    <td>
+                        <a href="{{ url_for('team_page', year=year, team_id=team.id) }}">
+                            {{team.name}}
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

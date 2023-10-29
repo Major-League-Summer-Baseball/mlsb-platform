@@ -42,19 +42,19 @@
                     {% endfor %}
                 </td>
                 <td>
-                    <input id="description" value="" placeholder="Description">
+                    <input id="description" value="" placeholder="Description" autocomplete="off">
                 </td>
                 <td>
-                    <input id="points" value="" placeholder="Points">
+                    <input id="points" value="" placeholder="Points" autocomplete="off">
                 </td>
                 <td>
-                        <input class="input" value=""  placeholder="YYYY-MM-DD" id='date'>
+                    <input class="input" value=""  placeholder="YYYY-MM-DD" id='date' autocomplete="off">
                 </td>
                 <td>
-                    <input class="input" value=""  placeholder="HH:MM" id='time'>
+                    <input class="input" value=""  placeholder="HH:MM" id='time' autocomplete="off">
                 </td>
                 <td>
-                    <input class="input" value=""  placeholder="Receipt Number or Notes" id='receipt'>
+                    <input class="input" value=""  placeholder="Receipt Number or Notes" id='receipt' autocomplete="off">
                 </td>
                 <td>
 
@@ -96,10 +96,10 @@ function addEspy(team_id){
     var data = {'team_id': team_id};
 
     sponsor_id = $('#selectSponsor').val();
-    sponsor = $("#selectSponsor option:selected").text();
+    sponsor = "None";
     if (sponsor_id != 0){
         data['sponsor_id'] = sponsor_id;
-        sponsor = "None";
+        sponsor = $("#selectSponsor").find(":selected").text();
     }
     description = $('#description').val();
     if (description != ""){

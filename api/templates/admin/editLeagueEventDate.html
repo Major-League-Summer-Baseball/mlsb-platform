@@ -3,7 +3,7 @@
 <h1>
     {{event.name}}
 </h1>
-<a href="{{route.editleagueevent}}/{{year}}">
+<a href="{{ url_for('admin_edit_league_event', year=year) }}">
     Go back
 </a>
 <table id="myTable" class="table table-bordered table-striped">
@@ -44,7 +44,7 @@
                     </button>
                     <br>
                     <br>
-                    <a type="button" class="btn btn-primary" href="{{route.editleagueevent}}/{{year}}/attendance/{{entry.league_event_date_id}}">
+                    <a type="button" class="btn btn-primary" href="{{ url_for('admin_league_event_date_attendance', year=year, league_event_date_id=entry.league_event_date_id) }}">
                         See Attendance
                     </a>
                 </td>

@@ -53,7 +53,7 @@
                         {{entry.year}}
                     </td>
                     <td data-cy="teamCell">
-                        <a href="{{route.teampage}}/{{entry.year}}/{{entry.team_id}}">
+                        <a href="{{ url_for('team_page', year=entry.year, team_id=entry.team_id) }}">
                             {{entry.team}}
                         </a>
                     </td>

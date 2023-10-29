@@ -11,7 +11,7 @@ from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
 
 
-@app.route(Routes['standingspage'] + "/<int:league_id>/<int:year>")
+@app.route("/website/standings/<int:league_id>/<int:year>")
 def standings(league_id, year):
     league = get_league_map().get(league_id, None)
     if league is None:
@@ -29,7 +29,7 @@ def standings(league_id, year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['statspage'] + "/<int:year>")
+@app.route("/website/stats/<int:year>")
 def stats_page(year):
     players = player_summary(year=year)
     return render_template("website/stats.html",
@@ -41,7 +41,7 @@ def stats_page(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['leagueleaderpage'] + "/<int:year>")
+@app.route("/website/leaders/<int:year>")
 def leaders_page(year):
     women = get_league_leaders("ss", year=year)[:5]
     men = get_league_leaders("hr", year=year)[:5]
@@ -55,7 +55,7 @@ def leaders_page(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['alltimeleaderspage'] + "/<int:year>")
+@app.route("/website/leaders/alltime/<int:year>")
 def all_time_leaders_page(year):
     hrSingleSeason = get_league_leaders("hr")
     ssSingleSeason = get_league_leaders("ss")
@@ -73,6 +73,6 @@ def all_time_leaders_page(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['espysbreakdown'] + "/<int:year>")
+@app.route("/website/espysbreakdown/<int:year>")
 def espys_breakdown_request(year):
     return get_espys_breakdown(year)
