@@ -1,5 +1,4 @@
 from flask import url_for
-from api.routes import Routes
 from api.test.BaseTest import \
     TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID, REDIRECT_CODE
 from datetime import datetime
@@ -136,7 +135,8 @@ class TestWebsiteViews(TestSetup):
             )
 
             # render the template for some post
-            route = url_for('checkout_post',
+            route = url_for(
+                'checkout_post',
                 year=START_OF_PLATFORM,
                 date='20160422',
                 file_name='Launch.html'

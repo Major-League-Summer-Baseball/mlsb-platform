@@ -53,8 +53,9 @@ class TestDocumentation(TestSetup):
             ]
             for route in documentation_routes:
                 with self.app.get(route) as result:
-                    error_message = ("Unable to get documentation for {} at {}"
-                                    .format(route, route))
-                    self.assertEqual(SUCCESSFUL_GET_CODE,
-                                    result.status_code,
-                                    error_message)
+                    message = "Unable to get docs for {}".format(route)
+                    self.assertEqual(
+                        SUCCESSFUL_GET_CODE,
+                        result.status_code,
+                        message
+                    )
