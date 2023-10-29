@@ -15,7 +15,7 @@ import os.path
 import json
 
 
-@app.route(Routes["homepage"] + "/<int:year>")
+@app.route("/website/<int:year>")
 def index(year):
     return render_template("website/index.html",
                            route=Routes,
@@ -27,12 +27,12 @@ def index(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['posts'] + "/<int:year>")
+@app.route("/website/posts/<int:year>")
 def posts_json(year):
     return json.dumps(get_all_descriptions(year))
 
 
-@app.route(Routes['posts'] + "/<int:year>/<date>/<file_name>/plain")
+@app.route("/website/posts/<int:year>/<date>/<file_name>/plain")
 def checkout_post_raw_html(year, date, file_name):
     result = ""
     file_name = date + "_" + file_name
@@ -41,7 +41,7 @@ def checkout_post_raw_html(year, date, file_name):
     return result
 
 
-@app.route(Routes['posts'] + "/<int:year>/<date>/<file_name>/json")
+@app.route("/website/posts/<int:year>/<date>/<file_name>/json")
 def checkout_post_json(year, date, file_name):
     file_name = date + "_" + file_name
     result = {}
@@ -50,7 +50,7 @@ def checkout_post_json(year, date, file_name):
     return json.dumps(result)
 
 
-@app.route(Routes['posts'] + "/<int:year>/<date>/<file_name>")
+@app.route("/website/posts/<int:year>/<date>/<file_name>")
 def checkout_post(year, date, file_name):
     file_name = date + "_" + file_name
     template = "/".join(["website", "posts", str(year), file_name])
@@ -72,7 +72,7 @@ def checkout_post(year, date, file_name):
                                user_info=get_user_information())
 
 
-@app.route(Routes['postpicture'] + "/<name>")
+@app.route("/website/post/pictures/<name>")
 def post_picture(name):
     f = os.path.join(PICTURES, "posts", name)
     fp = os.path.join(PICTURES, "posts")

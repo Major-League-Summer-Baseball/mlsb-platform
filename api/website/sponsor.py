@@ -15,8 +15,8 @@ import os.path
 import json
 
 
-@app.route(Routes['sponsorspicture'] + "/<int:name>")
-@app.route(Routes['sponsorspicture'] + "/<name>")
+@app.route("/website/sponsor/picture/<int:name>")
+@app.route("/website/sponsor/picture/<name>")
 def sponsor_picture(name):
     if isinstance(name, int):
         sponsor_id = int(name)
@@ -34,7 +34,7 @@ def sponsor_picture(name):
         return send_from_directory(fp, NOTFOUND)
 
 
-@app.route(Routes['sponsorspage'] + "/<int:year>")
+@app.route("/website/sponsors_list/<int:year>")
 def sponsors_page(year):
     return render_template("website/sponsors.html",
                            route=Routes,
@@ -44,7 +44,7 @@ def sponsors_page(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['sponsorspage'] + "/<int:year>" + "/<int:sponsor_id>")
+@app.route("/website/sponsors_list/<int:year>/<int:sponsor_id>")
 def sponsor_page(year, sponsor_id):
     sponsor = get_sponsor_map().get(sponsor_id, None)
     if sponsor is None:
@@ -66,7 +66,7 @@ def sponsor_page(year, sponsor_id):
     return page
 
 
-@app.route(Routes['sponsorbreakdown'] + "/<int:year>")
+@app.route("/website/sponsorbreakdown/<int:year>")
 def sponsor_breakdown(year):
     return render_template("website/sponsor_breakdown.html",
                            route=Routes,
@@ -77,7 +77,7 @@ def sponsor_breakdown(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['sponsorbreakdown'] + "/<int:year>" + "/<int:garbage>")
+@app.route("/website/sponsorbreakdown/<int:year>/<int:garbage>")
 def get_sponsor_breakdown(year, garbage):
     sponsors = DB.session.query(Sponsor).filter(Sponsor.active == True).all()
     tree = {'name': 'Sponsor Breakdown by ESPYS'}

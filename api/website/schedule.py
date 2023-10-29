@@ -12,7 +12,7 @@ from api.authentication import get_user_information
 import json
 
 
-@app.route(Routes["schedulepage"] + "/<int:league_id>/<int:year>")
+@app.route("/website/schedule/<int:league_id>/<int:year>")
 def schedule(league_id, year):
     league = get_league_map().get(league_id, None)
     if league is None:
@@ -30,7 +30,7 @@ def schedule(league_id, year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['schedulecache'] + "/<int:year>/<int:league_id>")
+@app.route("/website/cache/view/schedule/<int:year>/<int:league_id>")
 def cache_schedule_page(year, league_id):
     page = int(request.args.get('page', 1))
     data = get_league_schedule(year, league_id, page)

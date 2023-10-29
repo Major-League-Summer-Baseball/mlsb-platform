@@ -18,7 +18,6 @@ import inspect
 
 
 @app.route("/")
-@app.route(Routes["homepage"])
 @app.route("/website")
 @app.route("/website/")
 def reroute():
@@ -44,12 +43,12 @@ def about(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes["privacy"])
+@app.route("/privacy-policy")
 def privacy_policy():
     return render_template("website/privacy-policy.html")
 
 
-@app.route(Routes["termsandconditions"])
+@app.route("/terms-and-conditions")
 def terms_and_conditions():
     return render_template("website/terms_and_conditions.html")
 
@@ -69,7 +68,7 @@ def robot():
     return send_from_directory(app.static_folder, "robots.txt")
 
 
-@app.route(Routes['leaguenotfoundpage'] + "<int:year>")
+@app.route("/website/leagueNotFound/<int:year>")
 def league_not_found(year):
     return render_template("website/leagueNotFound.html",
                            route=Routes,
@@ -79,7 +78,7 @@ def league_not_found(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['fieldsrulespage'] + "/<int:year>")
+@app.route("/website/rulesAndFields/<int:year>")
 def rules_fields(year):
     return render_template("website/fields-and-rules.html",
                            route=Routes,

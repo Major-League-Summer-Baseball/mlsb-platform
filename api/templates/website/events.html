@@ -36,7 +36,7 @@
             <div id="event{{event.league_event_id}}" class="tab-pane fade in">
                 <br>
                 <center>
-                    <img class="eventImage" src="{{route.eventspage}}/{{year}}/image/{{event.league_event_id}}">
+                    <img class="eventImage" src="{{ url_for('mlsb_event_image', year=year, league_event_id=event.league_event_id) }}">
                 </center>
                 
                 <br>
@@ -68,10 +68,11 @@
 {% block script %}
 <script>
 function signUp(league_event_date_id) {
+    const signUrl = "{{url_for('signup_event', year=year, league_event_date_id=9999)}}";
     $.ajax
     ({
       type: "POST",
-      url: `{{route.eventspage}}/signup/${league_event_date_id}`,
+      url: `${signUrl.replace('9999', league_event_date_id)}`,
       contentType: "application/json",
       dataType: 'json',
       async: false,

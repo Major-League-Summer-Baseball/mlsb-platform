@@ -14,7 +14,7 @@ NOT_FOUND = "sorry.jpg"
 EVENT_FOLDER = 'events'
 
 
-@app.route(Routes['eventspage'] + "/<int:year>/image/<int:league_event_id>")
+@app.route("/website/event/<int:year>/image/<int:league_event_id>")
 def mlsb_event_image(year, league_event_id):
     # two potential file paths
     filepath = os.path.join(PICTURES, EVENT_FOLDER)
@@ -39,13 +39,13 @@ def mlsb_event_image(year, league_event_id):
     return send_from_directory(filepath, NOT_FOUND)
 
 
-@app.route(Routes['eventspage'] + "/<int:year>" + "/json")
+@app.route("/website/event/<int:year>/json")
 def events_page_json(year):
     return json.dumps(get_year_events())
 
 
 @app.route(
-    Routes['eventspage'] + "/signup/<int:league_event_date_id>",
+    "/website/event/signup/<int:league_event_date_id>",
     methods=["POST"]
 )
 @api_require_login
@@ -68,7 +68,7 @@ def signup_event(league_event_date_id):
     )
 
 
-@app.route(Routes['eventspage'] + "/<int:year>")
+@app.route("/website/event/<int:year>")
 def events_page(year):
     """The events page for a given year"""
     events = get_year_events(year)

@@ -83,7 +83,8 @@ function filterByDivision(division) {
 /** Renders the away team as a link. */
 function awayTeamLinkRender(data, type, row, meta){
     if(type === 'display'){
-        data = '<a href="{{route.teampage}}/{{year}}/' + row.away_team_id + '">' + row.away_team + '</a>';
+        const teamPageUrl = "{{ url_for('team', year=year, team_id=9999) }}";
+        data = `<a href="${teamPageUrl.replace('9999', row.away_team_id)}">${row.away_team}</a>`;
     }
     return data;
 }
@@ -91,7 +92,8 @@ function awayTeamLinkRender(data, type, row, meta){
 /** Renders the home team as a link*/
 function homeTeamLinkRender(data, type, row, meta){
     if(type === 'display'){
-        data = '<a href="{{route.teampage}}/{{year}}/' + row.home_team_id + '">' + row.home_team + '</a>';
+        const teamPageUrl = "{{ url_for('team', year=year, team_id=9999) }}";
+        data = `<a href="${teamPageUrl.replace('9999', row.home_team_id)}">${row.home_team}</a>`;
     }
     return data;
 }
@@ -141,7 +143,7 @@ function ready(){
     } );
 
     // load the table for the schedule using ajax
-    loadLeague({{league.league_id}}, "{{route.schedulecache}}/{{year}}/{{league.league_id}}", []);
+    loadLeague({{league.league_id}}, "{{ url_for('cache_schedule_page', year=year, league_id=league.league_id)}}", []);
 }
 </script>
 {% endblock %}
