@@ -14,7 +14,7 @@ import uuid
 testing_blueprint = Blueprint("testing", __name__, url_prefix='/testing')
 
 
-@testing_blueprint.post("/testing/api/create_and_login")
+@testing_blueprint.post("/api/create_and_login")
 def create_and_login():
     """Creates a player if they do not exist and login them in."""
     player_info = request.get_json(silent=True)
@@ -32,7 +32,7 @@ def create_and_login():
 
 
 @testing_blueprint.post(
-    "/testing/api/<int:team_id>/add_player/<int:player_id>"
+    "/api/<int:team_id>/add_player/<int:player_id>"
 )
 def add_player_to_team(team_id: int, player_id: int):
     """Add a player to the given team."""
@@ -45,7 +45,7 @@ def add_player_to_team(team_id: int, player_id: int):
     return Response(json.dumps(True), 200, mimetype='application/json')
 
 
-@testing_blueprint.post("/testing/api/make_captain")
+@testing_blueprint.post("/api/make_captain")
 def make_player_captain():
     """Make a given player a captain of some team."""
     data = request.get_json(silent=True)
@@ -58,7 +58,7 @@ def make_player_captain():
     return Response(json.dumps(True), 200, mimetype='application/json')
 
 
-@testing_blueprint.post("/testing/api/create_league_request")
+@testing_blueprint.post("/api/create_league_request")
 def create_league_request():
     """Creates a league request for testing purposes."""
     request_info = request.get_json(silent=True)
@@ -74,7 +74,7 @@ def create_league_request():
         200, mimetype='application/json')
 
 
-@testing_blueprint.route("/testing/api/get_current_team", methods=["GET"])
+@testing_blueprint.route("/api/get_current_team", methods=["GET"])
 def get_active_team():
     """Get some active team."""
     year = datetime.now().year
@@ -87,7 +87,7 @@ def get_active_team():
         200, mimetype='application/json')
 
 
-@testing_blueprint.post("/testing/api/team/<int:team_id>/game_without_score")
+@testing_blueprint.post("/api/team/<int:team_id>/game_without_score")
 def game_without_score(team_id: int):
     """Ensure the given team has a game today"""
     games = games_without_scores(team_id)
