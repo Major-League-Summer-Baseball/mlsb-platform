@@ -24,15 +24,13 @@ website_blueprint = Blueprint("website", __name__, url_prefix="/")
 @website_blueprint.route("/website/")
 def reroute():
     year = date.today().year
-    return redirect(url_for(
-        "index", year=year, user_info=get_user_information()))
+    return redirect(url_for("website.index", year=year))
 
 
 @website_blueprint.route("/about")
 def general_about():
     year = date.today().year
-    return redirect(url_for(
-        "website.about", year=year, user_info=get_user_information()))
+    return redirect(url_for("website.about", year=year))
 
 
 @website_blueprint.route("/about/<int:year>")
