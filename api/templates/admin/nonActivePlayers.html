@@ -8,7 +8,9 @@
             {% for entry in players %}
                 <tr class="sponsorEntry" id="{{entry.player_id}}">
                     <td>
-                        <a href="{{route.adeactivateplayer}}/{{year}}/{{entry.player_id}}">{{entry.player_name}} - {{entry.email}}</a>
+                        <a href="{{ url_for('admin.activate_player', year=year, player_id=entry.player_id) }}">
+                            {{entry.player_name}} - {{entry.email}}
+                        </a>
                     </td>
                 </tr>
             {% endfor %}

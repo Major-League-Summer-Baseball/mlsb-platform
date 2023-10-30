@@ -2,8 +2,7 @@
 """ Pages and routes related a team. """
 from flask import render_template, send_from_directory
 from sqlalchemy import func
-
-from api import app, PICTURES
+from api import PICTURES
 from api.model import Team, Player, JoinLeagueRequest, DB
 from api.variables import NOTFOUND, UNASSIGNED_EMAIL
 from api.website.helpers import get_team
@@ -14,14 +13,15 @@ from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, api_require_captain, \
     get_team_authorization, api_require_login
+from api.website import website_blueprint
 from flask_login import current_user
 from flask import request, Response
 import os.path
 import json
 
 
-@app.route(Routes['teampicture'] + "/<int:team>")
-@app.route(Routes['teampicture'] + "/<team>")
+@website_blueprint.route("/website/team/picture/<int:team>")
+@website_blueprint.route("/website/team/picture/<team>")
 def team_picture(team):
     name = team if team is not None and team != "None" else "notFound"
     if isinstance(team, int):
@@ -41,7 +41,9 @@ def team_picture(team):
 
 
 @api_require_login
-@app.route(Routes['teampage'] + "/<int:team_id>/join_team", methods=["POST"])
+@website_blueprint.route(
+    "/website/teams/<int:team_id>/join_team", methods=["POST"]
+)
 def request_to_join_team(team_id):
     # know the team will be found since decorator checks team exists
     team = Team.query.get(team_id)
@@ -54,40 +56,59 @@ def request_to_join_team(team_id):
 
 
 @api_require_captain
-@app.route(Routes['teampage'] +
-           "/<int:team_id>/drop_player/<int:player_id>",
-           methods=["POST"])
+@website_blueprint.route(
+    "/website/teams/<int:team_id>/drop_player/<int:player_id>",
+    methods=["POST"]
+)
 def team_remove_player(team_id, player_id):
     team = Team.query.get(team_id)
     if team is None:
         return Response(
-            json.dumps("Team not found"), status=404, mimetype="application/json")
+            json.dumps("Team not found"),
+            status=404,
+            mimetype="application/json")
     team.remove_player(player_id)
     DB.session.commit()
-    return Response(json.dumps(player_id), status=200, mimetype="application/json")
+    return Response(
+        json.dumps(player_id),
+        status=200,
+        mimetype="application/json"
+    )
 
 
 @api_require_captain
-@app.route(Routes['teampage'] +
-           "/<int:team_id>/add_player/<int:player_id>",
-           methods=["POST"])
+@website_blueprint.route(
+    "/website/teams/<int:team_id>/add_player/<int:player_id>",
+    methods=["POST"]
+)
 def team_add_player(team_id, player_id):
     team = Team.query.get(team_id)
     if team is None:
         return Response(
-            json.dumps("Team not found"), status=404, mimetype="application/json")
+            json.dumps("Team not found"),
+            status=404,
+            mimetype="application/json"
+        )
     success = team.insert_player(player_id)
     if not success:
         return Response(
-            json.dumps("Player already on team"), status=404, mimetype="application/json")
+            json.dumps("Player already on team"),
+            status=404,
+            mimetype="application/json"
+        )
     DB.session.commit()
-    return Response(json.dumps(player_id), status=200, mimetype="application/json")
+    return Response(
+        json.dumps(player_id),
+        status=200,
+        mimetype="application/json"
+    )
 
 
 @api_require_captain
-@app.route(Routes['teampage'] +
-           "/<int:team_id>/request_response/<int:request_id>",
-           methods=["POST"])
+@website_blueprint.route(
+    "/website/teams/<int:team_id>/request_response/<int:request_id>",
+    methods=["POST"]
+)
 def captain_respond_league_request(team_id, request_id):
     league_request = JoinLeagueRequest.query.get(request_id)
     if league_request is None and not league_request.pending:
@@ -100,7 +121,7 @@ def captain_respond_league_request(team_id, request_id):
     return json.dumps(True)
 
 
-@app.route(Routes['teampage'] + "/<int:year>/<int:team_id>")
+@website_blueprint.route("/website/teams/<int:year>/<int:team_id>")
 def team_page(year, team_id):
     team = get_team(year, team_id)
     if team is None:
@@ -136,7 +157,7 @@ def team_page(year, team_id):
                            team_authorization=team_authorization)
 
 
-@app.route(Routes['playerpage'] + "/<int:year>/<int:player_id>")
+@website_blueprint.route("/website/player<int:year>/<int:player_id>")
 def player_page(year, player_id):
     player = Player.query.get(player_id)
     if player is None:

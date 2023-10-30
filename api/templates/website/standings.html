@@ -240,7 +240,8 @@ function display_table(teams, selector) {
 /** Renders a team link*/
 function renderTeamLink(data, type, row, meta) {
     if (type === 'display') {
-        data = '<a href="{{route.teampage}}/{{year}}/' + row.team_id + '">' + row.name + '</a>';
+      const teamPageUrl = "{{ url_for('team', year=year, team_id=9999) }}";
+        data = `<a href="${teamPageUrl.replace('9999', row.team_id)}">${row.name}</a>`;
     }
     return data;
 }
@@ -258,7 +259,12 @@ function renderPlusMinus(data, type, row, meta) {
 <script type="text/javascript" src="{{ url_for('static', filename="d3/d3.layout.js") }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#MainHeader").prepend($('<img>',{id:'theImg',src:'{{route.sponsorspicture}}/Pabst'}));
+        $("#MainHeader").prepend($('<img>',
+          {
+            id:'theImg',
+            src:"{{ url_for('website.sponsor_picture', name='Pabst') }}"
+          }
+        ));
     })
     var m = [40, 20, 0, 170], // top right bottom left
         w = $('#graph').width() - m[1] - m[3], // width
@@ -287,7 +293,7 @@ function renderPlusMinus(data, type, row, meta) {
         .attr("class", "y axis")
       .append("svg:line")
         .attr("y1", "100%");
-    d3.json("{{route.espysbreakdown}}/{{year}}", function(root) {
+    d3.json("{{ url_for('website.espys_breakdown_request', year=year) }}", function(root) {
         $("#img1").hide();
         hierarchy.nodes(root);
         x.domain([0, root.value]).nice();

@@ -1,10 +1,4 @@
-'''
-@author: Dallas Fraser
-@author: 2019-03-13
-@organization: MLSB API
-@summary: Tests some views at least do not respond with application error
-'''
-from api.routes import Routes
+from flask import url_for
 from api.test.BaseTest import \
     TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID, REDIRECT_CODE
 from datetime import datetime
@@ -17,10 +11,16 @@ class TestWebsiteViews(TestSetup):
 
     def testStaticFileNotYearSpecific(self):
         # pages that do not need a year
-        self.assertGetRequest(Routes['logo'],
-                              "Logo page should give a 200")
-        self.assertGetRequest(Routes['privacy'],
-                              "Privacy page should give a 200")
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            self.assertGetRequest(
+                url_for('website.mlsb_logo'),
+                "Logo page should give a 200"
+            )
+            self.assertGetRequest(
+                url_for('website.privacy_policy'),
+                "Privacy page should give a 200"
+            )
 
     def testLoginPages(self):
         self.assertGetRequest("/authenticate", "Need to login")
@@ -30,54 +30,83 @@ class TestWebsiteViews(TestSetup):
     def testSponsorsPages(self):
         sponsor_name = str(uuid.uuid1())
         sponsor = self.add_sponsor(sponsor_name)
-
-        # get the sponsor picture using sponsor name or id
-        route = Routes['sponsorspicture'] + "/{}".format(sponsor_name)
-        self.assertGetRequest(route, "Get sponsor picture from name")
-        route = Routes['sponsorspicture'] + "/{}".format(sponsor['sponsor_id'])
-        self.assertGetRequest(route, "Get sponsor picture from id")
-
-        # get the sponsor page for all sponsors for a specific sponsor
         current_year = current_year = datetime.now().year
-        route = Routes['sponsorspage'] + "/{}".format(current_year)
-        self.assertGetRequest(route, "Get a page of all the sponsors")
-        route = Routes['sponsorspage'] + "/{}/{}".format(current_year,
-                                                         sponsor['sponsor_id'])
-        self.assertGetRequest(route, "Get a page of specific sponsor")
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            # get the sponsor picture using sponsor name or id
+            self.assertGetRequest(
+                url_for('website.sponsor_picture', name=sponsor_name),
+                "Get sponsor picture from name"
+            )
+            self.assertGetRequest(
+                url_for('website.sponsor_picture', name=sponsor['sponsor_id']),
+                "Get sponsor picture from id"
+            )
 
-        # get a non-existent sponsor
-        route = Routes['sponsorspicture'] + "/{}".format(str(uuid.uuid1()))
-        self.assertGetRequest(route, "Get non-existent sponsor picture")
-        route = Routes['sponsorspicture'] + "/{}".format(INVALID_ID)
-        self.assertGetRequest(route, "Get sponsor picture from id")
-        route = Routes['sponsorspage'] + "/{}/{}".format(current_year,
-                                                         INVALID_ID)
-        self.assertGetRequest(route, "Get a page of non-existent sponsor")
+            # get the sponsor page for all sponsors for a specific sponsor
+            self.assertGetRequest(
+                url_for(
+                    'website.sponsors_page',
+                    year=current_year,
+                    name=INVALID_ID
+                ),
+                "Get a page of all the sponsors"
+            )
+            self.assertGetRequest(
+                url_for(
+                    'website.sponsor_page',
+                    year=current_year,
+                    sponsor_id=sponsor['sponsor_id']
+                ),
+                "Get a page of specific sponsor"
+            )
+
+            # get a non-existent sponsor
+            self.assertGetRequest(
+                url_for('website.sponsor_picture', name=str(uuid.uuid1())),
+                "Get non-existent sponsor picture"
+            )
+            self.assertGetRequest(
+                url_for('website.sponsor_picture', name=INVALID_ID),
+                "Get sponsor picture from id"
+            )
+            self.assertGetRequest(
+                url_for(
+                    'website.sponsors_page',
+                    year=current_year,
+                    name=INVALID_ID
+                ),
+                "Get a page of non-existent sponsor"
+            )
 
     def testTeamPages(self):
         current_year = datetime.now().year
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            # test team with a sponsor
+            sponsor = self.add_sponsor(str(uuid.uuid1()))
+            league = self.add_league(str(uuid.uuid1()))
+            team_with_sponsor = self.add_team(
+                "white", sponsor=sponsor, league=league)
+            self.assertGetRequest(
+                url_for('website.team_picture', team=team_with_sponsor['team_id']),
+                "Get picture of team with a sponsor"
+            )
+            team_id = team_with_sponsor['team_id']
+            self.assertGetRequest(
+                url_for('website.team_page', year=current_year, team_id=team_id),
+                "Get page of team with a sponsor"
+            )
 
-        # test team with a sponsor
-        sponsor = self.add_sponsor(str(uuid.uuid1()))
-        league = self.add_league(str(uuid.uuid1()))
-        team_with_sponsor = self.add_team(
-            "white", sponsor=sponsor, league=league)
-        route = (Routes['teampicture'] +
-                 "/{}".format(team_with_sponsor['team_id']))
-        self.assertGetRequest(route,
-                              "Get picture of team with a sponsor")
-        route = (Routes['teampage'] +
-                 "/{}/{}".format(current_year, team_with_sponsor['team_id']))
-        self.assertGetRequest(route,
-                              "Get page of team with a sponsor")
-
-        # test non-existent team
-        route = Routes['teampicture'] + "/{}".format(INVALID_ID)
-        self.assertGetRequest(route,
-                              "Get picture of non-existent team")
-        route = Routes['teampage'] + "/{}/{}".format(current_year, INVALID_ID)
-        self.assertGetRequest(route,
-                              "Get page of non-existent team")
+            # test non-existent team
+            self.assertGetRequest(
+                url_for('website.team_picture', team=INVALID_ID),
+                "Get picture of non-existent team"
+            )
+            self.assertGetRequest(
+                url_for('website.team_page', year=current_year, team_id=INVALID_ID),
+                "Get page of non-existent team"
+            )
 
     def testPlayerPage(self):
         current_year = datetime.now().year
@@ -86,111 +115,148 @@ class TestWebsiteViews(TestSetup):
         player_name = str(uuid.uuid1())
         player = self.add_player(
             player_name, player_name + "@mlsb.ca", gender="F")
-        route = Routes['playerpage'] +\
-            "/{}/{}".format(current_year, player['player_id'])
-        self.assertGetRequest(route, 'Get page of a player')
 
-        # test non-existent player
-        route = Routes['playerpage'] +\
-            "/{}/{}".format(current_year, INVALID_ID)
-        self.assertGetRequest(route, 'Get page of a non-existent player')
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            self.assertGetRequest(
+                url_for(
+                    'website.player_page',
+                    year=current_year,
+                    player_id=player['player_id']
+                ),
+                'Get page of a player'
+            )
+
+            # test non-existent player
+            self.assertGetRequest(
+                url_for(
+                    'website.player_page',
+                    year=current_year,
+                    player_id=INVALID_ID
+                ),
+                'Get page of a non-existent player'
+            )
 
     def testPostPages(self):
-        # get all the posts
-        route = Routes['posts'] + "/{}".format(START_OF_PLATFORM)
-        self.assertGetRequest(route, " Get all the posts descriptions")
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            # get all the posts
+            self.assertGetRequest(
+                url_for('website.posts_json', year=START_OF_PLATFORM),
+                " Get all the posts descriptions"
+            )
 
-        # render the template for some post
-        route = (Routes['posts'] + "/{}/{}/{}".format(START_OF_PLATFORM,
-                                                      "20160422",
-                                                      "Launch.html"))
-        error_message = ("Get launch post at {}"
-                         .format(route))
-        self.assertGetRequest(route, error_message)
-
-        # get one of the post pictures
-        route = (Routes['postpicture'] + "/{}".format('bot.png'))
-        error_message = ("Get post picture at {}"
-                         .format(route))
-        self.assertGetRequest(route, error_message)
-
-        # get a post pictures that does not exist
-        route = (Routes['postpicture'] + "/{}".format('picDoesNotExist.png'))
-        error_message = ("Get non-existent post picture at {}"
-                         .format(route))
-        # will send back not found png
-        self.assertGetRequest(route, error_message)
-
-        # get a single post plain or json format
-        for extension in ["plain", "json"]:
-            route = (Routes['posts'] + "/{}/{}/{}/{}".format(START_OF_PLATFORM,
-                                                             "20160422",
-                                                             "Launch.html",
-                                                             extension))
-            error_message = ("Get launch post with formatting {} at {}"
-                             .format(extension, route))
+            # render the template for some post
+            route = url_for(
+                'website.checkout_post',
+                year=START_OF_PLATFORM,
+                date='20160422',
+                file_name='Launch.html'
+            )
+            error_message = "Get launch post at {}".format(route)
             self.assertGetRequest(route, error_message)
 
-    def testHomepagePosts(self):
-        # homepage with posts
-        route = Routes['homepage'] + "/{}".format(START_OF_PLATFORM)
-        error_message = "Get homepage with summaries"
-        self.assertGetRequest(route, error_message)
+            # get one of the post pictures
+            route = url_for('website.post_picture', name='bot.png')
+            message = "Get post picture at {}".format(route)
+            self.assertGetRequest(route, message)
 
-        # homepage without posts
-        route = Routes['homepage'] + "/{}".format(YEAR_WITH_NO_DATA)
-        error_message = "Get homepage without summaries"
-        self.assertGetRequest(route, error_message)
+            # get a post pictures that does not exist
+            route = url_for('website.post_picture', name='picDoesNotExist.png')
+            message = ("Get non-existent post picture at {}".format(route))
+            # will send back not found png
+            self.assertGetRequest(
+                url_for('website.post_picture', name='picDoesNotExist.png'), message
+            )
+
+            # get a single post plain or json format
+            for route in [
+                url_for(
+                    'website.checkout_post_raw_html',
+                    year=START_OF_PLATFORM,
+                    date='20160422',
+                    file_name='Launch.html'
+                ),
+                url_for(
+                    'website.checkout_post_json',
+                    year=START_OF_PLATFORM,
+                    date='20160422',
+                    file_name='Launch.html'
+                ),
+            ]:
+                message = "Get launch post with formatting at {}".format(route)
+                self.assertGetRequest(route, message)
+
+    def testHomepagePosts(self):
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            # homepage with posts
+            self.assertGetRequest(
+                url_for('website.index', year=START_OF_PLATFORM),
+                "Get homepage with summaries"
+            )
+
+            # homepage without posts
+            self.assertGetRequest(
+                url_for('website.index', year=YEAR_WITH_NO_DATA),
+                "Get homepage without summaries"
+            )
 
     def testEventsPages(self):
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            # year with events
+            self.assertGetRequest(
+                url_for('website.events_page', year=START_OF_PLATFORM),
+                "Get events for a given year"
+            )
 
-        # year with events
-        route = Routes['eventspage'] + "/{}".format(START_OF_PLATFORM)
-        error_message = "Get events for a given year"
-        self.assertGetRequest(route, error_message)
-
-        # year with no events
-        route = Routes['eventspage'] + "/{}".format(YEAR_WITH_NO_DATA)
-        error_message = "Get events for a given year with no events"
-        self.assertGetRequest(route, error_message)
+            # year with no events
+            self.assertGetRequest(
+                url_for('website.events_page', year=YEAR_WITH_NO_DATA),
+                "Get events for a given year with no events"
+            )
 
     def testLeaguePages(self):
         # test the pages that are dependent on a league
-        league_routes = [
-            'schedulepage',
-            'standingspage',
-        ]
         current_year = datetime.now().year
-        for route in league_routes:
-            for division in range(1, 10):
-                actual_route = Routes[route] + f"/{division}/{current_year}"
-                error_message = ("expecting 200 for route: {} page at url: {}"
-                                 .format(route, Routes[route]))
-                with self.app.get(actual_route) as result:
-                    self.assertTrue(result.status_code in [SUCCESSFUL_GET_CODE,
-                                                           REDIRECT_CODE],
-                                    error_message)
+        app = self.getApp()
+        expected_codes = [SUCCESSFUL_GET_CODE, REDIRECT_CODE]
+        with app.app_context(), app.test_request_context():
+            routes = []
+            for league_id in range(1, 10):
+                routes.append(
+                    url_for('website.schedule', year=current_year, league_id=league_id)
+                )
+                routes.append(
+                    url_for('website.standings', year=current_year, league_id=league_id)
+                )
+            for route in routes:
+                with self.app.get(route) as result:
+                    message = "expect 200 for url: {}".format(route)
+                    self.assertTrue(
+                        result.status_code in expected_codes,
+                        message
+                    )
 
     def testOtherPages(self):
-
         # test other routes that do not need parameters beside just a year
-        other_routes = [
-            'fieldsrulespage',
-            'homepage',
-            'statspage',
-            'leagueleaderpage',
-            'alltimeleaderspage',
-            'eventspage',
-            'espysbreakdown',
-            'sponsorbreakdown',
-            'promos'
-        ]
         current_year = datetime.now().year
-        for route in other_routes:
-            actual_route = Routes[route] + "/{}".format(current_year)
-            error_message = ("expecting 200 for route: {} page at url: {}"
-                             .format(route, Routes[route]))
-            self.assertGetRequest(actual_route, error_message)
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            for route in [
+                url_for('website.rules_fields', year=current_year),
+                url_for('website.index', year=current_year),
+                url_for('website.stats_page', year=current_year),
+                url_for('website.leaders_page', year=current_year),
+                url_for('website.all_time_leaders_page', year=current_year),
+                url_for('website.events_page', year=current_year),
+                url_for('website.espys_breakdown_request', year=current_year),
+                url_for('website.sponsor_breakdown', year=current_year),
+                url_for('website.promos_page', year=current_year)
+            ]:
+                error_message = "Expecting 200 at url: {}".format(route)
+                self.assertGetRequest(route, error_message)
 
     def assertGetRequest(self,
                          route,

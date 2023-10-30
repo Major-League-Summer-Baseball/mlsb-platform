@@ -50,7 +50,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a type="button" class="btn btn-primary" href="{{route.editleagueevent}}/{{year}}/{{entry.league_event_id}}">
+                    <a type="button" class="btn btn-primary" href="{{ url_for('admin.edit_league_event_date' , year=year, league_event_id=entry.league_event_id) }}">
                         Update Dates
                     </a>
                 </td>
@@ -123,6 +123,7 @@ function postLeagueEvent(){
     active = $("#newActive").is(":checked") ? "1" : "0";
     var data = { "name": name, "description": description, "active": active};
     console.log(data);
+    var editLeagueUrl = "{{ url_for('admin.edit_league_event_date', year=year, league_event_id=999) }}";
     $.ajax
     ({
       type: "POST",
@@ -164,7 +165,7 @@ function postLeagueEvent(){
                     ${checked}
                 </td>
                 <td>
-                    <a type="button" class="btn btn-primary" href="{{route.editleagueevent}}/{{year}}/${league_event_id}">
+                    <a type="button" class="btn btn-primary" href="${editLeagueUrl.replace(999, league_event_id)}">
                         Update Dates
                     </a>
                 </td>

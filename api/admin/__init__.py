@@ -9,11 +9,10 @@ Purpose: Holds the routes for the admin side
 # -----------------------------------------------------------------------------
 from os.path import join
 from flask import render_template, make_response, url_for, \
-    redirect, session, request
+    redirect, session, request, Blueprint
 from json import dumps
+from api import DB, FILES
 from api.routes import Routes
-from api import app
-from api import DB
 from api.errors import InvalidField
 from api.model import Team, Player, Sponsor, League, Game, Espys, Fun, \
     Division, JoinLeagueRequest, LeagueEvent, LeagueEventDate
@@ -28,6 +27,7 @@ from api.advanced.import_league import LeagueList
 # Constants
 # -----------------------------------------------------------------------------
 ALLOWED_EXTENSIONS = set(['csv'])
+admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 # -----------------------------------------------------------------------------
 
 
@@ -36,8 +36,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@app.route(Routes['import_team_list'], methods=["POST"])
-def admin_import_team_list():
+@admin_blueprint.route("/import/team/list", methods=["POST"])
+def import_team_list():
     results = {'errors': [], 'success': False, 'warnings': []}
     if not logged_in():
         results['errors'].append("Permission denied")
@@ -61,8 +61,8 @@ def admin_import_team_list():
     return dumps(results)
 
 
-@app.route(Routes['import_game_list'], methods=["POST"])
-def admin_import_game_list():
+@admin_blueprint.route("/import/game/list", methods=["POST"])
+def import_game_list():
     results = {'errors': [], 'success': False, 'warnings': []}
     if not logged_in():
         results['errors'].append("Permission denied")
@@ -85,10 +85,10 @@ def admin_import_game_list():
     return dumps(results)
 
 
-@app.route(Routes['view_league_requests'] + "/<int:year>")
-def admin_view_league_requests(year):
+@admin_blueprint.route("/edit/league_requests/<int:year>")
+def view_league_requests(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     league_requests = JoinLeagueRequest.query.filter(
         JoinLeagueRequest.pending == True).all()
     league_requests = [request.json() for request in league_requests]
@@ -99,9 +99,11 @@ def admin_view_league_requests(year):
                            league_requests=league_requests)
 
 
-@app.route(Routes['respond_league_requests'] + "/<int:request_id>",
-           methods=["POST"])
-def admin_respond_league_request(request_id):
+@admin_blueprint.route(
+    "/edit/league_requests/respond/<int:request_id>",
+    methods=["POST"]
+)
+def respond_league_request(request_id):
     if not logged_in():
         return dumps(False)
     league_request = JoinLeagueRequest.query.get(request_id)
@@ -115,37 +117,37 @@ def admin_respond_league_request(request_id):
     return dumps(True)
 
 
-@app.route(Routes['importteam'])
-def admin_import_team():
+@admin_blueprint.route("/import/team")
+def import_team():
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     return render_template("admin/importForm.html",
                            year=date.today().year,
                            route=Routes,
                            title="Import Team from CSV",
-                           template=Routes['team_template'],
-                           import_route=Routes['import_team_list'],
+                           template=url_for('admin.team_template'),
+                           import_route=url_for('admin.import_team_list'),
                            type="Team")
 
 
-@app.route(Routes['importgame'])
-def admin_import_game():
+@admin_blueprint.route("/import/game")
+def import_game():
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     return render_template("admin/importForm.html",
                            year=date.today().year,
                            route=Routes,
                            title="Import League's Game from CSV",
                            admin=session['admin'],
                            password=session['password'],
-                           template=Routes['game_template'],
-                           import_route=Routes['import_game_list'],
+                           template=url_for('admin.game_template'),
+                           import_route=url_for('admin.import_game_list'),
                            type="Games")
 
 
-@app.route(Routes['team_template'])
-def admin_team_template():
-    uploads = join(app.root_path, "static", "files", "team_template.csv")
+@admin_blueprint.route("/template/team")
+def team_template():
+    uploads = join(FILES, "team_template.csv")
     result = ""
     with open(uploads, "r") as f:
         for line in f:
@@ -156,9 +158,9 @@ def admin_team_template():
     return response
 
 
-@app.route(Routes['game_template'])
-def admin_game_template():
-    uploads = join(app.root_path, "static", "files", "game_template.csv")
+@admin_blueprint.route("/template/game")
+def game_template():
+    uploads = join(FILES, "game_template.csv")
     result = ""
     with open(uploads, "r") as f:
         for line in f:
@@ -169,7 +171,7 @@ def admin_game_template():
     return response
 
 
-@app.route(Routes['panel_captain_to_submit'] + "/<int:year>")
+@admin_blueprint.route("/views/captains/<int:year>")
 def get_captains_games_not_submitted(year):
     t1 = time(0, 0)
     t2 = time(23, 59)
@@ -205,10 +207,10 @@ def get_captains_games_not_submitted(year):
                            year=year)
 
 
-@app.route(Routes['editroster'] + "/<int:year>" + "/<int:team_id>")
-def admin_edit_roster(year, team_id):
+@admin_blueprint.route("/edit/roster/<int:year>/<int:team_id>")
+def edit_roster(year, team_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     team = Team.query.get(team_id)
     if team is None:
         return render_template("admin/notFound.html",
@@ -255,10 +257,10 @@ def quick_sort(array):
         return array
 
 
-@app.route(Routes['editfun'] + "/<int:year>")
-def admin_edit_fun(year):
+@admin_blueprint.route("/edit/fun/<int:year>")
+def edit_fun(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     return render_template("admin/editFun.html",
                            year=year,
                            route=Routes,
@@ -266,10 +268,10 @@ def admin_edit_fun(year):
                            title="Edit Fun")
 
 
-@app.route(Routes['editleagueevent'] + "/<int:year>")
-def admin_edit_league_event(year):
+@admin_blueprint.route("/edit/league-event/<int:year>")
+def edit_league_event(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     events = [event.json() for event in LeagueEvent.query.all()]
     return render_template("admin/editLeagueEvent.html",
                            year=year,
@@ -278,10 +280,10 @@ def admin_edit_league_event(year):
                            title="Edit League Events")
 
 
-@app.route(Routes['editleagueevent'] + "/<int:year>/<int:league_event_id>")
-def admin_edit_league_event_date(year, league_event_id):
+@admin_blueprint.route("/edit/league-event/<int:year>/<int:league_event_id>")
+def edit_league_event_date(year, league_event_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     query = LeagueEventDate.query
     dates = [
         d.json()
@@ -300,10 +302,12 @@ def admin_edit_league_event_date(year, league_event_id):
 attendance_route = "/<int:year>/attendance/<int:league_event_date_id>"
 
 
-@app.route(Routes['editleagueevent'] + attendance_route)
-def admin_league_event_date_attendance(year, league_event_date_id):
+@admin_blueprint.route(
+    "/edit/league-event/<int:year>/attendance/<int:league_event_date_id>"
+)
+def league_event_date_attendance(year, league_event_date_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     event = LeagueEventDate.query.get(league_event_date_id)
     players = [player.admin_json() for player in event.players]
     return render_template("admin/editLeagueEventAttendance.html",
@@ -314,10 +318,10 @@ def admin_league_event_date_attendance(year, league_event_date_id):
                            title="League Event Attendance")
 
 
-@app.route(Routes['editdivision'] + "/<int:year>")
-def admin_edit_division(year):
+@admin_blueprint.route("/edit/division/<int:year>")
+def edit_division(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     return render_template("admin/editDivision.html",
                            year=year,
                            route=Routes,
@@ -325,10 +329,10 @@ def admin_edit_division(year):
                            title="Edit Division")
 
 
-@app.route(Routes['editleague'] + "/<int:year>")
-def admin_edit_league(year):
+@admin_blueprint.route("/edit/league/<int:year>")
+def edit_league(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     return render_template("admin/editLeague.html",
                            year=year,
                            route=Routes,
@@ -336,10 +340,10 @@ def admin_edit_league(year):
                            title="Edit Leagues")
 
 
-@app.route(Routes['editsponsor'] + "/<int:year>")
-def admin_edit_sponsor(year):
+@admin_blueprint.route("/edit/sponsor/<int:year>")
+def edit_sponsor(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     return render_template("admin/editSponsor.html",
                            year=year,
                            route=Routes,
@@ -348,20 +352,28 @@ def admin_edit_sponsor(year):
                            title="Edit Leagues")
 
 
-@app.route(Routes['aindex'] + "/<int:year>")
-def admin_home(year):
+@admin_blueprint.route("")
+def _general_home():
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
+    year = date.today().year
+    return redirect(url_for("admin.home", year=year))
+
+
+@admin_blueprint.route("/<int:year>")
+def home(year):
+    if not logged_in():
+        return redirect(url_for('admin.login'))
     return render_template("admin/index.html",
                            year=year,
                            route=Routes,
                            title="Admin")
 
 
-@app.route(Routes['editplayer'] + "/<int:year>")
-def admin_edit_player(year):
+@admin_blueprint.route("/edit/player/<int:year>")
+def edit_player(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     players = get_players()
     return render_template("admin/editPlayer.html",
                            year=year,
@@ -370,10 +382,10 @@ def admin_edit_player(year):
                            title="Edit Players")
 
 
-@app.route(Routes['nonactiveplayers'] + "/<int:year>")
-def admin_non_active_players(year):
+@admin_blueprint.route("/edit/non_active_players/<int:year>")
+def non_active_players(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     players = get_players(active=False)
     return render_template("admin/nonActivePlayers.html",
                            year=year,
@@ -382,10 +394,10 @@ def admin_non_active_players(year):
                            title="Activate Old Players")
 
 
-@app.route(Routes['editteam'] + "/<int:year>")
-def admin_edit_team(year):
+@admin_blueprint.route("/edit/team/<int:year>")
+def edit_team(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     results = Team.query.filter(Team.year == year).all()
     # results = Team.query.all()
     teams = []
@@ -400,10 +412,10 @@ def admin_edit_team(year):
                            leagues=get_leagues())
 
 
-@app.route(Routes['editgame'] + "/<int:year>")
-def admin_edit_game(year):
+@admin_blueprint.route("/edit/game/<int:year>")
+def edit_game(year):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     results = Team.query.filter(Team.year == year).all()
     leagues = get_leagues()
     divisions = get_divisions()
@@ -432,10 +444,10 @@ def admin_edit_game(year):
                            games=games)
 
 
-@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>")
-def admin_activate_player(year, player_id):
+@admin_blueprint.route("/edit/player/deactivate/<int:year>/<int:player_id>")
+def activate_player(year, player_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     player = Player.query.get(player_id)
     if player is None:
         return render_template("admin/notFound.html",
@@ -450,9 +462,11 @@ def admin_activate_player(year, player_id):
                            title="Activate/Deactivate Player")
 
 
-@app.route(Routes['adeactivateplayer'] + "/<int:year>" + "/<int:player_id>",
-           methods=["POST"])
-def admin_activate_player_post(year, player_id):
+@admin_blueprint.route(
+    "/edit/player/deactivate/<int:year>/<int:player_id>",
+    methods=["POST"]
+)
+def activate_player_post(year, player_id):
     if not logged_in():
         return dumps(False)
     player = Player.query.get(player_id)
@@ -467,10 +481,10 @@ def admin_activate_player_post(year, player_id):
     return dumps(True)
 
 
-@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>")
-def admin_activate_sponsor(year, sponsor_id):
+@admin_blueprint.route("/edit/sponsor/deactivate/<int:year>/<int:sponsor_id>")
+def activate_sponsor(year, sponsor_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     sponsor = Sponsor.query.get(sponsor_id)
     if sponsor is None:
         return render_template("admin/notFound.html",
@@ -485,9 +499,11 @@ def admin_activate_sponsor(year, sponsor_id):
                            title="Activate/Deactivate Sponsor")
 
 
-@app.route(Routes['adeactivatesponsor'] + "/<int:year>" + "/<int:sponsor_id>",
-           methods=["POST"])
-def admin_activate_sponsor_post(year, sponsor_id):
+@admin_blueprint.route(
+    "/edit/sponsor/deactivate/<int:year>/<int:sponsor_id>",
+    methods=["POST"]
+)
+def activate_sponsor_post(year, sponsor_id):
     if not logged_in():
         return dumps(False)
     sponsor = Sponsor.query.get(sponsor_id)
@@ -502,10 +518,10 @@ def admin_activate_sponsor_post(year, sponsor_id):
     return dumps(True)
 
 
-@app.route(Routes['editespys'] + "/<int:year>" + "/<int:team_id>")
-def admin_edit_espys(year, team_id):
+@admin_blueprint.route("/edit/espys/<int:year>/<int:team_id>")
+def edit_espys(year, team_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     espys = Espys.query.filter(Espys.team_id == team_id).all()
     result = []
     for espy in espys:
@@ -519,10 +535,10 @@ def admin_edit_espys(year, team_id):
                            sponsors=get_sponsors(True))
 
 
-@app.route(Routes['editbat'] + "/<int:year>" + "/<int:game_id>")
-def admin_edit_bat(year, game_id):
+@admin_blueprint.route("/edit/bat/<int:year>/<int:game_id>")
+def edit_bat(year, game_id):
     if not logged_in():
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
     game = Game.query.get(game_id)
     results = game.bats
     away_team_id = game.away_team_id
@@ -558,14 +574,14 @@ def admin_edit_bat(year, game_id):
                            BATS=BATS)
 
 
-@app.route(Routes['alogout'])
-def admin_logout():
-    logout()
-    return redirect(url_for('reroute'))
+@admin_blueprint.route("/logout")
+def logout():
+    _logout()
+    return redirect(url_for('website.reroute'))
 
 
-@app.route(Routes['aportal'], methods=['POST'])
-def admin_portal():
+@admin_blueprint.route("/portal", methods=['POST'])
+def portal():
     if 'admin' in session and 'password' in session:
         admin = session['admin']
         password = session['password']
@@ -575,19 +591,19 @@ def admin_portal():
     if check_auth(admin, password):
         session['admin'] = admin
         session['password'] = password
-        return redirect(url_for('admin_home', year=date.today().year))
+        return redirect(url_for('admin.home', year=date.today().year))
     else:
         session['error'] = 'INVALID CREDENTIALS'
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('admin.login'))
 
 
-@app.route(Routes['alogin'])
-def admin_login():
-    post_url = Routes['aportal']
+@admin_blueprint.route("/login")
+def login():
+    post_url = url_for('admin.portal')
     error = None
     if 'error' in session:
         error = session.pop('error', None)
-    logout()
+    _logout()
     return render_template('admin/login.html',
                            type='Admin',
                            error=error,
@@ -602,7 +618,7 @@ def logged_in():
     return logged
 
 
-def logout():
+def _logout():
     session.pop('admin', None)
     session.pop('password', None)
     return
@@ -641,6 +657,7 @@ def get_players(active=True):
     players = []
     for player in results:
         players.append(player.admin_json())
+
     return players
 
 

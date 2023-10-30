@@ -37,7 +37,9 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{route.dosponsor}}">Sponsor Object</a></td>
+                <td class="col-md-3">
+                    <a href="{{url_for('documentation.sponsor_object_doc')}}">Sponsor Object</a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
             <tr>
@@ -281,7 +283,10 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{route.dopagination}}">Paginated</a> <a href="{{route.dosponsor}}">Sponsors</a></td>
+                <td class="col-md-3">
+                    <a href="{{url_for('documentation.pagination_object_doc')}}">Paginated</a> 
+                    <a href="{{url_for('documentation.sponsor_object_doc')}}">Sponsors</a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
         </tbody>

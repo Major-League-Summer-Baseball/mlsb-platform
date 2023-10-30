@@ -37,7 +37,9 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{route.dofun}}">Fun Object</a></td>
+                <td class="col-md-3">
+                    <a href="{{url_for('documentation.fun_object_doc')}}">Fun Object</a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
             <tr>
@@ -251,7 +253,10 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{route.dopagination}}">Paginated</a> <a href="{{route.dofun}}">Funs</a></td>
+                <td class="col-md-3">
+                    <a href="{{url_for('documentation.pagination_object_doc')}}">Paginated</a> 
+                    <a href="{{url_for('documentation.fun_object_doc')}}">Funs</a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
         </tbody>

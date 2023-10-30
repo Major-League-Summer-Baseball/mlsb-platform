@@ -2,7 +2,6 @@
 """ Holds views related to captain activities. """
 from flask import render_template, Response, request
 from flask_login import current_user
-from api import app
 from api.variables import UNASSIGNED
 from api.routes import Routes
 from api.bot.get_captain_games import games_without_scores
@@ -13,10 +12,11 @@ from api.bot.submit_scores import submit_bats, submit_score
 from api.model import Bat, Team
 from api.errors import NotTeamCaptain
 from datetime import datetime
+from api.website import website_blueprint
 import json
 
 
-@app.route("/captain/game_summary/<int:team_id>")
+@website_blueprint.route("/captain/game_summary/<int:team_id>")
 @require_captain
 def captain_score_games(team_id: int):
     """Navigate to the captain score app"""
@@ -30,7 +30,7 @@ def captain_score_games(team_id: int):
                            user_info=get_user_information())
 
 
-@app.route("/captain/batting_app/<int:team_id>")
+@website_blueprint.route("/captain/batting_app/<int:team_id>")
 @require_captain
 def captain_batting_app(team_id: int):
     """Navigate to the captain score app"""
@@ -44,7 +44,7 @@ def captain_batting_app(team_id: int):
                            user_info=get_user_information())
 
 
-@app.route("/captain/api/games/<int:team_id>")
+@website_blueprint.route("/captain/api/games/<int:team_id>")
 @api_require_captain
 def get_captain_info(team_id: int):
     """Get captain information for submitting games"""
@@ -63,7 +63,7 @@ def get_captain_info(team_id: int):
     }), status=200, mimetype="application/json")
 
 
-@app.route("/captain/api/submit_score/<int:team_id>", methods=["POST"])
+@website_blueprint.route("/captain/api/submit_score/<int:team_id>", methods=["POST"])
 @api_require_captain
 def captain_submit_score(team_id: int):
     """Submit a score for some game"""
@@ -77,7 +77,7 @@ def captain_submit_score(team_id: int):
     return Response(json.dumps(True), status=200, mimetype="application/json")
 
 
-@app.route("/captain/api/submit_batting/<int:team_id>", methods=["POST"])
+@website_blueprint.route("/captain/api/submit_batting/<int:team_id>", methods=["POST"])
 @api_require_captain
 def captain_submit_full_game(team_id: int):
     """Submit a complete game batting information for some game"""

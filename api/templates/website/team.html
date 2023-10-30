@@ -9,7 +9,7 @@
 <h4>
     Roster
     {% if team_authorization.logged_in and not team_authorization.pending_request and not team_authorization.on_team %}
-        <button class="btn btn-success" id="join_team" onclick="joinTeam('{{ url_for ('request_to_join_team', team_id=team_id) }}')">
+        <button class="btn btn-success" id="join_team" onclick="joinTeam('{{ url_for ('website.request_to_join_team', team_id=team_id) }}')">
             Join Team
         </button>
     {% endif %}
@@ -20,7 +20,7 @@
             {{player.player_name}}
             {% if team_authorization.is_captain %}
                 &nbsp;    
-                <button class="btn btn-danger" id="removePlayer{{player.player_id}}" alt="Remove player" onclick="dropPlayer('{{ url_for ('team_remove_player', team_id=team_id, player_id=player.player_id)}}', {{player.player_id}} )">
+                <button class="btn btn-danger" id="removePlayer{{player.player_id}}" alt="Remove player" onclick="dropPlayer('{{ url_for ('website.team_remove_player', team_id=team_id, player_id=player.player_id)}}', {{player.player_id}} )">
                     <span class="glyphicon glyphicon-remove"></span>
                 </button>
             {% endif %}
@@ -48,7 +48,7 @@
                 <button
                     class="btn btn-info"
                     id="acceptRequest{{league_request.id}}"
-                    onclick="respondToRequest('{{ url_for ('captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', true, 'league_request{{request.id}}')">
+                    onclick="respondToRequest('{{ url_for ('website.captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', true, 'league_request{{request.id}}')">
                     Accept
                 </button>
             </div>
@@ -56,7 +56,7 @@
                 <button
                     class="btn btn-warning"
                     id="rejectRequest{{league_request.id}}"
-                    onclick="respondToRequest('{{ url_for ('captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', false, 'league_request{{request.id}}');">
+                    onclick="respondToRequest('{{ url_for ('website.captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', false, 'league_request{{request.id}}');">
                     Decline
                 </button>
             </div>
@@ -101,7 +101,11 @@
     <tbody>
         {% for player in team.stats %}
             <tr>
-                <td><a href="{{route.playerpage}}/{{year}}/{{player.id}}">{{player.name}}</a></td>
+                <td>
+                    <a href="{{ url_for('website.player_page', year=year, player_id=player.id) }}">
+                        {{player.name}}
+                    </a>
+                </td>
                 <td>{{player.ba}}</td>
                 <td>{{player.sp}}</td>
                 <td>{{player.s}}</td>

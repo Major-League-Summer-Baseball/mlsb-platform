@@ -6,7 +6,7 @@
 """
 __all__ = []
 from flask import \
-    redirect, render_template, send_from_directory, url_for
+    redirect, render_template, send_from_directory, url_for, Blueprint
 from datetime import date
 from api import app
 from api.routes import Routes
@@ -16,18 +16,24 @@ from api.authentication import get_user_information
 import pkgutil
 import inspect
 
+website_blueprint = Blueprint("website", __name__, url_prefix="/")
 
-@app.route("/")
-@app.route(Routes["homepage"])
-@app.route("/website")
-@app.route("/website/")
+
+@website_blueprint.route("/")
+@website_blueprint.route("/website")
+@website_blueprint.route("/website/")
 def reroute():
     year = date.today().year
-    return redirect(url_for(
-        "index", year=year, user_info=get_user_information()))
+    return redirect(url_for("website.index", year=year))
 
 
-@app.route("/about/<int:year>")
+@website_blueprint.route("/about")
+def general_about():
+    year = date.today().year
+    return redirect(url_for("website.about", year=year))
+
+
+@website_blueprint.route("/about/<int:year>")
 def about(year):
     return render_template("website/about.html",
                            route=Routes,
@@ -38,17 +44,17 @@ def about(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes["privacy"])
+@website_blueprint.route("/privacy-policy")
 def privacy_policy():
     return render_template("website/privacy-policy.html")
 
 
-@app.route(Routes["termsandconditions"])
+@website_blueprint.route("/terms-and-conditions")
 def terms_and_conditions():
     return render_template("website/terms_and_conditions.html")
 
 
-@app.route("/.well-known/microsoft-identity-association.json")
+@website_blueprint.route("/.well-known/microsoft-identity-association.json")
 def azure_verify():
     """A route for verifying domain to azure."""
     return send_from_directory(
@@ -57,13 +63,13 @@ def azure_verify():
     )
 
 
-@app.route("/robots.txt")
+@website_blueprint.route("/robots.txt")
 def robot():
     """A route for the google web crawler."""
     return send_from_directory(app.static_folder, "robots.txt")
 
 
-@app.route(Routes['leaguenotfoundpage'] + "<int:year>")
+@website_blueprint.route("/website/leagueNotFound/<int:year>")
 def league_not_found(year):
     return render_template("website/leagueNotFound.html",
                            route=Routes,
@@ -73,7 +79,7 @@ def league_not_found(year):
                            user_info=get_user_information())
 
 
-@app.route(Routes['fieldsrulespage'] + "/<int:year>")
+@website_blueprint.route("/website/rulesAndFields/<int:year>")
 def rules_fields(year):
     return render_template("website/fields-and-rules.html",
                            route=Routes,

@@ -45,6 +45,7 @@ api.decorators = [cors.crossdomain(origin='*',
 PICTURES = join(getcwd(), "api", "static", "pictures")
 CSS_FOLDER = join(getcwd(), "api", "static", "css")
 POSTS = join(getcwd(), "api", "templates", "website", "posts")
+FILES = join(getcwd(), "api", "static", "files")
 app.config['UPLOAD_FOLDER'] = "./static"
 if app.config["ENV"] != "development":
     Talisman(app, content_security_policy=None)
@@ -53,9 +54,6 @@ if app.config["ENV"] != "development":
 # these imports cannot be at the top right now
 
 # imports for website, documentation, admin
-from api.website import *
-from api import admin
-from api import documentation
 from api import errorHandlers
 
 # imports for basic apis
@@ -91,15 +89,22 @@ from api.bot.authenticate_captain import \
 from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
 from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
-
 from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
-
+from api.documentation import documentation_blueprint
+from api.admin import admin_blueprint
+from api.website import website_blueprint
+from api.testing_blueprint import testing_blueprint
 
 app.register_blueprint(github_blueprint, url_prefix="/login")
 app.register_blueprint(facebook_blueprint, url_prefix="/login")
 app.register_blueprint(google_blueprint, url_prefix="/login")
 app.register_blueprint(azure_blueprint, url_prefix="/login")
+app.register_blueprint(documentation_blueprint)
+app.register_blueprint(admin_blueprint)
+app.register_blueprint(website_blueprint)
+if (app.config['ENV'] == "development"):
+    app.register_blueprint(testing_blueprint)
 login_manager.init_app(app)
 
 

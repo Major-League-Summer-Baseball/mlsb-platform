@@ -9,6 +9,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import undefer
 from sqlalchemy.sql.expression import and_, or_
 from datetime import date, datetime, time
+from flask import url_for
 from api import cache, DB
 from api.advanced.game_stats import post as game_summary
 from api.model import Team, Sponsor, League, Espys, Fun, Game, Division
@@ -133,7 +134,11 @@ def get_league_leaders(stat, year=None, group_by_team=False):
 @cache.memoize(timeout=LONG_TERM_CACHE)
 def get_league_schedule(year, league_id, page):
     """Get a page of the league schedule for the given league and year"""
-    url_route = Routes['schedulecache'] + f"/{year}/{league_id}"
+    url_route = url_for(
+        'website.cache_schedule_page',
+        year=year,
+        league_id=league_id
+    )
     return pull_schedule(year, league_id, page=page, url_route=url_route)
 
 

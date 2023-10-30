@@ -73,7 +73,7 @@ function ready(){
         .attr("class", "y axis")
       .append("svg:line")
         .attr("y1", "100%");
-    d3.json("{{route.sponsorbreakdown}}/{{year}}/1", function(root) {
+    d3.json("{{ url_for('website.get_sponsor_breakdown', year=year, garbage=1) }}", function(root) {
         $("#img1").hide();
         hierarchy.nodes(root);
         x.domain([0, root.value]).nice();

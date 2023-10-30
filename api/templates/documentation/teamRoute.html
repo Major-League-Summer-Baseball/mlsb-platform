@@ -36,7 +36,11 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{route.doteam}}">Team Object</a></td>
+                <td class="col-md-3">
+                    <a href="{{ url_for('documentation.team_object_doc') }}">
+                        Team Object
+                    </a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
             <tr>
@@ -281,7 +285,10 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{route.dopagination}}">Paginated</a> <a href="{{route.doteam}}">Teams</a></td>
+                <td class="col-md-3">
+                    <a href="{{url_for('documentation.pagination_object_doc')}}">Paginated</a> 
+                    <a href="{{ url_for('documentation.team_object_doc') }}">Teams</a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
         </tbody>

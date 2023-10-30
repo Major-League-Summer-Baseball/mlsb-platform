@@ -74,6 +74,9 @@ class TestSetup(unittest.TestCase):
                           ''')
             DB.create_all()
 
+    def getApp(self):
+        return app
+
     def tearDown(self):
         DB.session.rollback()
         espy_query = Espys.query.get

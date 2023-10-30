@@ -6,9 +6,22 @@
         <div class="col-sm-6 col-xs-12">
             <h4> {{article.title}} </h4>
             {% if article.image %}
-                <img src="{{route.postpicture}}/{{article.image}}"  alt="" class="postImage" style="postImage" height="200" width="200" >
+                <img
+                    src="{{ url_for('website.post_picture', name=article.image) }}"
+                    alt="Article Post Image - {{article.title}}"
+                    class="postImage"
+                    height="200"
+                    width="200" />
             {% endif %}
-            <p>{{article.summary}} <a data-cy="{{article.title}}" alt="{{article.title}}" href="{{route.posts}}/{{year}}/{{article.date}}/{{article.name}}"> Read more</a>
+            <p>
+                {{article.summary}} 
+                <a 
+                    data-cy="{{article.title}}"
+                    alt="{{article.title}}"
+                    href="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}">
+                    Read more
+                </a>
+            </p>
         </div>
     {% endfor %}
 {% endblock %}

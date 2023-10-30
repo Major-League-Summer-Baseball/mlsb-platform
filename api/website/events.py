@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """ MLSB Summer Events. """
 from flask import render_template, send_from_directory, Response
-from api import app, PICTURES, DB
+from api import PICTURES, DB
 from api.model import LeagueEvent, LeagueEventDate
 from api.routes import Routes
+from api.website import website_blueprint
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, api_require_login, are_logged_in, get_player_id
@@ -14,7 +15,9 @@ NOT_FOUND = "sorry.jpg"
 EVENT_FOLDER = 'events'
 
 
-@app.route(Routes['eventspage'] + "/<int:year>/image/<int:league_event_id>")
+@website_blueprint.route(
+    "/website/event/<int:year>/image/<int:league_event_id>"
+)
 def mlsb_event_image(year, league_event_id):
     # two potential file paths
     filepath = os.path.join(PICTURES, EVENT_FOLDER)
@@ -39,13 +42,13 @@ def mlsb_event_image(year, league_event_id):
     return send_from_directory(filepath, NOT_FOUND)
 
 
-@app.route(Routes['eventspage'] + "/<int:year>" + "/json")
+@website_blueprint.route("/website/event/<int:year>/json")
 def events_page_json(year):
     return json.dumps(get_year_events())
 
 
-@app.route(
-    Routes['eventspage'] + "/signup/<int:league_event_date_id>",
+@website_blueprint.route(
+    "/website/event/signup/<int:league_event_date_id>",
     methods=["POST"]
 )
 @api_require_login
@@ -68,7 +71,7 @@ def signup_event(league_event_date_id):
     )
 
 
-@app.route(Routes['eventspage'] + "/<int:year>")
+@website_blueprint.route("/website/event/<int:year>")
 def events_page(year):
     """The events page for a given year"""
     events = get_year_events(year)

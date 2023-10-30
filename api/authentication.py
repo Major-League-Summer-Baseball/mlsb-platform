@@ -95,8 +95,6 @@ def oauth_service_provider_logged_in(blueprint: Blueprint, token: str) -> bool:
     user_id = user_info["id"]
 
     # user user info to lookup oauth
-    print(user_info)
-    print(user_id)
     oauth = get_oauth(blueprint.name, user_id, token)
     if oauth.player:
         login_user(oauth.player)
@@ -356,7 +354,7 @@ def require_captain(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
         if not are_logged_in():
-            return redirect(url_for("loginpage"))
+            return redirect(url_for("website.loginpage"))
         team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
         team = Team.query.get(team_id)
         if team is None:
