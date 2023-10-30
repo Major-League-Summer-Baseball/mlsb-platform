@@ -3,7 +3,7 @@
 from flask import render_template, send_from_directory
 from sqlalchemy.sql import func
 from datetime import datetime
-from api import app, PICTURES, DB
+from api import PICTURES, DB
 from api.model import Team, Sponsor, Espys
 from api.variables import NOTFOUND
 from api.routes import Routes
@@ -11,12 +11,13 @@ from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map
 from api.authentication import get_user_information
 from api.cached_items import get_website_base_data as base_data
+from api.website import website_blueprint
 import os.path
 import json
 
 
-@app.route("/website/sponsor/picture/<int:name>")
-@app.route("/website/sponsor/picture/<name>")
+@website_blueprint.route("/website/sponsor/picture/<int:name>")
+@website_blueprint.route("/website/sponsor/picture/<name>")
 def sponsor_picture(name):
     if isinstance(name, int):
         sponsor_id = int(name)
@@ -34,7 +35,7 @@ def sponsor_picture(name):
         return send_from_directory(fp, NOTFOUND)
 
 
-@app.route("/website/sponsors_list/<int:year>")
+@website_blueprint.route("/website/sponsors_list/<int:year>")
 def sponsors_page(year):
     return render_template("website/sponsors.html",
                            route=Routes,
@@ -44,7 +45,7 @@ def sponsors_page(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/sponsors_list/<int:year>/<int:sponsor_id>")
+@website_blueprint.route("/website/sponsors_list/<int:year>/<int:sponsor_id>")
 def sponsor_page(year, sponsor_id):
     sponsor = get_sponsor_map().get(sponsor_id, None)
     if sponsor is None:
@@ -66,7 +67,7 @@ def sponsor_page(year, sponsor_id):
     return page
 
 
-@app.route("/website/sponsorbreakdown/<int:year>")
+@website_blueprint.route("/website/sponsorbreakdown/<int:year>")
 def sponsor_breakdown(year):
     return render_template("website/sponsor_breakdown.html",
                            route=Routes,
@@ -77,7 +78,7 @@ def sponsor_breakdown(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/sponsorbreakdown/<int:year>/<int:garbage>")
+@website_blueprint.route("/website/sponsorbreakdown/<int:year>/<int:garbage>")
 def get_sponsor_breakdown(year, garbage):
     sponsors = DB.session.query(Sponsor).filter(Sponsor.active == True).all()
     tree = {'name': 'Sponsor Breakdown by ESPYS'}

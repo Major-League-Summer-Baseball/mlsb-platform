@@ -99,8 +99,10 @@ def view_league_requests(year):
                            league_requests=league_requests)
 
 
-@admin_blueprint.route("/edit/league_requests/respond/<int:request_id>",
-           methods=["POST"])
+@admin_blueprint.route(
+    "/edit/league_requests/respond/<int:request_id>",
+    methods=["POST"]
+)
 def respond_league_request(request_id):
     if not logged_in():
         return dumps(False)
@@ -574,8 +576,8 @@ def edit_bat(year, game_id):
 
 @admin_blueprint.route("/logout")
 def logout():
-    logout()
-    return redirect(url_for('reroute'))
+    _logout()
+    return redirect(url_for('website.reroute'))
 
 
 @admin_blueprint.route("/portal", methods=['POST'])
@@ -601,7 +603,7 @@ def login():
     error = None
     if 'error' in session:
         error = session.pop('error', None)
-    logout()
+    _logout()
     return render_template('admin/login.html',
                            type='Admin',
                            error=error,
@@ -616,7 +618,7 @@ def logged_in():
     return logged
 
 
-def logout():
+def _logout():
     session.pop('admin', None)
     session.pop('password', None)
     return

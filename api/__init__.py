@@ -54,7 +54,6 @@ if app.config["ENV"] != "development":
 # these imports cannot be at the top right now
 
 # imports for website, documentation, admin
-from api.website import *
 from api import errorHandlers
 
 # imports for basic apis
@@ -94,6 +93,8 @@ from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
 from api.documentation import documentation_blueprint
 from api.admin import admin_blueprint
+from api.website import website_blueprint
+from api.testing_blueprint import testing_blueprint
 
 app.register_blueprint(github_blueprint, url_prefix="/login")
 app.register_blueprint(facebook_blueprint, url_prefix="/login")
@@ -101,6 +102,9 @@ app.register_blueprint(google_blueprint, url_prefix="/login")
 app.register_blueprint(azure_blueprint, url_prefix="/login")
 app.register_blueprint(documentation_blueprint)
 app.register_blueprint(admin_blueprint)
+app.register_blueprint(website_blueprint)
+if (app.config['ENV'] == "development"):
+    app.register_blueprint(testing_blueprint)
 login_manager.init_app(app)
 
 

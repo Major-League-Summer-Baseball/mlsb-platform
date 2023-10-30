@@ -134,7 +134,11 @@ def get_league_leaders(stat, year=None, group_by_team=False):
 @cache.memoize(timeout=LONG_TERM_CACHE)
 def get_league_schedule(year, league_id, page):
     """Get a page of the league schedule for the given league and year"""
-    url_route = url_for('cache_schedule_page', year=year, league_id=league_id)
+    url_route = url_for(
+        'website.cache_schedule_page',
+        year=year,
+        league_id=league_id
+    )
     return pull_schedule(year, league_id, page=page, url_route=url_route)
 
 

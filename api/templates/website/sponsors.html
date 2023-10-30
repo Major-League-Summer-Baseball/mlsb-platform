@@ -1,8 +1,8 @@
 {% extends "website/new-base.html" %}
 {% block content %}
     {% for sponsor in sponsors %}
-        <a href="{{url_for('sponsor_page', year=year, sponsor_id=sponsor.id) }}" title="{{sponsor.name}}">
-            <img src="{{ url_for('sponsor_picture', name=sponsor.id) }}" class="big-sponsor" style="" alt="{{sponsor.name}}">
+        <a href="{{url_for('website.sponsor_page', year=year, sponsor_id=sponsor.id) }}" title="{{sponsor.name}}">
+            <img src="{{ url_for('website.sponsor_picture', name=sponsor.id) }}" class="big-sponsor" style="" alt="{{sponsor.name}}">
         </a>
      {% endfor %}
 {% endblock %}

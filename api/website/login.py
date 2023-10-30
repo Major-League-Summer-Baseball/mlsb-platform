@@ -5,7 +5,7 @@ from flask_login import \
     current_user, logout_user, login_required, login_user
 from sqlalchemy import func
 from datetime import date
-from api import app, DB
+from api import DB
 from api.errors import \
     HaveLeagueRequestException, TeamDoesNotExist, OAuthException
 from api.authentication import \
@@ -16,9 +16,10 @@ from api.routes import Routes
 from api.logging import LOGGER
 from api.cached_items import get_website_base_data as get_base_data
 from api.authentication import get_user_information
+from api.website import website_blueprint
 
 
-@app.route("/authenticate")
+@website_blueprint.route("/authenticate")
 def need_to_login():
     """A route used to indicate the user needs to authenicate for some page."""
     year = date.today().year
@@ -34,7 +35,7 @@ def need_to_login():
                            user_info=get_user_information())
 
 
-@app.route("/login")
+@website_blueprint.route("/login")
 def loginpage():
     """A route to login the user."""
     year = date.today().year
@@ -49,7 +50,7 @@ def loginpage():
                            user_info=get_user_information())
 
 
-@app.route("/logout")
+@website_blueprint.route("/logout")
 @login_required
 def logout():
     """A route to log out the user."""
@@ -58,7 +59,7 @@ def logout():
     return redirect(url_for("index", year=date.today().year))
 
 
-@app.route("/join_league", methods=["POST"])
+@website_blueprint.route("/join_league", methods=["POST"])
 def join_league():
     """A form submission to ask to join the league."""
     # ensure given an email
@@ -91,10 +92,10 @@ def join_league():
     league_request = JoinLeagueRequest(email, player_name, team, gender)
     DB.session.add(league_request)
     DB.session.commit()
-    return redirect(url_for("league_request_sent"))
+    return redirect(url_for("website.league_request_sent"))
 
 
-@app.route("/request_sent", methods=["GET"])
+@website_blueprint.route("/request_sent", methods=["GET"])
 def league_request_sent():
     message = ("Submitted request to join."
                " Please wait until a convenor responds")

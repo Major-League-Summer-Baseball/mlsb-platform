@@ -143,7 +143,7 @@ function ready(){
     } );
 
     // load the table for the schedule using ajax
-    loadLeague({{league.league_id}}, "{{ url_for('cache_schedule_page', year=year, league_id=league.league_id)}}", []);
+    loadLeague({{league.league_id}}, "{{ url_for('website.cache_schedule_page', year=year, league_id=league.league_id)}}", []);
 }
 </script>
 {% endblock %}

@@ -5,17 +5,18 @@
     Some what of a deprecated feature but might come in hand later
 """
 from flask import render_template, send_from_directory
-from api import app, PICTURES, POSTS
+from api import PICTURES, POSTS
 from api.variables import NOTFOUND
 from api.routes import Routes
 from api.cached_items import get_upcoming_games
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
+from api.website import website_blueprint
 import os.path
 import json
 
 
-@app.route("/website/<int:year>")
+@website_blueprint.route("/website/<int:year>")
 def index(year):
     return render_template("website/index.html",
                            route=Routes,
@@ -27,12 +28,12 @@ def index(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/posts/<int:year>")
+@website_blueprint.route("/website/posts/<int:year>")
 def posts_json(year):
     return json.dumps(get_all_descriptions(year))
 
 
-@app.route("/website/posts/<int:year>/<date>/<file_name>/plain")
+@website_blueprint.route("/website/posts/<int:year>/<date>/<file_name>/plain")
 def checkout_post_raw_html(year, date, file_name):
     result = ""
     file_name = date + "_" + file_name
@@ -41,7 +42,7 @@ def checkout_post_raw_html(year, date, file_name):
     return result
 
 
-@app.route("/website/posts/<int:year>/<date>/<file_name>/json")
+@website_blueprint.route("/website/posts/<int:year>/<date>/<file_name>/json")
 def checkout_post_json(year, date, file_name):
     file_name = date + "_" + file_name
     result = {}
@@ -50,7 +51,7 @@ def checkout_post_json(year, date, file_name):
     return json.dumps(result)
 
 
-@app.route("/website/posts/<int:year>/<date>/<file_name>")
+@website_blueprint.route("/website/posts/<int:year>/<date>/<file_name>")
 def checkout_post(year, date, file_name):
     file_name = date + "_" + file_name
     template = "/".join(["website", "posts", str(year), file_name])
@@ -72,7 +73,7 @@ def checkout_post(year, date, file_name):
                                user_info=get_user_information())
 
 
-@app.route("/website/post/pictures/<name>")
+@website_blueprint.route("/website/post/pictures/<name>")
 def post_picture(name):
     f = os.path.join(PICTURES, "posts", name)
     fp = os.path.join(PICTURES, "posts")

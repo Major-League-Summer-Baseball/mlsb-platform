@@ -14,9 +14,13 @@ class TestWebsiteViews(TestSetup):
         app = self.getApp()
         with app.app_context(), app.test_request_context():
             self.assertGetRequest(
-                url_for('mlsb_logo'), "Logo page should give a 200")
+                url_for('website.mlsb_logo'),
+                "Logo page should give a 200"
+            )
             self.assertGetRequest(
-                url_for('privacy_policy'), "Privacy page should give a 200")
+                url_for('website.privacy_policy'),
+                "Privacy page should give a 200"
+            )
 
     def testLoginPages(self):
         self.assertGetRequest("/authenticate", "Need to login")
@@ -31,22 +35,26 @@ class TestWebsiteViews(TestSetup):
         with app.app_context(), app.test_request_context():
             # get the sponsor picture using sponsor name or id
             self.assertGetRequest(
-                url_for('sponsor_picture', name=sponsor_name),
+                url_for('website.sponsor_picture', name=sponsor_name),
                 "Get sponsor picture from name"
             )
             self.assertGetRequest(
-                url_for('sponsor_picture', name=sponsor['sponsor_id']),
+                url_for('website.sponsor_picture', name=sponsor['sponsor_id']),
                 "Get sponsor picture from id"
             )
 
             # get the sponsor page for all sponsors for a specific sponsor
             self.assertGetRequest(
-                url_for('sponsors_page', year=current_year, name=INVALID_ID),
+                url_for(
+                    'website.sponsors_page',
+                    year=current_year,
+                    name=INVALID_ID
+                ),
                 "Get a page of all the sponsors"
             )
             self.assertGetRequest(
                 url_for(
-                    'sponsor_page',
+                    'website.sponsor_page',
                     year=current_year,
                     sponsor_id=sponsor['sponsor_id']
                 ),
@@ -55,15 +63,19 @@ class TestWebsiteViews(TestSetup):
 
             # get a non-existent sponsor
             self.assertGetRequest(
-                url_for('sponsor_picture', name=str(uuid.uuid1())),
+                url_for('website.sponsor_picture', name=str(uuid.uuid1())),
                 "Get non-existent sponsor picture"
             )
             self.assertGetRequest(
-                url_for('sponsor_picture', name=INVALID_ID),
+                url_for('website.sponsor_picture', name=INVALID_ID),
                 "Get sponsor picture from id"
             )
             self.assertGetRequest(
-                url_for('sponsors_page', year=current_year, name=INVALID_ID),
+                url_for(
+                    'website.sponsors_page',
+                    year=current_year,
+                    name=INVALID_ID
+                ),
                 "Get a page of non-existent sponsor"
             )
 
@@ -77,22 +89,22 @@ class TestWebsiteViews(TestSetup):
             team_with_sponsor = self.add_team(
                 "white", sponsor=sponsor, league=league)
             self.assertGetRequest(
-                url_for('team_picture', team=team_with_sponsor['team_id']),
+                url_for('website.team_picture', team=team_with_sponsor['team_id']),
                 "Get picture of team with a sponsor"
             )
             team_id = team_with_sponsor['team_id']
             self.assertGetRequest(
-                url_for('team_page', year=current_year, team_id=team_id),
+                url_for('website.team_page', year=current_year, team_id=team_id),
                 "Get page of team with a sponsor"
             )
 
             # test non-existent team
             self.assertGetRequest(
-                url_for('team_picture', team=INVALID_ID),
+                url_for('website.team_picture', team=INVALID_ID),
                 "Get picture of non-existent team"
             )
             self.assertGetRequest(
-                url_for('team_page', year=current_year, team_id=INVALID_ID),
+                url_for('website.team_page', year=current_year, team_id=INVALID_ID),
                 "Get page of non-existent team"
             )
 
@@ -108,7 +120,7 @@ class TestWebsiteViews(TestSetup):
         with app.app_context(), app.test_request_context():
             self.assertGetRequest(
                 url_for(
-                    'player_page',
+                    'website.player_page',
                     year=current_year,
                     player_id=player['player_id']
                 ),
@@ -118,7 +130,7 @@ class TestWebsiteViews(TestSetup):
             # test non-existent player
             self.assertGetRequest(
                 url_for(
-                    'player_page',
+                    'website.player_page',
                     year=current_year,
                     player_id=INVALID_ID
                 ),
@@ -130,13 +142,13 @@ class TestWebsiteViews(TestSetup):
         with app.app_context(), app.test_request_context():
             # get all the posts
             self.assertGetRequest(
-                url_for('posts_json', year=START_OF_PLATFORM),
+                url_for('website.posts_json', year=START_OF_PLATFORM),
                 " Get all the posts descriptions"
             )
 
             # render the template for some post
             route = url_for(
-                'checkout_post',
+                'website.checkout_post',
                 year=START_OF_PLATFORM,
                 date='20160422',
                 file_name='Launch.html'
@@ -145,28 +157,28 @@ class TestWebsiteViews(TestSetup):
             self.assertGetRequest(route, error_message)
 
             # get one of the post pictures
-            route = url_for('post_picture', name='bot.png')
+            route = url_for('website.post_picture', name='bot.png')
             message = "Get post picture at {}".format(route)
             self.assertGetRequest(route, message)
 
             # get a post pictures that does not exist
-            route = url_for('post_picture', name='picDoesNotExist.png')
+            route = url_for('website.post_picture', name='picDoesNotExist.png')
             message = ("Get non-existent post picture at {}".format(route))
             # will send back not found png
             self.assertGetRequest(
-                url_for('post_picture', name='picDoesNotExist.png'), message
+                url_for('website.post_picture', name='picDoesNotExist.png'), message
             )
 
             # get a single post plain or json format
             for route in [
                 url_for(
-                    'checkout_post_raw_html',
+                    'website.checkout_post_raw_html',
                     year=START_OF_PLATFORM,
                     date='20160422',
                     file_name='Launch.html'
                 ),
                 url_for(
-                    'checkout_post_json',
+                    'website.checkout_post_json',
                     year=START_OF_PLATFORM,
                     date='20160422',
                     file_name='Launch.html'
@@ -180,13 +192,13 @@ class TestWebsiteViews(TestSetup):
         with app.app_context(), app.test_request_context():
             # homepage with posts
             self.assertGetRequest(
-                url_for('index', year=START_OF_PLATFORM),
+                url_for('website.index', year=START_OF_PLATFORM),
                 "Get homepage with summaries"
             )
 
             # homepage without posts
             self.assertGetRequest(
-                url_for('index', year=YEAR_WITH_NO_DATA),
+                url_for('website.index', year=YEAR_WITH_NO_DATA),
                 "Get homepage without summaries"
             )
 
@@ -195,13 +207,13 @@ class TestWebsiteViews(TestSetup):
         with app.app_context(), app.test_request_context():
             # year with events
             self.assertGetRequest(
-                url_for('events_page', year=START_OF_PLATFORM),
+                url_for('website.events_page', year=START_OF_PLATFORM),
                 "Get events for a given year"
             )
 
             # year with no events
             self.assertGetRequest(
-                url_for('events_page', year=YEAR_WITH_NO_DATA),
+                url_for('website.events_page', year=YEAR_WITH_NO_DATA),
                 "Get events for a given year with no events"
             )
 
@@ -214,10 +226,10 @@ class TestWebsiteViews(TestSetup):
             routes = []
             for league_id in range(1, 10):
                 routes.append(
-                    url_for('schedule', year=current_year, league_id=league_id)
+                    url_for('website.schedule', year=current_year, league_id=league_id)
                 )
                 routes.append(
-                    url_for('standings', year=current_year, league_id=league_id)
+                    url_for('website.standings', year=current_year, league_id=league_id)
                 )
             for route in routes:
                 with self.app.get(route) as result:
@@ -233,15 +245,15 @@ class TestWebsiteViews(TestSetup):
         app = self.getApp()
         with app.app_context(), app.test_request_context():
             for route in [
-                url_for('rules_fields', year=current_year),
-                url_for('index', year=current_year),
-                url_for('stats_page', year=current_year),
-                url_for('leaders_page', year=current_year),
-                url_for('all_time_leaders_page', year=current_year),
-                url_for('events_page', year=current_year),
-                url_for('espys_breakdown_request', year=current_year),
-                url_for('sponsor_breakdown', year=current_year),
-                url_for('promos_page', year=current_year)
+                url_for('website.rules_fields', year=current_year),
+                url_for('website.index', year=current_year),
+                url_for('website.stats_page', year=current_year),
+                url_for('website.leaders_page', year=current_year),
+                url_for('website.all_time_leaders_page', year=current_year),
+                url_for('website.events_page', year=current_year),
+                url_for('website.espys_breakdown_request', year=current_year),
+                url_for('website.sponsor_breakdown', year=current_year),
+                url_for('website.promos_page', year=current_year)
             ]:
                 error_message = "Expecting 200 at url: {}".format(route)
                 self.assertGetRequest(route, error_message)

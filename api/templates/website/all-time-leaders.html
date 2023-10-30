@@ -14,7 +14,7 @@
                 {{player.year}}
                 - {{player.name}}
                 - <span data-cy="allTimeSingleSeasonHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('team_picture', team=player.team_id) }}"  alt="" style="">
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}"  alt="" style="">
             </li>
         {% endfor %}
         </ul>
@@ -31,7 +31,7 @@
                 </span>
                 {{player.name}}
                 - <span data-cy="allTimeCareerHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('team_picture', team=-1) }}"  alt="" style="">
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}"  alt="" style="">
             </li>
         {% endfor %}
         </ul>
@@ -52,7 +52,7 @@
                  {{player.year}}
                  - {{player.name}}
                  - <span data-cy="allTimeSingleSeasonSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('team_picture', team=player.team_id) }}"  alt="" style="">
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}"  alt="" style="">
             </li>
         {% endfor %}
         </ol>
@@ -70,7 +70,7 @@
                 </span>
                  {{player.name}}
                  - <span data-cy="allTimeCareerSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('team_picture', team=-1) }}"  alt="" style="">
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}"  alt="" style="">
             </li>
         {% endfor %}
         </ol>

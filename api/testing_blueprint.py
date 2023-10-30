@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """Holds views that are only used for cypress testing."""
-from flask import Response, request
+from flask import Response, request, Blueprint
 from flask_login import login_user
-from functools import wraps
 from sqlalchemy import and_
-from api import app
 from api.model import Player, DB, JoinLeagueRequest, Team, Game, Division
 from api.bot.get_captain_games import games_without_scores
 from api.logging import LOGGER
@@ -13,20 +11,10 @@ from datetime import datetime
 import json
 import uuid
 
-
-def requires_testing(f):
-    """A decorator for routes that only available while testing."""
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        development = app.config['ENV'] == "development"
-        if not development:
-            return Response("Testing feature not on", 400)
-        return f(*args, **kwargs)
-    return decorated
+testing_blueprint = Blueprint("testing", __name__, url_prefix='/testing')
 
 
-@requires_testing
-@app.post("/testing/api/create_and_login")
+@testing_blueprint.post("/testing/api/create_and_login")
 def create_and_login():
     """Creates a player if they do not exist and login them in."""
     player_info = request.get_json(silent=True)
@@ -43,8 +31,9 @@ def create_and_login():
     return Response(json.dumps(player.json()), 200, mimetype='application/json')
 
 
-@requires_testing
-@app.post("/testing/api/<int:team_id>/add_player/<int:player_id>")
+@testing_blueprint.post(
+    "/testing/api/<int:team_id>/add_player/<int:player_id>"
+)
 def add_player_to_team(team_id: int, player_id: int):
     """Add a player to the given team."""
     player = Player.query.get(player_id)
@@ -56,8 +45,7 @@ def add_player_to_team(team_id: int, player_id: int):
     return Response(json.dumps(True), 200, mimetype='application/json')
 
 
-@requires_testing
-@app.post("/testing/api/make_captain")
+@testing_blueprint.post("/testing/api/make_captain")
 def make_player_captain():
     """Make a given player a captain of some team."""
     data = request.get_json(silent=True)
@@ -70,8 +58,7 @@ def make_player_captain():
     return Response(json.dumps(True), 200, mimetype='application/json')
 
 
-@requires_testing
-@app.post("/testing/api/create_league_request")
+@testing_blueprint.post("/testing/api/create_league_request")
 def create_league_request():
     """Creates a league request for testing purposes."""
     request_info = request.get_json(silent=True)
@@ -87,8 +74,7 @@ def create_league_request():
         200, mimetype='application/json')
 
 
-@requires_testing
-@app.route("/testing/api/get_current_team", methods=["GET"])
+@testing_blueprint.route("/testing/api/get_current_team", methods=["GET"])
 def get_active_team():
     """Get some active team."""
     year = datetime.now().year
@@ -101,8 +87,7 @@ def get_active_team():
         200, mimetype='application/json')
 
 
-@requires_testing
-@app.post("/testing/api/team/<int:team_id>/game_without_score")
+@testing_blueprint.post("/testing/api/team/<int:team_id>/game_without_score")
 def game_without_score(team_id: int):
     """Ensure the given team has a game today"""
     games = games_without_scores(team_id)

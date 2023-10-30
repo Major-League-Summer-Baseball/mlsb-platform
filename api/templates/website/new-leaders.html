@@ -13,7 +13,7 @@
                 </span>
                 {{player.name}}
                 - <span data-cy="currentSeasonHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('team_picture', team=player.team_id) }}"  alt="" style="">
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}"  alt="" style="">
             </li>
         {% endfor %}
         </ul>
@@ -30,7 +30,7 @@
                 </span>
                 {{player.name}}
                 - <span data-cy="currentSeasonSingles">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('team_picture', team=player.team_id) }}"  alt="" style="">
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}"  alt="" style="">
             </li>
         {% endfor %}
         </ol>

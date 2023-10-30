@@ -262,7 +262,7 @@ function renderPlusMinus(data, type, row, meta) {
         $("#MainHeader").prepend($('<img>',
           {
             id:'theImg',
-            src:"{{ url_for('sponsor_picture', name='Pabst') }}"
+            src:"{{ url_for('website.sponsor_picture', name='Pabst') }}"
           }
         ));
     })
@@ -293,7 +293,7 @@ function renderPlusMinus(data, type, row, meta) {
         .attr("class", "y axis")
       .append("svg:line")
         .attr("y1", "100%");
-    d3.json("{{ url_for('espys_breakdown_request', year=year) }}", function(root) {
+    d3.json("{{ url_for('website.espys_breakdown_request', year=year) }}", function(root) {
         $("#img1").hide();
         hierarchy.nodes(root);
         x.domain([0, root.value]).nice();

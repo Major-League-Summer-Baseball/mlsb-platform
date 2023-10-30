@@ -318,7 +318,7 @@
         function ready() {
             $.ajax({
                 type: "GET",
-                url: "{{ url_for('get_captain_info', team_id=team_id) }}",
+                url: "{{ url_for('website.get_captain_info', team_id=team_id) }}",
                 contentType: "application/json",
                 dataType: "json",
                 async: true,
@@ -510,7 +510,7 @@
                         $.ajax({
                             type: "POST",
                             data: JSON.stringify(this.game_selected.game_state.bats),
-                            url: "{{ url_for('captain_submit_full_game', team_id=team_id) }}",
+                            url: "{{ url_for('website.captain_submit_full_game', team_id=team_id) }}",
                             contentType: "application/json",
                             dataType: "json",
                             async: true,

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related to the league's standings. """
 from flask import render_template, url_for, redirect
-from api import app
 from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import \
     get_league_map, get_league_leaders, \
     get_espys_breakdown, get_divisions_for_league_and_year
+from api.website import website_blueprint
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
 
 
-@app.route("/website/standings/<int:league_id>/<int:year>")
+@website_blueprint.route("/website/standings/<int:league_id>/<int:year>")
 def standings(league_id, year):
     league = get_league_map().get(league_id, None)
     if league is None:
-        return redirect(url_for("league_not_found", year=year))
+        return redirect(url_for("website.league_not_found", year=year))
     divisions = get_divisions_for_league_and_year(year, league_id)
     if len(divisions) == 1:
         divisions = []
@@ -29,7 +29,7 @@ def standings(league_id, year):
                            user_info=get_user_information())
 
 
-@app.route("/website/stats/<int:year>")
+@website_blueprint.route("/website/stats/<int:year>")
 def stats_page(year):
     players = player_summary(year=year)
     return render_template("website/stats.html",
@@ -41,7 +41,7 @@ def stats_page(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/leaders/<int:year>")
+@website_blueprint.route("/website/leaders/<int:year>")
 def leaders_page(year):
     women = get_league_leaders("ss", year=year)[:5]
     men = get_league_leaders("hr", year=year)[:5]
@@ -55,7 +55,7 @@ def leaders_page(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/leaders/alltime/<int:year>")
+@website_blueprint.route("/website/leaders/alltime/<int:year>")
 def all_time_leaders_page(year):
     hrSingleSeason = get_league_leaders("hr")
     ssSingleSeason = get_league_leaders("ss")
@@ -73,6 +73,6 @@ def all_time_leaders_page(year):
                            user_info=get_user_information())
 
 
-@app.route("/website/espysbreakdown/<int:year>")
+@website_blueprint.route("/website/espysbreakdown/<int:year>")
 def espys_breakdown_request(year):
     return get_espys_breakdown(year)

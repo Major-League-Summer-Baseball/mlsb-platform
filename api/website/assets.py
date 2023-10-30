@@ -3,14 +3,15 @@
     Any routes related to media and other assets.
 """
 from flask import render_template, send_from_directory
-from api import app, PICTURES, CSS_FOLDER
+from api import PICTURES, CSS_FOLDER
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
+from api.website import website_blueprint
 import os.path
 
 
-@app.route("/website/promos/<int:year>")
+@website_blueprint.route("/website/promos/<int:year>")
 def promos_page(year):
     return render_template("website/promos.html",
                            route=Routes,
@@ -20,12 +21,12 @@ def promos_page(year):
                            user_info=get_user_information())
 
 
-@app.route("/accents")
+@website_blueprint.route("/accents")
 def mlsb_colors():
     return send_from_directory(CSS_FOLDER, "baseAccents.css")
 
 
-@app.route("/accents/<int:year>")
+@website_blueprint.route("/accents/<int:year>")
 def mlsb_colors_year(year):
     filename = f"accents-{year}.css"
     if os.path.isfile(os.path.join(CSS_FOLDER, filename)):
@@ -33,19 +34,19 @@ def mlsb_colors_year(year):
     return mlsb_colors()
 
 
-@app.route("/logo")
+@website_blueprint.route("/logo")
 def mlsb_logo():
     fp = os.path.dirname(PICTURES)
     return send_from_directory(fp, "banner.png")
 
 
-@app.route("/favicon")
+@website_blueprint.route("/favicon")
 def mlsb_favicon():
     fp = os.path.dirname(PICTURES)
     return send_from_directory(fp, "mlsb-favicon.png")
 
 
-@app.route("/logo/<int:year>")
+@website_blueprint.route("/logo/<int:year>")
 def mlsb_logo_year(year):
     fp = os.path.join(PICTURES, 'logos')
     filename = f"mlsb-logo-{year}.png"
@@ -54,7 +55,7 @@ def mlsb_logo_year(year):
     return mlsb_logo()
 
 
-@app.route("/favicon/<int:year>")
+@website_blueprint.route("/favicon/<int:year>")
 def mlsb_favicon_year(year):
     fp = os.path.join(PICTURES, 'logos')
     filename = f"mlsb-favicon-{year}.ico"

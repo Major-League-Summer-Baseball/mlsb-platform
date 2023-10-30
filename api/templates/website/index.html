@@ -7,7 +7,7 @@
             <h4> {{article.title}} </h4>
             {% if article.image %}
                 <img
-                    src="{{ url_for('post_picture', name=article.image) }}"
+                    src="{{ url_for('website.post_picture', name=article.image) }}"
                     alt="Article Post Image - {{article.title}}"
                     class="postImage"
                     height="200"
@@ -18,7 +18,7 @@
                 <a 
                     data-cy="{{article.title}}"
                     alt="{{article.title}}"
-                    href="{{ url_for('checkout_post', year=year, date=article.date, file_name=article.name) }}">
+                    href="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}">
                     Read more
                 </a>
             </p>
