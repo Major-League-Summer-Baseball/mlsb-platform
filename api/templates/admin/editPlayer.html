@@ -19,7 +19,7 @@ Player:<input class="input" onchange="searchPlayer();" oninput="searchPlayer();"
         {% for entry in players %}
             <tr class="playerEntry" id="{{entry.player_id}}">
                 <td>
-                    <a href="{{ url_for('admin_activate_player', year=year, player_id=entry.player_id) }}">
+                    <a href="{{ url_for('admin.activate_player', year=year, player_id=entry.player_id) }}">
                         {{entry.player_id}}
                     </a>
                 </td>

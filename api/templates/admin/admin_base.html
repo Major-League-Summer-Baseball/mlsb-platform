@@ -37,53 +37,53 @@
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_player', year=year) }}">
+                    <a href="{{ url_for('admin.edit_player', year=year) }}">
                       Edit Players
                     </a>
                 </li>
 
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_game', year=year) }}">
+                    <a href="{{ url_for('admin.edit_game', year=year) }}">
                       Edit Games
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_division', year=year) }}">
+                    <a href="{{ url_for('admin.edit_division', year=year) }}">
                       Edit Division
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_league_event', year=year) }}">
+                    <a href="{{ url_for('admin.edit_league', year=year) }}">
                       Edit Leagues
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                  <a href="{{ url_for('admin_edit_league_event', year=year) }}">
+                  <a href="{{ url_for('admin.edit_league_event', year=year) }}">
                     Edit League Events
                   </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_sponsor', year=year) }}">
+                    <a href="{{ url_for('admin.edit_sponsor', year=year) }}">
                       Edit Sponsors
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_team', year=year) }}">
+                    <a href="{{ url_for('admin.edit_team', year=year) }}">
                       Edit Teams
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_edit_fun', year=year) }}">
+                    <a href="{{ url_for('admin.edit_fun', year=year) }}">
                       Edit Funs
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_non_active_players', year=year) }}">
+                    <a href="{{ url_for('admin.non_active_players', year=year) }}">
                       Non-Active Players
                     </a>
                 </li>
                 <li class="indent-nav editsSidebar" style="display: none">
-                  <a href="{{ url_for('admin_view_league_requests', year=year) }}">
+                  <a href="{{ url_for('admin.view_league_requests', year=year) }}">
                    Requests to Join League
                   </a>
               </li>
@@ -94,12 +94,12 @@
                     </a>
                 </li>
                 <li class="indent-nav importsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_import_team') }}">
+                    <a href="{{ url_for('admin.import_team') }}">
                       Teams
                     </a>
                 </li>
                 <li class="indent-nav importsSidebar" style="display: none">
-                    <a href="{{ url_for('admin_import_game') }}">
+                    <a href="{{ url_for('admin.import_game') }}">
                       Games
                     </a>
                 </li>
@@ -109,7 +109,7 @@
                     </a>
                 </li>
                 <li class="indent-nav checkSidebar" style="display: none">
-                    <a href="{{url_for('get_captains_games_not_submitted', year=year) }}">
+                    <a href="{{url_for('admin.get_captains_games_not_submitted', year=year) }}">
                       Captains to submit scores
                     </a>
                 </li>

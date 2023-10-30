@@ -77,7 +77,7 @@
                     <input class="input" value="{{entry.field}}" id='{{entry.game_id}}_field' onchange="change({{entry.game_id}}, 'field');">
                 </td>
                 <td>
-                    <a type="button" class="btn btn-info" href="{{ url_for('admin_edit_bat', year=year, game_id=entry.game_id) }}">
+                    <a type="button" class="btn btn-info" href="{{ url_for('admin.edit_bat', year=year, game_id=entry.game_id) }}">
                         Edit Bats
                     </a>
                 </td>
@@ -287,7 +287,7 @@ function produceRow(id, data) {
   home_teams = makeTeams(id, data.league_id, 'home', data.home_team_id);
   away_teams = makeTeams(id, data.league_id, 'away', data.away_team_id);
   division = makeDivision(id, data.division_id);
-  const editbatUrl = "{{ url_for('admin_edit_bat', year=year, game_id=999) }}";
+  const editbatUrl = "{{ url_for('admin.edit_bat', year=year, game_id=999) }}";
   return `
     <tr id="${id}">
       <td> ${id} </td>

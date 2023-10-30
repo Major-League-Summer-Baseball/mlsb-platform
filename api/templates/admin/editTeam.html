@@ -52,12 +52,12 @@
                     <input class="input" value="{{entry.year}}" id='{{entry.team_id}}_year' onchange="change({{entry.team_id}}, 'year');">
                 </td>
                 <td>
-                    <a type="button" class="btn btn-info" href="{{ url_for('admin_edit_espys', year=year, team_id=entry.team_id) }}">
+                    <a type="button" class="btn btn-info" href="{{ url_for('admin.edit_espys', year=year, team_id=entry.team_id) }}">
                         Edit Espys
                     </a>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-info" href="{{ url_for('admin_edit_roster', year=year, team_id=entry.team_id) }}">
+                    <a type="button" class="btn btn-info" href="{{ url_for('admin.edit_roster', year=year, team_id=entry.team_id) }}">
                         Edit Team Roster
                     </a>
                 </td>
@@ -161,8 +161,8 @@ function postTeam(){
                 "league_id":league_id,
                 "year": year,
                 };
-    var espyUrl = "{{ url_for('admin_edit_espys', year=year, team_id=999) }}";
-    var editRosterUrl = "{{ url_for('admin_edit_roster', year=year, team_id=999)}}"
+    var espyUrl = "{{ url_for('admin.edit_espys', year=year, team_id=999) }}";
+    var editRosterUrl = "{{ url_for('admin.edit_roster', year=year, team_id=999)}}"
     $.ajax
     ({
       type: "POST",

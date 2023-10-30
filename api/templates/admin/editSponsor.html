@@ -22,7 +22,7 @@
                     {% for entry in sponsors %}
                         <tr class="sponsorEntry" id="{{entry.sponsor_id}}">
                             <td>
-                                <a href="{{ url_for('admin_activate_sponsor', year=year, sponsor_id=entry.sponsor_id) }}">
+                                <a href="{{ url_for('admin.activate_sponsor', year=year, sponsor_id=entry.sponsor_id) }}">
                                     {{entry.sponsor_id}}
                                 </a>
                             </td>
@@ -74,7 +74,7 @@
                     {% for entry in not_active %}
                         <tr class="sponsorEntry" id="{{entry.sponsor_id}}">
                             <td>
-                                <a href="{{ url_for('admin_activate_sponsor', year=year, sponsor_id=entry.sponsor_id) }}">
+                                <a href="{{ url_for('admin.activate_sponsor', year=year, sponsor_id=entry.sponsor_id) }}">
                                     {{entry.sponsor_name}}
                                 </a>
                             </td>

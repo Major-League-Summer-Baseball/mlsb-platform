@@ -11,7 +11,7 @@
 <script>
 function activate(id, year, submission){
     var data = {"active": submission};
-    var url = "{{ url_for('admin_activate_player_post', year=888, player_id=999) }}";
+    var url = "{{ url_for('admin.activate_player_post', year=888, player_id=999) }}";
     var urlParameters = url.replace(888, year).replace(999, id);
     $.ajax({
           type: "POST",
