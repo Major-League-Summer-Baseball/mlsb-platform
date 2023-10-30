@@ -91,15 +91,16 @@ from api.bot.authenticate_captain import \
 from api.bot.get_captain_games import CaptainGamesAPI as BotCaptainGamesAPI
 from api.bot.get_upcoming_games import UpcomingGamesAPI as BotUpcomingGamesAPI
 from api.bot.submit_transaction import SubmitTransactionAPI as BotSubmitTransactionAPI
-
 from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
+from api.documentation import documentation_blueprint
 
 
 app.register_blueprint(github_blueprint, url_prefix="/login")
 app.register_blueprint(facebook_blueprint, url_prefix="/login")
 app.register_blueprint(google_blueprint, url_prefix="/login")
 app.register_blueprint(azure_blueprint, url_prefix="/login")
+app.register_blueprint(documentation_blueprint)
 login_manager.init_app(app)
 
 

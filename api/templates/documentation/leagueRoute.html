@@ -36,7 +36,11 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{ url_for('league_object_doc') }}">League Object</a></td>
+                <td class="col-md-3">
+                    <a href="{{ url_for('documentation.league_object_doc') }}">
+                        League Object
+                    </a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
             <tr>
@@ -238,7 +242,14 @@
         <tbody>
             <tr>
                 <td class="col-md-3">200</td>
-                <td class="col-md-3"><a href="{{url_for('pagination_object_doc')}}">Paginated</a> <a href="{{ url_for('league_object_doc') }}">Leagues</a></td>
+                <td class="col-md-3">
+                    <a href="{{url_for('documentation.pagination_object_doc')}}">
+                        Paginated
+                    </a> 
+                    <a href="{{ url_for('documentation.league_object_doc') }}">
+                        Leagues
+                    </a>
+                </td>
                 <td class="col-md-3">Successful</td>
             </tr>
         </tbody>

@@ -1,7 +1,10 @@
 {% extends "documentation/documentation_base.html" %}
 {% block content %}
 <h1>bot - Captain submit scores</h1>
-<p>Submit scores for a games that has been played. To see games that needs scores see <a href="{{ url_for('captain_games_bot_doc') }}">captain games</a></p>
+<p>
+    Submit scores for a games that has been played. To see games that needs scores see 
+    <a href="{{ url_for('documentation.captain_games_bot_doc') }}">captain games</a>
+</p>
 <h4>POST</h4>
 <code>{{route.botsubmitscore}}</code>
 <p style="color:#808080">
