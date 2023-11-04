@@ -63,7 +63,7 @@ jobs:
         export FLASK_ENV="development"
         export CYPRESS_baseUrl=http://localhost:8080/
         # run the server just in-memory
-        nohup python -m flask --app api/app run --host=0.0.0.0 2>&1 &
+        nohup python -m flask --app api/app run --host=0.0.0.0 --port=8080 2>&1 &
         # now run the cypres tests against it
         cd ui-testing
         npm install
