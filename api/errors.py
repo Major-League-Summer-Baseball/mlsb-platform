@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@author: 2016-04-12
-@organization: MLSB API
-@summary: Holds the errors for the database
-'''
 ERROR = 431
 IFSC = 400
 PDNESC = 404

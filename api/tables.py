@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@since: 2020-02-29
-@organization: MLSB API
-@summary: Enumerates of all table
-'''
 from enum import Enum
 
 

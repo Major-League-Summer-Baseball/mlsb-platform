@@ -1,20 +1,13 @@
-'''
-@author: Dallas Fraser
-@date: 2015-08-25
-@organization: MLSB API
-@summary: The basic espys API
-'''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import Espys
 from api.authentication import requires_admin
 from api.errors import EspysDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
 from api.cached_items import handle_table_change
 from api.tables import Tables
 parser = reqparse.RequestParser()

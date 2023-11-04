@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Some helper functions for various pages. """
-from api import DB
+from api.extensions import DB
 from api.model import Team, Player, Sponsor, League
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import single_team

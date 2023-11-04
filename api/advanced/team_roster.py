@@ -1,14 +1,8 @@
-'''
-Name: Dallas Fraser
-Date: 2014-08-25
-Project: MLSB API
-Purpose: To create an application to act as an api for the database
-'''
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api.authentication import requires_admin
-from api import DB
+from api.extensions import DB
 from api.model import Team
 from api.errors import TeamDoesNotExist
 parser = reqparse.RequestParser()

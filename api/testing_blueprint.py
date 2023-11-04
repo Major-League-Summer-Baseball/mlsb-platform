@@ -3,7 +3,8 @@
 from flask import Response, request, Blueprint
 from flask_login import login_user
 from sqlalchemy import and_
-from api.model import Player, DB, JoinLeagueRequest, Team, Game, Division
+from api.extensions import DB
+from api.model import Player, JoinLeagueRequest, Team, Game, Division
 from api.bot.get_captain_games import games_without_scores
 from api.logging import LOGGER
 from api.errors import TeamDoesNotExist

@@ -1,20 +1,13 @@
-'''
-@author: Dallas Fraser
-@date: 2023-04-29
-@organization: MLSB API
-@summary: The basic league event API
-'''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import LeagueEventDate
 from api.authentication import requires_admin
 from api.errors import LeagueEventDateDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('date', type=str)
 parser.add_argument('time', type=str)

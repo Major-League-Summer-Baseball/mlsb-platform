@@ -1,14 +1,8 @@
-'''
-@author: Dallas Fraser
-@author: 2016-04-12
-@organization: MLSB API
-@summary: The views for player stats
-'''
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api.model import LeagueEvent, LeagueEventDate
 from datetime import datetime, date, time
+from api.model import LeagueEvent, LeagueEventDate
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 

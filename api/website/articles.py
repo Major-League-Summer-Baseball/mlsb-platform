@@ -5,8 +5,7 @@
     Some what of a deprecated feature but might come in hand later
 """
 from flask import render_template, send_from_directory
-from api import PICTURES, POSTS
-from api.variables import NOTFOUND
+from api.variables import NOTFOUND, PICTURES, POSTS
 from api.routes import Routes
 from api.cached_items import get_upcoming_games
 from api.cached_items import get_website_base_data as base_data

@@ -1,27 +1,18 @@
-'''
-Name: Dallas Fraser
-Date: 2016-04-12
-Project: MLSB API
-Purpose: Holds the routes for the admin side
-'''
-# -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
 from os.path import join
 from flask import render_template, make_response, url_for, \
     redirect, session, request, Blueprint
 from json import dumps
-from api import DB, FILES
+from datetime import date, time, datetime
+from api.extensions import DB
 from api.routes import Routes
 from api.errors import InvalidField
 from api.model import Team, Player, Sponsor, League, Game, Espys, Fun, \
     Division, JoinLeagueRequest, LeagueEvent, LeagueEventDate
-from api.variables import BATS
+from api.variables import BATS, FILES
 from api.authentication import check_auth
-from datetime import date, time, datetime
 from api.advanced.import_team import TeamList
 from api.advanced.import_league import LeagueList
-# -----------------------------------------------------------------------------
+
 
 # -----------------------------------------------------------------------------
 # Constants

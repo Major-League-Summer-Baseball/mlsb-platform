@@ -1,12 +1,5 @@
-'''
-Name: Dallas Fraser
-Date: 2016-04-12
-Project: MLSB API
-Purpose: Holds data validators
-'''
-import time
-import datetime
-from datetime import date
+from time import strptime
+from datetime import date, datetime
 from api.variables import BATS, FIELDS
 
 
@@ -136,7 +129,7 @@ def date_validator(date):
     '''
     valid = False
     try:
-        datetime.datetime.strptime(date, '%Y-%m-%d')
+        datetime.strptime(date, '%Y-%m-%d')
         valid = True
     except ValueError:
         # raise ValueError("Incorrect data format, should be YYYY-MM-DD")
@@ -155,7 +148,7 @@ def time_validator(value):
             False otherwise
     '''
     try:
-        time.strptime(value, '%H:%M')
+        strptime(value, '%H:%M')
         return True
     except ValueError:
         return False

@@ -1,20 +1,15 @@
-'''
-@author: Dallas Fraser
-@author: 2016-04-12
-@organization: MLSB API
-@summary: A base test class for testing API
-'''
-from api import app, DB
+from base64 import b64encode
 from pprint import PrettyPrinter
+from uuid import uuid1
+from datetime import date
+from api.app import create_app
+from api.extensions import DB
 from api.model import Player, Team, Sponsor, League, Game, Bat, Espys, Fun, \
     Division, LeagueEvent, LeagueEventDate, OAuth
-from base64 import b64encode
-from datetime import date
 from api.helper import loads
 from api.routes import Routes
 from api.variables import PAGE_SIZE
 from api.authentication import ADMIN, PASSWORD
-from uuid import uuid1
 import unittest
 
 headers = {
@@ -30,6 +25,8 @@ INVALID_ID = 10000000
 UNAUTHORIZED = 401
 VALID_YEAR = date.today().year
 NOT_FOUND_CODE = 404
+
+app = create_app()
 
 
 class TestSetup(unittest.TestCase):
@@ -55,7 +52,6 @@ class TestSetup(unittest.TestCase):
         self.leagues_to_delete = []
         self.divisions_to_delete = []
         if (not self.tables_created()):
-
             DB.engine.execute('''
                                   DROP TABLE IF EXISTS flask_dance_oauth;
                                   DROP TABLE IF EXISTS attendance;
@@ -78,37 +74,42 @@ class TestSetup(unittest.TestCase):
         return app
 
     def tearDown(self):
-        DB.session.rollback()
-        espy_query = Espys.query.get
-        bats_query = Bat.query.get
-        games_query = Game.query.get
-        player_query = Player.query.get
-        team_query = Team.query.get
-        sponsor_query = Sponsor.query.get
-        league_query = League.query.get
-        league_event_query = LeagueEvent.query.get
-        league_event_date_query = LeagueEventDate.query.get
-        fun_query = Fun.query.get
-        division_query = Division.query.get
-        self.remove_oauth(self.players_to_delete)
-        to_delete = (self.delete_list(self.league_event_dates_to_delete,
-                                      league_event_date_query) +
-                     self.delete_list(self.league_events_to_delete,
-                                      league_event_query) +
-                     self.delete_list(self.espys_to_delete, espy_query) +
-                     self.delete_list(self.bats_to_delete, bats_query) +
-                     self.delete_list(self.games_to_delete, games_query) +
-                     self.delete_list(self.players_to_delete, player_query) +
-                     self.delete_list(self.teams_to_delete, team_query) +
-                     self.delete_list(self.sponsors_to_delete, sponsor_query) +
-                     self.delete_list(self.leagues_to_delete, league_query) +
-                     self.delete_list(self.divisions_to_delete,
-                                      division_query) +
-                     self.delete_list(self.fun_to_delete, fun_query))
-        final_not_delete = to_delete
-        if len(final_not_delete) > 0:
-            self.assertFalse(True,
-                             "Unable to delete everying upon tear down")
+        app = self.getApp()
+        with app.app_context(), app.test_request_context():
+            DB.session.rollback()
+            espy_query = Espys.query.get
+            bats_query = Bat.query.get
+            games_query = Game.query.get
+            player_query = Player.query.get
+            team_query = Team.query.get
+            sponsor_query = Sponsor.query.get
+            league_query = League.query.get
+            league_event_query = LeagueEvent.query.get
+            league_event_date_query = LeagueEventDate.query.get
+            fun_query = Fun.query.get
+            division_query = Division.query.get
+            self.remove_oauth(self.players_to_delete)
+            to_delete = (
+                self.delete_list(
+                    self.league_event_dates_to_delete,
+                    league_event_date_query) +
+                self.delete_list(
+                    self.league_events_to_delete,
+                    league_event_query) +
+                self.delete_list(self.espys_to_delete, espy_query) +
+                self.delete_list(self.bats_to_delete, bats_query) +
+                self.delete_list(self.games_to_delete, games_query) +
+                self.delete_list(self.players_to_delete, player_query) +
+                self.delete_list(self.teams_to_delete, team_query) +
+                self.delete_list(self.sponsors_to_delete, sponsor_query) +
+                self.delete_list(self.leagues_to_delete, league_query) +
+                self.delete_list(self.divisions_to_delete, division_query) +
+                self.delete_list(self.fun_to_delete, fun_query))
+            final_not_delete = to_delete
+            if len(final_not_delete) > 0:
+                self.assertFalse(
+                    True, "Unable to delete everying upon tear down"
+                )
 
     def remove_oauth(self, players):
         """Remove oauth from the list of player."""
@@ -233,7 +234,8 @@ class TestSetup(unittest.TestCase):
         self.assertEqual(SUCCESSFUL_POST_CODE,
                          rv.status_code,
                          "Unable to add league event date object")
-        self.assertTrue(loads(rv.data) > 0, "Unable to add league event object")
+        self.assertTrue(
+            loads(rv.data) > 0, "Unable to add league event object")
         league = LeagueEventDate.query.get(loads(rv.data))
         self.leagues_to_delete.append(league.id)
         return league.json()

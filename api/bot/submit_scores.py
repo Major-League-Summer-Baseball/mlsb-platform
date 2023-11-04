@@ -1,14 +1,8 @@
-'''
-@author: Dallas Fraser
-@author: 2017-05-03
-@organization: MLSB API
-@summary: The bot API for a captain submitting scores
-'''
 from typing import List
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import Player, Bat, Game, Team
 from api.authentication import requires_admin
 from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist, \

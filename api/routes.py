@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@author: 2016-04-12
-@organization: MLSB API
-@summary: Contains all the routes for the API
-'''
 Routes = {}
 # -----------------------------------------------------------------------------
 # APIs
