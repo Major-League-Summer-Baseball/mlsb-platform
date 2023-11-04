@@ -11,4 +11,6 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["python", "./runserver.py"]
+ENV FLASK_APP=api/app
+
+CMD ["python", "-m", "flask", "--app", "api/app", "run", "--host=0.0.0.0"]
