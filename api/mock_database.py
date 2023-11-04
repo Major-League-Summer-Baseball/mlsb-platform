@@ -384,21 +384,6 @@ def is_player_captain(player, team):
     return captain
 
 
-@click.command("init-db")
-@click.option(
-    "-m/-M",
-    "--mock/--no-mock",
-    default=True,
-    is_flag=True,
-    help="Mock the database with data"
-)
-@click.option(
-    "-c/-C",
-    "--create/--no-create",
-    default=False,
-    is_flag=True,
-    help="Create the tables in the database"
-)
 def init_database(mock, create):
     """
     init_database
@@ -424,4 +409,25 @@ def init_database(mock, create):
         mock_teams_games(league, mock_division(), sponsor_lookup)
         mock_teams_games(league, mock_division(
             division="Tuesday & Thursday"), sponsor_lookup)
+    return
+
+
+@click.command("init-db")
+@click.option(
+    "-m/-M",
+    "--mock/--no-mock",
+    default=True,
+    is_flag=True,
+    help="Mock the database with data"
+)
+@click.option(
+    "-c/-C",
+    "--create/--no-create",
+    default=False,
+    is_flag=True,
+    help="Create the tables in the database"
+)
+def database_command(mock, create):
+    """Flask cli command for database."""
+    init_database(mock ,create)
     return

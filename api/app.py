@@ -13,7 +13,8 @@ from api.documentation import documentation_blueprint
 from api.admin import admin_blueprint
 from api.website import website_blueprint
 from api.testing_blueprint import testing_blueprint
-from api.commands import init_database
+from api.mock_database import init_database
+from api.commands import database_command
 import logging
 import sys
 import os
@@ -39,8 +40,6 @@ def register_extensions(app):
     cache.init_app(app)
     DB.init_app(app)
     login_manager.init_app(app)
-    if 'DATABASE_URL' not in os.environ and app.config["ENV"] == "development":
-        init_database(True, True)
     if app.config["ENV"] != "development":
         tailsman.init_app(app)
         app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -79,7 +78,7 @@ def register_blueprint(app):
 
 def register_commands(app):
     """Register command line tasks."""
-    app.cli.add_command(init_database)
+    app.cli.add_command(database_command)
 
 
 def configure_logger(app):
@@ -254,6 +253,11 @@ def create_app():
     register_extensions(app)
     register_apis(app)
     register_commands(app)
+    if 'DATABASE_URL' not in os.environ and app.config["ENV"] == "development":
+        # if development with no db url use an in memory database
+        # so must initialize it
+        with app.app_context():
+            init_database(True, True)
     return app
 
 

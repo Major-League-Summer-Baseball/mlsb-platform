@@ -1,2 +1,2 @@
 """Click commands."""
-from api.mock_database import init_database
+from api.mock_database import database_command
