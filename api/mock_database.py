@@ -429,5 +429,5 @@ def init_database(mock, create):
 )
 def database_command(mock, create):
     """Flask cli command for database."""
-    init_database(mock ,create)
+    init_database(mock, create)
     return
