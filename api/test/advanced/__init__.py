@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@date: 2019-03-13
-@organization: MLSB API
-@summary: Test suite that runs all the advanced APIs
-'''
 from unittest import TestLoader, TextTestRunner
 from api.test.advanced import testAdvancedFun
 from api.test.advanced import testAdvancedGame

@@ -3,7 +3,7 @@
     Any routes related to media and other assets.
 """
 from flask import render_template, send_from_directory
-from api import PICTURES, CSS_FOLDER
+from api.variables import PICTURES, CSS_FOLDER
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information

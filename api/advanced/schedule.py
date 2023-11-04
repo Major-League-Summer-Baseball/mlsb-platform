@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@date: 2019-03-11
-@organization: MLSB API
-@summary: The views for game schedule
-'''
 from flask import Response
 from flask_restful import Resource, request
 from json import dumps

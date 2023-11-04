@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@author: 2019-02-04
-@organization: MLSB API
-@summary: Tests all the validators functions
-'''
 import unittest
 from pprint import PrettyPrinter
 from api.validators import \

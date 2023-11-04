@@ -14,7 +14,8 @@ See the the Wiki Pages for [help](https://github.com/fras2560/mlsb-platform/wiki
 **TLDR**
 ```
 pip install -r requirements.txt
-python runserver.py
+export FLASK_ENV=development
+python -m flask --app api/app run --host=0.0.0.0
 # to run unittests
 python -m unittest discover -s api/test
 # want to run one suite
@@ -53,7 +54,7 @@ brackets:
 
 The app does expect the the postgres database has had the tables initiated. To intiated the datbase can use
 ```
-python initDB.py -createDB -mock
+python -m flask --app api/app init-db --create
 ```
 ## Developing Using Docker
 The platform can also be developed locally with Docker. For a simple docker setup one can do
@@ -63,7 +64,7 @@ docker-compose build
 # bring the container up
 docker-compose up -d
 # wait a few seconds and then init the database
-docker-compose exec mlsb python initDB.py -createDB -mock
+docker-compose exec mlsb python -m flask --app api/app init-db --create
 ```
 The app should be available at `http://localhost:8080`. If you need to chage the port change
 in the `docker-compose.yml` line 13 from 8080:8080 to <PORT>:8080.

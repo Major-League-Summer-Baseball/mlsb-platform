@@ -2,9 +2,9 @@
 """ Pages and routes related a team. """
 from flask import render_template, send_from_directory
 from sqlalchemy import func
-from api import PICTURES
-from api.model import Team, Player, JoinLeagueRequest, DB
-from api.variables import NOTFOUND, UNASSIGNED_EMAIL
+from api.extensions import DB
+from api.model import Team, Player, JoinLeagueRequest
+from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES
 from api.website.helpers import get_team
 from api.routes import Routes
 from api.advanced.players_stats import post as player_summary

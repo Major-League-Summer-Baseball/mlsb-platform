@@ -1,14 +1,7 @@
-'''
-@author: Dallas Fraser
-@date: 2016-04-12
-@organization: MLSB API
-@summary: Holds a class TeamList that helps imports a team roster
-'''
-# imports
 from sqlalchemy import func, or_
-from api.model import Sponsor, Team, Player, League
-from api import DB
 from datetime import date
+from api.model import Sponsor, Team, Player, League
+from api.extensions import DB
 from api.errors import InvalidField, SponsorDoesNotExist, LeagueDoesNotExist
 import logging
 

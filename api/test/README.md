@@ -2,8 +2,8 @@
 All test cases should be begin with test*.py
 
 ## Running Tests On Docker
-Whole test suite: `./run_test.sh`
-Single test: `./run_single_test.sh TESTFILE.py`
+Whole test suite: `docker-compose exec mlsb python -m unittest discover -s api/test -p test*.py`
+Single test: `docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>.py`
 
 ## Running Tests On cmd
 Whole test suite: `python -m unittest discover -s api/test -p test*.py`

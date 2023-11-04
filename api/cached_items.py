@@ -10,7 +10,7 @@ from sqlalchemy.orm import undefer
 from sqlalchemy.sql.expression import and_, or_
 from datetime import date, datetime, time
 from flask import url_for
-from api import cache, DB
+from api.extensions import cache, DB
 from api.advanced.game_stats import post as game_summary
 from api.model import Team, Sponsor, League, Espys, Fun, Game, Division
 from api.errors import LeagueDoesNotExist

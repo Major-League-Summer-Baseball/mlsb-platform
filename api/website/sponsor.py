@@ -3,9 +3,9 @@
 from flask import render_template, send_from_directory
 from sqlalchemy.sql import func
 from datetime import datetime
-from api import PICTURES, DB
+from api.extensions import DB
 from api.model import Team, Sponsor, Espys
-from api.variables import NOTFOUND
+from api.variables import PICTURES, NOTFOUND
 from api.routes import Routes
 from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map

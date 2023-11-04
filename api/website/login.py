@@ -5,7 +5,7 @@ from flask_login import \
     current_user, logout_user, login_required, login_user
 from sqlalchemy import func
 from datetime import date
-from api import DB
+from api.extensions import DB
 from api.errors import \
     HaveLeagueRequestException, TeamDoesNotExist, OAuthException
 from api.authentication import \

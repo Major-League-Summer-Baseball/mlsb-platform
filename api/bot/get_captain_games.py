@@ -1,19 +1,13 @@
-'''
-@author: Dallas Fraser
-@author: 2017-05-03
-@organization: MLSB API
-@summary: The bot API for authenticating a captain
-'''
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from sqlalchemy import asc
-from api import DB
+from datetime import datetime
+from sqlalchemy import asc, or_
+from api.extensions import DB
 from api.model import Team, Game, Bat
 from api.errors import TeamDoesNotExist, NotTeamCaptain, InvalidField
 from api.authentication import requires_admin
-from datetime import datetime
-from sqlalchemy import or_
+
 parser = reqparse.RequestParser()
 parser.add_argument('team', type=int, required=True)
 parser.add_argument('player_id', type=int, required=True)

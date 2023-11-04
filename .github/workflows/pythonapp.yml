@@ -33,7 +33,7 @@ jobs:
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,venv/*,ui-testing/* --ignore=E712,W503,W504
+        flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/* --ignore=E712,W503,W504
     - name: Test with python unittest
       run: |
         pip install coverage
@@ -63,7 +63,7 @@ jobs:
         export FLASK_ENV="development"
         export CYPRESS_baseUrl=http://localhost:8080/
         # run the server just in-memory
-        nohup python runserver.py  2>&1 &
+        nohup python -m flask --app api/app run --host=0.0.0.0 --port=8080 2>&1 &
         # now run the cypres tests against it
         cd ui-testing
         npm install

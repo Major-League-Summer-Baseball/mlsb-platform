@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ MLSB Summer Events. """
 from flask import render_template, send_from_directory, Response
-from api import PICTURES, DB
+from api.extensions import DB
 from api.model import LeagueEvent, LeagueEventDate
 from api.routes import Routes
 from api.website import website_blueprint
@@ -9,6 +9,7 @@ from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, api_require_login, are_logged_in, get_player_id
 from api.advanced.league_event import get_year_events
+from api.variables import PICTURES
 import os.path
 import json
 NOT_FOUND = "sorry.jpg"

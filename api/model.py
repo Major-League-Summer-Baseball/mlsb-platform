@@ -1,14 +1,10 @@
-"""
-@author: Dallas Fraser
-@author: 2016-04-12
-@organization: MLSB API
-@summary: Holds the model for the database
-"""
+from datetime import date, datetime
 from sqlalchemy.orm import column_property
 from sqlalchemy import and_, select, func, or_
-from api import DB
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date, datetime
+from flask_login import UserMixin
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
+from api.extensions import DB
 from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist, \
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist, \
     NonUniqueEmail, PlayerNotOnTeam, DivisionDoesNotExist, \
@@ -17,8 +13,6 @@ from api.validators import rbi_validator, hit_validator, inning_validator, \
     string_validator, date_validator, time_validator, \
     field_validator, year_validator, gender_validator, \
     float_validator, boolean_validator
-from flask_login import UserMixin
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 
 
 roster = DB.Table('roster',

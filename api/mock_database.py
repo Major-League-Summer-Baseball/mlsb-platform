@@ -1,19 +1,13 @@
-'''
-@author: Dallas Fraser
-@author: 2018-08-17
-@organization: MLSB API
-@summary: A script that initializes the databases and adds some demo data
-'''
-from api import DB
+"""Command used for init and mocking database."""
+from api.extensions import DB
 from api.model import \
     Player, Sponsor, League, Fun, Game, Team, Espys, Bat, Division, \
     LeagueEvent, LeagueEventDate
 from api.variables import UNASSIGNED_EMAIL, HITS
-from tqdm import tqdm
-import os
+from api.tqdm import tqdm
+import click
 import datetime
 import random
-import argparse
 
 
 CURRENT_YEAR = datetime.datetime.now().year
@@ -390,18 +384,18 @@ def is_player_captain(player, team):
     return captain
 
 
-def init_database(mock, create_db):
+def init_database(mock, create):
     """
     init_database
         Initialize the database either by mocking data or copying main
         website locally
         Parameters:
             mock: whether to mock some data for the current year
-            create_db: True if database should be created
+            create: True if database should be created
         Returns:
             None
     """
-    if (create_db):
+    if (create):
         create_fresh_tables()
         DB.session.add(Player("UNASSIGNED", UNASSIGNED_EMAIL, gender="F"))
         DB.session.commit()
@@ -418,39 +412,22 @@ def init_database(mock, create_db):
     return
 
 
-if __name__ == "__main__":
-    descp = """
-            Initialize the database for MLSB platform
-            One can mock some data or can pull the main platform data
-            to create a local copy
-            Author: Dallas Fraser (dallas.fraser.waterloo@gmail.com)
-            """
-    if ("FLASK_ENV" not in os.environ or
-            os.environ.get("FLASK_ENV").lower() != "docker"):
-        print("No FLASK_ENV set or not running on docker")
-
-    if ("FLASK_ENV" not in os.environ or
-            os.environ.get("FLASK_ENV").lower() == "production"):
-        print("Running on Production")
-    parser = argparse.ArgumentParser(description=descp)
-
-    # use the development serve (just so not touching production)
-    default_url = "https://mlsb-devlopment.fly.dev"
-    parser.add_argument("-url",
-                        dest="url",
-                        action="store",
-                        help="The main platform URL",
-                        default=default_url)
-    prompt = "Set if one wants to mock some data for this year"
-    parser.add_argument("-mock",
-                        dest="mock",
-                        action="store_true",
-                        help=prompt,
-                        default=False)
-    parser.add_argument("-createDB",
-                        dest="createDB",
-                        action="store_true",
-                        help="Set if want to create DB (delete if exists)",
-                        default=False)
-    args = parser.parse_args()
-    init_database(args.mock, args.createDB)
+@click.command("init-db")
+@click.option(
+    "-m/-M",
+    "--mock/--no-mock",
+    default=True,
+    is_flag=True,
+    help="Mock the database with data"
+)
+@click.option(
+    "-c/-C",
+    "--create/--no-create",
+    default=False,
+    is_flag=True,
+    help="Create the tables in the database"
+)
+def database_command(mock, create):
+    """Flask cli command for database."""
+    init_database(mock, create)
+    return

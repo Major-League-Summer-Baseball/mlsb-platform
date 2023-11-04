@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@author: 2016-04-12
-@organization: MLSB API
-@summary: Holds the authentication functions
-'''
 from typing import TypedDict, Callable
 from functools import wraps
 from sqlalchemy.sql import func, and_
@@ -17,7 +11,8 @@ from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
 from flask import request, Blueprint, session, Response, redirect, \
     url_for
-from api.model import DB, Player, OAuth, JoinLeagueRequest, Team
+from api.extensions import DB
+from api.model import Player, OAuth, JoinLeagueRequest, Team
 from api.errors import OAuthException, NotPartOfLeagueException, \
     HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist
 from api.logging import LOGGER
