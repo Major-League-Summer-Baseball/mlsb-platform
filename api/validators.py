@@ -14,7 +14,7 @@ def boolean_validator(value):
             False otherwise
     '''
     validated = False
-    if value is True or value is False:
+    if value is True or value is False or value.lower() in ['true', 'false']:
         validated = True
     return validated
 
@@ -55,8 +55,10 @@ def year_validator(year):
             False otherwise
     '''
     validated = False
-    if int_validator(year) and year >= 2014 and year <= date.today().year:
-        validated = True
+    if int_validator(year):
+        int_year = int(year)
+        if int_year >= 2014 and int_year <= date.today().year:
+            validated = True
     return validated
 
 
@@ -166,7 +168,8 @@ def rbi_validator(rbi):
     '''
     valid = False
     if int_validator(rbi):
-        if rbi <= 4:
+        int_rbi = int(rbi)
+        if int_rbi <= 4:
             valid = True
     return valid
 
@@ -204,8 +207,10 @@ def inning_validator(inning):
             False otherwise
     '''
     valid = False
-    if inning > 0:
-        valid = True
+    if int_validator(inning):
+        int_inning = int(inning)
+        if int_inning > 0:
+            valid = True
     return valid
 
 
@@ -232,6 +237,6 @@ def field_validator(field):
             False otherwise
     '''
     valid = False
-    if field in FIELDS:
+    if field.strip().lower() in [field.lower() for field in FIELDS]:
         valid = True
     return valid
