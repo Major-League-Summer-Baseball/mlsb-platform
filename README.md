@@ -54,7 +54,7 @@ deactivate # to deactivate the virtual environment
 The following variables are used by mlsb-platform and the defaults are in
 brackets:
 
-* ADMIN: the admin's user name ("admin") 
+* ADMIN: the admin's user name ("admin")
 * PASSWORD: the admin password ("password")
 * DATABASE_URL: the postgres database to connect to ("sqlite://")
 * SECRET_KEY:a secret key used by Flask (randomly generated uuid)
@@ -116,7 +116,7 @@ docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>
 ## Documentation/Style
 
 All APIs are document in html and can be found by going to
-"http://localhost:5000/documentation". If one is to add an API then it
+`http://localhost:5000/documentation`. If one is to add an API then it
 is expected they add an HTML page that documents it.
 The style for how one is to be documented is still open for discussion.
 
