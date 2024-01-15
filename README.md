@@ -23,6 +23,11 @@ python -m flask --app api/app run --host=0.0.0.0
 python -m unittest discover -s api/test
 # want to run one suite
 python -m unittest discover -s api/test -p <TEST_SUITE>.py
+# to run pytests
+pytest
+# to run a particular grouping
+pytest api/tests/<FOLDER>
+# to run a particular grouping
 ```
 
 This will use an in-memory database and in-memory cache. To actually test
