@@ -59,7 +59,7 @@ jobs:
     - name: Test with pytest
       run: |
         pip install coverage
-        coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/*, api/tests/conftest.py -m pytest
+        coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/*,api/tests/conftest.py -m pytest
         coverage html
     - name: UI Test with cypress
       run: |
