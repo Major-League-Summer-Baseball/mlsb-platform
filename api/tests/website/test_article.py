@@ -14,7 +14,7 @@ from api.helper import loads
 def test_homepage_different_years(mlsb_app, client, year):
     with mlsb_app.app_context():
         url = url_for('website.index', year=year)
-        response = client.get(url, follow_redirects=True)        
+        response = client.get(url, follow_redirects=True)
         assert response.status_code == 200
 
 
@@ -83,6 +83,7 @@ def test_checkout_nonexistent_post(mlsb_app, client):
         assert response.status_code == 200
         data = response.data
         assert "Posts not Found" in str(data)
+
 
 @pytest.mark.routes
 @pytest.mark.usefixtures('client')
