@@ -253,6 +253,8 @@ def create_app():
     register_extensions(app)
     register_apis(app)
     register_commands(app)
+    print(os.environ)
+    print(app.config("ENV"))
     if 'DATABASE_URL' not in os.environ and app.config["ENV"] == "development":
         # if development with no db url use an in memory database
         # so must initialize it
