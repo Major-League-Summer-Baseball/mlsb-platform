@@ -11,6 +11,8 @@ from datetime import date
 @pytest.mark.parametrize("valid_boolean", [
     True,
     False,
+    "True",
+    "False",
 ])
 def test_boolean_validator_valid(valid_boolean):
     assert boolean_validator(valid_boolean) is True
