@@ -22,6 +22,7 @@ def test_boolean_validator_valid(valid_boolean):
 @pytest.mark.parametrize("invalid_boolean", [
     "TrueX",
     "FalseX",
+    1
 ])
 def test_boolean_validator_invalid(invalid_boolean):
     assert boolean_validator(invalid_boolean) is False
@@ -237,7 +238,8 @@ def test_inning_validator(valid_inning):
 @pytest.mark.parametrize("invalid_field", [
     "WP5",
     "1",
-    "Hillside Central"
+    "Hillside Central",
+    1
 ])
 def test_field_validator_invalid(invalid_field):
     assert field_validator(invalid_field) is False

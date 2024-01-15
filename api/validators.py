@@ -14,7 +14,9 @@ def boolean_validator(value):
             False otherwise
     '''
     validated = False
-    if value is True or value is False or value.lower() in ['true', 'false']:
+    if value is True or value is False:
+        validated = True
+    elif string_validator(value) and value.lower() in ['true', 'false']:
         validated = True
     return validated
 
@@ -237,6 +239,7 @@ def field_validator(field):
             False otherwise
     '''
     valid = False
-    if field.strip().lower() in [field.lower() for field in FIELDS]:
+    if string_validator(field) and field.strip().lower() in [
+            field.lower() for field in FIELDS]:
         valid = True
     return valid
