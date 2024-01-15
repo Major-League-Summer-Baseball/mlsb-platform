@@ -56,6 +56,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '16.x'
+    - name: Test with pytest
+      run: |
+        pip install coverage
+        coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/* -m pytest
+        coverage html
     - name: UI Test with cypress
       run: |
         export ADMIN="admin"
