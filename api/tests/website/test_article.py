@@ -40,13 +40,14 @@ def test_posts_json(mlsb_app, client):
         assert response.status_code == 200
         response_json = loads(response.data)
         expected_json = [
-            {'date': '20160713', 'description': 'Ladies.html'},
-            {'date': '20160609', 'description': 'VinceJP.html'},
             {'date': '20160422', 'description': 'Launch.html'},
-            {'date': '20160713', 'description': 'SeasonRoundUp.html'},
             {'date': '20160507', 'description': 'Kik.html'},
-            {'date': '20160629', 'description': 'Rory.html'}
+            {'date': '20160609', 'description': 'VinceJP.html'},
+            {'date': '20160629', 'description': 'Rory.html'},
+            {'date': '20160713', 'description': 'Ladies.html'},
+            {'date': '20160713', 'description': 'SeasonRoundUp.html'}
         ]
+
         assert response_json == expected_json, "Static 2016 posts"
 
 

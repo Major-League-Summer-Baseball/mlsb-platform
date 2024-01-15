@@ -93,7 +93,10 @@ def get_all_descriptions(year: int) -> list[dict]:
             description = "_".join(fname.split("_")[1:])
             result.append({"date": post_date,
                            "description": description})
-    return result
+    return sorted(
+        result,
+        key=lambda post: (post["date"], post["description"])
+    )
 
 
 def get_summaries(year: int) -> list[dict]:
