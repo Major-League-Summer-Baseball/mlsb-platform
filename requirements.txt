@@ -13,3 +13,4 @@ Flask-Caching>=1.0
 redis>=3.1
 requests>=2.9
 SQLAlchemy-Utils>=0.36.6
+pytest>=7.4.3
