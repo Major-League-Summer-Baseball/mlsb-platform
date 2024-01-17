@@ -1,8 +1,6 @@
 import pytest
 from datetime import datetime
 from flask import url_for
-from api.helper import loads
-
 
 
 @pytest.mark.routes
@@ -33,6 +31,7 @@ def test_promos_page_different_years(mlsb_app, client, year):
         url = url_for('website.promos_page', year=year)
         response = client.get(url, follow_redirects=True)
         assert response.status_code == 200
+
 
 @pytest.mark.routes
 @pytest.mark.parametrize("year", [
