@@ -1,6 +1,7 @@
 import pytest
 from api.app import create_app
-from api.model import Sponsor
+from api.extensions import DB
+from api.model import Sponsor, Player
 
 
 @pytest.fixture(scope="session")
@@ -8,8 +9,7 @@ def mlsb_app():
     """The mlsb flask app."""
     mlsb_app = create_app()
     mlsb_app.config.update({
-        "TESTING": True,
-        "SERVER_NAME": 'localhost:5000'
+        "SERVER_NAME": 'localhost:5000',
     })
 
     # other setups
@@ -39,4 +39,21 @@ def factory_fixture(factory):
 
 @factory_fixture
 def sponsor_factory(sponsor_name, link=None, description=None):
-    return Sponsor(sponsor_name, link=link, description=description)
+    sponsor = Sponsor(sponsor_name, link=link, description=description)
+    DB.session.add(sponsor)
+    DB.session.commit()
+    return sponsor
+
+
+@factory_fixture
+def player_factory(name, email, gender, password="default", active=True):
+    player = Player(
+        name=name,
+        email=email,
+        gender=gender,
+        password=password,
+        active=active
+    )
+    DB.session.add(player)
+    DB.session.commit()
+    return player
