@@ -1,8 +1,10 @@
 import pytest
 import uuid
+from datetime import date
 from api.app import create_app
 from api.extensions import DB
-from api.model import Sponsor, Player, LeagueEvent, LeagueEventDate
+from api.model import Sponsor, Player, LeagueEvent, LeagueEventDate, Team,\
+    League, Division
 
 
 @pytest.fixture(scope="session")
@@ -39,16 +41,37 @@ def factory_fixture(factory):
 
 
 @factory_fixture
-def sponsor_factory(sponsor_name: str = '', link=None, description=None):
-    sponsor_name = sponsor_name if sponsor_name != '' else f"Sponsor - {str(uuid.uuid4())}"
-    sponsor = Sponsor(sponsor_name, link=link, description=description)
+def sponsor_factory(
+    sponsor_name: str = '',
+    link=None,
+    description=None
+) -> Sponsor:
+    fallback = f"Sponsor - {str(uuid.uuid4())}"
+    name = sponsor_name if sponsor_name != '' else fallback
+    sponsor = Sponsor(name, link=link, description=description)
     DB.session.add(sponsor)
     DB.session.commit()
     return sponsor
 
 
 @factory_fixture
-def player_factory(name: str = '', email: str = '', gender="M", password="default", active=True):
+def league_factory(league_name: str = '') -> League:
+    fallback = f"Sponsor - {str(uuid.uuid4())}"
+    name = league_name if league_name != '' else fallback
+    league = League(name=name)
+    DB.session.add(league)
+    DB.session.commit()
+    return league
+
+
+@factory_fixture
+def player_factory(
+    name: str = '',
+    email: str = '',
+    gender="M",
+    password="default",
+    active=True
+) -> Player:
     name = name if name != '' else f"{str(uuid.uuid4())}"
     email = email if email != '' else f"{str(uuid.uuid4())}@mlsb.ca"
     player = Player(
@@ -60,7 +83,31 @@ def player_factory(name: str = '', email: str = '', gender="M", password="defaul
     )
     DB.session.add(player)
     DB.session.commit()
-    return player
+    return Player.query.get(player.id)
+
+
+@factory_fixture
+def team_factory(
+    color: str = '',
+    sponsor: Sponsor = None,
+    league: League = None,
+    year: int = date.today().year,
+    players: list[Player] = []
+) -> Team:
+    color = color if color != '' else f"{str(uuid.uuid4())}"
+    sponsor_id = None if sponsor is None else sponsor.id
+    league_id = None if league is None else league.id
+    team = Team(
+        color=color,
+        sponsor_id=sponsor_id,
+        league_id=league_id,
+        year=year
+    )
+    for player in players:
+        team.insert_player(player.id)
+    DB.session.add(team)
+    DB.session.commit()
+    return team
 
 
 @factory_fixture
