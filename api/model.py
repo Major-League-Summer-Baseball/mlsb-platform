@@ -700,14 +700,13 @@ class Team(DB.Model):
 
     def __repr__(self) -> str:
         """Returns the string representation."""
-        if self.sponsor_name is not None and self.color is not None:
-            return f"{self.sponsor_name} {self.color}"
-        elif self.sponsor_name is not None:
-            return f"{self.sponsor_name}"
-        elif self.color is not None:
-            return f"{self.color}"
-        else:
-            return f"Team: {self.id}"
+        name_parts = []
+        fallback = f"Team: {self.id}"
+        if self.sponsor_name is not None:
+            name_parts.append(self.sponsor_name)
+        if self.color is not None:
+            name_parts.append(self.color)
+        return " ".join(name_parts) if len(name_parts) > 0 else fallback
 
     def json(self, admin: bool = False) -> dict:
         """Returns a jsonserializable object."""
@@ -791,6 +790,8 @@ class Team(DB.Model):
             MissingPlayer
         """
         player = Player.query.get(player_id)
+        if player is None:
+            raise PlayerDoesNotExist(payload={'details': player_id})
         if not self.is_player_on_team(player):
             raise PlayerNotOnTeam(payload={'details': player_id})
         self.players.remove(player)
@@ -818,7 +819,11 @@ class Team(DB.Model):
             False otherwise
         """
         player = Player.query.get(self.player_id)
-        return player.name == player_name and player.check_password(password)
+        return (
+            player is not None and
+            player.name == player_name and 
+            player.check_password(password)
+        )
 
     def team_stats(self) -> None:
         pass
