@@ -251,7 +251,7 @@ def is_memory_database(url: str) -> bool:
 
 def is_development(app) -> bool:
     """Returns whether the app is in development mode."""
-    return app.config["ENV"] == "development"
+    return app.config["ENV"] == "development" or app.config["DEBUG"]
 
 def create_app():
     app = Flask(__name__)
