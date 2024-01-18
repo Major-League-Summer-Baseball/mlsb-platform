@@ -818,7 +818,7 @@ class Team(DB.Model):
 
 class Division(DB.Model):
     """
-    a class that holds all the information for a division in a eague.
+    a class that holds all the information for a division in a league.
     Columns:
         id: the division unique id
         name: the name of the division
