@@ -32,6 +32,10 @@ SUBSCRIBED = "{} SUBSCRIBED"
 AWARD_POINTS = "{} awarded espy points for subscribing: {}"
 
 
+def convert_date(date_string: str, time_string: str) -> datetime:
+    return datetime.strptime(date_string + "-" + time_string, '%Y-%m-%d-%H:%M')
+
+
 class LeagueEvent(DB.Model):
     """
         A class used to store league events like Summerween.
@@ -87,6 +91,10 @@ class LeagueEvent(DB.Model):
                 "description": self.description,
                 "active": self.active}
 
+    @classmethod
+    def is_league_event(cls, league_event_id: str) -> bool:
+        return LeagueEvent.query.get(league_event_id) is not None
+
 
 class LeagueEventDate(DB.Model):
     """
@@ -111,9 +119,9 @@ class LeagueEventDate(DB.Model):
             raise InvalidField(payload={'details': "League Event Date - date"})
         if not time_validator(time):
             raise InvalidField(payload={'details': "League Event Date - time"})
-        self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
-        if LeagueEvent.query.get(league_event_id) is None:
+        if not LeagueEvent.is_league_event(league_event_id):
             raise LeagueEventDoesNotExist(payload={'details': league_event_id})
+        self.date = convert_date(date, time)
         self.league_event_id = league_event_id
 
     def update(self,
@@ -121,24 +129,24 @@ class LeagueEventDate(DB.Model):
                time: str = None,
                league_event_id: int = None) -> None:
         """ League event date constructor. """
-        d = self.date.strftime("%Y-%m-%d")
-        t = self.date.strftime("%H:%M")
+        temp_date = self.date.strftime("%Y-%m-%d")
+        temp_time = self.date.strftime("%H:%M")
         if date is not None:
             if not date_validator(date):
                 payload = {'details': "League Event Date - date"}
                 raise InvalidField(payload=payload)
-            d = date
+            temp_date = date
         if time is not None:
             if not time_validator(time):
                 payload = {'details': "League Event Date - time"}
                 raise InvalidField(payload=payload)
-            t = time
+            temp_time = time
         if league_event_id is not None:
-            if LeagueEvent.query.get(league_event_id) is None:
+            if not LeagueEvent.is_league_event(league_event_id):
                 payload = {'details': league_event_id}
                 raise LeagueEventDoesNotExist(payload=payload)
             self.league_event_id = league_event_id
-        self.date = datetime.strptime(d + "-" + t, '%Y-%m-%d-%H:%M')
+        self.date = convert_date(temp_date, temp_time)
 
     def is_player_signed_up(self, player_id: int) -> bool:
         """Is the given player signed up."""
@@ -162,7 +170,7 @@ class LeagueEventDate(DB.Model):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
-        if not self.is_player_attending(player):
+        if not self.is_player_signed_up(player.id):
             self.players.append(player)
             valid = True
         return valid
@@ -176,21 +184,11 @@ class LeagueEventDate(DB.Model):
             MissingPlayer
         """
         player = Player.query.get(player_id)
-        if not self.is_player_attending(player):
+        if player is None:
+            raise PlayerDoesNotExist(payload={'details': player_id})
+        if not self.is_player_signed_up(player.id):
             raise PlayerNotOnTeam(payload={'details': player_id})
         self.players.remove(player)
-
-    def is_player_attending(self, player: 'Player') -> bool:
-        """Returns whether the given player is attending the event.
-
-        Parameter:
-            player: the player model
-        Returns:
-            True if player on team otherwise False (boolean)
-        """
-        if player is None:
-            return False
-        return player.id in [p.id for p in self.players]
 
     def json(self) -> dict:
         """Returns a jsonserializable object."""
@@ -525,6 +523,7 @@ class Player(UserMixin, DB.Model):
         """Returns whether the email is unique or not."""
         player = Player.query.filter_by(email=email).first()
         return player is None
+
 
 class OAuth(OAuthConsumerMixin, DB.Model):
     """A model for storing information about oauth"""
