@@ -414,13 +414,13 @@ class Player(UserMixin, DB.Model):
         # check if email is unique
         if not string_validator(email):
             raise InvalidField(payload={'details': "Player - email"})
-        player = Player.query.filter_by(email=email).first()
-        if player is not None:
+        email = Player.normalize_email(email)
+        if not Player.is_email_unique(email):
             raise NonUniqueEmail(payload={'details': email})
         if gender is not None and not gender_validator(gender):
             raise InvalidField(payload={'details': "Player - gender"})
         self.name = name
-        self.email = email.lower().strip()
+        self.email = email
         if gender is not None:
             gender = gender.lower()
         self.gender = gender
@@ -490,9 +490,8 @@ class Player(UserMixin, DB.Model):
             # check if email is unique
             if not string_validator(email):
                 raise InvalidField(payload="Player - email")
-            email = email.strip().lower()
-            player = Player.query.filter_by(email=email).first()
-            if player is not None:
+            email = Player.normalize_email(email)
+            if not Player.is_email_unique(email):
                 raise NonUniqueEmail(payload={'details': email})
             self.email = email
         if gender is not None and gender_validator(gender):
@@ -516,6 +515,16 @@ class Player(UserMixin, DB.Model):
         """Deactivate the player (retire them)."""
         self.active = False
 
+    @classmethod
+    def normalize_email(cls, email: str) -> str:
+        """Return a normalized email."""
+        return email.strip().lower()
+
+    @classmethod
+    def is_email_unique(cls, email: str) -> bool:
+        """Returns whether the email is unique or not."""
+        player = Player.query.filter_by(email=email).first()
+        return player is None
 
 class OAuth(OAuthConsumerMixin, DB.Model):
     """A model for storing information about oauth"""
