@@ -3,8 +3,8 @@ import uuid
 from datetime import date
 from api.app import create_app
 from api.extensions import DB
-from api.model import Sponsor, Player, LeagueEvent, LeagueEventDate, Team,\
-    League, Division
+from api.model import Sponsor, Player, LeagueEvent, LeagueEventDate, Team, \
+    League
 
 
 @pytest.fixture(scope="session")
