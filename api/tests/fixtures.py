@@ -3,8 +3,8 @@ import uuid
 from datetime import date
 from api.app import create_app
 from api.extensions import DB
-from api.model import Sponsor, Player, LeagueEvent, LeagueEventDate, Team, \
-    League
+from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
+    LeagueEventDate, Team, League, Game, Division, Bat
 
 
 @pytest.fixture(scope="session")
@@ -46,8 +46,7 @@ def sponsor_factory(
     link=None,
     description=None
 ) -> Sponsor:
-    fallback = f"Sponsor - {str(uuid.uuid4())}"
-    name = sponsor_name if sponsor_name != '' else fallback
+    name = sponsor_name if sponsor_name != '' else random_name('Sponsor')
     sponsor = Sponsor(name, link=link, description=description)
     DB.session.add(sponsor)
     DB.session.commit()
@@ -56,12 +55,21 @@ def sponsor_factory(
 
 @factory_fixture
 def league_factory(league_name: str = '') -> League:
-    fallback = f"Sponsor - {str(uuid.uuid4())}"
-    name = league_name if league_name != '' else fallback
+    name = league_name if league_name != '' else random_name('League')
     league = League(name=name)
     DB.session.add(league)
     DB.session.commit()
     return league
+
+
+@factory_fixture
+def division_factory(name: str = '', shortname: str = None) -> Division:
+    fallback = f"Division - {str(uuid.uuid4())}"
+    name = name if name != '' else fallback
+    division = Division(name=name, shortname=shortname)
+    DB.session.add(division)
+    DB.session.commit()
+    return division
 
 
 @factory_fixture
@@ -72,8 +80,8 @@ def player_factory(
     password="default",
     active=True
 ) -> Player:
-    name = name if name != '' else f"{str(uuid.uuid4())}"
-    email = email if email != '' else f"{str(uuid.uuid4())}@mlsb.ca"
+    name = name if name != '' else random_name("Player")
+    email = email if email != '' else random_email()
     player = Player(
         name=name,
         email=email,
@@ -116,7 +124,7 @@ def league_event_factory(
     description: str = 'Description',
     active: bool = True
 ) -> LeagueEvent:
-    name = name if name != '' else f"Event - {str(uuid.uuid4())}"
+    name = name if name != '' else random_name("Event")
     league_event = LeagueEvent(
         name=name,
         description=description,
@@ -144,3 +152,80 @@ def league_event_date_factory(
     DB.session.add(league_event)
     DB.session.commit()
     return league_event_date
+
+
+@factory_fixture
+def game_factory(
+    home_team: Team,
+    away_team: Team,
+    league: League,
+    division: Division,
+    date: str = "2022-10-01",
+    time: str = "10:00",
+    status: str = "",
+    field: str ="WP1",
+) -> Game:
+    game = Game(
+        date=date,
+        time=time,
+        home_team_id=home_team.id,
+        away_team_id=away_team.id,
+        league_id=league.id,
+        division_id=division.id,
+        status=status,
+        field=field
+
+    )
+    DB.session.add(game)
+    DB.session.commit()
+    return game
+
+
+@factory_fixture
+def bat_factory(
+    game: Game,
+    player: Player,
+    team: Team,
+    classification: str = "s",
+    inning: int = 1,
+    rbi: int = 0
+) -> Bat:
+    bat = Bat(
+        player_id=player.id,
+        team_id=team.id,
+        game_id=game.id,
+        classification=classification,
+        inning=inning,
+        rbi=rbi
+    )
+    DB.session.add(bat)
+    DB.session.commit()
+    return bat
+
+
+@factory_fixture
+def join_league_request_factory(
+    team: Team,
+    email: str = "",
+    name: str ="",
+    gender="M"
+) -> JoinLeagueRequest:
+    email = email if email != "" else random_email()
+    name = name if name != "" else random_name("Player Request")
+    request = JoinLeagueRequest(
+        email=email,
+        name=name,
+        gender=gender,
+        team=team,
+    )
+    DB.session.add(request)
+    DB.session.commit()
+    return request
+
+
+def random_email( ) -> str:
+    return f"{str(uuid.uuid4())}@mlsb.ca"
+
+
+def random_name(category: str) -> str:
+    return f"{category} - {str(uuid.uuid4())}"
