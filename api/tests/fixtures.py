@@ -163,7 +163,7 @@ def game_factory(
     date: str = "2022-10-01",
     time: str = "10:00",
     status: str = "",
-    field: str ="WP1",
+    field: str = "WP1",
 ) -> Game:
     game = Game(
         date=date,
@@ -207,7 +207,7 @@ def bat_factory(
 def join_league_request_factory(
     team: Team,
     email: str = "",
-    name: str ="",
+    name: str = "",
     gender="M"
 ) -> JoinLeagueRequest:
     email = email if email != "" else random_email()
@@ -223,7 +223,7 @@ def join_league_request_factory(
     return request
 
 
-def random_email( ) -> str:
+def random_email() -> str:
     return f"{str(uuid.uuid4())}@mlsb.ca"
 
 
