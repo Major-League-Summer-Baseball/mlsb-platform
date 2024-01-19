@@ -33,7 +33,16 @@ AWARD_POINTS = "{} awarded espy points for subscribing: {}"
 
 
 def convert_date(date_string: str, time_string: str) -> datetime:
+    """Converts a date and time strings to datetime object."""
     return datetime.strptime(date_string + "-" + time_string, '%Y-%m-%d-%H:%M')
+
+
+def split_datetime(date: datetime) -> tuple[str, str]:
+    """Splits the datetime to their equivalent date and time string."""
+    return (
+        None if date is None else date.strftime("%Y-%m-%d"),
+        None if date is None else date.strftime("%H:%M")
+    )
 
 
 class LeagueEvent(DB.Model):
@@ -74,11 +83,13 @@ class LeagueEvent(DB.Model):
             if not string_validator(name):
                 raise InvalidField(payload={"details": "League event - name"})
             self.name = name
+
         if description is not None:
             if not string_validator(description):
                 load = {"details": "League event - description"}
                 raise InvalidField(payload=load)
             self.description = description
+
         if active is not None:
             if not boolean_validator(active):
                 raise InvalidField(payload={'detail': "League Event - active"})
@@ -86,10 +97,12 @@ class LeagueEvent(DB.Model):
 
     def json(self) -> dict:
         """Returns a jsonserializable object."""
-        return {"league_event_id": self.id,
-                "name": self.name,
-                "description": self.description,
-                "active": self.active}
+        return {
+            "league_event_id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "active": self.active
+        }
 
     @classmethod
     def is_league_event(cls, league_event_id: str) -> bool:
@@ -109,9 +122,11 @@ class LeagueEventDate(DB.Model):
                             backref=DB.backref('event', uselist=False))
     league_event_id = DB.Column(DB.Integer, DB.ForeignKey('league_event.id'))
     date = DB.Column(DB.DateTime)
-    players = DB.relationship('Player',
-                              secondary=attendance,
-                              backref=DB.backref('events', lazy='dynamic'))
+    players = DB.relationship(
+        'Player',
+        secondary=attendance,
+        backref=DB.backref('events', lazy='dynamic')
+    )
 
     def __init__(self, date: str, time: str, league_event_id: int):
         """ League event date constructor. """
@@ -121,31 +136,36 @@ class LeagueEventDate(DB.Model):
             raise InvalidField(payload={'details': "League Event Date - time"})
         if not LeagueEvent.is_league_event(league_event_id):
             raise LeagueEventDoesNotExist(payload={'details': league_event_id})
+
         self.date = convert_date(date, time)
         self.league_event_id = league_event_id
 
-    def update(self,
-               date: str = None,
-               time: str = None,
-               league_event_id: int = None) -> None:
+    def update(
+        self,
+        date: str = None,
+        time: str = None,
+        league_event_id: int = None
+    ) -> None:
         """ League event date constructor. """
-        temp_date = self.date.strftime("%Y-%m-%d")
-        temp_time = self.date.strftime("%H:%M")
-        if date is not None:
-            if not date_validator(date):
-                payload = {'details': "League Event Date - date"}
-                raise InvalidField(payload=payload)
-            temp_date = date
-        if time is not None:
-            if not time_validator(time):
-                payload = {'details': "League Event Date - time"}
-                raise InvalidField(payload=payload)
-            temp_time = time
         if league_event_id is not None:
             if not LeagueEvent.is_league_event(league_event_id):
                 payload = {'details': league_event_id}
                 raise LeagueEventDoesNotExist(payload=payload)
             self.league_event_id = league_event_id
+
+        temp_date, temp_time = split_datetime(self.date)
+        if date is not None:
+            if not date_validator(date):
+                payload = {'details': "League Event Date - date"}
+                raise InvalidField(payload=payload)
+            temp_date = date
+
+        if time is not None:
+            if not time_validator(time):
+                payload = {'details': "League Event Date - time"}
+                raise InvalidField(payload=payload)
+            temp_time = time
+
         self.date = convert_date(temp_date, temp_time)
 
     def is_player_signed_up(self, player_id: int) -> bool:
@@ -170,6 +190,7 @@ class LeagueEventDate(DB.Model):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+
         if not self.is_player_signed_up(player.id):
             self.players.append(player)
             valid = True
@@ -186,21 +207,25 @@ class LeagueEventDate(DB.Model):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+
         if not self.is_player_signed_up(player.id):
             raise PlayerNotOnTeam(payload={'details': player_id})
+
         self.players.remove(player)
 
     def json(self) -> dict:
         """Returns a jsonserializable object."""
-        return {'league_event_date_id': self.id,
-                'league_event_id': self.event.id,
-                'date': self.date.strftime("%Y-%m-%d"),
-                'time': self.date.strftime("%H:%M"),
-                'description': self.event.description,
-                'name': self.event.name,
-                'active': self.event.active,
-                'attendance': len(self.players)
-                }
+        date, time = split_datetime(self.date)
+        return {
+            'league_event_date_id': self.id,
+            'league_event_id': self.event.id,
+            'date': date,
+            'time': time,
+            'description': self.event.description,
+            'name': self.event.name,
+            'active': self.event.active,
+            'attendance': len(self.players)
+        }
 
 
 class Fun(DB.Model):
@@ -272,29 +297,36 @@ class Espys(DB.Model):
                 TeamDoesNotExist
         """
         if not float_validator(points):
-            raise InvalidField(payload={"details": "Game - points"})
-        self.points = float(points)
-        sponsor = None
-        if sponsor_id is not None:
-            sponsor = Sponsor.query.get(sponsor_id)
-        self.receipt = receipt
-        if sponsor_id is not None and sponsor is None:
+            raise InvalidField(payload={"details": "Espys - points"})
+
+        if description is not None and not string_validator(description):
+            raise InvalidField(payload={"details": "Espys - description"})
+
+        if receipt is not None and not string_validator(receipt):
+            raise InvalidField(payload={"details": "Espys - receipt"})
+
+        if sponsor_id is not None and not Sponsor.does_sponsor_exist(sponsor_id):
             raise SponsorDoesNotExist(payload={"details": sponsor_id})
-        team = Team.query.get(team_id)
-        if team is None:
+
+        if not Team.does_team_exist(team_id):
             raise TeamDoesNotExist(payload={"details": team_id})
-        self.description = description
-        self.team_id = team_id
-        self.sponsor_id = sponsor_id
-        self.kik = None
+
         if date is not None and not date_validator(date):
             raise InvalidField(payload={'details': "Game - date"})
         if time is not None and not time_validator(time):
             raise InvalidField(payload={'details': "Game - time"})
+
         if date is not None and time is not None:
-            self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
+            self.date = convert_date(date, time)
         else:
             self.date = datetime.today()
+
+        self.points = float(points)
+        self.receipt = receipt
+        self.description = description
+        self.team_id = team_id
+        self.sponsor_id = sponsor_id
+        self.kik = None
 
     def __add__(self, other) -> 'Espys':
         """Adds two Espys or an int together"""
@@ -320,29 +352,40 @@ class Espys(DB.Model):
                 SponsorDoesNotExist
         """
         if points is not None:
+            if not float_validator(points):
+                raise InvalidField(payload={"details": "Espys - points"})
             self.points = points
+
         if description is not None:
+            if not string_validator(description):
+                raise InvalidField(payload={"details": "Espys - description"})
             self.description = description
+
         if team_id is not None:
-            if Team.query.get(team_id) is not None:
-                self.team_id = team_id
-            else:
+            if not Team.does_team_exist(team_id):
                 raise TeamDoesNotExist(payload={"details": team_id})
+            self.team_id = team_id
+
         if sponsor_id is not None:
-            if Sponsor.query.get(sponsor_id) is not None:
-                self.sponsor_id = sponsor_id
-            else:
+            if not Sponsor.does_sponsor_exist(sponsor_id):
                 raise SponsorDoesNotExist(payload={"details": sponsor_id})
+            self.sponsor_id = sponsor_id
+
         if receipt is not None:
+            if not string_validator(receipt):
+                raise InvalidField(payload={"details": "Espys - receipt"})
             self.receipt = receipt
-        if date is not None and time is None:
-            self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
-        if date is not None and time is not None:
-            if date is not None and not date_validator(date):
+
+        temp_date, temp_time = split_datetime(self.date)
+        if date is not None:
+            if not date_validator(date):
                 raise InvalidField(payload={'details': "Game - date"})
-            if time is not None and not time_validator(time):
+            temp_date = date
+        if time is not None:
+            if not time_validator(time):
                 raise InvalidField(payload={'details': "Game - time"})
-            self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
+            temp_time = time
+        self.date = convert_date(temp_date, temp_time)
 
     def json(self) -> dict:
         """Returns a jsonserializable object."""
@@ -350,11 +393,7 @@ class Espys(DB.Model):
                    else str(Sponsor.query.get(self.sponsor_id)))
         team = (None if self.team_id is None
                 else str(Team.query.get(self.team_id)))
-        date = None
-        time = None
-        if self.date is not None:
-            date = self.date.strftime("%Y-%m-%d")
-            time = self.date.strftime("%H:%M")
+        date, time = split_datetime(self.date)
         return {
             'espy_id': self.id,
             'team': team,
@@ -407,21 +446,22 @@ class Player(UserMixin, DB.Model):
                 InvalidField
                 NonUniqueEmail
         """
-        if not string_validator(name):
-            raise InvalidField(payload={"details": "Player - name"})
         # check if email is unique
         if not string_validator(email):
             raise InvalidField(payload={'details': "Player - email"})
         email = Player.normalize_email(email)
         if not Player.is_email_unique(email):
             raise NonUniqueEmail(payload={'details': email})
+
+        if not string_validator(name):
+            raise InvalidField(payload={"details": "Player - name"})
+
         if gender is not None and not gender_validator(gender):
             raise InvalidField(payload={'details': "Player - gender"})
+
         self.name = name
         self.email = email
-        if gender is not None:
-            gender = gender.lower()
-        self.gender = gender
+        self.gender = gender if gender is None else gender.lower()
         self.set_password(password)
         self.active = active
 
@@ -485,25 +525,28 @@ class Player(UserMixin, DB.Model):
                 NonUniqueEmail
         """
         if email is not None:
-            # check if email is unique
+            # check if email is valid and unique
             if not string_validator(email):
                 raise InvalidField(payload="Player - email")
             email = Player.normalize_email(email)
             if not Player.is_email_unique(email):
                 raise NonUniqueEmail(payload={'details': email})
             self.email = email
-        if gender is not None and gender_validator(gender):
+
+        if gender is not None:
+            if not gender_validator(gender):
+                raise InvalidField(payload={'details': "Player - gender"})
             self.gender = gender.lower()
-        elif gender is not None:
-            raise InvalidField(payload={'details': "Player - gender"})
-        if name is not None and string_validator(name):
+
+        if name is not None:
+            if not string_validator(name):
+                raise InvalidField(payload={'details': "Player - name"})
             self.name = name
-        elif name is not None:
-            raise InvalidField(payload={'details': "Player - name"})
-        if active is not None and boolean_validator(active):
+
+        if active is not None:
+            if not boolean_validator(active):
+                raise InvalidField(payload={'detail': "Player - active"})
             self.active = active
-        elif active is not None:
-            raise InvalidField(payload={'detail': "Player - active"})
 
     def activate(self) -> None:
         """Activate the player."""
@@ -512,6 +555,10 @@ class Player(UserMixin, DB.Model):
     def deactivate(self) -> None:
         """Deactivate the player (retire them)."""
         self.active = False
+
+    @classmethod
+    def does_player_exist(cls, player_id: str) -> bool:
+        return Player.query.get(player_id) is not None
 
     @classmethod
     def normalize_email(cls, email: str) -> str:
@@ -573,14 +620,12 @@ class Sponsor(DB.Model):
             raise InvalidField(payload={'details': "Sponsor - link"})
         if not string_validator(description):
             raise InvalidField(payload={'details': "Sponsor - description"})
+
         self.name = name
         self.description = description
         self.link = link
         self.active = active
-        if nickname is None:
-            self.nickname = name
-        else:
-            self.nickname = nickname
+        self.nickname = nickname if nickname is not None else name
 
     def __repr__(self) -> str:
         """Returns the string representation of the sponsor."""
@@ -604,22 +649,25 @@ class Sponsor(DB.Model):
            Raises:
                InvalidField
         """
-        if name is not None and string_validator(name):
+        if name is not None:
+            if not string_validator(name):
+                raise InvalidField(payload={'details': "Sponsor - name"})
             self.name = name
-        elif name is not None:
-            raise InvalidField(payload={'details': "Sponsor - name"})
-        if description is not None and string_validator(description):
+
+        if description is not None:
+            if not string_validator(description):
+                raise InvalidField(payload={'details': "Sponsor - description"})
             self.description = description
-        elif description is not None:
-            raise InvalidField(payload={'details': "Sponsor - description"})
-        if link is not None and string_validator(link):
+
+        if link is not None:
+            if not string_validator(link):
+                raise InvalidField(payload={'details': "Sponsor - link"})
             self.link = link
-        elif link is not None:
-            raise InvalidField(payload={'details': "Sponsor - link"})
-        if active is not None and boolean_validator(active):
+
+        if active is not None:
+            if not boolean_validator(active):
+                raise InvalidField(payload={'detail': "Player - active"})
             self.active = active
-        elif active is not None:
-            raise InvalidField(payload={'detail': "Player - active"})
 
     def activate(self) -> None:
         """Activate a sponsor (they are back baby)."""
@@ -628,6 +676,10 @@ class Sponsor(DB.Model):
     def deactivate(self) -> None:
         """Deactivate a sponsor (they are no longer sponsoring). """
         self.active = False
+
+    @classmethod
+    def does_sponsor_exist(cls, sponsor_id: str) -> bool:
+        return Sponsor.query.get(sponsor_id) is not None
 
 
 class Team(DB.Model):
@@ -686,12 +738,13 @@ class Team(DB.Model):
         """
         if color is not None and not string_validator(color):
             raise InvalidField(payload={'details': "Team - color"})
-        if sponsor_id is not None and Sponsor.query.get(sponsor_id) is None:
-            raise SponsorDoesNotExist(payload={'details': sponsor_id})
-        if league_id is not None and League.query.get(league_id) is None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
         if year is not None and not year_validator(year):
             raise InvalidField(payload={'details': "Team - year"})
+        if sponsor_id is not None and not Sponsor.does_sponsor_exist(sponsor_id):
+            raise SponsorDoesNotExist(payload={'details': sponsor_id})
+        if league_id is not None and not League.does_league_exist(league_id):
+            raise LeagueDoesNotExist(payload={'details': league_id})
+
         self.color = color
         self.sponsor_id = sponsor_id
         self.league_id = league_id
@@ -724,7 +777,8 @@ class Team(DB.Model):
             'league_id': self.league_id,
             'year': self.year,
             'espys': self.espys_total if self.espys_total is not None else 0,
-            'captain': captain}
+            'captain': captain
+        }
 
     def update(self,
                color: str = None,
@@ -738,24 +792,25 @@ class Team(DB.Model):
             SponsorDoesNotExist
             LeagueDoesNotExist
         """
-        # does nothing with espys given
-        if color is not None and string_validator(color):
+        if color is not None:
+            if not string_validator(color):
+                raise InvalidField(payload={'details': "Team - color"})
             self.color = color
-        elif color is not None:
-            raise InvalidField(payload={'details': "Team - color"})
-        if (sponsor_id is not None and
-                Sponsor.query.get(sponsor_id) is not None):
+
+        if sponsor_id is not None:
+            if not Sponsor.does_sponsor_exist(sponsor_id):
+                raise SponsorDoesNotExist(payload={'details': sponsor_id})
             self.sponsor_id = sponsor_id
-        elif sponsor_id is not None:
-            raise SponsorDoesNotExist(payload={'details': sponsor_id})
-        if league_id is not None and League.query.get(league_id) is not None:
+
+        if league_id is not None:
+            if not League.does_league_exist(league_id):
+                raise LeagueDoesNotExist(payload={'details': league_id})
             self.league_id = league_id
-        elif league_id is not None:
-            raise LeagueDoesNotExist(payload={'details': league_id})
-        if year is not None and year_validator(year):
+
+        if year is not None:
+            if not year_validator(year):
+                raise InvalidField(payload={'details': "Team - year"})
             self.year = year
-        elif year is not None:
-            raise InvalidField(payload={'details': "Team - year"})
 
     def insert_player(self, player_id: int, captain: bool = False) -> None:
         """Insert a player on to the team.
@@ -769,10 +824,11 @@ class Team(DB.Model):
         Raises:
             PlayerDoesNotExist
         """
-        valid = False
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+
+        valid = False
         if not self.is_player_on_team(player):
             self.players.append(player)
             valid = True
@@ -821,12 +877,16 @@ class Team(DB.Model):
         player = Player.query.get(self.player_id)
         return (
             player is not None and
-            player.name == player_name and 
+            player.name == player_name and
             player.check_password(password)
         )
 
     def team_stats(self) -> None:
         pass
+
+    @classmethod
+    def does_team_exist(cls, team_id: str) -> bool:
+        return Team.query.get(team_id) is not None
 
 
 class Division(DB.Model):
@@ -863,13 +923,13 @@ class Division(DB.Model):
         Raises:
             InvalidField
         """
-        if name is not None and not string_validator(name):
-            raise InvalidField(payload={'details': "Division - name"})
-        if shortname is not None and not string_validator(shortname):
-            raise InvalidField(payload={'details': "Division - shortname"})
         if name is not None:
+            if not string_validator(name):
+                raise InvalidField(payload={'details': "Division - name"})
             self.name = name
         if shortname is not None:
+            if not string_validator(shortname):
+                raise InvalidField(payload={'details': "Division - shortname"})
             self.shortname = shortname
 
     def get_shortname(self) -> str:
@@ -931,6 +991,10 @@ class League(DB.Model):
         if not string_validator(league):
             raise InvalidField(payload={'details': "League - name"})
         self.name = league
+
+    @classmethod
+    def does_league_exist(cls, league_id: str) -> bool:
+        return League.query.get(league_id) is not None
 
 
 class Bat(DB.Model):
@@ -1145,7 +1209,7 @@ class Game(DB.Model):
             raise InvalidField(payload={'details': "Game - date"})
         if not time_validator(time):
             raise InvalidField(payload={'details': "Game - time"})
-        self.date = datetime.strptime(date + "-" + time, '%Y-%m-%d-%H:%M')
+
         if (home_team_id is None or Team.query.get(home_team_id) is None):
             raise TeamDoesNotExist(payload={'details': home_team_id})
         if (away_team_id is None or Team.query.get(away_team_id) is None):
@@ -1157,7 +1221,9 @@ class Game(DB.Model):
             raise InvalidField(payload={'details': "Game - field/status"})
         if Division.query.get(division_id) is None:
             raise DivisionDoesNotExist(payload={'details': division_id})
-            # must be good now
+
+        # must be good now
+        self.date = convert_date(date, time)
         self.home_team_id = home_team_id
         self.away_team_id = away_team_id
         self.league_id = league_id
@@ -1258,6 +1324,10 @@ class Game(DB.Model):
             'home_bats': self.home_team_hits
             if self.home_team_hits is not None else 0
         }
+
+    @classmethod
+    def does_game_exist(cls, game_id: str) -> bool:
+        return Game.query.get(game_id) is not None
 
 
 class JoinLeagueRequest(DB.Model):
