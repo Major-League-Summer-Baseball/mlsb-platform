@@ -1,7 +1,6 @@
 import pytest
-import uuid
-from api.errors import InvalidField, NonUniqueEmail, PlayerDoesNotExist, PlayerNotOnTeam
-from api.model import Player, Team
+from api.errors import InvalidField, PlayerDoesNotExist, PlayerNotOnTeam
+from api.model import Team
 
 
 @pytest.mark.usefixtures('mlsb_app')
@@ -163,7 +162,6 @@ def test_team_cannot_remove_nonexistent_player(mlsb_app, team_factory):
             team.remove_player(-1)
 
 
-
 @pytest.mark.usefixtures('player_factory')
 @pytest.mark.usefixtures('mlsb_app')
 def test_determine_not_captain(mlsb_app, player_factory):
@@ -181,6 +179,3 @@ def test_determine_not_captain_no_team_captain(mlsb_app, player_factory):
     with mlsb_app.app_context():
         team = Team()
         assert team.check_captain("Some other name", "default") is False
-
-
-
