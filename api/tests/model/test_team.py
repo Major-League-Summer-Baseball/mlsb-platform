@@ -1,18 +1,21 @@
 import pytest
-from api.errors import InvalidField, PlayerDoesNotExist, PlayerNotOnTeam
+from api.errors import InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
+    PlayerNotOnTeam, SponsorDoesNotExist
 from api.model import Team
 
 
 @pytest.mark.usefixtures('mlsb_app')
 def test_team_cannot_nonexistent_sponsor(mlsb_app):
     with mlsb_app.app_context():
-        pass
+        with pytest.raises(SponsorDoesNotExist):
+            Team(color="some color", year=2023, sponsor_id=-1)
 
 
 @pytest.mark.usefixtures('mlsb_app')
 def test_team_cannot_be_nonexistent_league(mlsb_app):
     with mlsb_app.app_context():
-        pass
+        with pytest.raises(LeagueDoesNotExist):
+            Team(color="some color", year=2023, league_id=-1)
 
 
 @pytest.mark.parametrize("team_data", [
