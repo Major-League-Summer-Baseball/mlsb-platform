@@ -264,7 +264,7 @@ class TestEspys(TestSetup):
                 'points': "XX"
             }
             result = {
-                'details': 'Game - points', 'message': InvalidField.message
+                'details': 'Espys - points', 'message': InvalidField.message
             }
             error_message = (
                 Routes['espy'] + " POST: request with invalid points"
