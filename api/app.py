@@ -244,6 +244,15 @@ def register_apis(app):
     api.init_app(app)
 
 
+def is_memory_database(url: str) -> bool:
+    """Returns whether the database is in memory database."""
+    return url.strip().lower() == "sqlite://"
+
+
+def is_development(app) -> bool:
+    """Returns whether the app is in development mode."""
+    return app.config["ENV"] == "development" or app.config["DEBUG"]
+
 def create_app():
     app = Flask(__name__)
     configure_app(app)
@@ -253,9 +262,7 @@ def create_app():
     register_extensions(app)
     register_apis(app)
     register_commands(app)
-    print(os.environ)
-    print(app.config["ENV"])
-    if 'DATABASE_URL' not in os.environ and app.config["ENV"] == "development":
+    if is_memory_database(app.config["URL"]) and is_development(app):
         # if development with no db url use an in memory database
         # so must initialize it
         print("Init memory DB")

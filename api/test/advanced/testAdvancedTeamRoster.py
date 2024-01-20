@@ -129,7 +129,10 @@ class TeamRosterTest(TestSetup):
             data = {"player_id": INVALID_ID}
             url_request = Routes['team_roster'] + "/" + str(team_id)
             rv = self.app.delete(url_request, json=data, headers=headers)
-            expect = {'details': INVALID_ID, 'message': PlayerNotOnTeam.message}
+            expect = {
+                'details': INVALID_ID,
+                'message': PlayerDoesNotExist.message
+            }
             self.output(loads(rv.data))
             self.output(expect)
             self.assertEqual(
@@ -138,7 +141,7 @@ class TeamRosterTest(TestSetup):
                 Routes['team_roster'] + "DELETE: Invalid player id"
             )
             self.assertEqual(
-                PlayerNotOnTeam.status_code,
+                PlayerDoesNotExist.status_code,
                 rv.status_code,
                 Routes['team_roster'] + " PUT: invalid player id"
             )
