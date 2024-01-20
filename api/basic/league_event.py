@@ -107,10 +107,11 @@ class LeagueEventAPI(Resource):
         name = args.get('name', None)
         active = convert_active(args.get('active', None))
 
-        league_event.update(name=name,
-                            description=description,
-                            active=active
-                            )
+        league_event.update(
+            name=name,
+            description=description,
+            active=active
+        )
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -171,7 +172,7 @@ class LeagueEventListAPI(Resource):
         description = args.get('description')
         name = args.get('name')
         active = convert_active(args.get('active', "1"))
-
+        active = active if active is not None else True
         league_event = LeagueEvent(name, description, active=active)
         DB.session.add(league_event)
         DB.session.commit()

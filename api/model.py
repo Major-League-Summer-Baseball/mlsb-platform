@@ -9,6 +9,7 @@ from api.errors import TeamDoesNotExist, PlayerDoesNotExist, GameDoesNotExist, \
     InvalidField, LeagueDoesNotExist, SponsorDoesNotExist, \
     NonUniqueEmail, PlayerNotOnTeam, DivisionDoesNotExist, \
     HaveLeagueRequestException, LeagueEventDoesNotExist
+from api.helper import normalize_string
 from api.validators import rbi_validator, hit_validator, inning_validator, \
     string_validator, date_validator, time_validator, \
     field_validator, year_validator, gender_validator, \
@@ -79,12 +80,12 @@ class LeagueEvent(DB.Model):
         validate(
             active,
             boolean_validator,
-            InvalidField(payload={"details": "League event - name"})
+            InvalidField(payload={"details": "League event - active"})
         )
         validate(
             description,
             string_validator,
-            InvalidField(payload={"details": "League event - active"})
+            InvalidField(payload={"details": "League event - description"})
         )
         self.__update(name=name, description=description, active=active)
 
@@ -538,7 +539,7 @@ class Player(UserMixin, DB.Model):
     def __init__(self,
                  name: str,
                  email: str,
-                 gender: str = "M",
+                 gender: str = "m",
                  password: str = "default",
                  active: bool = True):
         """The constructor.
@@ -556,11 +557,6 @@ class Player(UserMixin, DB.Model):
             Player.normalize_email(email),
             lambda email: Player.is_email_unique(email),
             NonUniqueEmail(payload={'details': email})
-        )
-        validate(
-            name,
-            string_validator,
-            InvalidField(payload={"details": "Player - name"})
         )
         validate(
             name,
@@ -591,7 +587,7 @@ class Player(UserMixin, DB.Model):
     ):
         self.name = notNone(name, self.name)
         self.email = Player.normalize_email(notNone(email, self.email))
-        self.gender = notNone(gender, self.gender).lower()
+        self.gender = Player.normalize_gender(notNone(gender, self.gender))
         self.set_password(notNone(password, self.password))
         self.active = notNone(active, self.active)
 
@@ -618,26 +614,23 @@ class Player(UserMixin, DB.Model):
             InvalidField(payload={'details': "Player - email"}),
             required=False
         )
-        if email is not None:
-            validate(
-                Player.normalize_email(email),
-                lambda email: Player.is_email_unique(email),
-                NonUniqueEmail(payload={'details': email})
-            )
         validate(
-            name,
-            string_validator,
-            InvalidField(payload={"details": "Player - name"})
+            None if email is None else Player.normalize_email(email),
+            lambda email: Player.is_email_unique(email),
+            NonUniqueEmail(payload={'details': email}),
+            required=False
         )
         validate(
             name,
             string_validator,
-            InvalidField(payload={"details": "Player - name"})
+            InvalidField(payload={"details": "Player - name"}),
+            required=False
         )
         validate(
             gender,
             gender_validator,
-            InvalidField(payload={'details': "Player - gender"})
+            InvalidField(payload={'details': "Player - gender"}),
+            required=False
         )
 
         self.__update(
@@ -705,13 +698,26 @@ class Player(UserMixin, DB.Model):
     @classmethod
     def normalize_email(cls, email: str) -> str:
         """Return a normalized email."""
-        return email.strip().lower()
+        return normalize_string(email)
+
+    @classmethod
+    def normalize_gender(cls, gender: str) -> str:
+        """Return a normalized email."""
+        return normalize_string(gender)
+
+    @classmethod
+    def find_by_email(cls, email: str) -> "Player":
+        """Returns the player with the given email."""
+        if email is None:
+            return None
+        return Player.query.filter(
+            func.lower(Player.email) == Player.normalize_email(email)
+        ).first()
 
     @classmethod
     def is_email_unique(cls, email: str) -> bool:
-        """Returns whether the email is unique or not."""
-        player = Player.query.filter_by(email=email).first()
-        return player is None
+        """Returns whether the email is unique and available."""
+        return Player.find_by_email(email) is None
 
 
 class OAuth(OAuthConsumerMixin, DB.Model):
@@ -1156,7 +1162,7 @@ class Division(DB.Model):
         validate(
             shortname,
             string_validator,
-            InvalidField(payload={'details': "Division - short name"}),
+            InvalidField(payload={'details': "Division - shortname"}),
             required=False
         )
         self.__update(name=name, shortname=shortname)
@@ -1180,7 +1186,7 @@ class Division(DB.Model):
         validate(
             shortname,
             string_validator,
-            InvalidField(payload={'details': "Division - short name"}),
+            InvalidField(payload={'details': "Division - shortname"}),
             required=False
         )
         self.__update(name=name, shortname=shortname)
@@ -1323,7 +1329,7 @@ class Bat(DB.Model):
         validate(
             rbi,
             rbi_validator,
-            InvalidField(payload={'details': "Bat - inning"}),
+            InvalidField(payload={'details': "Bat - rbi"}),
         )
         validate(
             classification,
@@ -1353,14 +1359,14 @@ class Bat(DB.Model):
         inning: int,
         rbi: int
     ):
-        self.classification = Bat.normalize_classification(
-            notNone(classification, self.classification)
-        )
         self.rbi = notNone(rbi, self.rbi)
         self.player_id = notNone(player_id, self.player_id)
         self.team_id = notNone(team_id, self.team_id)
         self.game_id = notNone(game_id, self.game_id)
         self.inning = notNone(inning, self.inning)
+        self.classification = Bat.normalize_classification(
+            notNone(classification, self.classification)
+        )
 
     def __repr__(self) -> str:
         """Returns the string representation of the Bat."""
@@ -1393,7 +1399,7 @@ class Bat(DB.Model):
 
     @classmethod
     def normalize_classification(cls, classification: str) -> str:
-        return classification.lower().strip()
+        return normalize_string(classification)
 
     def update(
         self,
@@ -1433,7 +1439,7 @@ class Bat(DB.Model):
         validate(
             rbi,
             rbi_validator,
-            InvalidField(payload={'details': "Bat - inning"}),
+            InvalidField(payload={'details': "Bat - rbi"}),
             required=False
         )
         validate(
@@ -1442,13 +1448,20 @@ class Bat(DB.Model):
             InvalidField(payload={'details': "Bat - inning"}),
             required=False
         )
+        player = Player.query.get(player_id)
+        validate(
+            hit,
+            lambda cls: hit_validator(cls, player.gender),
+            InvalidField(payload={'details': "Bat - hit"}),
+            required=False
+        )
         self.__update(
             player_id=player_id,
             team_id=team_id,
             game_id=game_id,
             rbi=rbi,
             inning=inning,
-            classification=self.classification
+            classification=notNone(hit, self.classification)
         )
 
 
@@ -1573,13 +1586,13 @@ class Game(DB.Model):
         validate(
             status if status != '' else None,
             string_validator,
-            InvalidField(payload={'details': "Game - field/status"}),
+            InvalidField(payload={'details': "Game - status"}),
             required=False
         )
         validate(
             field if field != '' else None,
             field_validator,
-            InvalidField(payload={'details': "Game - field/status"}),
+            InvalidField(payload={'details': "Game - field"}),
             required=False
         )
         self.__update(
@@ -1675,13 +1688,13 @@ class Game(DB.Model):
         validate(
             status,
             string_validator,
-            InvalidField(payload={'details': "Game - field/status"}),
+            InvalidField(payload={'details': "Game - status"}),
             required=False
         )
         validate(
             field,
             field_validator,
-            InvalidField(payload={'details': "Game - field/status"}),
+            InvalidField(payload={'details': "Game - field"}),
             required=False
         )
         (current_date, current_time) = split_datetime(self.date)
@@ -1739,6 +1752,11 @@ class Game(DB.Model):
     def does_game_exist(cls, game_id: str) -> bool:
         return Game.query.get(game_id) is not None
 
+    @classmethod
+    def normalize_field(cls, field: str) -> str:
+        """Normalized the field """
+        return normalize_string(field)
+
 
 class JoinLeagueRequest(DB.Model):
     """
@@ -1791,9 +1809,7 @@ class JoinLeagueRequest(DB.Model):
         if not self.pending:
             raise HaveLeagueRequestException("Request already submitted")
 
-        player = Player.query.filter(
-            func.lower(Player.email) == Player.normalize_email(self.email)
-        ).first()
+        player = Player.find_by_email(self.email)
         if player is None:
             player = Player(self.name, self.email, gender=self.gender)
             DB.session.add(player)

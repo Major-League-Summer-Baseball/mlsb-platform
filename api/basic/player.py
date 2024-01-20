@@ -196,7 +196,7 @@ class PlayerListAPI(Resource):
         """
         # create a new user
         args = post_parser.parse_args()
-        gender = None
+        gender = "M"
         player_name = None
         email = None
         password = "default"

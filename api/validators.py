@@ -167,7 +167,8 @@ def hit_validator(hit, gender=None):
     is_eligible = gender is not None and normalize_string(gender) == "f"
     return (
         string_validator(hit) and normalize_string(str(hit)) in BATS and
-        (is_eligible or
+        (
+            is_eligible or
             (not is_eligible and normalize_string(str(hit)) != "ss")
         )
     )

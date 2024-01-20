@@ -65,7 +65,7 @@ class TestDivision(TestSetup):
                 'division_shortname': 1
             }
             result = {
-                'details': 'Division - short name',
+                'details': 'Division - shortname',
                 'message': InvalidField.message
             }
             error_message = (

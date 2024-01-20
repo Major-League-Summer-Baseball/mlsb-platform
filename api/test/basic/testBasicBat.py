@@ -126,7 +126,7 @@ class TestBat(TestSetup):
 
             # testing invalid rbi
             params = {
-                'game_id': INVALID_ID,
+                'game_id': game['game_id'],
                 'player_id': player['player_id'],
                 'team_id': game['home_team_id'],
                 'rbi': 100,
@@ -148,7 +148,7 @@ class TestBat(TestSetup):
 
             # testing invalid inning
             params = {
-                'game_id': INVALID_ID,
+                'game_id': game['game_id'],
                 'player_id': player['player_id'],
                 'team_id': game['home_team_id'],
                 'rbi': 1,
@@ -172,7 +172,7 @@ class TestBat(TestSetup):
 
             # testing invalid hit
             params = {
-                'game_id': INVALID_ID,
+                'game_id': game['game_id'],
                 'player_id': player['player_id'],
                 'team_id': game['home_team_id'],
                 'rbi': 1,
@@ -422,7 +422,7 @@ class TestBat(TestSetup):
                 'player_id': second_player['player_id'],
                 'team_id': second_team['team_id'],
                 'rbi': 4,
-                'hit': "HR",
+                'hit': "hr",
                 'inning': 1
             }
             bat['game_id'] = params['game_id']
