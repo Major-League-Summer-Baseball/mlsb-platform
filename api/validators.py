@@ -1,6 +1,9 @@
 from time import strptime
 from datetime import date, datetime
+from api.helper import normalize_string
 from api.variables import BATS, FIELDS
+
+NORMALIZED_FIELDS = [field.lower() for field in FIELDS]
 
 
 def boolean_validator(value):
@@ -13,12 +16,10 @@ def boolean_validator(value):
             True if valid
             False otherwise
     '''
-    validated = False
-    if value is True or value is False:
-        validated = True
-    elif string_validator(value) and value.lower() in ['true', 'false']:
-        validated = True
-    return validated
+    return (
+        (value is True or value is False) or
+        (string_validator(value) and str(value).lower() in ['true', 'false'])
+    )
 
 
 def string_validator(value):
@@ -31,19 +32,19 @@ def string_validator(value):
             True if valid
             False otherwise
     '''
-    validated = False
-    # try to convert to int
     try:
-        value = int(value)
+        # try to convert to int
+        int(value)
+        return False
     except Exception:
         pass
     try:
         # will be an int if successfully converted other it won't be
-        if not isinstance(value, int) and str(value) != "":
-            validated = True
+        if str(value) != "":
+            return True
     except Exception:
-        pass
-    return validated
+        return False
+    return False
 
 
 def year_validator(year):
@@ -56,12 +57,7 @@ def year_validator(year):
             True if valid
             False otherwise
     '''
-    validated = False
-    if int_validator(year):
-        int_year = int(year)
-        if int_year >= 2014 and int_year <= date.today().year:
-            validated = True
-    return validated
+    return int_validator(year) and 2014 <= int(year) <= date.today().year
 
 
 def int_validator(value):
@@ -74,13 +70,10 @@ def int_validator(value):
             True if valid
             False otherwise
     '''
-    validated = False
     try:
-        if int(value) >= 0:
-            validated = True
+        return int(value) >= 0
     except Exception:
-        pass
-    return validated
+        return False
 
 
 def float_validator(value):
@@ -93,13 +86,10 @@ def float_validator(value):
             True if valid
             False otherwise
     '''
-    validated = False
     try:
-        if float(value) >= 0:
-            validated = True
+        return float(value) >= 0
     except Exception:
-        pass
-    return validated
+        return False
 
 
 def gender_validator(value):
@@ -112,13 +102,7 @@ def gender_validator(value):
             True if valid
             False otherwise
     '''
-    validated = False
-    try:
-        if str(value) != "" and (value.upper() in "FTM"):
-            validated = True
-    except Exception:
-        pass
-    return validated
+    return string_validator(value) and str(value).lower() in "ftm"
 
 
 def date_validator(date):
@@ -131,14 +115,12 @@ def date_validator(date):
             True if valid
             False otherwise
     '''
-    valid = False
     try:
         datetime.strptime(date, '%Y-%m-%d')
-        valid = True
+        return True
     except ValueError:
         # raise ValueError("Incorrect data format, should be YYYY-MM-DD")
-        pass
-    return valid
+        return False
 
 
 def time_validator(value):
@@ -168,12 +150,7 @@ def rbi_validator(rbi):
             True if valid
             False otherwise
     '''
-    valid = False
-    if int_validator(rbi):
-        int_rbi = int(rbi)
-        if int_rbi <= 4:
-            valid = True
-    return valid
+    return int_validator(rbi) and int(rbi) <= 4
 
 
 def hit_validator(hit, gender=None):
@@ -187,15 +164,13 @@ def hit_validator(hit, gender=None):
             True is valid
             False otherwise
     '''
-    valid = False
-    if string_validator(hit):
-        if hit.lower() in BATS:
-            valid = True
-            if ((gender is None or
-                    gender.lower() != "f") and
-                    hit.lower() == "ss"):
-                valid = False
-    return valid
+    is_eligible = gender is not None and normalize_string(gender) == "f"
+    return (
+        string_validator(hit) and normalize_string(str(hit)) in BATS and
+        (is_eligible or
+            (not is_eligible and normalize_string(str(hit)) != "ss")
+        )
+    )
 
 
 def inning_validator(inning):
@@ -208,12 +183,7 @@ def inning_validator(inning):
             True if valid
             False otherwise
     '''
-    valid = False
-    if int_validator(inning):
-        int_inning = int(inning)
-        if int_inning > 0:
-            valid = True
-    return valid
+    return int_validator(inning) and int(inning) > 0
 
 
 def validated(x):
@@ -238,8 +208,7 @@ def field_validator(field):
             True if valid
             False otherwise
     '''
-    valid = False
-    if string_validator(field) and field.strip().lower() in [
-            field.lower() for field in FIELDS]:
-        valid = True
-    return valid
+    return (
+        string_validator(field) and
+        str(field).strip().lower() in NORMALIZED_FIELDS
+    )
