@@ -1,6 +1,11 @@
 from json import loads as loader
 
 
+def normalize_string(some_field: str) -> str:
+    """Normalize the given string."""
+    return some_field.strip().lower()
+
+
 def loads(data):
     try:
         data = loader(data)
