@@ -1574,11 +1574,6 @@ class Game(DB.Model):
             LeagueDoesNotExist(payload={'details': league_id}),
         )
         validate(
-            league_id,
-            lambda id: League.does_league_exist(id),
-            LeagueDoesNotExist(payload={'details': league_id}),
-        )
-        validate(
             division_id,
             lambda id: Division.does_division_exist(id),
             DivisionDoesNotExist(payload={'details': division_id}),
@@ -1665,12 +1660,6 @@ class Game(DB.Model):
             away_team_id,
             lambda id: Team.does_team_exist(id),
             TeamDoesNotExist(payload={'details': away_team_id}),
-            required=False
-        )
-        validate(
-            league_id,
-            lambda id: League.does_league_exist(id),
-            LeagueDoesNotExist(payload={'details': league_id}),
             required=False
         )
         validate(
