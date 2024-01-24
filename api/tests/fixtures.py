@@ -1,10 +1,12 @@
+from json import dumps
 import pytest
 import uuid
-from datetime import date
+from datetime import date, datetime, timedelta
+from flask import url_for
 from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
-    LeagueEventDate, Team, League, Game, Division, Bat
+    LeagueEventDate, Team, League, Game, Division, Bat, Espys, split_datetime
 
 
 @pytest.fixture(scope="session")
@@ -30,6 +32,28 @@ def client(mlsb_app):
 @pytest.fixture(scope="session")
 def runner(mlsb_app):
     return mlsb_app.test_cli_runner()
+
+
+class AuthActions():
+    def __init__(self, client):
+        self.client = client
+
+    def login(self, email: str):
+        return self.client.post(
+            url_for("testing.create_and_login"),
+            data=dumps({"email": email}),
+            content_type='application/json'
+        )
+
+    def logout(self):
+        return self.client.post(
+            url_for("testing.logout")
+        )
+
+
+@pytest.fixture
+def auth(client):
+    return AuthActions(client)
 
 
 def factory_fixture(factory):
@@ -149,7 +173,7 @@ def league_event_date_factory(
     )
     for player in attendees:
         league_event_date.signup_player(player.id)
-    DB.session.add(league_event)
+    DB.session.add(league_event_date)
     DB.session.commit()
     return league_event_date
 
@@ -174,7 +198,6 @@ def game_factory(
         division_id=division.id,
         status=status,
         field=field
-
     )
     DB.session.add(game)
     DB.session.commit()
@@ -204,6 +227,30 @@ def bat_factory(
 
 
 @factory_fixture
+def espys_factory(
+    team: Team,
+    sponsor: Sponsor = None,
+    description: str = "Random Espys",
+    points: float = 1.0,
+    receipt: str = None,
+    time: str = None,
+    date: str = None
+) -> Espys:
+    espy = Espys(
+        team_id=team.id,
+        sponsor_id=None if sponsor is None else sponsor.id,
+        description=description,
+        points=points,
+        receipt=receipt,
+        time=time,
+        date=date
+    )
+    DB.session.add(espy)
+    DB.session.commit()
+    return espy
+
+
+@factory_fixture
 def join_league_request_factory(
     team: Team,
     email: str = "",
@@ -221,6 +268,140 @@ def join_league_request_factory(
     DB.session.add(request)
     DB.session.commit()
     return request
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('espys_factory')
+@pytest.fixture
+def sample_league(
+    mlsb_app,
+    sponsor_factory,
+    league_factory,
+    division_factory,
+    player_factory,
+    team_factory,
+    game_factory,
+    espys_factory,
+    bat_factory
+) -> dict:
+    """Generates a random league with sponsors, teams and games."""
+    with mlsb_app.app_context():
+        sponsors = [
+            sponsor_factory(),
+            sponsor_factory(),
+            sponsor_factory()
+        ]
+        league = league_factory()
+        division = division_factory()
+
+        teams = [
+            team_factory(
+                league=league,
+                sponsor=sponsors[0],
+                players=[player_factory(), player_factory()]
+            ),
+            team_factory(
+                league=league,
+                sponsor=sponsors[1],
+                players=[player_factory(), player_factory()]
+            ),
+            team_factory(
+                league=league,
+                sponsor=sponsors[2],
+                players=[player_factory(gender="f"), player_factory(gender="f")]
+            ),
+            team_factory(
+                league=league,
+                players=[player_factory(), player_factory()]
+            ),
+        ]
+        for team in teams:
+            # pick first player as captain
+            team.insert_player(team.players[0].id, captain=True)
+        espys_factory(team=teams[0], sponsor=sponsors[0], points=1000)
+
+        (yesterday_date, _) = split_datetime(datetime.today())
+        (today_date, _) = split_datetime(datetime.today() + timedelta(days=1))
+        (tomorrow_date, _) = split_datetime(datetime.today() + timedelta(days=1))
+        games = [
+            game_factory(
+                home_team=teams[0],
+                away_team=teams[1],
+                league=league,
+                division=division,
+                date = yesterday_date,
+                time="11:00"
+            ),
+            game_factory(
+                home_team=teams[2],
+                away_team=teams[3],
+                league=league,
+                division=division,
+                date = yesterday_date,
+                time="12:00"
+            ),
+            game_factory(
+                home_team=teams[0],
+                away_team=teams[2],
+                league=league,
+                division=division,
+                date = today_date,
+                time="11:00",
+            ),
+            game_factory(
+                home_team=teams[1],
+                away_team=teams[3],
+                league=league,
+                division=division,
+                date = today_date,
+                time="12:00"
+            ),
+            game_factory(
+                home_team=teams[0],
+                away_team=teams[3],
+                league=league,
+                division=division,
+                date = tomorrow_date,
+                time="11:00"
+            ),
+            game_factory(
+                home_team=teams[1],
+                away_team=teams[2],
+                league=league,
+                division=division,
+                date = tomorrow_date,
+                time="12:00"
+            )
+        ]
+
+        # add some scores for the two games
+        bat_factory(
+            game=games[0],
+            team=games[0].home_team,
+            player=games[0].home_team.players[0],
+            classification="hr",
+            rbi=1
+        )
+        bat_factory(
+            game=games[1],
+            team=games[1].home_team,
+            player=games[1].home_team.players[0],
+            classification="ss",
+            rbi=2
+        )
+        result = {
+            "sponsors": [sponsor.json() for sponsor in sponsors],
+            "league": league.json(),
+            "division": division.json(),
+            "teams": [team.json() for team in teams]
+        }
+    return result
 
 
 def random_email() -> str:
