@@ -91,8 +91,8 @@ def get_sponsor_breakdown(year, garbage):
         element['name'] = str(sponsor)
         children_list = []
         espys = (DB.session.query(total, Team)
-                 .join(Sponsor)
-                 .join(Team, Espys.team_id == Team.id)
+                 .join(Sponsor, Sponsor.id == Team.sponsor_id)
+                 .join(Espys, Espys.team_id == Team.id)
                  .filter(Espys.date.between(start, end))
                  .filter(Espys.sponsor_id == sponsor.id)
                  .group_by(Team)).all()
