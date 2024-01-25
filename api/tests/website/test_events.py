@@ -100,6 +100,7 @@ def test_signup_twice_for_event(
         response = client.post(url, follow_redirects=True)
         assert response.status_code == 200
 
+
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('auth')
@@ -140,4 +141,3 @@ def test_logged_in_events_page(mlsb_app, client, auth):
         )
         response = client.get(url, follow_redirects=True)
         assert response.status_code == 200
-

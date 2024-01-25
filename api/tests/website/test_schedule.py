@@ -35,7 +35,7 @@ def test_schedule_nonexistent_league(mlsb_app, client):
         assert response.status_code == 200
         response_data = response.data.decode("utf-8")
         assert "<title>League not found</title>" in response_data
- 
+
 
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
@@ -50,4 +50,4 @@ def test_schedule_cache(mlsb_app, client):
         response = client.get(url, follow_redirects=True)
         assert response.status_code == 200
         data = loads(response.data)
-        assert isinstance(data["items"] , list) is True
+        assert isinstance(data["items"], list) is True

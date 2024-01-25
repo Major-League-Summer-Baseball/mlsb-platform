@@ -1,11 +1,11 @@
 import pytest
-from datetime import datetime, date
+from datetime import date
 from api.model import League
 from flask import url_for
-from json import dumps
 from api.helper import loads
 
 THIS_YEAR = date.today().year
+
 
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
@@ -52,7 +52,7 @@ def test_standings_page(mlsb_app, client):
     with mlsb_app.app_context():
         league = League.query.first()
         url = url_for(
-            "website.standings", league_id = league.id, year=THIS_YEAR
+            "website.standings", league_id=league.id, year=THIS_YEAR
         )
         response = client.get(url, follow_redirects=True)
         assert response.status_code == 200

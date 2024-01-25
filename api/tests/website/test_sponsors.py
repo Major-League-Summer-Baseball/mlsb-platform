@@ -40,7 +40,7 @@ def test_sponsor_page(mlsb_app, client, sponsor_factory):
     with mlsb_app.app_context():
         sponsor = sponsor_factory()
         url = url_for(
-            "website.sponsor_page", 
+            "website.sponsor_page",
             year=THIS_YEAR,
             sponsor_id=sponsor.id
         )
@@ -53,7 +53,7 @@ def test_sponsor_page(mlsb_app, client, sponsor_factory):
 def test_nonexistent_sponsor_page(mlsb_app, client):
     with mlsb_app.app_context():
         url = url_for(
-            "website.sponsor_page", 
+            "website.sponsor_page",
             year=THIS_YEAR,
             sponsor_id=INVALID_ENTITY
         )
@@ -67,7 +67,7 @@ def test_nonexistent_sponsor_page(mlsb_app, client):
 def test_sponsors_page(mlsb_app, client):
     with mlsb_app.app_context():
         url = url_for(
-            "website.sponsors_page", 
+            "website.sponsors_page",
             year=THIS_YEAR,
         )
         response = client.get(url, follow_redirects=True)
@@ -81,7 +81,7 @@ def test_sponsor_picture_by_id(mlsb_app, client):
         # get some sponsor
         sponsor = Sponsor.query.first()
         url = url_for(
-            "website.sponsor_picture", 
+            "website.sponsor_picture",
             year=THIS_YEAR,
             name=sponsor.id
         )
@@ -96,7 +96,7 @@ def test_sponsor_picture_by_name(mlsb_app, client):
         # get some sponsor
         sponsor = Sponsor.query.first()
         url = url_for(
-            "website.sponsor_picture", 
+            "website.sponsor_picture",
             year=THIS_YEAR,
             name=sponsor.name
         )
@@ -109,7 +109,7 @@ def test_sponsor_picture_by_name(mlsb_app, client):
 def test_nonexistent_sponsor_picture(mlsb_app, client):
     with mlsb_app.app_context():
         url = url_for(
-            "website.sponsor_picture", 
+            "website.sponsor_picture",
             year=THIS_YEAR,
             name="X"
         )
