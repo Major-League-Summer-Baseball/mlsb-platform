@@ -124,7 +124,8 @@ def team_factory(
     sponsor: Sponsor = None,
     league: League = None,
     year: int = date.today().year,
-    players: list[Player] = []
+    players: list[Player] = [],
+    captain: Player = None,
 ) -> Team:
     color = color if color != '' else f"{str(uuid.uuid4())}"
     sponsor_id = None if sponsor is None else sponsor.id
@@ -137,6 +138,8 @@ def team_factory(
     )
     for player in players:
         team.insert_player(player.id)
+    if captain is not None:
+        team.insert_player(captain.id, captain=True)
     DB.session.add(team)
     DB.session.commit()
     return team
@@ -335,7 +338,7 @@ def sample_league(
                 away_team=teams[1],
                 league=league,
                 division=division,
-                date = yesterday_date,
+                date=yesterday_date,
                 time="11:00"
             ),
             game_factory(
@@ -343,7 +346,7 @@ def sample_league(
                 away_team=teams[3],
                 league=league,
                 division=division,
-                date = yesterday_date,
+                date=yesterday_date,
                 time="12:00"
             ),
             game_factory(
@@ -351,7 +354,7 @@ def sample_league(
                 away_team=teams[2],
                 league=league,
                 division=division,
-                date = today_date,
+                date=today_date,
                 time="11:00",
             ),
             game_factory(
@@ -359,7 +362,7 @@ def sample_league(
                 away_team=teams[3],
                 league=league,
                 division=division,
-                date = today_date,
+                date=today_date,
                 time="12:00"
             ),
             game_factory(
@@ -367,7 +370,7 @@ def sample_league(
                 away_team=teams[3],
                 league=league,
                 division=division,
-                date = tomorrow_date,
+                date=tomorrow_date,
                 time="11:00"
             ),
             game_factory(
@@ -375,7 +378,7 @@ def sample_league(
                 away_team=teams[2],
                 league=league,
                 division=division,
-                date = tomorrow_date,
+                date=tomorrow_date,
                 time="12:00"
             )
         ]
