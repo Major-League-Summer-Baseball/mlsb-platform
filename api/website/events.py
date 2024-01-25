@@ -12,7 +12,7 @@ from api.advanced.league_event import get_year_events
 from api.variables import PICTURES
 import os.path
 import json
-NOT_FOUND = "sorry.jpg"
+NOT_FOUND = "sorry.png"
 EVENT_FOLDER = 'events'
 
 
@@ -45,7 +45,7 @@ def mlsb_event_image(year, league_event_id):
 
 @website_blueprint.route("/website/event/<int:year>/json")
 def events_page_json(year):
-    return json.dumps(get_year_events())
+    return json.dumps(get_year_events(year))
 
 
 @website_blueprint.route(
