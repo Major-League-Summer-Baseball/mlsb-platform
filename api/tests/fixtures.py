@@ -6,7 +6,7 @@ from flask import url_for
 from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
-    LeagueEventDate, Team, League, Game, Division, Bat, Espys, split_datetime
+    LeagueEventDate, Team, League, Game, Division, Bat, Espys
 
 
 @pytest.fixture(scope="session")
