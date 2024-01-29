@@ -1,10 +1,12 @@
+from json import dumps
 import pytest
 import uuid
 from datetime import date
+from flask import url_for
 from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
-    LeagueEventDate, Team, League, Game, Division, Bat
+    LeagueEventDate, Team, League, Game, Division, Bat, Espys
 
 
 @pytest.fixture(scope="session")
@@ -30,6 +32,28 @@ def client(mlsb_app):
 @pytest.fixture(scope="session")
 def runner(mlsb_app):
     return mlsb_app.test_cli_runner()
+
+
+class AuthActions():
+    def __init__(self, client):
+        self.client = client
+
+    def login(self, email: str):
+        return self.client.post(
+            url_for("testing.create_and_login"),
+            data=dumps({"email": email}),
+            content_type='application/json'
+        )
+
+    def logout(self):
+        return self.client.post(
+            url_for("testing.logout")
+        )
+
+
+@pytest.fixture
+def auth(client):
+    return AuthActions(client)
 
 
 def factory_fixture(factory):
@@ -100,7 +124,8 @@ def team_factory(
     sponsor: Sponsor = None,
     league: League = None,
     year: int = date.today().year,
-    players: list[Player] = []
+    players: list[Player] = [],
+    captain: Player = None,
 ) -> Team:
     color = color if color != '' else f"{str(uuid.uuid4())}"
     sponsor_id = None if sponsor is None else sponsor.id
@@ -113,6 +138,8 @@ def team_factory(
     )
     for player in players:
         team.insert_player(player.id)
+    if captain is not None:
+        team.insert_player(captain.id, captain=True)
     DB.session.add(team)
     DB.session.commit()
     return team
@@ -149,7 +176,7 @@ def league_event_date_factory(
     )
     for player in attendees:
         league_event_date.signup_player(player.id)
-    DB.session.add(league_event)
+    DB.session.add(league_event_date)
     DB.session.commit()
     return league_event_date
 
@@ -174,7 +201,6 @@ def game_factory(
         division_id=division.id,
         status=status,
         field=field
-
     )
     DB.session.add(game)
     DB.session.commit()
@@ -201,6 +227,30 @@ def bat_factory(
     DB.session.add(bat)
     DB.session.commit()
     return bat
+
+
+@factory_fixture
+def espys_factory(
+    team: Team,
+    sponsor: Sponsor = None,
+    description: str = "Random Espys",
+    points: float = 1.0,
+    receipt: str = None,
+    time: str = None,
+    date: str = None
+) -> Espys:
+    espy = Espys(
+        team_id=team.id,
+        sponsor_id=None if sponsor is None else sponsor.id,
+        description=description,
+        points=points,
+        receipt=receipt,
+        time=time,
+        date=date
+    )
+    DB.session.add(espy)
+    DB.session.commit()
+    return espy
 
 
 @factory_fixture

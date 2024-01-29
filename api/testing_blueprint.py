@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Holds views that are only used for cypress testing."""
 from flask import Response, request, Blueprint
-from flask_login import login_user
+from flask_login import login_user, logout_user
 from sqlalchemy import and_
 from api.extensions import DB
 from api.model import Player, JoinLeagueRequest, Team, Game, Division
@@ -30,6 +30,13 @@ def create_and_login():
         DB.session.commit()
     login_user(player)
     return Response(json.dumps(player.json()), 200, mimetype='application/json')
+
+
+@testing_blueprint.post("/api/logout")
+def logout():
+    """Logout a test user."""
+    result = logout_user()
+    return Response(json.dumps(result), 200, mimetype='application/json')
 
 
 @testing_blueprint.post(
