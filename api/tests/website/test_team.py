@@ -38,7 +38,7 @@ def test_nonexistent_team_picture(mlsb_app, client):
 @pytest.mark.usefixtures('mlsb_app')
 def test_team_picture_by_name(mlsb_app, client):
     with mlsb_app.app_context():
-        team = Team.query.filter(Team.sponsor_name.is_not(None)).first()
+        team = Team.query.filter(Team.sponsor_name.isnot(None)).first()
         url = url_for(
             "website.team_picture",
             team=team.sponsor_name
@@ -51,7 +51,7 @@ def test_team_picture_by_name(mlsb_app, client):
 @pytest.mark.usefixtures('mlsb_app')
 def test_nonexistent_team_picture_by_name(mlsb_app, client):
     with mlsb_app.app_context():
-        Team.query.filter(Team.sponsor_name.is_not(None)).first()
+        Team.query.filter(Team.sponsor_name.isnot(None)).first()
         url = url_for(
             "website.team_picture",
             team="DefinitelyNotTeamForSure"
