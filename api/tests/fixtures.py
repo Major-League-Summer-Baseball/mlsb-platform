@@ -1,7 +1,7 @@
 from json import dumps
 import pytest
 import uuid
-from datetime import date, datetime, timedelta
+from datetime import date
 from flask import url_for
 from api.app import create_app
 from api.extensions import DB
