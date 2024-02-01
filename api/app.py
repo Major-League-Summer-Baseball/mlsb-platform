@@ -1,4 +1,4 @@
-from flask import Flask, g, request
+from flask import Flask, g, request, url_for
 from flask_restful.utils import cors
 from api.errors import ERRORS
 from api.config import Config
@@ -85,6 +85,12 @@ def configure_logger(app):
     """Configure loggers."""
     app.logger.addHandler(logging.StreamHandler(sys.stdout))
     app.logger.setLevel(logging.ERROR)
+
+
+def register_apixs(app):
+    """Register all the apis for restx."""
+    from api.restx import apiX
+    apiX.init_app(app)
 
 
 def register_apis(app):
@@ -261,6 +267,7 @@ def create_app():
     register_blueprint(app)
     register_extensions(app)
     register_apis(app)
+    register_apixs(app)
     register_commands(app)
     if is_memory_database(app.config["URL"]) and is_development(app):
         # if development with no db url use an in memory database
