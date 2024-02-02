@@ -65,7 +65,7 @@ class PlayerAPIX(Resource):
         entry = Player.query.get(player_id)
         if entry is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
-        return entry.admin_json()
+        return entry.json()
 
     @requires_admin
     @player_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
