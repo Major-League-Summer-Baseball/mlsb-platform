@@ -27,14 +27,14 @@ fun_api = Namespace(
     "fun",
     description="API for all the League's Fun"
 )
-count_payload = fun_api.model('CountPayload', {
+fun_payload = fun_api.model('FunPayload', {
     'count': fields.Integer(
         min=0,
         max=10000,
         description="The total count of all the fun"
     ),
 })
-fun = fun_api.inherit('Fun', count_payload, {
+fun = fun_api.inherit('Fun', fun_payload, {
     'year': fields.Integer(
         min=2016,
         max=datetime.now().year,
@@ -81,7 +81,7 @@ class FunAPIX(Resource):
 
     @requires_admin
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
-    @fun_api.expect(count_payload)
+    @fun_api.expect(fun_payload)
     @fun_api.marshal_with(fun, code=200)
     def put(self, year):
         fun_year = Fun.query.filter(Fun.year == year).first()
