@@ -1,6 +1,6 @@
 import pytest
 from flask import url_for
-from api.tests.fixtures import random_email, random_name
+from api.tests.fixtures import random_name
 from api.model import Sponsor
 from api.helper import loads
 

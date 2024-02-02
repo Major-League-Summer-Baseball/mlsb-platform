@@ -84,21 +84,16 @@ class SponsorAPI(Resource):
     def put(self, sponsor_id):
         # update a single user
         sponsor = Sponsor.query.get(sponsor_id)
-        link = None
-        description = None
-        name = None
-        active = True
         if sponsor is None:
             raise SponsorDoesNotExist(payload={'details': sponsor_id})
+
         args = parser.parse_args()
-        if args['sponsor_name']:
-            name = args['sponsor_name']
-        if args['link']:
-            link = args['link']
-        if args['description']:
-            description = args['description']
-        if args['active']:
-            active = args['active'] == 1 if True else False
+        name = args.get('sponsor_name', None)
+        link = args.get('link', None)
+        is_active = args.get("active", True)
+        active = is_active == 1 if isinstance(is_active, int) else is_active
+        description = args.get('description', None)
+
         sponsor.update(
             name=name, link=link, description=description, active=active
         )
@@ -130,18 +125,13 @@ class SponsorListAPI(Resource):
     def post(self):
         # create a new user
         args = post_parser.parse_args()
-        sponsor_name = None
-        description = None
-        link = None
-        active = True
-        if args['sponsor_name']:
-            sponsor_name = args['sponsor_name']
-        if args['description']:
-            description = args['description']
-        if args['link']:
-            link = args['link']
-        if args['active']:
-            active = args['active'] == 1 if True else False
+
+        sponsor_name = args.get('sponsor_name', None)
+        link = args.get('link', None)
+        is_active = args.get("active", True)
+        active = is_active == 1 if isinstance(is_active, int) else is_active
+        description = args.get('description', None)
+
         sponsor = Sponsor(
             sponsor_name, link=link, description=description, active=active
         )
