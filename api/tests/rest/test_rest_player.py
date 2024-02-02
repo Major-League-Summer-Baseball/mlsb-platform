@@ -142,4 +142,4 @@ def test_get_player(mlsb_app, client, admin_header, player_factory):
         assert response.status_code == 200
         data = loads(response.data)
         assert data['player_id'] == player.id
-        assert data['email'] == player.email
+        assert data['email'] is None
