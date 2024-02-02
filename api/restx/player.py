@@ -43,7 +43,6 @@ player_payload = player_api.model('PlayerPayload', {
     'email': fields.String(
         description="The email of the player"
     )
-
 })
 player = player_api.inherit("Player", player_payload, {
     'player_id': fields.Integer(
@@ -75,12 +74,14 @@ class PlayerAPIX(Resource):
         player = Player.query.get(player_id)
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
+
         oauths = OAuth.query.filter(OAuth.player_id == player_id).all()
         for oauth in oauths:
             DB.session.delete(oauth)
         query = TeamRequest.query.filter(TeamRequest.email == player.email)
         for team_request in query.all():
             DB.session.delete(team_request)
+
         # delete a single user
         DB.session.delete(player)
         DB.session.commit()
@@ -97,22 +98,19 @@ class PlayerAPIX(Resource):
         args = parser.parse_args()
         if player is None:
             raise PlayerDoesNotExist(payload={'details': player_id})
-        player_name = None
-        gender = None
-        email = None
-        active = True
-        if args['player_name']:
-            player_name = args['player_name']
-        if args['gender']:
-            gender = args['gender']
-        if args['email']:
-            email = args['email']
-        if args['active']:
-            active = args['active'] == 1 if True else False
-        player.update(name=player_name,
-                      gender=gender,
-                      email=email,
-                      active=active)
+
+        player_name = args.get("player_name", None)
+        gender = args.get("gender", None)
+        email = args.get("email", None)
+        is_active = args.get("active", True)
+        active = is_active == 1 if isinstance(is_active, int) else is_active
+
+        player.update(
+            name=player_name,
+            gender=gender,
+            email=email,
+            active=active
+        )
         DB.session.commit()
         handle_table_change(Tables.PLAYER, item=player.json())
         return player.admin_json()
@@ -141,22 +139,13 @@ class PlayerListAPIX(Resource):
     def post(self):
         # create a new user
         args = post_parser.parse_args()
-        gender = "M"
-        player_name = None
-        email = None
-        password = "default"
-        active = True
-        if args['player_name']:
-            player_name = args['player_name']
-        if args['gender']:
-            gender = args['gender']
-        if args['email']:
-            email = args['email']
-        if args['password']:
-            password = args['password']
-        if args['active']:
-            active = args['active'] == 1 if True else False
-        player = Player(player_name, email, gender, password, active=active)
+
+        gender = args.get("gender", "M")
+        player_name = args.get("player_name", None)
+        email = args.get("email", None)
+        is_active = args.get("active", True)
+        active = is_active == 1 if isinstance(is_active, int) else is_active
+        player = Player(player_name, email, gender, "default", active=active)
         DB.session.add(player)
         DB.session.commit()
         handle_table_change(Tables.PLAYER, item=player.json())
