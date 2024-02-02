@@ -76,7 +76,7 @@ class TeamAPI(Resource):
 
     @requires_admin
     @team_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
-    @team_api.marshal_with(team, code=200)
+    @team_api.marshal_with(team)
     def delete(self, team_id):
         # delete a single team
         team = Team.query.get(team_id)
@@ -91,7 +91,7 @@ class TeamAPI(Resource):
     @requires_admin
     @team_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @team_api.expect(team_payload)
-    @team_api.marshal_with(team, code=200)
+    @team_api.marshal_with(team)
     def put(self, team_id):
         # update a single user
         team = Team.query.get(team_id)
@@ -132,9 +132,9 @@ class TeamListAPI(Resource):
         return result
 
     @requires_admin
-    @team_api.doc(responses={403: 'Not Authorized', 201: 'Created'})
+    @team_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @team_api.expect(team_payload)
-    @team_api.marshal_with(team, code=201)
+    @team_api.marshal_with(team)
     def post(self):
         # create a new user
         args = post_parser.parse_args()

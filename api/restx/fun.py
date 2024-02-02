@@ -65,7 +65,7 @@ class FunAPIX(Resource):
 
     @requires_admin
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
-    @fun_api.marshal_with(fun, code=200)
+    @fun_api.marshal_with(fun)
     def delete(self, year):
 
         # delete a single user
@@ -82,7 +82,7 @@ class FunAPIX(Resource):
     @requires_admin
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @fun_api.expect(fun_payload)
-    @fun_api.marshal_with(fun, code=200)
+    @fun_api.marshal_with(fun)
     def put(self, year):
         fun_year = Fun.query.filter(Fun.year == year).first()
         if fun_year is None:
@@ -112,9 +112,9 @@ class FunListAPI(Resource):
         return result
 
     @requires_admin
-    @fun_api.doc(responses={403: 'Not Authorized', 201: 'Created'})
+    @fun_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @fun_api.expect(fun)
-    @fun_api.marshal_with(fun, code=201)
+    @fun_api.marshal_with(fun)
     def post(self):
         args = post_parser.parse_args()
         count = args.get('count', None)

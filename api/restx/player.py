@@ -69,7 +69,7 @@ class PlayerAPIX(Resource):
 
     @requires_admin
     @player_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
-    @player_api.marshal_with(player, code=200)
+    @player_api.marshal_with(player)
     def delete(self, player_id):
         player = Player.query.get(player_id)
         if player is None:
@@ -91,7 +91,7 @@ class PlayerAPIX(Resource):
     @requires_admin
     @player_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @player_api.expect(player_payload)
-    @player_api.marshal_with(player, code=200)
+    @player_api.marshal_with(player)
     def put(self, player_id):
         # update a single user
         player = DB.session.query(Player).get(player_id)
@@ -133,9 +133,9 @@ class PlayerListAPIX(Resource):
         return result
 
     @requires_admin
-    @player_api.doc(responses={403: 'Not Authorized', 201: 'Created'})
+    @player_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @player_api.expect(player_payload)
-    @player_api.marshal_with(player, code=201)
+    @player_api.marshal_with(player)
     def post(self):
         # create a new user
         args = post_parser.parse_args()

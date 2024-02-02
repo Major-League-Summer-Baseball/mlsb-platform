@@ -81,7 +81,7 @@ class EspyAPI(Resource):
 
     @requires_admin
     @espys_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
-    @espys_api.marshal_with(espys, code=200)
+    @espys_api.marshal_with(espys)
     def delete(self, espy_id):
         espy = Espys.query.get(espy_id)
         if espy is None:
@@ -95,7 +95,7 @@ class EspyAPI(Resource):
     @requires_admin
     @espys_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @espys_api.expect(espys_payload)
-    @espys_api.marshal_with(espys, code=200)
+    @espys_api.marshal_with(espys)
     def put(self, espy_id):
         # update a single user
         espy = Espys.query.get(espy_id)
@@ -145,9 +145,9 @@ class EspyListAPI(Resource):
         return result
 
     @requires_admin
-    @espys_api.doc(responses={403: 'Not Authorized', 201: 'Created'})
+    @espys_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @espys_api.expect(espys_payload)
-    @espys_api.marshal_with(espys, code=201)
+    @espys_api.marshal_with(espys)
     def post(self):
         # create a new user
         args = post_parser.parse_args()

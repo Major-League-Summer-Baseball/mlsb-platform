@@ -66,7 +66,7 @@ class SponsorAPI(Resource):
 
     @requires_admin
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
-    @sponsor_api.marshal_with(sponsor, code=200)
+    @sponsor_api.marshal_with(sponsor)
     def delete(self, sponsor_id):
         # delete a single user
         sponsor = Sponsor.query.get(sponsor_id)
@@ -80,7 +80,7 @@ class SponsorAPI(Resource):
     @requires_admin
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @sponsor_api.expect(sponsor_payload)
-    @sponsor_api.marshal_with(sponsor, code=200)
+    @sponsor_api.marshal_with(sponsor)
     def put(self, sponsor_id):
         # update a single user
         sponsor = Sponsor.query.get(sponsor_id)
@@ -119,9 +119,9 @@ class SponsorListAPI(Resource):
         return result
 
     @requires_admin
-    @sponsor_api.doc(responses={403: 'Not Authorized', 201: 'Created'})
+    @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @sponsor_api.expect(sponsor_payload)
-    @sponsor_api.marshal_with(sponsor, code=201)
+    @sponsor_api.marshal_with(sponsor)
     def post(self):
         # create a new user
         args = post_parser.parse_args()
