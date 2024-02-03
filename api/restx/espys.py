@@ -67,7 +67,7 @@ espys_pagination = espys_api.inherit("EspysPagination", pagination, {
 })
 
 
-@espys_api.route("<int:espy_id>", endpoint="rest.espy")
+@espys_api.route("/<int:espy_id>", endpoint="rest.espy")
 @espys_api.doc(params={"espy_id": "The id of the espy points"})
 class EspyAPI(Resource):
 

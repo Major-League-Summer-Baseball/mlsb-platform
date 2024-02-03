@@ -81,7 +81,7 @@ game_pagination = game_api.inherit("GamePagination", pagination, {
 })
 
 
-@game_api.route("<int:game_id>", endpoint="rest.game")
+@game_api.route("/<int:game_id>", endpoint="rest.game")
 @game_api.doc(params={"game_id": "The id of the game"})
 class GameAPI(Resource):
 

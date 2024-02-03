@@ -62,7 +62,7 @@ team_pagination = team_api.inherit("TeamPagination", pagination, {
 })
 
 
-@team_api.route("<int:team_id>", endpoint="rest.team")
+@team_api.route("/<int:team_id>", endpoint="rest.team")
 @team_api.doc(params={"team_id": "The id of the team"})
 class TeamAPI(Resource):
 

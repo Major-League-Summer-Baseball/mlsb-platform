@@ -52,7 +52,7 @@ sponsor_pagination = sponsor_api.inherit("SponsorPagination", pagination, {
 })
 
 
-@sponsor_api.route("<int:sponsor_id>", endpoint="rest.sponsor")
+@sponsor_api.route("/<int:sponsor_id>", endpoint="rest.sponsor")
 @sponsor_api.doc(params={"sponsor_id": "The id of the sponsor"})
 class SponsorAPI(Resource):
 

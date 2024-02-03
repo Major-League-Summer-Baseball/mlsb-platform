@@ -37,7 +37,7 @@ league_pagination = league_api.inherit("LeaguePagination", pagination, {
 })
 
 
-@league_api.route("<int:league_id>", endpoint="rest.league")
+@league_api.route("/<int:league_id>", endpoint="rest.league")
 @league_api.doc(params={"league_id": "The id of the league"})
 class LeagueAPI(Resource):
 

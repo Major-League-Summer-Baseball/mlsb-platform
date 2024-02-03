@@ -38,7 +38,7 @@ division_pagination = division_api.inherit("DivisionPagination", pagination, {
 })
 
 
-@division_api.route("<int:division_id>", endpoint="rest.division")
+@division_api.route("/<int:division_id>", endpoint="rest.division")
 @division_api.doc(params={"division_id": "The id of the division"})
 class DivisionAPI(Resource):
 

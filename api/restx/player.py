@@ -55,7 +55,7 @@ player_pagination = player_api.inherit("PlayerPagination", pagination, {
 })
 
 
-@player_api.route("<int:player_id>", endpoint="rest.player")
+@player_api.route("/<int:player_id>", endpoint="rest.player")
 @player_api.doc(params={"player_id": "The id of the player"})
 class PlayerAPIX(Resource):
 
