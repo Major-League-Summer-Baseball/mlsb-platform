@@ -1389,13 +1389,17 @@ class Bat(DB.Model):
             'bat_id': self.id,
             'game_id': self.game_id,
             'team_id': self.team_id,
-            'team': str(Player.query.get(self.team_id)),
+            'team': str(Team.query.get(self.team_id)),
             'rbi': self.rbi,
             'hit': self.classification,
             'inning': self.inning,
             'player_id': self.player_id,
-            'player': str(Player.query.get(self.player_id))
+            'player': Player.query.get(self.player_id).name
         }
+
+    @classmethod
+    def does_bat_exist(cls, bat_id: str) -> bool:
+        return Bat.query.get(bat_id) is not None
 
     @classmethod
     def normalize_classification(cls, classification: str) -> str:
@@ -1448,7 +1452,10 @@ class Bat(DB.Model):
             InvalidField(payload={'details': "Bat - inning"}),
             required=False
         )
-        player = Player.query.get(player_id)
+        player = Player.query.get(
+            player_id
+            if player_id is not None else self.player_id
+        )
         validate(
             hit,
             lambda cls: hit_validator(cls, player.gender),
