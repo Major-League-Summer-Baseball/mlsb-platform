@@ -57,7 +57,6 @@ def test_able_create_bat(
             headers=admin_header
         )
 
-        print(response.data)
         assert response.status_code == 200
         data = loads(response.data)
         assert data['game_id'] == game.id
