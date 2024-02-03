@@ -132,7 +132,7 @@ def test_delete_team(
             headers=admin_header
         )
         assert response.status_code == 200
-        assert Team.does_team_exist(sponsor.id) is False
+        assert Team.does_team_exist(team.id) is False
 
 
 @pytest.mark.rest
