@@ -662,7 +662,7 @@ class Player(UserMixin, DB.Model):
 
     def __repr__(self) -> str:
         """Return the string representation of the player."""
-        return self.name + " email:" + self.email
+        return self.name
 
     def update_kik(self, kik: str) -> None:
         """Update the player's kik profile."""
@@ -1394,7 +1394,7 @@ class Bat(DB.Model):
             'hit': self.classification,
             'inning': self.inning,
             'player_id': self.player_id,
-            'player': Player.query.get(self.player_id).name
+            'player': str(Player.query.get(self.player_id))
         }
 
     @classmethod
