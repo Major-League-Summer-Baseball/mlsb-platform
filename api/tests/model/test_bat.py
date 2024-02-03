@@ -298,6 +298,7 @@ def test_cannot_update_invalid_bat(
                 rbi=invalid_bat_data[2]
             )
 
+
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('division_factory')
@@ -330,6 +331,7 @@ def test_cannot_update_bat_type(
         bat.update(
             hit="S",
         )
+
 
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('league_factory')

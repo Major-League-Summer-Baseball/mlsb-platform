@@ -1,7 +1,6 @@
 import pytest
 from flask import url_for
-from datetime import datetime
-from api.model import Game, split_datetime, Bat
+from api.model import Bat
 from api.helper import loads
 
 
