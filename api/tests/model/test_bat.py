@@ -305,6 +305,40 @@ def test_cannot_update_invalid_bat(
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('game_factory')
 @pytest.mark.usefixtures('player_factory')
+def test_cannot_update_bat_type(
+    mlsb_app,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        player = player_factory()
+        player_team = team_factory(players=[player])
+        game = game_factory(
+            home_team=player_team,
+            away_team=team_factory(),
+            league=league_factory(),
+            division=division_factory()
+        )
+        bat = Bat(
+            player_id=player.id,
+            team_id=player_team.id,
+            game_id=game.id,
+            classification="FO",
+        )
+        bat.update(
+            hit="S",
+        )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('player_factory')
 def test_sum_bats_rbis(
     mlsb_app,
     league_factory,

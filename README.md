@@ -27,7 +27,10 @@ python -m unittest discover -s api/test -p <TEST_SUITE>.py
 pytest
 # to run a particular grouping
 pytest api/tests/<FOLDER>
-# to run a particular grouping
+# run flake linter
+pip install flake8
+flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/*,api/tests/conftest.py --ignore=E712,W503,W504
+
 ```
 
 This will use an in-memory database and in-memory cache. To actually test
@@ -145,6 +148,13 @@ There is one Github action that runs against pushes to main and development. Add
 Additionally there are two Github actions for main and development that deploys them on a commit. They are currently being deployed to fly.IO
 
 Finally, there is a Github action for creating a docker image for pushes to main and development. No real use of the docker images at this moment.
+
+## Flask Commands
+
+```bash
+# list all routes for app
+flask --app api/app routes
+```
 
 ## Fly IO Commands
 

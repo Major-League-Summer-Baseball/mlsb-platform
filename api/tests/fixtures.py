@@ -1,12 +1,25 @@
-from json import dumps
 import pytest
 import uuid
+from base64 import b64encode
+from json import dumps
 from datetime import date
 from flask import url_for
 from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
     LeagueEventDate, Team, League, Game, Division, Bat, Espys
+import os
+
+
+ADMIN = os.environ.get('ADMIN', 'admin')
+PASSWORD = os.environ.get('PASSWORD', 'password')
+
+
+@pytest.fixture(scope="session")
+def admin_header():
+    """The header to use for the admin authentication"""
+    encode = b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
+    return {'Authorization': 'Basic %s' % encode}
 
 
 @pytest.fixture(scope="session")
