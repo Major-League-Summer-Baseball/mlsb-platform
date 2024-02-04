@@ -123,7 +123,7 @@ def rip_summary(f: str, year: int) -> dict:
     with open(f) as f:
         # read the header in
         line = f.readline().strip()
-        while (not f.readline().strip().startswith("{% block content %}") and
+        while (not f.readline().strip().startswith("{% block article %}") and
                len(line) > 0):
             line = f.readline().strip()
         line = f.readline().strip()
