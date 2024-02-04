@@ -174,7 +174,7 @@ def post_json(f: str, year: int) -> dict:
     with open(f) as fn:
         line = fn.readline().strip()
         # read the header
-        while not line.startswith("{% block content %}") and len(line) > 0:
+        while not line.startswith("{% block article %}") and len(line) > 0:
             line = fn.readline().strip()
         lines = fn.readline().strip()
         while not lines.startswith("{% endblock %}") and len(lines) > 0:
@@ -197,7 +197,7 @@ def post_raw_html(f: str, year: int) -> str:
     with open(f) as fn:
         line = fn.readline().strip()
         # read the header
-        while not line.startswith("{% block content %}") and len(line) > 0:
+        while not line.startswith("{% block article %}") and len(line) > 0:
             line = fn.readline().strip()
         lines = fn.readline().strip()
         result = ""
