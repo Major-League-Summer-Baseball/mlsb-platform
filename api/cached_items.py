@@ -171,18 +171,33 @@ def get_website_base_data(year):
     base = {}
     base['current_year'] = datetime.now().year
     base['games'] = get_upcoming_games(year)
-    base['sponsors'] = [sponsor.json() for sponsor in DB.session.query(Sponsor)
-                        .filter(Sponsor.active == True)
-                        .order_by(Sponsor.name).all()]
+    base['sponsors'] = get_sponsor_banner(year)
     base['leagues'] = [league.json() for league in League.query.all()]
+    base['fun'] = get_fun_meter(year)
+    base['today'] = datetime.now().strftime("%Y-%m-%d")
+    return base
+
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def get_sponsor_banner(year):
+    sponsors = DB.session.query(
+        Sponsor
+    ).filter(
+        Sponsor.active == True
+    ).order_by(
+        Sponsor.name
+    ).all()
+    return [sponsor.json() for sponsor in sponsors]
+
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def get_fun_meter(year):
     fun_count = Fun.query.filter_by(year=year).first()
     if fun_count is None:
         fun_count = {'year': year, 'count': 0}
     else:
         fun_count = fun_count
-    base['fun'] = fun_count
-    base['today'] = datetime.now().strftime("%Y-%m-%d")
-    return base
+    return fun_count
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
