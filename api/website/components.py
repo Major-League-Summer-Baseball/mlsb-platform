@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Any routes related to media and other assets.
+    Any routes related to small web components
 """
 from flask import render_template
 from api.routes import Routes
