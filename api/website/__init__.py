@@ -21,8 +21,6 @@ website_blueprint = Blueprint("website", __name__, url_prefix="/")
 
 @website_blueprint.app_context_processor
 def inject_htmx():
-    print("injecting htmx")
-    print(request.headers)
     return dict(snippet=request.headers.get("Hx-Request", False))
 
 
