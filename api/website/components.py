@@ -4,7 +4,7 @@
 """
 from flask import render_template
 from api.routes import Routes
-from api.cached_items import get_upcoming_games, get_fun_meter,\
+from api.cached_items import get_upcoming_games, get_fun_meter, \
     get_sponsor_banner
 from api.website import website_blueprint
 
