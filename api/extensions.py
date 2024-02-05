@@ -12,7 +12,4 @@ DB = SQLAlchemy()
 cache = Cache(config=Config.REDIS_CACHE)
 login_manager = LoginManager()
 api = Api(errors=ERRORS)
-tailsman = Talisman(content_security_policy={
-    'default-src': '*',
-    'object-src': '\'none\'',
-})
+tailsman = Talisman()
