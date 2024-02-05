@@ -41,7 +41,39 @@ def register_extensions(app):
     DB.init_app(app)
     login_manager.init_app(app)
     if app.config["ENV"] != "development":
-        tailsman.init_app(app)
+        csp = {
+            'default-src': [
+                '\'self\'',
+                'oss.maxcdn.com',
+                'fonts.googleapis.com',
+                'cdn.datatables.net',
+                'cdn.jsdelivr.net',
+                'd3js.org',
+                'www.google-analytics.com',
+                'stats.g.doubleclick.net',
+                'www.googletagmanager.com',
+                'maxcdn.bootstrapcdn.com',
+                'ajax.googleapis.com',
+                #TODO: Move all inline scripts to file
+                '\'unsafe-inline\'',
+                
+            ],
+            'frame-src': [
+                '\'self\'',
+                'youtube.com',
+                'www.youtube.com',
+                'maps.google.ca',
+                'www.google.com',
+            ],
+            'object-src': '\'none\'',
+            'font-src': [
+                '\'self\'',
+                'fonts.gstatic.com',
+                'maxcdn.bootstrapcdn.com',
+                'fonts.googleapis.com',
+            ]
+        }
+        tailsman.init_app(app, content_security_policy=None)
         app.wsgi_app = ProxyFix(app.wsgi_app)
     else: 
         app.register_blueprint(testing_blueprint)
