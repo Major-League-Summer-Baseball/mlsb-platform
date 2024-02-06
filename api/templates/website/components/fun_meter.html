@@ -1,0 +1,41 @@
+<div class="fun-meter">
+    <h4 id="funMeter">
+      Fun Meter {{year}}
+    </h4>
+    <svg id="fillgauge2" width="100%" height="200" onclick="updateGauge();"></svg>
+</div>
+
+<script src="{{url_for('static', filename="d3/liquidFillGauge.js" ) }}"></script>
+<script>
+    var config1 = liquidFillGaugeDefaultSettings();
+    config1.circleThickness = 0.2;
+    config1.textVertPosition = 0.5;
+    config1.waveAnimateTime = 1000;
+    config1.displayPercent = false;
+    config1.maxValue = 500;
+    var gauge2= loadLiquidFillGauge("fillgauge2", {{fun.count}}, config1);
+    var funs = [];
+    var funIndex = 0
+    function updateGauge(){
+        funIndex = (funIndex + 1) % funs.length;
+        gauge2.update(funs[funIndex].count)
+        $('#funMeter').text('Fun Meter ' + funs[funIndex].year);
+    }
+    $(document).ready(function() {
+        $.ajax
+        ({
+            type: "POST",
+            url: "{{route.vfun}}",
+            contentType: "application/json",
+            data: JSON.stringify({}),
+            dataType: 'json',
+            async: true,
+            dataType: "json",
+            success: function (result){
+                funs = result
+            }, error: function(request, error){
+                funs = [{'count':{{fun.count}}, 'year': {{year}} }]
+            } 
+        });
+    });
+    </script>

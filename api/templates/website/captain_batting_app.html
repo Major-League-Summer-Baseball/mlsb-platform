@@ -1,8 +1,4 @@
 {% extends "website/new-base.html" %}
-{% block header %}
-    <link href="{{ url_for('static', filename="css/batting_app.css") }}" rel="stylesheet">
-{% endblock %}
-
 {% block content %}
     <div id="battingScoreApp" class="battingScoreApp">
         <div v-if="game_selected == null">

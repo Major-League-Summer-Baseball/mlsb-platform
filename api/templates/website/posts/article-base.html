@@ -1,0 +1,15 @@
+<!-- At the top is the some details about it, when the the post was made, summary automatically generated takes title, first p and img -->
+{% extends "website/new-base.html" %}
+{% block content %}
+    <a
+        href="{{url_for('website.index', year=year)}}"
+        hx-get="{{url_for('website.index', year=year)}}"
+        hx-target="#website-body"
+        hx-push-url="true"
+    >
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Back
+    </a>
+    {% block article %}
+
+    {% endblock %}
+{% endblock %}

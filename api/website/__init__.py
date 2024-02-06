@@ -6,7 +6,7 @@
 """
 __all__ = []
 from flask import \
-    redirect, render_template, send_from_directory, url_for, Blueprint
+    redirect, render_template, send_from_directory, url_for, Blueprint, request
 from datetime import date
 from api import app
 from api.routes import Routes
@@ -17,6 +17,11 @@ import pkgutil
 import inspect
 
 website_blueprint = Blueprint("website", __name__, url_prefix="/")
+
+
+@website_blueprint.app_context_processor
+def inject_htmx():
+    return dict(snippet=request.headers.get("Hx-Request", False))
 
 
 @website_blueprint.route("/")

@@ -18,7 +18,11 @@
                 <a 
                     data-cy="{{article.title}}"
                     alt="{{article.title}}"
-                    href="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}">
+                    href="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}"
+                    hx-get="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}"
+                    hx-target="#website-body"
+                    hx-push-url="true"
+                >
                     Read more
                 </a>
             </p>

@@ -1,0 +1,63 @@
+<div class="games-container">
+    <div class="container">
+        <div class="games" data-cy="games">
+            {% for game in games %}
+            <div class="game" data-cy="game">
+                <div class="game-date" >
+                    {{game.date}}
+                </div>
+                <div class="team away-team">
+                   <img src="{{ url_for('website.sponsor_picture', name=game.away_team.sponsor_id) }}"  alt="" style="">
+                   {{game.away_team.team_name}}:
+                   {% if game.away_bats|length > 0 %}
+                     {{game.away_score}}
+                   {% else %}
+                     --
+                   {% endif %}
+                </div>
+                <div class="team home-team">
+                    <img src="{{ url_for('website.sponsor_picture', name=game.home_team.sponsor_id) }}"  alt="" style="">
+                    {{game.home_team.team_name}}:
+                    {% if game.home_bats|length > 0 %}
+                      {{game.home_score}}
+                    {% else %}
+                      --
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // -------------------------------------------------------------
+        //   Centered Navigation
+        // -------------------------------------------------------------
+        var $frame = $('#centered');
+        var $wrap  = $frame.parent();
+
+        // Call Sly on frame
+        $frame.sly({
+            horizontal: 1,
+            itemNav: 'centered',
+            smart: 1,
+            activateOn: 'click',
+            mouseDragging: 1,
+            touchDragging: 1,
+            releaseSwing: 1,
+            scrollBar: $wrap.find('.scrollbar'),
+            scrollBy: 1,
+            speed: 300,
+            elasticBounds: 1,
+            dragHandle: 1,
+            dynamicHandle: 1,
+            clickBar: 1,
+
+            // Buttons
+            prev: $wrap.find('.prev'),
+            next: $wrap.find('.next')
+        });
+    });
+</script>
