@@ -14,6 +14,9 @@ class Config(object):
     SECRET_KEY = os.environ.get("SECRET_KEY", str(uuid1()))
     SQLALCHEMY_DATABASE_URI = DB_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True
+    }
     AZURE_OAUTH_CLIENT_ID = os.environ.get("AZURE_OAUTH_CLIENT_ID", "")
     AZURE_OAUTH_CLIENT_SECRET = os.environ.get("AZURE_OAUTH_CLIENT_SECRET", "")
     GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
@@ -26,6 +29,7 @@ class Config(object):
     GITHUB_OAUTH_CLIENT_SECRET = os.environ.get(
         "GITHUB_OAUTH_CLIENT_SECRET", "")
     USE_SESSION_FOR_NEXT = True
+    RESTX_MASK_SWAGGER = False
     REDIS_CACHE = ({'CACHE_TYPE': 'simple'}
                    if os.environ.get("REDIS_URL", None) is None
                    else {'CACHE_TYPE': 'redis',

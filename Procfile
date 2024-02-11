@@ -1,1 +1,1 @@
-web: gunicorn runserver:app	-b :8080
+web: gunicorn 'api.app:create_app()' -b :8080

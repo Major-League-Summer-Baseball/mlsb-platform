@@ -1,9 +1,3 @@
-'''
-Name: Dallas Fraser
-Date: 2016-04-12
-Project: MLSB API
-Purpose: Holds the routes for the documentation
-'''
 from flask import render_template, Blueprint
 from api.routes import Routes
 from api.errors import ERRORS

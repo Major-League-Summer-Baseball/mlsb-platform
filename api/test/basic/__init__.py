@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@date: 2016-04-12
-@organization: MLSB API
-@summary: Test suite that runs all the basic APIs
-'''
 from unittest import TestLoader, TextTestRunner
 from api.test.basic import testBasicBat
 from api.test.basic import testBasicEspsy

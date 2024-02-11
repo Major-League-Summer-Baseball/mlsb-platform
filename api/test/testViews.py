@@ -3,6 +3,8 @@ from api.test.BaseTest import \
     TestSetup, SUCCESSFUL_GET_CODE, INVALID_ID, REDIRECT_CODE
 from datetime import datetime
 import uuid
+
+
 START_OF_PLATFORM = 2016
 YEAR_WITH_NO_DATA = 1992
 
@@ -28,11 +30,11 @@ class TestWebsiteViews(TestSetup):
         self.assertGetRequest("/request_sent", "League request sent page")
 
     def testSponsorsPages(self):
-        sponsor_name = str(uuid.uuid1())
-        sponsor = self.add_sponsor(sponsor_name)
-        current_year = current_year = datetime.now().year
         app = self.getApp()
         with app.app_context(), app.test_request_context():
+            sponsor_name = str(uuid.uuid1())
+            sponsor = self.add_sponsor(sponsor_name)
+            current_year = current_year = datetime.now().year
             # get the sponsor picture using sponsor name or id
             self.assertGetRequest(
                 url_for('website.sponsor_picture', name=sponsor_name),
@@ -110,14 +112,13 @@ class TestWebsiteViews(TestSetup):
 
     def testPlayerPage(self):
         current_year = datetime.now().year
-
-        # test player
-        player_name = str(uuid.uuid1())
-        player = self.add_player(
-            player_name, player_name + "@mlsb.ca", gender="F")
-
         app = self.getApp()
         with app.app_context(), app.test_request_context():
+            # test player
+            player_name = str(uuid.uuid1())
+            player = self.add_player(
+                player_name, player_name + "@mlsb.ca", gender="F"
+            )
             self.assertGetRequest(
                 url_for(
                     'website.player_page',

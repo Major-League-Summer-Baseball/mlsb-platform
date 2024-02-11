@@ -1,11 +1,9 @@
-'''
-Name: Dallas Fraser
-Date: 2016-04-12
-Project: MLSB API
-Purpose: Some random helper functions
-'''
-import unittest
 from json import loads as loader
+
+
+def normalize_string(some_field: str) -> str:
+    """Normalize the given string."""
+    return some_field.strip().lower()
 
 
 def loads(data):
@@ -40,20 +38,3 @@ def pagination_response_items(pagination, route, items):
     response['total'] = pagination.total
     response['pages'] = pagination.pages
     return response
-
-
-class Test(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def testLoads(self):
-        pass
-
-
-if __name__ == "__main__":
-    # import sys;sys.argv = ['', 'Test.testLoads']
-    unittest.main()

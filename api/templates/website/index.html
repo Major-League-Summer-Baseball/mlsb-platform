@@ -2,26 +2,33 @@
 {% block content %}
     <div class="container">
         <div class="row">
-    {% for article in news %}
-        <div class="col-sm-6 col-xs-12">
-            <h4> {{article.title}} </h4>
-            {% if article.image %}
-                <img
-                    src="{{ url_for('website.post_picture', name=article.image) }}"
-                    alt="Article Post Image - {{article.title}}"
-                    class="postImage"
-                    height="200"
-                    width="200" />
-            {% endif %}
-            <p>
-                {{article.summary}} 
-                <a 
-                    data-cy="{{article.title}}"
-                    alt="{{article.title}}"
-                    href="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}">
-                    Read more
-                </a>
-            </p>
+            {% for article in news %}
+                <div class="col-sm-6 col-xs-12">
+                    <h4> {{article.title}} </h4>
+                    {% if article.image %}
+                        <img
+                            src="{{ url_for('website.post_picture', name=article.image) }}"
+                            alt="Article Post Image - {{article.title}}"
+                            class="postImage"
+                            height="200"
+                            width="200" />
+                    {% endif %}
+                    <p>
+                        {{article.summary}} 
+                        <a 
+                            data-cy="{{article.title}}"
+                            alt="{{article.title}}"
+                            href="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}"
+                            hx-get="{{ url_for('website.checkout_post', year=year, date=article.date, file_name=article.name) }}"
+                            hx-target="#website-body"
+                            hx-push-url="true"
+                        >
+                            Read more
+                        </a>
+                    </p>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </div>
+
 {% endblock %}

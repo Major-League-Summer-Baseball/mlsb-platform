@@ -1,13 +1,7 @@
-'''
-@author: Dallas Fraser
-@date: 2015-08-25
-@organization: MLSB API
-@summary: The basic league API
-'''
 from flask_restful import Resource, reqparse
 from flask import Response, request
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import League
 from api.authentication import requires_admin
 from api.errors import LeagueDoesNotExist

@@ -1,13 +1,7 @@
-'''
-@author: Dallas Fraser
-@date: 2016-04-12
-@organization: MLSB API
-@summary: The basic sponsor API
-'''
 from flask_restful import Resource, reqparse
 from flask import Response, request
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.validators import string_validator
 from api.model import Sponsor
 from api.authentication import requires_admin

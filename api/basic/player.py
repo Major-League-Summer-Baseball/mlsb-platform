@@ -1,13 +1,7 @@
-'''
-@author: Dallas Fraser
-@date: 2016-04-12
-@organization: MLSB API
-@summary: The basic player API
-'''
 from flask_restful import Resource, reqparse
 from flask import Response, request
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
@@ -202,7 +196,7 @@ class PlayerListAPI(Resource):
         """
         # create a new user
         args = post_parser.parse_args()
-        gender = None
+        gender = "M"
         player_name = None
         email = None
         password = "default"

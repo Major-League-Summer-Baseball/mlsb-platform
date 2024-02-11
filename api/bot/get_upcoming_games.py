@@ -1,13 +1,7 @@
-'''
-@author: Dallas Fraser
-@author: 2017-05-03
-@organization: MLSB API
-@summary: The bot API for authenticating a captain
-'''
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import Player, Game
 from api.errors import PlayerDoesNotExist
 from api.authentication import requires_admin

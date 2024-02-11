@@ -11,8 +11,8 @@ from api.authentication import \
 from api.bot.submit_scores import submit_bats, submit_score
 from api.model import Bat, Team
 from api.errors import NotTeamCaptain
-from datetime import datetime
 from api.website import website_blueprint
+from datetime import datetime
 import json
 
 

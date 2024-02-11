@@ -5,6 +5,7 @@ Flask-Security==3.0.0
 Flask-Dance>=3.3.1
 Flask-Login>=0.5.0
 Flask-Talisman>-0.7.0
+Flask-RestX==1.3.0
 psycopg2-binary>=2.7
 SQLAlchemy==1.3.24
 Werkzeug==2.2.2
@@ -13,3 +14,4 @@ Flask-Caching>=1.0
 redis>=3.1
 requests>=2.9
 SQLAlchemy-Utils>=0.36.6
+pytest>=7.4.3

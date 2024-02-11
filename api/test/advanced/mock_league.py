@@ -1,9 +1,3 @@
-'''
-@author: Dallas Fraser
-@author: 2019-03-13
-@organization: MLSB API
-@summary: Used to mock a league for advanced testings
-'''
 from uuid import uuid1
 import datetime
 

@@ -1,23 +1,20 @@
 # -*- coding: utf-8 -*-
 """ Some helper functions for various pages. """
-from api import DB
-from api.model import Team, Player, Sponsor, League
+from api.extensions import DB
+from api.model import Team, Player, League
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import single_team
 
 
-def get_team(year, tid: int) -> dict:
-    result = Team.query.get(tid)
+def get_team(year, team_id: int) -> dict:
+    """Get the team record and player stats for a given team."""
+    result = Team.query.get(team_id)
     team = None
     if result is not None:
-        captain = "TBD"
-        players = []
-        for player in result.players:
-            if player.name not in players:
-                players.append(player.json())
-        if result.player_id is not None:
-            captain = str(Player.query.get(result.player_id))
-        p_ = player_summary(team_id=tid)
+        captain = "TBD" if result.player_id is None else str(
+            Player.query.get(result.player_id)
+        )
+        p_ = player_summary(team_id=team_id)
         stats = []
         for name in p_:
             sp = (
@@ -37,32 +34,30 @@ def get_team(year, tid: int) -> dict:
                 'hr': p_[name]['hr'],
                 'bats': p_[name]['bats'],
                 'ba': "{0:.3f}".format(p_[name]['avg']),
-                'sp': "{0:.3f}".format(sp)})
-        record = single_team(tid)
-        team = {'name': str(result),
-                'league': str(League.query.get(result.league_id)),
-                'captain': str(captain),
-                'captain_id': result.player_id,
-                'players': players,
-                'record': record,
-                'wins': record[tid]['wins'],
-                'losses': record[tid]['losses'],
-                'ties': record[tid]['ties'],
-                'stats': stats}
+                'sp': "{0:.3f}".format(sp)
+            })
+        record = single_team(team_id)
+        team = {
+            'name': str(result),
+            'league': str(League.query.get(result.league_id)),
+            'captain': str(captain),
+            'captain_id': result.player_id,
+            'players': [player.json() for player in result.players],
+            'record': record,
+            'wins': record[team_id]['wins'],
+            'losses': record[team_id]['losses'],
+            'ties': record[team_id]['ties'],
+            'stats': stats
+        }
     return team
 
 
 def get_teams(year: int) -> list:
-    result = (DB.session.query(Team.id, Team.color, Sponsor.nickname)
-              .join(Sponsor)
-              .filter(Team.year == year)
-              .order_by(Sponsor.nickname).all())
-    teams = []
-    for team in result:
-        if (team[2] is None):
-            name = team[1]
-        else:
-            name = team[2] + " " + team[1]
-        teams.append({'id': team[0],
-                      'name': name})
-    return teams
+    """Get a list of teams for the given year."""
+    result = (
+        DB.session
+        .query(Team)
+        .filter(Team.year == year)
+        .order_by(Team.sponsor_name).all()
+    )
+    return [{'id': team.id, 'name': str(team)} for team in result]

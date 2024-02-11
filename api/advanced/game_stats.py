@@ -1,15 +1,9 @@
-'''
-@author: Dallas Fraser
-@date: 2016-04-12
-@organization: MLSB API
-@summary: The views for game stats
-'''
 from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
-from api import DB
-from api.model import Team, Player, Game, League, Bat, Division
 from datetime import datetime, date, time, timedelta
+from api.extensions import DB
+from api.model import Team, Player, Game, League, Bat, Division
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)

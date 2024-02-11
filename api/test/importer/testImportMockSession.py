@@ -1,11 +1,5 @@
-'''
-@author: Dallas Fraser
-@date: 2019-04-03
-@organization: MLSB API
-@summary: Mock DB session so objects added are removed upon tear down
-'''
 from api.model import Team, Game, Player
-from api import DB
+from api.extensions import DB
 
 
 class TestImportMockSession():

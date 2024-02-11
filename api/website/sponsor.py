@@ -3,9 +3,9 @@
 from flask import render_template, send_from_directory
 from sqlalchemy.sql import func
 from datetime import datetime
-from api import PICTURES, DB
+from api.extensions import DB
 from api.model import Team, Sponsor, Espys
-from api.variables import NOTFOUND
+from api.variables import PICTURES, NOTFOUND
 from api.routes import Routes
 from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map
@@ -91,8 +91,8 @@ def get_sponsor_breakdown(year, garbage):
         element['name'] = str(sponsor)
         children_list = []
         espys = (DB.session.query(total, Team)
-                 .join(Sponsor)
-                 .join(Team, Espys.team_id == Team.id)
+                 .join(Sponsor, Sponsor.id == Team.sponsor_id)
+                 .join(Espys, Espys.team_id == Team.id)
                  .filter(Espys.date.between(start, end))
                  .filter(Espys.sponsor_id == sponsor.id)
                  .group_by(Team)).all()

@@ -5,8 +5,7 @@
     Some what of a deprecated feature but might come in hand later
 """
 from flask import render_template, send_from_directory
-from api import PICTURES, POSTS
-from api.variables import NOTFOUND
+from api.variables import NOTFOUND, PICTURES, POSTS
 from api.routes import Routes
 from api.cached_items import get_upcoming_games
 from api.cached_items import get_website_base_data as base_data
@@ -94,7 +93,10 @@ def get_all_descriptions(year: int) -> list[dict]:
             description = "_".join(fname.split("_")[1:])
             result.append({"date": post_date,
                            "description": description})
-    return result
+    return sorted(
+        result,
+        key=lambda post: (post["date"], post["description"])
+    )
 
 
 def get_summaries(year: int) -> list[dict]:
@@ -121,7 +123,7 @@ def rip_summary(f: str, year: int) -> dict:
     with open(f) as f:
         # read the header in
         line = f.readline().strip()
-        while (not f.readline().strip().startswith("{% block content %}") and
+        while (not f.readline().strip().startswith("{% block article %}") and
                len(line) > 0):
             line = f.readline().strip()
         line = f.readline().strip()
@@ -172,7 +174,7 @@ def post_json(f: str, year: int) -> dict:
     with open(f) as fn:
         line = fn.readline().strip()
         # read the header
-        while not line.startswith("{% block content %}") and len(line) > 0:
+        while not line.startswith("{% block article %}") and len(line) > 0:
             line = fn.readline().strip()
         lines = fn.readline().strip()
         while not lines.startswith("{% endblock %}") and len(lines) > 0:
@@ -195,7 +197,7 @@ def post_raw_html(f: str, year: int) -> str:
     with open(f) as fn:
         line = fn.readline().strip()
         # read the header
-        while not line.startswith("{% block content %}") and len(line) > 0:
+        while not line.startswith("{% block article %}") and len(line) > 0:
             line = fn.readline().strip()
         lines = fn.readline().strip()
         result = ""

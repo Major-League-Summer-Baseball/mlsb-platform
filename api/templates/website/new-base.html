@@ -1,393 +1,393 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A website for softball league in Waterloo">
-    <meta name="author" content="MLSB">
-    <meta name="google-site-verification" content="qSt9jjuYZUBY4xLaVzVWozeFLlZ9_Gy9GB3fChNzSmw" />
-    <meta name="google-site-verification" content="tkL16jUVVvkLG3CLF-2r0-XVLQTR4JeLjrs4OA1ZGXI" />
-    <meta name="google-site-verification" content="WtIwssAfgRo0FQDNR27UsjJnKAX_qiYH8l6uQfskI9w" />
-    <title>{{title}}</title>
-	  <!-- core CSS -->
-    <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
-    <!-- A css file that contains all the accent colors -->
-    <link href="{{ url_for('website.mlsb_colors_year', year=year) }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/flickity.css") }}" rel="stylesheet">
-    <!-- Datatables include -->
-    <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    {% block header %}
-    {% endblock %}
-    <!--[if lt IE 9]>
-    <script src="{{ url_for('static', filename="js/html5shiv.js") }}""></script>
-    <script src="{{ url_for('static', filename="js/respond.js") }}""></script>
-    <![endif]-->
-    
-    <link rel="icon" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
-    <link rel="shortcut icon"  href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
-    <link rel="apple-touch-icon-precomposed" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
-    
-    <!-- Google Font-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
+{% if not snippet %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A website for softball league in Waterloo">
+        <meta name="author" content="MLSB">
+        <meta name="google-site-verification" content="qSt9jjuYZUBY4xLaVzVWozeFLlZ9_Gy9GB3fChNzSmw" />
+        <meta name="google-site-verification" content="tkL16jUVVvkLG3CLF-2r0-XVLQTR4JeLjrs4OA1ZGXI" />
+        <meta name="google-site-verification" content="WtIwssAfgRo0FQDNR27UsjJnKAX_qiYH8l6uQfskI9w" />
+        <title>{{title}}</title>
+        <!-- core CSS -->
+        <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename="css/main.css") }}" rel="stylesheet">
+        <!-- A css file that contains all the accent colors -->
+        <link href="{{ url_for('website.mlsb_colors_year', year=year) }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename="css/flickity.css") }}" rel="stylesheet">
+        <!-- CSS for various pages - Loading here so HTMX does not need to deal with it -->
+        <link href="{{ url_for('static', filename="css/score_app.css") }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename="css/batting_app.css") }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename="css/login.css") }}" rel="stylesheet">
+        <!-- Datatables include -->
+        <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
+        <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+        <!--[if lt IE 9]>
+        <script src="{{ url_for('static', filename="js/html5shiv.js") }}""></script>
+        <script src="{{ url_for('static', filename="js/respond.js") }}""></script>
+        <![endif]-->
 
-</head><!--/head-->
+        <link rel="icon" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
+        <link rel="shortcut icon"  href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
+        <link rel="apple-touch-icon-precomposed" href="{{ url_for('website.mlsb_favicon_year', year=year) }}">
+        
+        <!-- Google Font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
+    </head><!--/head-->
 
-<body class="homepage">
-    <div class="full-wrap">
-        <header id="header">
-           <div class="sponsor-banner js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false, "autoPlay": true}'>
-               {% for sponsor in base.sponsors %}
-                 {% if sponsor.sponsor_name is defined and sponsor.sponsor_name is not none and sponsor.sponsor_name.strip()|length%}
-                   <div class="sponsor-cell" data-cy="sponsor-cell">
-                     <a href="{{sponsor.link}}" title="{{sponsor.sponsor_name}}" target="_blank">
-                       <img src="{{ url_for('website.sponsor_picture', name=sponsor.sponsor_name) }}"  alt="">
-                     </a>
-                   </div>
-                  {% endif %}
-              {% endfor %}
-           </div>
-           <div class="games-container">
-               <div class="container">
-                   <div class="games" data-cy="games">
-                       {% for game in base.games %}
-                       <div class="game" data-cy="game">
-                           <div class="game-date" >
-                               {{game.date}}
-                           </div>
-                           <div class="team away-team">
-                              <img src="{{ url_for('website.sponsor_picture', name=game.away_team.sponsor_id) }}"  alt="" style="">
-                              {{game.away_team.team_name}}:
-                              {% if game.away_bats|length > 0 %}
-                                {{game.away_score}}
-                              {% else %}
-                                --
-                              {% endif %}
-                           </div>
-                           <div class="team home-team">
-                               <img src="{{ url_for('website.sponsor_picture', name=game.home_team.sponsor_id) }}"  alt="" style="">
-                               {{game.home_team.team_name}}:
-                               {% if game.home_bats|length > 0 %}
-                                 {{game.home_score}}
-                               {% else %}
-                                 --
-                               {% endif %}
-                           </div>
-                       </div>
-                       {% endfor %}
-                   </div>
-               </div>
-           </div>
-            <nav class="navbar" role="banner">
-                <div class="container">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="{{ url_for('website.index', year=year) }}">
-                        <img src="{{ url_for('website.mlsb_logo_year', year=year) }}">
-                    </a>
+    <body class="homepage">
+        <div class="full-wrap">
+            <div hx-get="{{ url_for('website.component_sponsor_banner', year=year)}}" hx-trigger="load">
+            <span class="glyphicon glyphicon-refresh spinning"></span>
+            </div>
+            <div hx-get="{{ url_for('website.component_score_banner', year=year)}}" hx-trigger="load">
+            <span class="glyphicon glyphicon-refresh spinning"></span>
+            </div>
+            <header id="header">
+                <nav class="navbar" role="banner">
+                    <div class="container">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a
+                            class="navbar-brand"
+                            href="{{ url_for('website.index', year=year) }}"
+                            hx-get="{{ url_for('website.index', year=year) }}"
+                            hx-target="#website-body"
+                            hx-push-url="true"
+                        >
+                            <img src="{{ url_for('website.mlsb_logo_year', year=year) }}">
+                        </a>
 
-                    <div class="collapse navbar-collapse navbar-left">
-                        <ul class="nav navbar-nav">
-                            <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  Schedule <b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu">
-                                {% for league in base.leagues %}
-                                <li>
-                                  <a href="{{ url_for('website.schedule', year=year, league_id=league.league_id) }}">
-                                    {{league.league_name}}
-                                  </a>
-                                </li>
-                                {% endfor %}
-                              </ul>
-                            </li>
-                            <li>
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  Standings <b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu">
-                                {% for league in base.leagues %}
-                                <li>
-                                  <a href="{{ url_for('website.standings', year=year, league_id=league.league_id) }}">
-                                    {{league.league_name}}
-                                  </a>
-                                </li>
-                                {% endfor %}
-                              </ul>
-                            </li>
-                            <li>
-                                <a href="{{ url_for('website.events_page', year=year) }}">
-                                  Events
-                                </a>
-                            </li>
-                            <li class="dropdown">
+                        <div class="collapse navbar-collapse navbar-left">
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  Stats<b class="caret"></b>
+                                    Schedule <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li>
-                                    <a href="{{ url_for('website.leaders_page', year=year) }}">
-                                      Leaders
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a href="{{ url_for('website.stats_page', year=year) }}">
-                                      Players
-                                    </a>
-                                  </li>
-                                  <li>
-                                      <a href="{{ url_for('website.all_time_leaders_page', year=year) }}">
-                                        Legends
-                                      </a>
-                                  </li>
-                                  
-                                </ul>
-                            </li>
-                            <li>
-                              <a href="{{ url_for('website.rules_fields', year=year) }}">
-                                Fields & Rules
-                              </a>
-                            </li>
-                            <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                Media <b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li>
-                                  <a href="{{ url_for('website.promos_page', year=year) }}">
-                                    Promos
-                                  </a>
-                                </li>
-                              </ul>
-                          </li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  Archive <b class="caret"></b>
-                                </a>
-                                <ul class="dropdown-menu">
-                                  <li>
-                                    <a href="/">
-                                      Current Year
-                                    </a>
-                                  </li>
-                                  {% for n in range (2016, base.current_year) %}
+                                    {% for league in base.leagues %}
                                     <li>
-                                      <a href="{{ url_for('website.index', year=n) }}">
-                                        {{n}}
+                                    <a
+                                        href="{{ url_for('website.schedule', year=year, league_id=league.league_id) }}"
+                                        hx-get="{{ url_for('website.schedule', year=year, league_id=league.league_id) }}"
+                                        hx-target="#website-body"
+                                        hx-push-url="true"
+                                    >
+                                        {{league.league_name}}
+                                    </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                </li>
+                                <li>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    Standings <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for league in base.leagues %}
+                                    <li>
+                                    <a
+                                      href="{{ url_for('website.standings', year=year, league_id=league.league_id) }}"
+                                      hx-get="{{ url_for('website.standings', year=year, league_id=league.league_id) }}"
+                                      hx-target="#website-body"
+                                      hx-push-url="true"
+                                    >
+                                        {{league.league_name}}
+                                    </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                </li>
+                                <li>
+                                    <a
+                                      href="{{ url_for('website.events_page', year=year) }}"
+                                      hx-get="{{ url_for('website.events_page', year=year) }}"
+                                      hx-target="#website-body"
+                                      hx-push-url="true"
+                                    >
+                                    Events
+                                    </a>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    Stats<b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                    <li>
+                                        <a
+                                          href="{{ url_for('website.leaders_page', year=year) }}"
+                                          hx-get="{{ url_for('website.leaders_page', year=year) }}"
+                                          hx-target="#website-body"
+                                          hx-push-url="true"
+                                        >
+                                        Leaders
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                          href="{{ url_for('website.stats_page', year=year) }}"
+                                          hx-get="{{ url_for('website.stats_page', year=year) }}"
+                                          hx-target="#website-body"
+                                          hx-push-url="true"
+                                        >
+                                        Players
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                          href="{{ url_for('website.all_time_leaders_page', year=year) }}"
+                                          hx-get="{{ url_for('website.all_time_leaders_page', year=year) }}"
+                                          hx-target="#website-body"
+                                          hx-push-url="true"
+                                        >
+                                            Legends
+                                        </a>
+                                    </li>
+                                    
+                                    </ul>
+                                </li>
+                                <li>
+                                  <a
+                                    href="{{ url_for('website.rules_fields', year=year) }}"
+                                    hx-get="{{ url_for('website.rules_fields', year=year) }}"
+                                    hx-target="#website-body"
+                                    hx-push-url="true"
+                                  >
+                                      Fields & Rules
+                                  </a>
+                                </li>
+                                <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    Media <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                      <a
+                                        href="{{ url_for('website.promos_page', year=year) }}"
+                                        hx-get="{{ url_for('website.promos_page', year=year) }}"
+                                        hx-target="#website-body"
+                                        hx-push-url="true"
+                                      >
+                                          Promos
                                       </a>
                                     </li>
-                                  {% endfor %}
                                 </ul>
                             </li>
-                            <li>
-                              {% if not user_info.logged_in %}
-                                <a href="{{ url_for('website.loginpage') }}">
-                                  Login
-                                </a>
-                              {% endif %}
-                            </li>
-                            {% if user_info.logged_in %}
-                            <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                Profile <b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu">
-                                {% for team in user_info.teams %}
-                                  <li>
-                                    {% if team.captain is not none and team.captain.player_id ==  user_info.player_information.player_id %}
-                                      <a href=" {{ url_for('website.captain_score_games', team_id=team.team_id) }}">
-                                        Submit Scores
-                                      </a>
-                                      <a href="{{ url_for('website.captain_batting_app', team_id=team.team_id) }}">
-                                        Batting app
-                                      </a>
-                                    {% endif %}
-                                    <a href="{{ url_for('website.team_page', year=year, team_id=team.team_id) }}">
-                                      {{team.team_name}}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    Archive <b class="caret"></b>
                                     </a>
+                                    <ul class="dropdown-menu">
+                                    <li>
+                                        <a
+                                          href="/"
+                                          hx-get="/"
+                                          hx-target="#website-body"
+                                          hx-push-url="true"
+                                        >
+                                        Current Year
+                                        </a>
+                                    </li>
+                                    {% for n in range (2016, base.current_year) %}
+                                        <li>
+                                        <a
+                                          href="{{ url_for('website.index', year=n) }}"
+                                        >
+                                            {{n}}
+                                        </a>
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                </li>                                    
+                                {% if not user_info.logged_in %}
+                                  <li>
+                                      <a
+                                        href="{{ url_for('website.loginpage') }}"
+                                        hx-get="{{ url_for('website.loginpage') }}"
+                                        hx-target="#website-body"
+                                        hx-push-url="true"
+                                      >
+                                        Login
+                                      </a>
                                   </li>
-                                {% endfor %}
-                                <li>
-                                  <a href="{{ url_for('website.logout') }}">
-                                    Logout
-                                  </a>
-                                </li>
-                              </ul>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div><!--/.container-->
-            </nav><!--/nav-->
+                                {% endif %}
+                                
+                                {% if user_info.logged_in %}
+                                  <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        Profile <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        {% for team in user_info.teams %}
+                                        <li>
+                                            {% if team.captain is not none and team.captain.player_id ==  user_info.player_information.player_id %}
+                                            <a
+                                              href="{{ url_for('website.captain_score_games', team_id=team.team_id) }}"
+                                              hx-get="{{ url_for('website.captain_score_games', team_id=team.team_id) }}"
+                                              hx-target="#website-body"
+                                              hx-push-url="true"
+                                            >
+                                                Submit Scores
+                                            </a>
+                                            <a
+                                              href="{{ url_for('website.captain_batting_app', team_id=team.team_id) }}"
+                                              hx-get="{{ url_for('website.captain_batting_app', team_id=team.team_id) }}"
+                                              hx-target="#website-body"
+                                              hx-push-url="true"
+                                            >
+                                                Batting app
+                                            </a>
+                                            {% endif %}
+                                            <a
+                                              href="{{ url_for('website.team_page', year=year, team_id=team.team_id) }}"
+                                              hx-get="{{ url_for('website.team_page', year=year, team_id=team.team_id) }}"
+                                              hx-target="#website-body"
+                                              hx-push-url="true"
+                                            >
+                                              {{team.team_name}}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                        <li>
+                                        <a href="{{ url_for('website.logout') }}">
+                                            Logout
+                                        </a>
+                                        </li>
+                                    </ul>
+                                  </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div><!--/.container-->
+                </nav><!--/nav-->
 
-        </header><!--/header-->
+            </header><!--/header-->
 
-        <section class="main-content-section">
-            <div class="container">
-                <div class="row content-row">
-                    <div class="col-xs-12 mainBlock" >
-                        <h2 class="main-header" id="MainHeader">
-                            {{title}}
-                        </h2>
-                        {% block content %}{% endblock %}
+            <section class="main-content-section">
+                <div class="container">
+                    <div class="row content-row" id="website-body">
+{% endif %}
+                        <div class="col-xs-12 mainBlock" >
+                          <h2 class="main-header" id="MainHeader">
+                              {{title}}
+                          </h2>
+
+                            {% block content %}{% endblock %}
+                        </div>
+{% if not snippet %}
                     </div>
-                </div>
-                <div class="row bottom-row">
-                    <div class="fun-meter">
-                        <h4 id="funMeter">
-                          Fun Meter {{year}}
-                        </h4>
-                        <svg id="fillgauge2" width="100%" height="200" onclick="updateGauge();"></svg>
-                        
-                    </div>
-                    <div class="social">
-                      <!-- This is a hack for now there was a general pattern
-                          but it seems that 2016 and 2020 now break that pattern. A longer term solution maybe needed.
-                      -->
-                        {% if year == 2016 %}
-                          <a href="https://www.facebook.com/MLSB-2016-1511418369154082/" target="_blank" class="social-link">
-                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
-                          </a>
-                        {% elif year == 2020 %}
-                          <a href="https://www.facebook.com/MLSB-2020-105916120893092/" target="_blank" class="social-link">
-                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
-                          </a>
-                        {% elif year >= 2022 %}
-                          <a href="https://www.facebook.com/MLSBalumni/" target="_blank" class="social-link">
-                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
-                          </a>
-                        {% else %}
-                          <a href="https://www.facebook.com/MLSB{{year}}/" target="_blank" class="social-link">
-                            <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
-                          </a>
-                        {% endif %}
-                        
-                        <!-- The general pattern is for the convenors to update the instagram handle to current year -->
-                        <a href="https://www.instagram.com/mlsb{{base.current_year}}/" target="_blank" class="social-link">
-                            <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
-                        </a>
-                        <!--
-                        <a href="https://twitter.com/MLSB2015" target="_blank" class="social-link">
-                            <img class="social-icon" src="{{ url_for('static', filename="twitter.png")}}"/>
-                        </a>
+                    <div class="row bottom-row">
+                        <div style="text-align: center;" hx-get="{{ url_for('website.component_fun_meter', year=year)}}" hx-trigger="load">
+                            <span class="glyphicon glyphicon-refresh spinning"></span>
+                        </div>
+                        <div class="social">
+                        <!-- This is a hack for now there was a general pattern
+                            but it seems that 2016 and 2020 now break that pattern. A longer term solution maybe needed.
                         -->
+                            {% if year == 2016 %}
+                            <a href="https://www.facebook.com/MLSB-2016-1511418369154082/" target="_blank" class="social-link">
+                                <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                            </a>
+                            {% elif year == 2020 %}
+                            <a href="https://www.facebook.com/MLSB-2020-105916120893092/" target="_blank" class="social-link">
+                                <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                            </a>
+                            {% elif year >= 2022 %}
+                            <a href="https://www.facebook.com/MLSBalumni/" target="_blank" class="social-link">
+                                <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                            </a>
+                            {% else %}
+                            <a href="https://www.facebook.com/MLSB{{year}}/" target="_blank" class="social-link">
+                                <img class="social-icon" src="{{ url_for('static', filename="facebook.png")}}"/>
+                            </a>
+                            {% endif %}
+                            
+                            <!-- The general pattern is for the convenors to update the instagram handle to current year -->
+                            <a href="https://www.instagram.com/mlsb{{base.current_year}}/" target="_blank" class="social-link">
+                                <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
+                            </a>
+                            <!--
+                            <a href="https://twitter.com/MLSB2015" target="_blank" class="social-link">
+                                <img class="social-icon" src="{{ url_for('static', filename="twitter.png")}}"/>
+                            </a>
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </section><!--/#bottom-->
+        </div>
+
+        <footer id="footer" class="midnight-blue">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        &copy; MLSB 2023. All Rights Reserved.
+                    </div>
+                    <div class="col-sm-8">
+                    <ul class="pull-right">
+                        <li>
+                          <a
+                            class="btn btn-mini btn-link"
+                            href="{{ url_for('website.about', year=base.current_year) }}"
+                            hx-get="{{ url_for('website.about', year=base.current_year) }}"
+                            hx-target="#website-body"
+                            hx-push-url="true"
+                          >
+                            About
+                          </a>
+                        </li>
+                    </ul>
+                    <ul class="pull-right">
+                        <li>
+                          <a
+                            class="btn btn-mini btn-link"
+                            href="{{ url_for('website.privacy_policy') }}"
+                            hx-get="{{ url_for('website.privacy_policy') }}"
+                            hx-target="#website-body"
+                            hx-push-url="true"
+                          >
+                            Privacy Policy
+                          </a>
+                        </li>
+                    </ul>
                     </div>
                 </div>
             </div>
-        </section><!--/#bottom-->
-    </div>
+        </footer><!--/#footer-->
+        <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/jquery.dataTables.responsive.min.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/sly.js") }} "></script>
+        <script src="{{ url_for('static', filename="js/flickity.min.js") }}"></script>
+        <script src="{{url_for('static', filename="d3/liquidFillGauge.js" ) }}" defer></script>
+        <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
+        
+        <!-- Google Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <footer id="footer" class="midnight-blue">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-4">
-                    &copy; MLSB 2023. All Rights Reserved.
-                </div>
-                <div class="col-sm-8">
-                  <ul class="pull-right">
-                    <li><a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=base.current_year) }}">About</a></li>
-                  </ul>
-                  <ul class="pull-right">
-                    <li><a class="btn btn-mini btn-link " href="{{ url_for('website.privacy_policy') }}">Privacy Policy</a></li>
-                  </ul>
-                </div>
-            </div>
-        </div>
-    </footer><!--/#footer-->
-    <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/flickity.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/jquery.dataTables.responsive.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/sly.js") }} "></script>
-    <script src="{{url_for('static', filename="d3/liquidFillGauge.js" ) }}"></script>
-    <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
-    <script>
-    var config1 = liquidFillGaugeDefaultSettings();
-    config1.circleThickness = 0.2;
-    config1.textVertPosition = 0.5;
-    config1.waveAnimateTime = 1000;
-    config1.displayPercent = false;
-    config1.maxValue = 500;
-    var gauge2= loadLiquidFillGauge("fillgauge2", {{base.fun.count}}, config1);
-    var funs = [];
-    var funIndex = 0
-    function updateGauge(){
-        funIndex = (funIndex + 1) % funs.length;
-        gauge2.update(funs[funIndex].count)
-        $('#funMeter').text('Fun Meter ' + funs[funIndex].year);
-    }
-        $(document).ready(function() {
-                // -------------------------------------------------------------
-    //   Centered Navigation
-    // -------------------------------------------------------------
-                var $frame = $('#centered');
-                var $wrap  = $frame.parent();
-
-                // Call Sly on frame
-                $frame.sly({
-                    horizontal: 1,
-                    itemNav: 'centered',
-                    smart: 1,
-                    activateOn: 'click',
-                    mouseDragging: 1,
-                    touchDragging: 1,
-                    releaseSwing: 1,
-                    scrollBar: $wrap.find('.scrollbar'),
-                    scrollBy: 1,
-                    speed: 300,
-                    elasticBounds: 1,
-                    dragHandle: 1,
-                    dynamicHandle: 1,
-                    clickBar: 1,
-
-                    // Buttons
-                    prev: $wrap.find('.prev'),
-                    next: $wrap.find('.next')
-                });
-
-                  $.ajax
-                    ({
-                      type: "POST",
-                      url: "{{route.vfun}}",
-                      contentType: "application/json",
-                      data: JSON.stringify({}),
-                      dataType: 'json',
-                      async: true,
-                        dataType: "json",
-                        success: function (result){
-                          funs = result
-                        }, error: function(request, error){
-                          funs = [{'count':{{base.fun.count}}, 'year': {{year}} }]
-                      } 
-                    });
-
-        });
-    </script>
-    <!-- Google Analytics -->
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-76763804-1', 'auto');
-      ga('send', 'pageview');
-    </script>
-    {% block script %}
-
-    {% endblock %}
-</body>
+        ga('create', 'UA-76763804-1', 'auto');
+        ga('send', 'pageview');
+        </script>
+{% endif %}
+        {% block script %}{% endblock %}
+{% if not snippet %}
+    </body>
 </html>
+{% endif %}

@@ -1,20 +1,13 @@
-'''
-@author: Dallas Fraser
-@date: 2023-04-29
-@organization: MLSB API
-@summary: The basic league event API
-'''
 from flask_restful import Resource, reqparse
-from flask import Response
+from flask import Response, request
 from json import dumps
-from api import DB
+from api.extensions import DB
 from api.model import LeagueEvent
 from api.authentication import requires_admin
 from api.errors import LeagueEventDoesNotExist
 from api.variables import PAGE_SIZE
 from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
 parser = reqparse.RequestParser()
 parser.add_argument('name', type=str)
 parser.add_argument('description', type=str)
@@ -114,10 +107,11 @@ class LeagueEventAPI(Resource):
         name = args.get('name', None)
         active = convert_active(args.get('active', None))
 
-        league_event.update(name=name,
-                            description=description,
-                            active=active
-                            )
+        league_event.update(
+            name=name,
+            description=description,
+            active=active
+        )
         DB.session.commit()
         response = Response(dumps(None), status=200,
                             mimetype="application/json")
@@ -178,7 +172,7 @@ class LeagueEventListAPI(Resource):
         description = args.get('description')
         name = args.get('name')
         active = convert_active(args.get('active', "1"))
-
+        active = active if active is not None else True
         league_event = LeagueEvent(name, description, active=active)
         DB.session.add(league_event)
         DB.session.commit()

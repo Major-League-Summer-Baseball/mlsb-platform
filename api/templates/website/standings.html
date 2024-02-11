@@ -240,7 +240,7 @@ function display_table(teams, selector) {
 /** Renders a team link*/
 function renderTeamLink(data, type, row, meta) {
     if (type === 'display') {
-      const teamPageUrl = "{{ url_for('team', year=year, team_id=9999) }}";
+      const teamPageUrl = "{{ url_for('website.team_page', year=year, team_id=9999) }}";
         data = `<a href="${teamPageUrl.replace('9999', row.team_id)}">${row.name}</a>`;
     }
     return data;

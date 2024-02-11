@@ -1,14 +1,7 @@
-'''
-@author: Dallas Fraser
-@date: 2016-04-12
-@organization: MLSB API
-@summary: Holds a class LeagueList that helps imports a League (list of games)
-'''
-# imports
 from sqlalchemy import func
 from api.cached_items import handle_table_change
 from api.model import Sponsor, Game, League, Division
-from api import DB
+from api.extensions import DB
 from api.errors import InvalidField, LeagueDoesNotExist, TeamDoesNotExist, \
     DivisionDoesNotExist
 from api.tables import Tables

@@ -1,38 +1,39 @@
 # -*- coding: utf-8 -*-
 """Holds a logger for the application."""
-import os
-import logging
+from os import environ
+from logging import getLogger, StreamHandler, Formatter, DEBUG, INFO, \
+    ERROR, WARNING, CRITICAL, Logger
 import sys
 
 
-def setupLogger() -> logging.Logger:
+def setupLogger() -> Logger:
     """Setups the logger to use for the project
 
     Returns:
         logging.Logger: the project logger
     """
-    level = os.environ.get("logging", "info")
-    logger = logging.getLogger()
-    handler = logging.StreamHandler(sys.stdout)
+    level = environ.get("logging", "info")
+    logger = getLogger()
+    handler = StreamHandler(sys.stdout)
     if "debug" in level.lower():
-        logger.setLevel(logging.DEBUG)
-        handler.setLevel(logging.DEBUG)
+        logger.setLevel(DEBUG)
+        handler.setLevel(DEBUG)
     elif "info" in level.lower():
-        logger.setLevel(logging.INFO)
-        handler.setLevel(logging.INFO)
+        logger.setLevel(INFO)
+        handler.setLevel(INFO)
     elif "error" in level.lower():
-        logger.setLevel(logging.ERROR)
-        handler.setLevel(logging.ERROR)
+        logger.setLevel(ERROR)
+        handler.setLevel(ERROR)
     elif "warning" in level.lower():
-        logger.setLevel(logging.WARNING)
-        handler.setLevel(logging.WARNING)
+        logger.setLevel(WARNING)
+        handler.setLevel(WARNING)
     elif "error" in level.lower():
-        logger.setLevel(logging.ERROR)
-        handler.setLevel(logging.ERROR)
+        logger.setLevel(ERROR)
+        handler.setLevel(ERROR)
     elif "critical" in level.lower():
-        logger.setLevel(logging.CRITICAL)
-        handler.setLevel(logging.CRITICAL)
-    formatter = logging.Formatter(
+        logger.setLevel(CRITICAL)
+        handler.setLevel(CRITICAL)
+    formatter = Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)

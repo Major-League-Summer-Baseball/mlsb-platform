@@ -20,7 +20,7 @@ services:
             gunicorn -b 0.0.0.0:8080
                 --access-logfile -
                 --reload
-                "runserver:app"
+                "flask --app api/app run"
 
     postgres:
         restart: always
