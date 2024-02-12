@@ -360,6 +360,21 @@ def require_captain(f: Callable) -> Callable:
     return decorated
 
 
+def require_to_be_a_captain(f: Callable) -> Callable:
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return redirect(url_for("website.loginpage"))
+        teams = Player.get_teams_captained(current_user.id)
+
+        team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
+        team = Team.query.get(team_id)
+        if len(teams) == 0:
+            raise NotTeamCaptain(payload={"details": team_id})        
+        return f(*args, **kwargs)
+    return decorated
+
+
 def requires_admin(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
