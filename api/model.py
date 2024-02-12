@@ -692,6 +692,10 @@ class Player(UserMixin, DB.Model):
         self.active = False
 
     @classmethod
+    def get_teams_captained(cls, player_id: str) -> list['Team']:
+        return Team.query.filter(Team.player_id == player_id).all()
+
+    @classmethod
     def does_player_exist(cls, player_id: str) -> bool:
         return Player.query.get(player_id) is not None
 
