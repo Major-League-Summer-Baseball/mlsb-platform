@@ -548,7 +548,6 @@ def test_games_games_needing_scores(
         assert game_with_score.id in game_ids
 
 
-
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('division_factory')

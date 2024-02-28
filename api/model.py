@@ -1762,14 +1762,14 @@ class Game(DB.Model):
             cls,
             teams: list[Team],
             year: int = datetime.today().year
-        ) -> list['Game']:
+    ) -> list['Game']:
         """Return games that have a score for the given year & list of teams
-        
+
         If given a empty list of teams will get all games for all
         teams in the given year
         """
         team_ids = [team.id for team in teams] if len(teams) > 0 else [
-            team.id for team in Team.query.filter(Team.year==year).all()
+            team.id for team in Team.query.filter(Team.year == year).all()
         ]
         games = Game.query.filter(
             or_(
@@ -1786,9 +1786,9 @@ class Game(DB.Model):
             cls,
             teams: list[Team],
             year: int = datetime.today().year
-        ) -> list['Game']:
+    ) -> list['Game']:
         """Return games that are elible for a score submission without one
-        
+
         If given a empty list of teams will get all games for all
         teams in the given year
         """
@@ -1797,7 +1797,7 @@ class Game(DB.Model):
             today.year, today.month, today.day, hour=23, minute=59
         )
         team_ids = [team.id for team in teams] if len(teams) > 0 else [
-            team.id for team in Team.query.filter(Team.year==year).all()
+            team.id for team in Team.query.filter(Team.year == year).all()
         ]
         games = Game.query.filter(
             or_(
@@ -1809,7 +1809,7 @@ class Game(DB.Model):
         ).filter(
             Game.date <= end_of_today
         ).order_by(asc(Game.date)).all()
-        return games   
+        return games
 
 
 class JoinLeagueRequest(DB.Model):

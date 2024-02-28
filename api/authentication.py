@@ -366,11 +366,11 @@ def require_to_be_a_captain(f: Callable) -> Callable:
         if not are_logged_in():
             return redirect(url_for("website.loginpage"))
         teams = Player.get_teams_captained(current_user.id)
-
         team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
-        team = Team.query.get(team_id)
         if len(teams) == 0:
-            raise NotTeamCaptain(payload={"details": team_id})        
+            raise NotTeamCaptain(payload={"details": team_id})
+        if Team.query.get(team_id) is None:
+            raise TeamDoesNotExist(payload={"details": team_id})
         return f(*args, **kwargs)
     return decorated
 
