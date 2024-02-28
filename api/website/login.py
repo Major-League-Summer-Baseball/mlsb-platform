@@ -56,7 +56,7 @@ def logout():
     """A route to log out the user."""
     LOGGER.info(f"{current_user} has logged out")
     logout_user()
-    return redirect(url_for("index", year=date.today().year))
+    return redirect(url_for("website.index", year=date.today().year))
 
 
 @website_blueprint.route("/join_league", methods=["POST"])
