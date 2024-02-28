@@ -1,0 +1,42 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+    <h2>
+        Pending Games
+    </h2>
+    <ul class="list-group">
+        {% for game in open_games %}
+        <li class="list-group-item">
+            <span>
+                {{loop.index}}.
+            </span>
+            {{ game.home_team}} vs {{game.away_team}} on {{game.date}}
+            <a href="" class="btn btn-info">
+                Score
+            </a>
+            <a href="" class="btn btn-info">
+                Batting App
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>
+        Submitted Games
+    </h2>
+    <ul class="list-group">
+        {% for game in submitted_games %}
+        <li class="list-group-item">
+            <span>
+                {{loop.index}}.
+            </span>
+            {{ game.home_team}} vs {{game.away_team}} on {{game.date}}
+            <a href="" class="btn btn-info">
+                Score
+            </a>
+            <a href="" class="btn btn-info">
+                Batting App
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

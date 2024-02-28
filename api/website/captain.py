@@ -6,9 +6,10 @@ from api.variables import UNASSIGNED
 from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
-    get_user_information, require_captain, api_require_captain
+    get_user_information, require_captain, api_require_captain, \
+    require_to_be_a_captain
 from api.bot.submit_scores import submit_bats, submit_score
-from api.model import Bat, Team
+from api.model import Bat, Team, Player, Game
 from api.errors import NotTeamCaptain
 from api.website import website_blueprint
 from datetime import datetime
@@ -32,7 +33,7 @@ def captain_score_games(team_id: int):
 @website_blueprint.route("/captain/batting_app/<int:team_id>")
 @require_captain
 def captain_batting_app(team_id: int):
-    """Navigate to the captain score app"""
+    """Navigate to the captain batting app"""
     year = datetime.now().year
     return render_template("website/captain_batting_app.html",
                            route=Routes,
@@ -43,15 +44,39 @@ def captain_batting_app(team_id: int):
                            user_info=get_user_information())
 
 
+@website_blueprint.route("/captain/games/<int:year>")
+@require_to_be_a_captain
+def captain_games(year: int):
+    """Route for captain submitting games for the given year"""
+    teams = Player.get_teams_captained(current_user.id)
+    print(teams)
+    open_games = [
+        game.json() for game in Game.games_needing_scores(teams, year=year)
+    ]
+    submitted_games = [
+        game.json() for game in Game.games_with_scores(teams, year=year)
+    ]
+    return render_template(
+        "website/captain_games.html",
+        routes=Routes,
+        base=base_data(year),
+        title="Captain - Submit Scores",
+        year=year,
+        user_info=get_user_information(),
+        open_games=open_games,
+        submitted_games=submitted_games
+    )
+
+
 @website_blueprint.route("/captain/api/games/<int:team_id>")
 @api_require_captain
 def get_captain_info(team_id: int):
     """Get captain information for submitting games"""
     team = Team.query.get(team_id)
     if team is None:
-        msg = f"Player is not a captian of any team {current_user.id}"
+        msg = f"Player is not a captain of any team {current_user.id}"
         raise NotTeamCaptain(msg)
-    games = games_without_scores(team.id)
+    games = Game.games_needing_scores([team], year=team.year)
     return Response(json.dumps({
         "games": [game.json() for game in games],
         "players": sorted(
@@ -62,7 +87,9 @@ def get_captain_info(team_id: int):
     }), status=200, mimetype="application/json")
 
 
-@website_blueprint.route("/captain/api/submit_score/<int:team_id>", methods=["POST"])
+@website_blueprint.route(
+    "/captain/api/submit_score/<int:team_id>", methods=["POST"]
+)
 @api_require_captain
 def captain_submit_score(team_id: int):
     """Submit a score for some game"""
