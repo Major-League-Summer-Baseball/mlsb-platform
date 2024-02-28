@@ -4,7 +4,6 @@ from flask import render_template, Response, request
 from flask_login import current_user
 from api.variables import UNASSIGNED
 from api.routes import Routes
-from api.bot.get_captain_games import games_without_scores
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, require_captain, api_require_captain
