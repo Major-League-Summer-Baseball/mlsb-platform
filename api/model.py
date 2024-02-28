@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from sqlalchemy.orm import column_property
-from sqlalchemy import and_, select, func, or_
+from sqlalchemy import and_, select, func, or_, desc, asc, not_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
@@ -1756,6 +1756,60 @@ class Game(DB.Model):
     def normalize_field(cls, field: str) -> str:
         """Normalized the field """
         return normalize_string(field)
+
+    @classmethod
+    def games_with_scores(
+            cls,
+            teams: list[Team],
+            year: int = datetime.today().year
+        ) -> list['Game']:
+        """Return games that have a score for the given year & list of teams
+        
+        If given a empty list of teams will get all games for all
+        teams in the given year
+        """
+        team_ids = [team.id for team in teams] if len(teams) > 0 else [
+            team.id for team in Team.query.filter(Team.year==year).all()
+        ]
+        games = Game.query.filter(
+            or_(
+                Game.away_team_id.in_(team_ids),
+                Game.home_team_id.in_(team_ids),
+            )
+        ).filter(
+            Game.bats.any(Bat.team_id.in_(team_ids))
+        ).order_by(desc(Game.date)).all()
+        return games
+
+    @classmethod
+    def games_needing_scores(
+            cls,
+            teams: list[Team],
+            year: int = datetime.today().year
+        ) -> list['Game']:
+        """Return games that are elible for a score submission without one
+        
+        If given a empty list of teams will get all games for all
+        teams in the given year
+        """
+        today = datetime.today()
+        end_of_today = datetime(
+            today.year, today.month, today.day, hour=23, minute=59
+        )
+        team_ids = [team.id for team in teams] if len(teams) > 0 else [
+            team.id for team in Team.query.filter(Team.year==year).all()
+        ]
+        games = Game.query.filter(
+            or_(
+                Game.away_team_id.in_(team_ids),
+                Game.home_team_id.in_(team_ids),
+            )
+        ).filter(
+            not_(Game.bats.any(Bat.team_id.in_(team_ids)))
+        ).filter(
+            Game.date <= end_of_today
+        ).order_by(asc(Game.date)).all()
+        return games   
 
 
 class JoinLeagueRequest(DB.Model):

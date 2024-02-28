@@ -1,7 +1,7 @@
 import pytest
 from api.errors import DivisionDoesNotExist, InvalidField, \
     LeagueDoesNotExist, TeamDoesNotExist
-from api.model import Game, convert_date
+from api.model import Game, convert_date, Team
 
 INVALID_ENTITY = -1
 
@@ -403,3 +403,196 @@ def test_completed_game_summary(
         assert summary['away_bats'] == 2
         assert summary['home_score'] == 1
         assert summary['home_bats'] == 1
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('bat_factory')
+def test_games_with_scores(
+    mlsb_app,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    player_factory,
+    bat_factory
+):
+    with mlsb_app.app_context():
+        # setup players
+        home_player = player_factory()
+        away_player = player_factory()
+
+        # setup teams
+        home_team = team_factory(players=[home_player])
+        away_team = team_factory(players=[away_player])
+
+        # setup divion and league
+        division = division_factory()
+        league = league_factory()
+
+        # create the game
+        game_with_score = game_factory(
+            home_team=home_team,
+            away_team=away_team,
+            league=league,
+            division=division
+        )
+
+        # add some scores
+        bat_factory(
+            game=game_with_score,
+            player=home_player,
+            team=home_team,
+            rbi=0
+        )
+        team = Team.query.get(home_team.id)
+        games = Game.games_with_scores([team])
+        assert len(games) > 0
+        game_ids = [game.id for game in games]
+        assert game_with_score.id in game_ids
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('bat_factory')
+def test_games_with_scores_no_submission(
+    mlsb_app,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    player_factory,
+    bat_factory
+):
+    with mlsb_app.app_context():
+        # setup players
+        home_player = player_factory()
+        away_player = player_factory()
+
+        # setup teams
+        home_team = team_factory(players=[home_player])
+        away_team = team_factory(players=[away_player])
+
+        # setup divion and league
+        division = division_factory()
+        league = league_factory()
+
+        # create the game
+        game_with_score = game_factory(
+            home_team=home_team,
+            away_team=away_team,
+            league=league,
+            division=division
+        )
+
+        # add some scores
+        bat_factory(
+            game=game_with_score,
+            player=home_player,
+            team=home_team,
+            rbi=0
+        )
+        team = Team.query.get(away_team.id)
+        games = Game.games_with_scores([team])
+        game_ids = [game.id for game in games]
+        assert game_with_score.id not in game_ids
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('player_factory')
+def test_games_games_needing_scores(
+    mlsb_app,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        # setup players
+        home_player = player_factory()
+        away_player = player_factory()
+
+        # setup teams
+        home_team = team_factory(players=[home_player])
+        away_team = team_factory(players=[away_player])
+
+        # setup divion and league
+        division = division_factory()
+        league = league_factory()
+
+        # create the game
+        game_with_score = game_factory(
+            home_team=home_team,
+            away_team=away_team,
+            league=league,
+            division=division
+        )
+
+        team = Team.query.get(away_team.id)
+        games = Game.games_needing_scores([team])
+        game_ids = [game.id for game in games]
+        assert len(game_ids) > 0
+        assert game_with_score.id in game_ids
+
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('player_factory')
+def test_games_games_needing_scores_already_submitted(
+    mlsb_app,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    player_factory,
+    bat_factory
+):
+    with mlsb_app.app_context():
+        # setup players
+        home_player = player_factory()
+        away_player = player_factory()
+
+        # setup teams
+        home_team = team_factory(players=[home_player])
+        away_team = team_factory(players=[away_player])
+
+        # setup divion and league
+        division = division_factory()
+        league = league_factory()
+
+        # create the game
+        game_with_score = game_factory(
+            home_team=home_team,
+            away_team=away_team,
+            league=league,
+            division=division
+        )
+
+        # add some scores
+        bat_factory(
+            game=game_with_score,
+            player=home_player,
+            team=home_team,
+            rbi=0
+        )
+        team = Team.query.get(home_team.id)
+        games = Game.games_needing_scores([team])
+        game_ids = [game.id for game in games]
+        assert game_with_score.id not in game_ids
