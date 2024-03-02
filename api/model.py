@@ -1748,6 +1748,11 @@ class Game(DB.Model):
             if self.home_team_hits is not None else 0
         }
 
+    def get_team_bats(self, team_id: int):
+        """Remove score for the given team from the game."""
+        print(self.bats)
+        return [bat for bat in self.bats if bat.team_id == team_id]
+
     @classmethod
     def does_game_exist(cls, game_id: str) -> bool:
         return Game.query.get(game_id) is not None
