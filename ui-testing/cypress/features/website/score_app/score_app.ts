@@ -89,12 +89,13 @@ const assertGameVisible = (): void => {
 Then(`I see the game`, assertGameVisible);
 
 /** Assert that expected game is visible. */
-const assertGameNotVisible = (): void => {
+const assertGameCanBeResubmitted = (): void => {
+    
     cy.get<Game>('@game').then((game: Game) => {
-        cy.get(`#game-${game.game_id}`).should('not.exist');
+        cy.get(`#game-${game.game_id}-resubmit`).should("exist");
     });
 };
-Then(`I no longer see the game`, assertGameNotVisible);
+Then(`I see the game can be resubmitted`, assertGameCanBeResubmitted);
 
 /** Assert the submission is blocked. */
 const assertSubmissionBlocked = (): void => {

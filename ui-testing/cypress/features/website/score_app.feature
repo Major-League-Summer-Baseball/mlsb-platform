@@ -24,4 +24,4 @@ Feature: The captain score app
           And I got a homerun
           And I am able to submit
          Then the score is submitted
-          And I no longer see the game
+          And I see the game can be resubmitted
