@@ -23,7 +23,7 @@ ADMIN = os.environ.get('ADMIN', 'admin')
 PASSWORD = os.environ.get('PASSWORD', 'password')
 
 login_manager = LoginManager()
-login_manager.login_view = "loginpage"
+login_manager.login_view = "website.loginpage"
 
 github_blueprint = make_github_blueprint(
     scope=["email"],
