@@ -63,9 +63,8 @@ function startApp(captain_information, game, submission_url, next_step_url) {
                   }
                   this.$emit('update:number', this.number);
                   this.$emit('update:player', this.player);
+                  this.$emit('clicked', direction, this.stat);
               }
-
-              this.$emit('clicked', direction, this.stat);
           }
       }
   });
