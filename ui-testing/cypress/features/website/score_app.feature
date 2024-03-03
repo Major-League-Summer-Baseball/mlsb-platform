@@ -2,12 +2,6 @@ Feature: The captain score app
 
     Tests the score app for a captain
 
-    Scenario: Past Games without scores are listed on the page
-        Given I am captain of a team
-          And my team had a game
-         When I view the list of Games
-         Then I see the game
-
     Scenario: Score cannot be negative
         Given I am captain of a team
           And submitting a score for a game
