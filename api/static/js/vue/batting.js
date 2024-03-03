@@ -99,14 +99,14 @@ function startApp(captain_information, game, submission_url, next_step_url) {
             <div v-bind:id="'roster-' + player.player_id" class="player-bats__summary">
                 <div v-if="bats.length == 0">
                     <span
-                        class="glyphicon glyphicon-circle-arrow-up glyphicon--lg glyphicon--info"
+                        class="glyphicon glyphicon-circle-arrow-up glyphicon--lg glyphicon--info roster-up"
                         v-if="bats.length == 0"
                         v-bind:id="'rosterUp-' + player.player_id"
                         :disabled="firstBatter()"
                         :class="{'glyphicon--disabled':firstBatter()}"
                         v-on:click="!firstBatter() && $emit('batterup', player)"></span>
                     <span
-                        class="glyphicon glyphicon-circle-arrow-down glyphicon--lg glyphicon--info"
+                        class="glyphicon glyphicon-circle-arrow-down glyphicon--lg glyphicon--info roster-down"
                         v-if="bats.length == 0"
                         v-bind:id="'rosterDown-' + player.player_id"
                         :disabled="lastBatter()"
@@ -357,7 +357,7 @@ function startApp(captain_information, game, submission_url, next_step_url) {
                     this.advanceBaseRunner(0);
                     this.advanceBaseRunner(1);
                     this.game_selected.game_state.bases[1] = true;
-                } else if (stat == SINGLE || stat == ERROR) {
+                } else if (stat == SINGLE || stat == ERROR || stat == SPECIAL_SINGLE) {
                     this.advanceBaseRunner(0);
                     this.game_selected.game_state.bases[0] = true;
                 } else if (stat == SACRIFICE_FLY) {

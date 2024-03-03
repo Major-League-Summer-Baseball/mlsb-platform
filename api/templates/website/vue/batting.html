@@ -8,7 +8,7 @@
                     <div class="col-xs-12 col-sm-12">
                         <div class="game__container controls__container">
                             <div class="game__column column__roster">
-                                <ul class="list-group">
+                                <ul class="list-group" id="player-lineup">
                                     <li
                                         v-for="player in game_selected.game_state.batters"
                                         v-bind:id="'player-bats-' + player.player_id"
