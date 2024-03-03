@@ -88,6 +88,7 @@ function removeSavedGame() {
  */
 function startApp(captain_information, game, submission_url, next_step_url) {
     const previous_game = getSavedGame() || game;
+    console.log({previous_game, captain_information});
     const playerEntry = Vue.component('player-row', {
         props: {
             player: Object,
@@ -389,9 +390,17 @@ function startApp(captain_information, game, submission_url, next_step_url) {
             total_score(){
                 return this.game_selected.game_state.bats.reduce((partialSum, bat) => partialSum + bat.rbi, 0);
             }
-        }
+        },
+        created() {
+            if (!this.game_selected.game_state) {
+                this.gameWasSelected(this.game_selected);
+            }
+         },
     });
     if (window.Cypress) {
         window.scoreApp = app;
     }
 }
+
+//
+window.startBattingScoreApp = startApp;
