@@ -3,9 +3,9 @@
     <h2>
         Pending Games
     </h2>
-    <ul class="list-group">
+    <ul class="list-group" id="pending-games">
         {% for (game, team_id) in open_games %}
-        <li class="list-group-item">
+        <li class="list-group-item" id="game-{{game.game_id}}">
             <strong>
                 {{loop.index}}.
             </strong>
@@ -16,6 +16,7 @@
                 hx-target="#website-body"
                 hx-push-url="true"
                 class="btn btn-info"
+                id="game-{{game.game_id}}-score"
             >
                 Score <i class="glyphicon glyphicon-list-alt"></i>
             </a>
@@ -25,6 +26,7 @@
                 hx-target="#website-body"
                 hx-push-url="true"
                 class="btn btn-warning"
+                id="game-{{game.game_id}}-batting"
             >
                 Batting App <i class="glyphicon glyphicon-hdd"></i>
             </a>
@@ -35,9 +37,9 @@
     <h2>
         Submitted Games
     </h2>
-    <ul class="list-group">
+    <ul class="list-group" id="submitted-games">
         {% for (game, team_id) in submitted_games %}
-        <li class="list-group-item">
+        <li class="list-group-item" id="game-{{game.game_id}}">
             <span>
                 {{loop.index}}.
             </span>
@@ -47,7 +49,9 @@
                 hx-delete="{{ url_for('website.captain_remove_submitted_score', year=year, team_id=team_id, game_id=game.game_id)}}"
                 hx-target="#website-body"
                 hx-push-url="true"
-                class="btn btn-danger">
+                class="btn btn-danger"
+                id="game-{{game.game_id}}-resubmit"
+            >
                 Re-submit <i class="glyphicon glyphicon-remove"></i>
             </a>
         </li>
