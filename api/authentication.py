@@ -233,7 +233,7 @@ def get_user_information() -> dict:
     logged_in = are_logged_in()
     teams = get_player_teams()
     player_id = get_player_id()
-    is_captain = any(
+    is_captain = False if teams is None else any(
         team['captain'] is not None and
         team['captain']['player_id'] == player_id for team in teams
     )
