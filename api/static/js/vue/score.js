@@ -51,6 +51,9 @@ function startApp(captain_information, game, submission_url, next_step_url) {
       delimiters: ['[[', ']]'],
       methods: {
           changeNumber: function(direction) {
+              if(!this.number) {
+                this.number = 0;
+              }
               if ((this.number + direction) >= 0) {
                   this.number += direction;
                   if (this.stat == 'ss') {
