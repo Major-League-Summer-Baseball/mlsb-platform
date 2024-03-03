@@ -1,0 +1,297 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+    <div id="battingScoreApp" class="battingScoreApp">
+        <div>
+            <h2 class="battingScoreApp__heading">[[game_selected.home_team]] vs [[game_selected.away_team]]</h2>            
+            <div class="container battingScoreApp__container">
+                <div class="battingScoreApp__game row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="game__container controls__container">
+                            <div class="game__column column__roster">
+                                <ul class="list-group">
+                                    <li
+                                        v-for="player in game_selected.game_state.batters"
+                                        v-bind:id="'player-bats-' + player.player_id"
+                                        class="list-group-item roster__player">
+                                        <span
+                                            id="currentBatter"
+                                            class="badge badge-primary badge-pill"
+                                            v-if="currentBatter(player) && game_selected.game_state.bats.length > 0">
+                                            <span class="glyphicon glyphicon-arrow-left"></span>
+                                        </span>
+                                        <player-row
+                                            :player.sync="player"
+                                            :bats.sync="game_selected.game_state.bats"
+                                            :batters.sync="game_selected.game_state.batters"
+                                            @batterdown="movePlayerSpot(player, false)"
+                                            @batterup="movePlayerSpot(player, true)"
+                                            @removebatter="removeBatter(player)"
+                                            ></player-row>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="game__column column__actions">
+                                <div class="actions__group">
+                                    <button
+                                        title="Single"
+                                        id="singleBat"
+                                        class="btn btn-info actions__bat"
+                                        @click="submitBat(SINGLE)"
+                                        :disabled="submitting" >
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                        S
+                                    </button>
+                                    <button
+                                        title="Sapporo Single"
+                                        id="specialSingeBat"
+                                        class="btn btn-info actions__bat"
+                                        v-if="isBatterEligible()"
+                                        @click="submitBat(SPECIAL_SINGLE)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                        SS
+                                    </button>
+                                    <button
+                                        title="Double"
+                                        id="doubleBat"
+                                        class="btn btn-info actions__bat"
+                                        @click="submitBat(DOUBLE)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                        D
+                                    </button>
+                                    <button
+                                        title="Triple"
+                                        id="tripleBat"
+                                        class="btn btn-info actions__bat"
+                                        @click="submitBat(TRIPLE)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                        T
+                                    </button>
+                                    <button
+                                        title="Homerun"
+                                        id="homerunBat"
+                                        class="btn btn-info actions__bat"
+                                        @click="submitBat(HOMERUN)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-fire"></span>
+                                        HR
+                                    </button>
+                                </div>
+                                <div class="actions__group">
+                                    <button
+                                        title="Fielder error"
+                                        id="errorBat"
+                                        class="btn btn-warning actions__bat"
+                                        @click="submitBat(ERROR)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                        E
+                                    </button>
+                                    <button
+                                        title="Fielder's Choice"
+                                        id="fielderChoiceBat"
+                                        class="btn btn-warning actions__bat"
+                                        @click="submitBat(FIELDER_CHOICE)"
+                                        v-if="game_selected.game_state.bases[0] || game_selected.game_state.bases[1] || game_selected.game_state.bases[2]"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                        FC
+                                    </button>
+                                    <button
+                                        title="Sacrifice-Fly"
+                                        id="sacrificeFlyBat"
+                                        class="btn btn-warning actions__bat"
+                                        @click="submitBat(SACRIFICE_FLY)"
+                                        v-if="game_selected.game_state.bases[2] && game_selected.game_state.outs < 2"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                        SF
+                                    </button>
+                                </div>
+                                <div class="actions__group">
+                                    <button
+                                        title="Fly-out"
+                                        id="flyoutBat"
+                                        class="btn btn-danger actions__bat"
+                                        @click="submitBat(FLY_OUT)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                        FO
+                                    </button>
+                                    <button
+                                        title="Ground-out"
+                                        id="groundoutBat"
+                                        class="btn btn-danger actions__bat"
+                                        @click="submitBat(GROUND_OUT)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                        GO
+                                    </button>
+                                    <button
+                                        title="Strike out"
+                                        id="strikeoutBat" 
+                                        class="btn btn-danger actions__bat"
+                                        @click="submitBat(STRIKE_OUT)"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                        K
+                                    </button>
+                                    <button
+                                        title="Auto out"
+                                        id="autoOutBat" 
+                                        class="btn btn-danger actions__bat"
+                                        @click="gotAnOut()"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                        Auto out
+                                    </button>
+                                </div>
+                                <div class="actions__group">
+                                    <button
+                                        title="Skip the batter"
+                                        id="SkipBatter"
+                                        class="btn btn-default actions__bat"
+                                        @click="nextBatter()"
+                                        :disabled="submitting">
+                                        <span class="glyphicon glyphicon-step-forward"></span>
+                                        Skip
+                                    </button>
+                                    <button
+                                        title="Undo recent bat"
+                                        class="btn btn-default actions__bat"
+                                        id="undoButton"
+                                        @click="undo()"
+                                        :disabled="!can_undo">
+                                        <span class="glyphicon glyphicon-step-backward"></span>
+                                        Undo
+                                    </button>
+                                    <label>Open inning</label>
+                                    <label class="switch">
+                                        <input type="checkbox" @click="toggleOpen()">
+                                        <div class="slider round"></div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="game__column column__status controls__column">
+                                <div class="status__bases">
+                                    <div class="bases__spacing"></div>
+                                    <div id="firstBase" class="bases__base bases__first" :class="{'bases__base--runner':getBase(0)}">
+                                        <span
+                                            title="Advance first-base runner"
+                                            class="glyphicon glyphicon-arrow-left glyphicon--lg glyphicon--success glyphicon--actionable"
+                                            v-if="getBase(0)"
+                                            @click="moveBaseRunner(0)"
+                                            :disabled="submitting"></span>
+                                        <span
+                                            title="First-base runner"
+                                            class="glyphicon glyphicon-user glyphicon--lg glyphicon--info glyphicon--actionable"
+                                            v-if="getBase(0)"
+                                            :disabled="submitting"></span>
+                                        <span
+                                            title="First-base runner is out"
+                                            class="glyphicon glyphicon-remove glyphicon--lg glyphicon--danger glyphicon--actionable"
+                                            v-if="getBase(0)"
+                                            @click="baseRunnerOut(0)"
+                                            :disabled="submitting"></span>
+                                        <span v-if="!getBase(0)">1st</span>
+                                    </div>
+                                    <div id="secondBase" class="bases__base bases__second" :class="{'bases__base--runner':getBase(1)}">
+                                        <span
+                                            title="Advance second-base runner"
+                                            class="glyphicon glyphicon-arrow-left glyphicon--lg glyphicon--success glyphicon--actionable"
+                                            v-if="getBase(1)"
+                                            @click="moveBaseRunner(1)"
+                                            :disabled="submitting"></span>
+                                        <span
+                                            title="Second-base runner"
+                                            class="glyphicon glyphicon-user glyphicon--lg glyphicon--info glyphicon--actionable"
+                                            v-if="getBase(1)"
+                                            :disabled="submitting"></span>
+                                        <span
+                                            title="Second-base runner is out"
+                                            class="glyphicon glyphicon-remove glyphicon--lg glyphicon--danger glyphicon--actionable"
+                                            v-if="getBase(1)"
+                                            @click="baseRunnerOut(1)"
+                                            :disabled="submitting"></span>
+                                        <span v-if="!getBase(1)">2nd</span>
+                                    </div>
+                                    <div id="thirdBase" class="bases__base bases__third" :class="{'bases__base--runner':getBase(2)}">
+                                        <span
+                                            title="Advance third-base runner"
+                                            class="glyphicon glyphicon-arrow-left glyphicon--lg glyphicon--success glyphicon--actionable"
+                                            v-if="getBase(2)"
+                                            @click="moveBaseRunner(2)"
+                                            :disabled="submitting"></span>
+                                        <span
+                                            title="Third-base runner"
+                                            class="glyphicon glyphicon-user glyphicon--lg glyphicon--info glyphicon--actionable"
+                                            v-if="getBase(2)"></span>
+                                        <span
+                                            title="Third-base runner is out"
+                                            class="glyphicon glyphicon-remove glyphicon--lg glyphicon--danger glyphicon--actionable"
+                                            v-if="getBase(2)"
+                                            @click="baseRunnerOut(2)"
+                                            :disabled="submitting"></span>
+                                        <span v-if="!getBase(2)">3rd</span>
+                                    </div>
+                                </div>
+                                <div class="status__text">
+                                    <h4 id="gameScore">Score: [[total_score]]</h4>
+                                    <h4 id="gameInning">Inning: [[game_selected.game_state.inning]]</h4>
+                                    <h4 id="gameOuts">Outs: [[game_selected.game_state.outs]]</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row battingScoreApp__controls submitGameControls">
+                    <div class="col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-centered">
+                        <div class="controls__container">
+                            <button
+                                class="btn btn-lg btn-success"
+                                @click="gameOver()"
+                                id="gameOverButton"
+                                :disabled="submitting">
+                                <span class="glyphicon glyphicon-ok"></span>
+                                Submit game
+                            </button>
+                            <button
+                                class="btn btn-lg btn-warning"
+                                v-on:click="restartGame()"
+                                id="restartButton"
+                                :disabled="submitting">
+                                <span class="glyphicon glyphicon-refresh"></span>
+                                Restart game
+                            </button>
+                            <button
+                                class="btn btn-lg btn-danger"
+                                v-on:click="quitGame()"
+                                id="quitButton"
+                                :disabled="submitting">
+                                <span class="glyphicon glyphicon-remove"></span>
+                                Quit game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(() => {
+            const submission_url = "{{ url_for('website.captain_submit_full_game', team_id=team_id) }}";
+            const next_url = "{{ url_for('website.captain_games', year=year) }}";
+            const captain_info = JSON.parse('{{ captain_info | tojson | safe }}');
+            const game = JSON.parse('{{ game | tojson | safe }}');
+            console.log("Ready to start score app");
+            console.log({captain_info, game, submission_url, next_url});
+            window.startBattingScoreApp(captain_info, game, submission_url, next_url);    
+            window.appReady = true;
+        });
+    </script>
+{% endblock %}
