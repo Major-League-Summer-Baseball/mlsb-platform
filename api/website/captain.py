@@ -11,9 +11,8 @@ from api.authentication import \
 from api.bot.submit_scores import remove_submitted_score, submit_bats, \
     submit_score
 from api.model import Bat, Team, Player, Game
-from api.errors import GameDoesNotExist, NotTeamCaptain
+from api.errors import GameDoesNotExist, NotTeamCaptain, TeamDoesNotExist
 from api.website import website_blueprint
-from datetime import datetime
 import json
 
 
@@ -25,12 +24,14 @@ def captain_score_app_game(year: int, team_id: int, game_id: int):
     """Route for handling Vue score app"""
     team = Team.query.get(team_id)
     game = Game.query.get(game_id)
-    if team is None:
-        msg = f"Player is not a captain of any team {current_user.id}"
-        raise NotTeamCaptain(msg)
     if game is None:
-        msg = f"Games does not exist {game_id}"
-        raise GameDoesNotExist(msg)
+        raise GameDoesNotExist(payload={
+            'details': game_id
+        })
+    if team is None:
+        raise TeamDoesNotExist(payload={
+            'details': team_id
+        })
 
     captain_info = {
         "players": sorted(
@@ -62,11 +63,9 @@ def captain_batting_app_game(year: int, team_id: int, game_id: int):
     team = Team.query.get(team_id)
     game = Game.query.get(game_id)
     if team is None:
-        msg = f"Player is not a captain of any team {current_user.id}"
-        raise NotTeamCaptain(msg)
+        raise NotTeamCaptain(payload={'details': team_id})
     if game is None:
-        msg = f"Games does not exist {game_id}"
-        raise GameDoesNotExist(msg)
+        raise GameDoesNotExist(payload={'details': game_id})
 
     captain_info = {
         "players": sorted(
