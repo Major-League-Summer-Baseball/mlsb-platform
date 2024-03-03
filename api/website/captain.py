@@ -17,7 +17,7 @@ import json
 
 
 @website_blueprint.route(
-    "/captain/game/<int:year>/<int:team_id>/<int:game_id>"
+    "/captain/game/<int:year>/<int:game_id>/<int:team_id>"
 )
 @require_captain
 def captain_score_app_game(year: int, team_id: int, game_id: int):
