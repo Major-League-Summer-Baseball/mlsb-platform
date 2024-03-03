@@ -230,11 +230,19 @@ def find_player(user_info: UserInfo) -> Player:
 
 def get_user_information() -> dict:
     """Returns information about the logged in user."""
+    logged_in = are_logged_in()
+    teams = get_player_teams()
+    player_id = get_player_id()
+    is_captain = any(
+        team['captain'] is not None and
+        team['captain']['player_id'] == player_id for team in teams
+    )
     return {
-        'logged_in': are_logged_in(),
+        'logged_in': logged_in,
         'email': get_login_email(),
         'player_information': get_player_information(),
-        'teams': get_player_teams()
+        'teams': teams,
+        'captain': is_captain
     }
 
 
