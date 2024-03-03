@@ -28,6 +28,7 @@ class BaseException(Exception):
 
     def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
+
         self.message = self.message
         if status_code is not None:
             self.status_code = status_code
@@ -37,6 +38,9 @@ class BaseException(Exception):
         rv = dict(self.payload or ())
         rv['message'] = self.message
         return rv
+
+    def __str__(self):
+        return f"{self.status_code}:{self.message} with {self.payload}"
 
 
 class FunDoesNotExist(BaseException):

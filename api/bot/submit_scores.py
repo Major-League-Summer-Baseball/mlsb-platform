@@ -101,6 +101,9 @@ def submit_score(
                 unassigned_id, team.id, game.id, "fo", inning=1, rbi=0
             )
         )
+    elif score < (0 if homeruns is None else len(homeruns)):
+        raise InvalidField(payload={'details': "More hr than score"})
+
     for player_id in homeruns if homeruns is not None else []:
         # add the homeruns
         DB.session.add(
@@ -109,6 +112,7 @@ def submit_score(
             )
         )
         score -= 1
+
     for player_id in ss if ss is not None else []:
         # add the special singles
         try:
@@ -125,6 +129,7 @@ def submit_score(
         )
         DB.session.add(bat)
         score -= 1
+
     DB.session.commit()  # good to add the submission
     handle_table_change(Tables.GAME)
     return True

@@ -71,7 +71,7 @@ class testSubmitScores(TestSetup):
                 'ss': []
             }
             expect = {
-                'details': 'More hr than score',
+                'details': "More hr than score",
                 'message': InvalidField.message
             }
             rv = self.app.post(route, json=data, headers=headers)
