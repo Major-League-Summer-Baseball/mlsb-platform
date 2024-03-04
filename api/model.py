@@ -717,6 +717,16 @@ class Player(UserMixin, DB.Model):
         return Player.query.filter(
             func.lower(Player.email) == Player.normalize_email(email)
         ).first()
+    
+    @classmethod
+    def search_player(cls, search_phrase: str) -> list["Player"]:
+        """Returns all players who meet the search phrase"""
+        return Player.query.filter(
+            or_(
+                func.lower(Player.email).contains(search_phrase.lower()),
+                func.lower(Player.name).contains(search_phrase.lower())
+            )
+        ).all()
 
     @classmethod
     def is_email_unique(cls, email: str) -> bool:

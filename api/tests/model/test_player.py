@@ -138,3 +138,26 @@ def test_not_captain_no_teams(mlsb_app, player_factory, team_factory):
         team_factory(year=date.today().year - 1, captain=player)
         teams = Player.get_teams_captained(not_captain.id)
         assert len(teams) == 0
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('player_factory')
+def test_search_player(mlsb_app, player_factory):
+    with mlsb_app.app_context():
+        search_phrase = "some-secret-phrase"
+        player_name = player_factory(
+            name=search_phrase.upper() + str(uuid.uuid4())
+        )
+        player_email = player_factory(
+            email=search_phrase.upper() + str(uuid.uuid4()) + "@mlsb.ca"
+        )
+        not_matched = player_factory(
+            name="not", email=f"not{str(uuid.uuid4())}@mlsb.ca"
+        )
+        players = Player.search_player(search_phrase)
+        assert len(players) >= 2
+        player_ids = [player.id for player in players]
+        assert player_name.id in player_ids
+        assert player_email.id in player_ids
+        assert not_matched.id not in player_ids
+
