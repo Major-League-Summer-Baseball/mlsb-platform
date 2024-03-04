@@ -73,24 +73,14 @@ def join_league():
     if player is not None:
         login_user(player)
         return redirect(url_for("homepage"))
-    # double check this is not refresh page issue
-    pending_request = JoinLeagueRequest.query.filter(
-        func.lower(JoinLeagueRequest.email) == email.lower()).first()
-    if pending_request is not None:
-        raise HaveLeagueRequestException("Double submit on form")
-    # ensure the selected team exists
-    team_id = request.form.get("team", None)
-    if team_id is None:
-        raise TeamDoesNotExist(f"Team does not exist - {team_id}")
-    team = Team.query.get(team_id)
-    if team is None:
-        raise TeamDoesNotExist(f"Team does not exist - {team_id}")
-
-    # save the request
-    player_name = request.form.get("name", None)
     gender = "F" if request.form.get("is_female", False) else "M"
-    league_request = JoinLeagueRequest(email, player_name, team, gender)
-    DB.session.add(league_request)
+    player_name = request.form.get("name", None)
+    team_id = request.form.get("team", None)
+
+    # create a request
+    DB.session.add(
+        JoinLeagueRequest.create_request(player_name, email, team_id, gender)
+    )
     DB.session.commit()
     return redirect(url_for("website.league_request_sent"))
 
