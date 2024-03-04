@@ -1906,3 +1906,24 @@ class JoinLeagueRequest(DB.Model):
             "player_name": self.name,
             "gender": self.gender
         }
+
+    @classmethod
+    def create_request(
+        cls,
+        player_name: str,
+        player_email: str,
+        gender: str,
+        team_id: int,
+        ) -> 'JoinLeagueRequest':
+        """Create a join league request"""
+        pending_request = JoinLeagueRequest.query.filter(
+            func.lower(JoinLeagueRequest.email) == player_email.lower()
+        ).first()
+        if pending_request is not None:
+            raise HaveLeagueRequestException(
+                payload={'detail': "Already pending request"}
+            )
+
+        return JoinLeagueRequest(
+            player_email, player_name, Team.query.get(team_id), gender
+        )

@@ -1,5 +1,6 @@
 import pytest
-from api.errors import InvalidField, TeamDoesNotExist
+from api.errors import HaveLeagueRequestException, InvalidField, \
+    TeamDoesNotExist
 from api.model import JoinLeagueRequest
 
 
@@ -111,3 +112,53 @@ def test_accepted_request_reuse_existing_player(
         )
         accepted_player = request.accept_request()
         assert accepted_player.id == player.id
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
+def test_create_request(
+    mlsb_app,
+    team_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        team = team_factory()
+        player = player_factory()
+        request = JoinLeagueRequest.create_request(
+            player.name,
+            player.email,
+            player.gender,
+            team.id
+        )
+        assert request.team_id == team.id
+        assert request.email == player.email
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('join_league_request_factory')
+def test_cannot_create_duplicate_request(
+    mlsb_app,
+    team_factory,
+    player_factory,
+    join_league_request_factory
+):
+    with mlsb_app.app_context():
+        team = team_factory()
+        player = player_factory()
+        request = join_league_request_factory(
+            team,
+            email=player.email,
+            name=player.name,
+            gender=player.gender
+        )
+
+        with pytest.raises(HaveLeagueRequestException):
+            JoinLeagueRequest.create_request(
+                player.name,
+                player.email,
+                player.gender,
+                team.id
+            )
