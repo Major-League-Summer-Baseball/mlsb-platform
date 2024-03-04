@@ -59,6 +59,15 @@ p.accent{
   background: #f059cb;
 }
 
+.btn-secondary {
+  background: #1ebff1;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: rgb(30,191,241, 1);
+}
+
 li.presentation a{
   background-color: #1ebff1;
   color: white;
