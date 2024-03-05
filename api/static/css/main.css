@@ -48,6 +48,14 @@ body {
     border-radius: 50%;
 }
 
+.mr-2 {
+  margin-right: 36px;
+}
+
+.mt-2 {
+  margin-top: 36px;
+}
+
 .games-container {
     border-bottom: 1px solid #dcdcdc;
     color: white;
@@ -568,6 +576,14 @@ ul.social_icons li  a i{
   height:100%;
   max-height:150px;
   border-radius: 60px
+}
+
+.rosterRequests {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .rosterManagement {
