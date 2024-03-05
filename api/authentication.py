@@ -98,9 +98,7 @@ def oauth_service_provider_logged_in(blueprint: Blueprint, token: str) -> bool:
         # remember their email in session in case they want to join
         session["oauth_email"] = user_info["email"]
         # check if they have a pending request
-        is_pending = JoinLeagueRequest.query.filter(
-            and_(JoinLeagueRequest.email == session["oauth_email"],
-                 JoinLeagueRequest.pending == True)).first()
+        is_pending = JoinLeagueRequest.find_request(session["oauth_email"])
         if is_pending is not None:
             raise HaveLeagueRequestException()
         # see if they part of the legaue

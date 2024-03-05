@@ -1927,3 +1927,13 @@ class JoinLeagueRequest(DB.Model):
         return JoinLeagueRequest(
             player_email, player_name, Team.query.get(team_id), gender
         )
+
+    @classmethod
+    def find_request(cls, player_email: str) -> 'JoinLeagueRequest':
+        """Find a pending request for the given email"""
+        return JoinLeagueRequest.query.filter(
+            and_(
+                JoinLeagueRequest.email == player_email,
+                JoinLeagueRequest.pending == True
+            )
+        ).first()

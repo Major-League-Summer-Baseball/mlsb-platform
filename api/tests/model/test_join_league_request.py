@@ -162,3 +162,29 @@ def test_cannot_create_duplicate_request(
                 player.gender,
                 team.id
             )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('join_league_request_factory')
+def test_find_request_by_email(
+    mlsb_app,
+    team_factory,
+    player_factory,
+    join_league_request_factory
+):
+    with mlsb_app.app_context():
+        team = team_factory()
+        player = player_factory()
+        join_league_request_factory(
+            team,
+            email=player.email,
+            name=player.name,
+            gender=player.gender
+        )
+        request = JoinLeagueRequest.find_request(player.email)
+        assert request.email == player.email
+        assert request.team_id == team.id
+        assert request.gender == player.gender
+        assert request.name == player.name
