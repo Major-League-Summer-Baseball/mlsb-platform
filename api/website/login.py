@@ -88,7 +88,7 @@ def join_league():
 @website_blueprint.route("/request_sent", methods=["GET"])
 def league_request_sent():
     message = ("Submitted request to join."
-               " Please wait until a convenor responds")
+               " Please wait until a convenor/captain responds")
     year = date.today().year
     return render_template("website/error.html",
                            route=Routes,
