@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related a team. """
-from flask import render_template, send_from_directory
+from flask import redirect, render_template, send_from_directory, url_for
 from sqlalchemy import func
 from api.extensions import DB
 from api.model import Team, Player, JoinLeagueRequest
@@ -18,6 +18,20 @@ from flask_login import current_user
 from flask import request, Response
 import os.path
 import json
+
+
+@website_blueprint.route("/website/team/<int:team_id>/join", methods=["POST"])
+def join_team_request(team_id: int):
+    """Form Request to join a given team"""
+    gender = "F" if request.form.get("is_female", False) else "M"
+    player_name = request.form.get("name", None)
+    email = request.form.get("email")
+    # create a request
+    DB.session.add(
+        JoinLeagueRequest.create_request(player_name, email, gender, team_id)
+    )
+    DB.session.commit()
+    return redirect(url_for("website.league_request_sent"))
 
 
 @website_blueprint.route("/website/team/picture/<int:team>")
