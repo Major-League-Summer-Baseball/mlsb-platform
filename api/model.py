@@ -1863,7 +1863,7 @@ class JoinLeagueRequest(DB.Model):
         validate(
             -1 if team is None or not isinstance(team, Team) else team.id,
             lambda id: Team.does_team_exist(id),
-            TeamDoesNotExist("Given team does not exist")
+            TeamDoesNotExist(payload={"details": "Given team does not exist"})
         )
 
         self.email = Player.normalize_email(email)
@@ -1876,7 +1876,9 @@ class JoinLeagueRequest(DB.Model):
         """Accept the request and add the player to the team"""
         # create a player if they do not exit already
         if not self.pending:
-            raise HaveLeagueRequestException("Request already submitted")
+            raise HaveLeagueRequestException(
+                payload={"details": "Request already submitted"}
+            )
 
         player = Player.find_by_email(self.email)
         if player is None:
