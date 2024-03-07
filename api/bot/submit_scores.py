@@ -7,7 +7,7 @@ from api.model import Player, Bat, Game, Team
 from api.authentication import requires_admin
 from api.errors import InvalidField, NotTeamCaptain, GameDoesNotExist, \
     PlayerNotSubscribed, TeamDoesNotExist
-from api.variables import UNASSIGNED, UNASSIGNED_EMAIL
+from api.variables import UNASSIGNED
 from api.cached_items import handle_table_change
 from api.tables import Tables
 parser = reqparse.RequestParser()
@@ -70,11 +70,8 @@ def submit_score(
         ss: List[int]
 ) -> bool:
     """Captain submit a score"""
-    unassigned_player = Player.query.filter_by(
-        email=UNASSIGNED_EMAIL).first()
-    unassigned_id = UNASSIGNED
-    if unassigned_player is not None:
-        unassigned_id = unassigned_player.id
+    unassigned = Player.get_unassigned_player()
+    unassigned_id = UNASSIGNED if unassigned is None else unassigned.id
 
     # check if any of the given ids do not exist
     game = Game.query.get(game_id)

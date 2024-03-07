@@ -3,6 +3,7 @@ import uuid
 from datetime import date
 from api.errors import InvalidField, NonUniqueEmail
 from api.model import Player
+from api.variables import UNASSIGNED_EMAIL
 
 
 @pytest.mark.parametrize("player_date", [
@@ -160,4 +161,20 @@ def test_search_player(mlsb_app, player_factory):
         assert player_name.id in player_ids
         assert player_email.id in player_ids
         assert not_matched.id not in player_ids
+
+
+@pytest.mark.usefixtures('mlsb_app')
+def test_search_player_does_not_include_unassigned(mlsb_app):
+    with mlsb_app.app_context():
+        search_phrase = UNASSIGNED_EMAIL
+        players = Player.search_player(search_phrase)
+        assert len(players) == 0
+
+
+@pytest.mark.usefixtures('mlsb_app')
+def test_get_unassigned_player(mlsb_app):
+    with mlsb_app.app_context():
+        player = Player.get_unassigned_player()
+        assert player is not None
+        assert player.email == Player.normalize_email(UNASSIGNED_EMAIL)
 

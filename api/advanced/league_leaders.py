@@ -5,7 +5,6 @@ from datetime import datetime, date, time
 from sqlalchemy.sql import func
 from api.extensions import DB
 from api.model import Player, Bat, Game, Team
-from api.variables import UNASSIGNED_EMAIL
 from api.validators import hit_validator
 from api.errors import InvalidField
 parser = reqparse.RequestParser()
@@ -41,10 +40,10 @@ def get_leaders(hit, year=None):
         d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
-    unassigned_id = 0
-    unassigned = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
-    if unassigned is not None:
-        unassigned_id = unassigned.id
+    
+    unassigned = Player.get_unassigned_player()
+    unassigned_id = 0 if unassigned is None else unassigned.id
+
     bats = (DB.session.query(Bat.player_id,
                              hits,
                              Bat.team_id,
@@ -105,10 +104,10 @@ def get_leaders_not_grouped_by_team(hit, year=None):
         d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
-    unassigned_id = 0
-    unassigned = Player.query.filter_by(email=UNASSIGNED_EMAIL).first()
-    if unassigned is not None:
-        unassigned_id = unassigned.id
+
+    unassigned = Player.get_unassigned_player()
+    unassigned_id = 0 if unassigned is None else unassigned.id
+
     bats = (DB.session.query(Bat.player_id,
                              hits,
                              Bat.classification)

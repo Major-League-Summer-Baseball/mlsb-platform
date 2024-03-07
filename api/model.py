@@ -14,6 +14,7 @@ from api.validators import rbi_validator, hit_validator, inning_validator, \
     string_validator, date_validator, time_validator, \
     field_validator, year_validator, gender_validator, \
     float_validator, boolean_validator
+from api.variables import UNASSIGNED_EMAIL
 
 
 roster = DB.Table('roster',
@@ -722,11 +723,19 @@ class Player(UserMixin, DB.Model):
     def search_player(cls, search_phrase: str) -> list["Player"]:
         """Returns all players who meet the search phrase"""
         return Player.query.filter(
-            or_(
-                func.lower(Player.email).contains(search_phrase.lower()),
-                func.lower(Player.name).contains(search_phrase.lower())
+            and_(
+                or_(
+                    func.lower(Player.email).contains(search_phrase.lower()),
+                    func.lower(Player.name).contains(search_phrase.lower())
+                ),
+                not_(Player.email.ilike(UNASSIGNED_EMAIL))
             )
         ).all()
+
+    @classmethod
+    def get_unassigned_player(cls) -> "Player":
+        """Returns the player used for unassigned bats"""
+        return Player.query.filter(Player.email.ilike(UNASSIGNED_EMAIL)).first()
 
     @classmethod
     def is_email_unique(cls, email: str) -> bool:

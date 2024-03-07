@@ -142,36 +142,44 @@ def captain_respond_league_request(team_id, request_id):
 def team_page(year, team_id):
     team = get_team(year, team_id)
     if team is None:
-        return render_template("website/notFound.html",
-                               route=Routes,
-                               base=base_data(year),
-                               team=team,
-                               title="Team not found",
-                               year=year,
-                               user_info=get_user_information())
+        return render_template(
+            "website/notFound.html",
+            route=Routes,
+            base=base_data(year),
+            team=team,
+            title="Team not found",
+            year=year,
+            user_info=get_user_information()
+        )
     team_authorization = get_team_authorization(Team.query.get(team_id))
     team_requests = []
     all_players = []
     if team_authorization['is_captain']:
-        team_requests = (JoinLeagueRequest.query
-                         .filter(JoinLeagueRequest.team_id == team_id)
-                         .filter(JoinLeagueRequest.pending == True)).all()
+        team_requests = (
+            JoinLeagueRequest.query
+                .filter(JoinLeagueRequest.team_id == team_id)
+                .filter(JoinLeagueRequest.pending == True)
+        ).all()
         team_requests = [request.json() for request in team_requests]
         all_players = [
             player.admin_json()
             for player in Player.query.filter(
-                func.lower(Player.email) != func.lower(UNASSIGNED_EMAIL)).all()]
-    return render_template("website/team.html",
-                           route=Routes,
-                           base=base_data(year),
-                           team=team,
-                           team_id=team_id,
-                           title="Team - " + str(team['name']),
-                           year=year,
-                           user_info=get_user_information(),
-                           team_requests=team_requests,
-                           all_players=all_players,
-                           team_authorization=team_authorization)
+                not_(Player.email.ilike(UNASSIGNED_EMAIL))
+            ).all()
+        ]
+    return render_template(
+        "website/team.html",
+        route=Routes,
+        base=base_data(year),
+        team=team,
+        team_id=team_id,
+        title="Team - " + str(team['name']),
+        year=year,
+        user_info=get_user_information(),
+        team_requests=team_requests,
+        all_players=all_players,
+        team_authorization=team_authorization
+    )
 
 
 @website_blueprint.route("/website/player<int:year>/<int:player_id>")
