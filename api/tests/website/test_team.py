@@ -113,8 +113,10 @@ def test_team_page_captain(
         response = client.get(url, follow_redirects=True)
         assert response.status_code == 200
         data = response.data.decode("utf-8")
-        # email should be visible
-        assert teammate.email in data
+
+        # see controls for adding players
+        assert "Add Players" in data
+        assert 'id="rosterManagement"' in data
 
 
 @pytest.mark.usefixtures('client')
