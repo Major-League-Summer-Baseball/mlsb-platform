@@ -317,6 +317,11 @@ hr {
   margin-top: 10px;
 }
 
+.btn-mlsb {
+  padding: 8px 20px;
+  margin-top: 10px;
+}
+
 .btn-primary:hover,
 .btn-primary:focus{
   outline: none;
@@ -714,6 +719,10 @@ a {
  .glyphicon.spinning {
   animation: spin 1s infinite linear;
   -webkit-animation: spin2 1s infinite linear;
+}
+
+.hoverable:hover {
+  cursor: pointer;
 }
 
 @keyframes spin {
