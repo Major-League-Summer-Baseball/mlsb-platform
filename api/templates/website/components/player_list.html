@@ -1,0 +1,20 @@
+<ul class="list-group">
+    {% for player in players %}
+    <li
+        _="on click send selectedPlayer(player_id: {{player.player_id}}) to the closest parent <div/>"
+        class="list-group-item hoverable"
+    >
+        <span class="badge">+</span>
+        {{player.player_name}} ({{player.email}}) - {{player.first_year}}
+    </li>
+    {% endfor %}
+    {% if show_add %}
+        <li
+            _="on click send createNewPlayer to the closest parent <div/>"
+            class="list-group-item hoverable"
+        >
+            <span class="badge">+</span>
+            Add New Player
+        </li>
+    {% endif %}
+</ul>

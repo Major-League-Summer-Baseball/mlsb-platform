@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related a team. """
+from datetime import date
 from flask import redirect, render_template, send_from_directory, url_for
-from sqlalchemy import func
+from sqlalchemy import not_
 from api.extensions import DB
 from api.model import Team, Player, JoinLeagueRequest
-from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES
+from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES, PLAYER_PAGE_SIZE
 from api.website.helpers import get_team
 from api.routes import Routes
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_team_map
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
-    get_user_information, api_require_captain, \
+    get_user_information, api_require_captain, require_captain,\
     get_team_authorization, api_require_login
 from api.website import website_blueprint
 from flask_login import current_user
@@ -34,6 +35,7 @@ def join_team_request(team_id: int):
     return redirect(url_for("website.league_request_sent"))
 
 
+
 @website_blueprint.route("/website/team/picture/<int:team>")
 @website_blueprint.route("/website/team/picture/<team>")
 def team_picture(team):
@@ -53,6 +55,30 @@ def team_picture(team):
     else:
         return send_from_directory(fp, NOTFOUND)
 
+
+@website_blueprint.route("/website/<int:team_id>/search_players", methods=["POST"])
+@require_captain
+def search_players(team_id):
+    # ensure only search by logged in and 
+    if request.is_json:
+        search_phrase = request.get_json()['player']
+    else:
+        search_phrase = request.form['player']
+    players = Player.search_player(search_phrase)
+    player_data = []
+    for player in players[0:PLAYER_PAGE_SIZE]:
+        # include email since only should be searchable by captains
+        json = player.admin_json()
+        json['first_year'] = min(
+            [team.year for team in player.teams] + [date.today().year]
+        )
+        player_data.append(json)
+
+    return render_template(
+        "website/components/player_list.html",
+        players=player_data,
+        show_add=len(players) <= PLAYER_PAGE_SIZE
+    )
 
 @website_blueprint.route(
     "/website/teams/<int:team_id>/join_team", methods=["POST"]

@@ -33,3 +33,4 @@ FIELDS = ["WP1", "WP2", "WP3", "WP4", "Hillside Upper", "Hillside Lower"]
 
 # the page size for the API paginated responses
 PAGE_SIZE = 30
+PLAYER_PAGE_SIZE = 5
