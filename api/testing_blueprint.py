@@ -85,8 +85,9 @@ def create_league_request():
 def get_active_team():
     """Get some active team."""
     year = datetime.now().year
-    team = Team.query.filter(and_(Team.year == year,
-                                  Team.player_id is not None)).first()
+    team = Team.query.filter(
+        and_(Team.year == year, Team.player_id is not None)
+    ).first()
     if team is None:
         raise TeamDoesNotExist("No team for current year")
     return Response(
