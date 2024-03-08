@@ -591,6 +591,14 @@ ul.social_icons li  a i{
   display: flex;
 }
 
+.d-inline-block {
+  display: inline-block;
+}
+
+.hidden {
+  display: none;
+}
+
 .rosterRequests {
   display: flex;
   flex-direction: row;
