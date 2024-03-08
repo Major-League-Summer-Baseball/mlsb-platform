@@ -351,6 +351,15 @@ def api_require_captain(f: Callable) -> Callable:
     return decorated
 
 
+def require_login(f: Callable) -> Callable:
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return redirect(url_for("website.loginpage"))
+        return f(*args, **kwargs)
+    return decorated
+
+
 def require_captain(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
