@@ -40,7 +40,7 @@ def get_leaders(hit, year=None):
         d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
-    
+
     unassigned = Player.get_unassigned_player()
     unassigned_id = 0 if unassigned is None else unassigned.id
 

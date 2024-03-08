@@ -148,7 +148,7 @@ def test_cannot_create_duplicate_request(
     with mlsb_app.app_context():
         team = team_factory()
         player = player_factory()
-        request = join_league_request_factory(
+        join_league_request_factory(
             team,
             email=player.email,
             name=player.name,

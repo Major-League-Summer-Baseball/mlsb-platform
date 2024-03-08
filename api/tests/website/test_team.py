@@ -2,8 +2,7 @@ import pytest
 import uuid
 from datetime import date
 from flask import url_for
-from api.helper import loads
-from api.model import JoinLeagueRequest, Team, Player
+from api.model import JoinLeagueRequest, Team
 
 
 THIS_YEAR = date.today().year

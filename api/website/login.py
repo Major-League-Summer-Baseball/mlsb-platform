@@ -3,15 +3,13 @@
 from flask import render_template, session, request, url_for, redirect
 from flask_login import \
     current_user, logout_user, login_required, login_user
-from sqlalchemy import func
 from datetime import date
 from api.extensions import DB
-from api.errors import \
-    HaveLeagueRequestException, TeamDoesNotExist, OAuthException
+from api.errors import OAuthException
 from api.authentication import \
     is_facebook_supported, is_github_supported, is_gmail_supported, \
     is_azure_supported
-from api.model import JoinLeagueRequest, Player, Team
+from api.model import JoinLeagueRequest, Player
 from api.routes import Routes
 from api.logging import LOGGER
 from api.cached_items import get_website_base_data as get_base_data

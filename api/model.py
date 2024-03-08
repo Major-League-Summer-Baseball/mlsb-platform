@@ -718,7 +718,7 @@ class Player(UserMixin, DB.Model):
         return Player.query.filter(
             func.lower(Player.email) == Player.normalize_email(email)
         ).first()
-    
+
     @classmethod
     def search_player(cls, search_phrase: str) -> list["Player"]:
         """Returns all players who meet the search phrase"""
@@ -1925,7 +1925,7 @@ class JoinLeagueRequest(DB.Model):
         player_email: str,
         gender: str,
         team_id: int,
-        ) -> 'JoinLeagueRequest':
+    ) -> 'JoinLeagueRequest':
         """Create a join league request"""
         pending_request = JoinLeagueRequest.query.filter(
             func.lower(JoinLeagueRequest.email) == player_email.lower()

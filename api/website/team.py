@@ -19,6 +19,7 @@ from flask_login import current_user
 from flask import request
 import os.path
 
+
 @website_blueprint.route("/website/team/picture/<int:team>")
 @website_blueprint.route("/website/team/picture/<team>")
 def team_picture(team):
@@ -58,8 +59,8 @@ def team_page(year, team_id):
     if team_authorization['is_captain']:
         team_requests = (
             JoinLeagueRequest.query
-                .filter(JoinLeagueRequest.team_id == team_id)
-                .filter(JoinLeagueRequest.pending == True)
+            .filter(JoinLeagueRequest.team_id == team_id)
+            .filter(JoinLeagueRequest.pending == True)
         ).all()
         team_requests = [request.json() for request in team_requests]
         all_players = [
@@ -143,7 +144,7 @@ def player_page(year, player_id):
     "/website/<int:year>/team/<int:team_id>/add-new-player", methods=["POST"]
 )
 @require_captain
-def add_new_player(year:int, team_id: int):
+def add_new_player(year: int, team_id: int):
     """Form Request to add a new player"""
     gender = "F" if request.form.get("is_female", False) else "M"
     player_name = request.form.get("name", None)
@@ -170,7 +171,7 @@ def add_new_player(year:int, team_id: int):
 )
 @require_captain
 def search_players(team_id):
-    # ensure only search by logged in and 
+    # ensure only search by logged in captain
     if request.is_json:
         search_phrase = request.get_json()['player']
     else:
@@ -247,7 +248,7 @@ def team_add_player_form(year, team_id):
     success = team.insert_player(player_id)
     if not success:
         raise PlayerNotOnTeam(payload={
-            'details':  player_id
+            'details': player_id
         })
 
     DB.session.commit()
@@ -268,7 +269,7 @@ def captain_respond_league_request_form(year, team_id):
         raise RequestDoesNotExist(payload={
             'details': request_id
         })
-        
+
     if accept:
         league_request.accept_request()
     else:

@@ -177,4 +177,3 @@ def test_get_unassigned_player(mlsb_app):
         player = Player.get_unassigned_player()
         assert player is not None
         assert player.email == Player.normalize_email(UNASSIGNED_EMAIL)
-

@@ -103,6 +103,7 @@ class BatDoesNotExist(BaseException):
     status_code = BDNESC
     message = "Bat does not exist"
 
+
 class RequestDoesNotExist(BaseException):
     status_code = JLRDNESC
     message = "League Request does not exist"

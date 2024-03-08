@@ -1,10 +1,9 @@
 """Test all the captain functionality of the team page."""
 import pytest
-import uuid
 from datetime import date
 from flask import url_for
 from api.helper import loads
-from api.model import JoinLeagueRequest, Team, Player
+from api.model import Player
 
 
 THIS_YEAR = date.today().year

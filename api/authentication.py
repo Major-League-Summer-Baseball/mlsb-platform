@@ -1,6 +1,6 @@
 from typing import TypedDict, Callable
 from functools import wraps
-from sqlalchemy.sql import func, and_
+from sqlalchemy.sql import func
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import make_github_blueprint
 from flask_dance.contrib.facebook import make_facebook_blueprint
