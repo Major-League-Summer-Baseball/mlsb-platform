@@ -9,7 +9,8 @@ from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist, \
     TeamAlreadyHasCaptain, PlayerNotSubscribed, \
     BadRequestError, TeamNotPartOfLeague, DivisionDoesNotExist, \
     OAuthException, HaveLeagueRequestException, NotPartOfLeagueException, \
-    LeagueEventDateDoesNotExist, LeagueEventDoesNotExist
+    LeagueEventDateDoesNotExist, LeagueEventDoesNotExist, \
+    RequestDoesNotExist
 from api.model import JoinLeagueRequest, Team
 from api.logging import LOGGER
 from api.routes import Routes
@@ -60,6 +61,7 @@ def handle_not_part_of_league():
 @current_app.errorhandler(GameDoesNotExist)
 @current_app.errorhandler(PlayerDoesNotExist)
 @current_app.errorhandler(TeamDoesNotExist)
+@current_app.errorhandler(RequestDoesNotExist)
 @current_app.errorhandler(NonUniqueEmail)
 @current_app.errorhandler(InvalidField)
 @current_app.errorhandler(PlayerNotOnTeam)

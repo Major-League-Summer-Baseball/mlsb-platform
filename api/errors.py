@@ -6,6 +6,7 @@ LDNESC = 404
 GDNESC = 404
 SDNESC = 404
 BDNESC = 404
+JLRDNESC = 404
 EDNESC = 404
 FDNESC = 404
 NUESC = 400
@@ -101,6 +102,10 @@ class TeamAlreadyHasCaptain(BaseException):
 class BatDoesNotExist(BaseException):
     status_code = BDNESC
     message = "Bat does not exist"
+
+class RequestDoesNotExist(BaseException):
+    status_code = JLRDNESC
+    message = "League Request does not exist"
 
 
 class EspysDoesNotExist(BaseException):
