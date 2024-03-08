@@ -3,6 +3,7 @@
 from datetime import date
 from flask import redirect, render_template, send_from_directory, url_for
 from sqlalchemy import not_
+from api.errors import PlayerNotOnTeam, RequestDoesNotExist, TeamDoesNotExist
 from api.extensions import DB
 from api.model import Team, Player, JoinLeagueRequest
 from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES, PLAYER_PAGE_SIZE
@@ -12,29 +13,11 @@ from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_team_map
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
-    get_user_information, api_require_captain, require_captain,\
-    get_team_authorization, api_require_login
+    get_user_information, get_team_authorization, require_captain, require_login
 from api.website import website_blueprint
 from flask_login import current_user
-from flask import request, Response
+from flask import request
 import os.path
-import json
-
-
-@website_blueprint.route("/website/team/<int:team_id>/join", methods=["POST"])
-def join_team_request(team_id: int):
-    """Form Request to join a given team"""
-    gender = "F" if request.form.get("is_female", False) else "M"
-    player_name = request.form.get("name", None)
-    email = request.form.get("email")
-    # create a request
-    DB.session.add(
-        JoinLeagueRequest.create_request(player_name, email, gender, team_id)
-    )
-    DB.session.commit()
-    return redirect(url_for("website.league_request_sent"))
-
-
 
 @website_blueprint.route("/website/team/picture/<int:team>")
 @website_blueprint.route("/website/team/picture/<team>")
@@ -54,114 +37,6 @@ def team_picture(team):
         return send_from_directory(fp, name)
     else:
         return send_from_directory(fp, NOTFOUND)
-
-
-@website_blueprint.route("/website/<int:team_id>/search_players", methods=["POST"])
-@require_captain
-def search_players(team_id):
-    # ensure only search by logged in and 
-    if request.is_json:
-        search_phrase = request.get_json()['player']
-    else:
-        search_phrase = request.form['player']
-    players = Player.search_player(search_phrase)
-    player_data = []
-    for player in players[0:PLAYER_PAGE_SIZE]:
-        # include email since only should be searchable by captains
-        json = player.admin_json()
-        json['first_year'] = min(
-            [team.year for team in player.teams] + [date.today().year]
-        )
-        player_data.append(json)
-
-    return render_template(
-        "website/components/player_list.html",
-        players=player_data,
-        show_add=len(players) <= PLAYER_PAGE_SIZE
-    )
-
-@website_blueprint.route(
-    "/website/teams/<int:team_id>/join_team", methods=["POST"]
-)
-@api_require_login
-def request_to_join_team(team_id):
-    # know the team will be found since decorator checks team exists
-    team = Team.query.get(team_id)
-    if team is None:
-        return Response(
-            json.dumps("Team not found"),
-            status=404,
-            mimetype="application/json"
-        )
-    join = JoinLeagueRequest(
-        current_user.email, current_user.name, team, current_user.gender)
-    DB.session.add(join)
-    DB.session.commit()
-    return Response(
-        json.dumps(join.json()), status=200, mimetype="application/json")
-
-
-@website_blueprint.route(
-    "/website/teams/<int:team_id>/drop_player/<int:player_id>",
-    methods=["POST"]
-)
-@api_require_captain
-def team_remove_player(team_id, player_id):
-    # know teams exist since user is captain
-    team = Team.query.get(team_id)
-    team.remove_player(player_id)
-    DB.session.commit()
-    return Response(
-        json.dumps(player_id),
-        status=200,
-        mimetype="application/json"
-    )
-
-
-@website_blueprint.route(
-    "/website/teams/<int:team_id>/add_player/<int:player_id>",
-    methods=["POST"]
-)
-@api_require_captain
-def team_add_player(team_id, player_id):
-    # know teams exist since user is captain
-    team = Team.query.get(team_id)
-    success = team.insert_player(player_id)
-    if not success:
-        return Response(
-            json.dumps("Player already on team"),
-            status=404,
-            mimetype="application/json"
-        )
-    DB.session.commit()
-    return Response(
-        json.dumps(player_id),
-        status=200,
-        mimetype="application/json"
-    )
-
-
-@website_blueprint.route(
-    "/website/teams/<int:team_id>/request_response/<int:request_id>",
-    methods=["POST"]
-)
-@api_require_captain
-def captain_respond_league_request(team_id, request_id):
-    league_request = JoinLeagueRequest.query.get(request_id)
-    if league_request is None or not league_request.pending:
-        return Response(
-            json.dumps(False),
-            status=200,
-            mimetype="application/json"
-        )
-    accept = request.get_json()['accept']
-    if accept:
-        league_request.accept_request()
-    else:
-        league_request.decline_request()
-    return Response(
-        json.dumps(True), status=200, mimetype="application/json"
-    )
 
 
 @website_blueprint.route("/website/teams/<int:year>/<int:team_id>")
@@ -212,12 +87,14 @@ def team_page(year, team_id):
 def player_page(year, player_id):
     player = Player.query.get(player_id)
     if player is None:
-        return render_template("website/notFound.html",
-                               route=Routes,
-                               base=base_data(year),
-                               title="Player not found",
-                               year=year,
-                               user_info=get_user_information())
+        return render_template(
+            "website/notFound.html",
+            route=Routes,
+            base=base_data(year),
+            title="Player not found",
+            year=year,
+            user_info=get_user_information()
+        )
     name = player.name
     years = []
     for team in player.teams:
@@ -250,11 +127,151 @@ def player_page(year, player_id):
         player['team_id'] = entry[1]
         player['year'] = entry[0]
         stats.append(player)
-    return render_template("website/player.html",
-                           route=Routes,
-                           base=base_data(year),
-                           stats=stats,
-                           title="Player Stats",
-                           name=name,
-                           year=year,
-                           user_info=get_user_information())
+    return render_template(
+        "website/player.html",
+        route=Routes,
+        base=base_data(year),
+        stats=stats,
+        title="Player Stats",
+        name=name,
+        year=year,
+        user_info=get_user_information()
+    )
+
+
+@website_blueprint.route(
+    "/website/<int:year>/team/<int:team_id>/add-new-player", methods=["POST"]
+)
+@require_captain
+def add_new_player(year:int, team_id: int):
+    """Form Request to add a new player"""
+    gender = "F" if request.form.get("is_female", False) else "M"
+    player_name = request.form.get("name", None)
+    email = request.form.get("email")
+    # create a new player
+    player = Player(player_name, email, gender)
+    DB.session.add(player)
+    DB.session.commit()
+
+    # add the player to the team
+    team = Team.query.get(team_id)
+    if team is None:
+        raise TeamDoesNotExist(payload={
+            'details': team_id
+        })
+
+    team.insert_player(player.id)
+    DB.session.commit()
+    return redirect(url_for("website.team_page", team_id=team_id, year=year))
+
+
+@website_blueprint.route(
+    "/website/<int:team_id>/search_players", methods=["POST"]
+)
+@require_captain
+def search_players(team_id):
+    # ensure only search by logged in and 
+    if request.is_json:
+        search_phrase = request.get_json()['player']
+    else:
+        search_phrase = request.form['player']
+    players = Player.search_player(search_phrase)
+    player_data = []
+    for player in players[0:PLAYER_PAGE_SIZE]:
+        # include email since only should be searchable by captains
+        json = player.admin_json()
+        json['first_year'] = min(
+            [team.year for team in player.teams] + [date.today().year]
+        )
+        player_data.append(json)
+
+    return render_template(
+        "website/components/player_list.html",
+        players=player_data,
+        show_add=len(players) <= PLAYER_PAGE_SIZE
+    )
+
+
+@website_blueprint.route(
+    "/website/<int:year>/teams/<int:team_id>/join_team", methods=["POST"]
+)
+@require_login
+def request_to_join_team(year, team_id):
+    """Request to join a given team as a logged in user"""
+    team = Team.query.get(team_id)
+    if team is None:
+        raise TeamDoesNotExist(payload={'details': team_id})
+    join = JoinLeagueRequest(
+        current_user.email, current_user.name, team, current_user.gender)
+    DB.session.add(join)
+    DB.session.commit()
+    return redirect(url_for("website.league_request_sent"))
+
+
+@website_blueprint.route("/website/team/<int:team_id>/join", methods=["POST"])
+def join_team_request(team_id: int):
+    """Form Request to join a given team for not logged in user"""
+    gender = "F" if request.form.get("is_female", False) else "M"
+    player_name = request.form.get("name", None)
+    email = request.form.get("email")
+    # create a request
+    DB.session.add(
+        JoinLeagueRequest.create_request(player_name, email, gender, team_id)
+    )
+    DB.session.commit()
+    return redirect(url_for("website.league_request_sent"))
+
+
+@website_blueprint.route(
+    "/website/<int:year>/teams/<int:team_id>/drop_player/<int:player_id>",
+    methods=["POST"]
+)
+@require_captain
+def team_remove_player(year, team_id, player_id):
+    # know teams exist since user is captain
+    team = Team.query.get(team_id)
+    team.remove_player(player_id)
+    DB.session.commit()
+    return redirect(url_for("website.team_page", team_id=team_id, year=year))
+
+
+@website_blueprint.route(
+    "/website/<int:year>/teams/<int:team_id>/add_player",
+    methods=["POST"]
+)
+@require_captain
+def team_add_player_form(year, team_id):
+    # know teams exist since user is captain
+    player_id = request.form.get("player_id", -1)
+    team = Team.query.get(team_id)
+    success = team.insert_player(player_id)
+    if not success:
+        raise PlayerNotOnTeam(payload={
+            'details':  player_id
+        })
+
+    DB.session.commit()
+    return redirect(url_for("website.team_page", team_id=team_id, year=year))
+
+
+@website_blueprint.route(
+    "/website/<int:year>/teams/<int:team_id>/request_response",
+    methods=["POST"]
+)
+@require_captain
+def captain_respond_league_request_form(year, team_id):
+    request_id = request.form.get("request_id", -1)
+    accept = True if request.form.get(
+        "accept", False) in ["true", "True", 1, True] else False
+    league_request = JoinLeagueRequest.query.get(request_id)
+    if league_request is None or not league_request.pending:
+        raise RequestDoesNotExist(payload={
+            'details': request_id
+        })
+        
+    if accept:
+        league_request.accept_request()
+    else:
+        league_request.decline_request()
+    DB.session.commit()
+    return redirect(url_for("website.team_page", team_id=team_id, year=year))
