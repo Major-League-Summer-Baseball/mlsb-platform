@@ -52,6 +52,10 @@ body {
   margin-right: 36px;
 }
 
+.mt-0 {
+  margin-top: 0 !important;
+}
+
 .mt-2 {
   margin-top: 36px;
 }
@@ -583,13 +587,25 @@ ul.social_icons li  a i{
   border-radius: 60px
 }
 
+.d-flex {
+  display: flex;
+}
+
 .rosterRequests {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
+  margin-top: 16px;
+
 }
+
+.rosterRequests__player {
+  width: 100%;
+  max-width: 400px;
+}
+
 
 .rosterManagement {
   padding-top: 20px;
