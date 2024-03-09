@@ -75,7 +75,7 @@
                                     Schedule <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    {% for league in base.leagues %}
+                                    {% for league in leagues %}
                                     <li>
                                     <a
                                         href="{{ url_for('website.schedule', year=year, league_id=league.league_id) }}"
@@ -94,7 +94,7 @@
                                     Standings <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    {% for league in base.leagues %}
+                                    {% for league in leagues %}
                                     <li>
                                     <a
                                       href="{{ url_for('website.standings', year=year, league_id=league.league_id) }}"
@@ -198,7 +198,7 @@
                                         Current Year
                                         </a>
                                     </li>
-                                    {% for n in range (2016, base.current_year) %}
+                                    {% for n in range (2016, current_year) %}
                                         <li>
                                         <a
                                           href="{{ url_for('website.index', year=n) }}"
@@ -307,7 +307,7 @@
                             {% endif %}
                             
                             <!-- The general pattern is for the convenors to update the instagram handle to current year -->
-                            <a href="https://www.instagram.com/mlsb{{base.current_year}}/" target="_blank" class="social-link">
+                            <a href="https://www.instagram.com/mlsb{{current_year}}/" target="_blank" class="social-link">
                                 <img class="social-icon" src="{{ url_for('static', filename="instagram.png")}}"/>
                             </a>
                             <!--
@@ -332,8 +332,8 @@
                         <li>
                           <a
                             class="btn btn-mini btn-link"
-                            href="{{ url_for('website.about', year=base.current_year) }}"
-                            hx-get="{{ url_for('website.about', year=base.current_year) }}"
+                            href="{{ url_for('website.about', year=current_year) }}"
+                            hx-get="{{ url_for('website.about', year=current_year) }}"
                             hx-target="#website-body"
                             hx-push-url="true"
                           >

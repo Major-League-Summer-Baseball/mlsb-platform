@@ -23,6 +23,16 @@ def inject_htmx():
     return dict(snippet=request.headers.get("Hx-Request", False))
 
 
+@website_blueprint.app_context_processor
+def inject_leagues():
+    return dict(leagues=get_leagues())
+
+
+@website_blueprint.app_context_processor
+def inject_current_year():
+    return dict(current_year=date.today().year)
+
+
 @website_blueprint.route("/")
 @website_blueprint.route("/website")
 @website_blueprint.route("/website/")
