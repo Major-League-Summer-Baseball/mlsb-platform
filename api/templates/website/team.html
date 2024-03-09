@@ -30,17 +30,27 @@
                 id="leagueRequest"
             >
                 <div class="form-group">
-                    <label for="inputName">Name</label>
-                    <input name="name" type="name" class="form-control" id="inputName" aria-describedby="nameHelp" placeholder="Enter name" required>
+                    <label for="joinTeamRequestInputName">
+                        Name
+                    </label>
+                    <input
+                        name="name"
+                        type="name"
+                        class="form-control"
+                        id="joinTeamRequestInputName"
+                        aria-describedby="nameHelp"
+                        placeholder="Enter name"
+                        required
+                    >
                     <small id="nameHelp" class="form-text text-muted">Your name will appear on team page and leaders page.</small>
                     <br /><br />
 
-                    <label for="inputEmail">Email</label>
+                    <label for="joinTeamRequestInputEmail">Email</label>
                     <input
                         name="email"
                         type="email"
                         class="form-control"
-                        id="inputEmail"
+                        id="joinTeamRequestInputEmail"
                         placeholder="Enter Email"
                         required
                     >
@@ -51,7 +61,9 @@
                     </label>
                     <input class="form-check-input" type="checkbox" name="is_female" id="flexCheckDefault">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" id="joinTeamRequestSubmit">
+                    Submit
+                </button>
                 <button class="btn btn-secondary" onclick="document.querySelector('#joinTeamRequest').close();">
                     Cancel
                 </button>
