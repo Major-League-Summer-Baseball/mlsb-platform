@@ -77,7 +77,7 @@ def join_league():
 
     # create a request
     DB.session.add(
-        JoinLeagueRequest.create_request(player_name, email, team_id, gender)
+        JoinLeagueRequest.create_request(player_name, email, gender, team_id)
     )
     DB.session.commit()
     return redirect(url_for("website.league_request_sent"))
