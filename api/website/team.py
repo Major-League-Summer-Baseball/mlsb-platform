@@ -178,7 +178,7 @@ def search_players(team_id):
         search_phrase = request.form['player']
     players = Player.search_player(search_phrase)
     player_data = []
-    for player in players[0:PLAYER_PAGE_SIZE]:
+    for player in players:
         # include email since only should be searchable by captains
         json = player.admin_json()
         json['first_year'] = min(

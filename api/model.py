@@ -14,7 +14,7 @@ from api.validators import rbi_validator, hit_validator, inning_validator, \
     string_validator, date_validator, time_validator, \
     field_validator, year_validator, gender_validator, \
     float_validator, boolean_validator
-from api.variables import UNASSIGNED_EMAIL
+from api.variables import PLAYER_PAGE_SIZE, UNASSIGNED_EMAIL
 
 
 roster = DB.Table('roster',
@@ -720,7 +720,11 @@ class Player(UserMixin, DB.Model):
         ).first()
 
     @classmethod
-    def search_player(cls, search_phrase: str) -> list["Player"]:
+    def search_player(
+        cls,
+        search_phrase: str,
+        page_size: int = PLAYER_PAGE_SIZE
+    ) -> list["Player"]:
         """Returns all players who meet the search phrase"""
         return Player.query.filter(
             and_(
@@ -730,7 +734,7 @@ class Player(UserMixin, DB.Model):
                 ),
                 not_(Player.email.ilike(UNASSIGNED_EMAIL))
             )
-        ).all()
+        ).limit(page_size).all()
 
     @classmethod
     def get_unassigned_player(cls) -> "Player":
