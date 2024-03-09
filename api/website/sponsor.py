@@ -6,7 +6,6 @@ from datetime import datetime
 from api.extensions import DB
 from api.model import Team, Sponsor, Espys
 from api.variables import PICTURES, NOTFOUND
-from api.routes import Routes
 from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map
 from api.authentication import get_user_information
@@ -37,45 +36,48 @@ def sponsor_picture(name):
 
 @website_blueprint.route("/website/sponsors_list/<int:year>")
 def sponsors_page(year):
-    return render_template("website/sponsors.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Sponsors",
-                           year=year,
-                           user_info=get_user_information())
+    return render_template(
+        "website/sponsors.html",
+        base=base_data(year),
+        title="Sponsors",
+        year=year,
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/website/sponsors_list/<int:year>/<int:sponsor_id>")
 def sponsor_page(year, sponsor_id):
     sponsor = get_sponsor_map().get(sponsor_id, None)
     if sponsor is None:
-        page = render_template("website/notFound.html",
-                               route=Routes,
-                               base=base_data(year),
-                               title="Not Found",
-                               year=year,
-                               user_info=get_user_information())
+        page = render_template(
+            "website/notFound.html",
+            base=base_data(year),
+            title="Not Found",
+            year=year,
+            user_info=get_user_information()
+        )
     else:
-        page = render_template("website/sponsor.html",
-                               route=Routes,
-                               base=base_data(year),
-                               sponsor=sponsor,
-                               title="Sponsor | " + sponsor.get('sponsor_name',
-                                                                'No Name'),
-                               year=year,
-                               user_info=get_user_information())
+        page = render_template(
+            "website/sponsor.html",
+            base=base_data(year),
+            sponsor=sponsor,
+            title="Sponsor | " + sponsor.get('sponsor_name', 'No Name'),
+            year=year,
+            user_info=get_user_information()
+        )
     return page
 
 
 @website_blueprint.route("/website/sponsorbreakdown/<int:year>")
 def sponsor_breakdown(year):
-    return render_template("website/sponsor_breakdown.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="ESPYS Breakdown by Sponsor",
-                           year=year,
-                           teams=get_teams(year),
-                           user_info=get_user_information())
+    return render_template(
+        "website/sponsor_breakdown.html",
+        base=base_data(year),
+        title="ESPYS Breakdown by Sponsor",
+        year=year,
+        teams=get_teams(year),
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/website/sponsorbreakdown/<int:year>/<int:garbage>")

@@ -9,7 +9,6 @@ from flask import \
     redirect, render_template, send_from_directory, url_for, Blueprint, request
 from datetime import date
 from api import app
-from api.routes import Routes
 from api.cached_items import get_website_base_data as base_data
 from api.cached_items import get_upcoming_games
 from api.authentication import get_user_information
@@ -40,13 +39,14 @@ def general_about():
 
 @website_blueprint.route("/about/<int:year>")
 def about(year):
-    return render_template("website/about.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="About",
-                           year=year,
-                           games=get_upcoming_games(year),
-                           user_info=get_user_information())
+    return render_template(
+        "website/about.html",
+        base=base_data(year),
+        title="About",
+        year=year,
+        games=get_upcoming_games(year),
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/privacy-policy")
@@ -76,22 +76,24 @@ def robot():
 
 @website_blueprint.route("/website/leagueNotFound/<int:year>")
 def league_not_found(year):
-    return render_template("website/leagueNotFound.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="League not found",
-                           year=year,
-                           user_info=get_user_information())
+    return render_template(
+        "website/leagueNotFound.html",
+        base=base_data(year),
+        title="League not found",
+        year=year,
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/website/rulesAndFields/<int:year>")
 def rules_fields(year):
-    return render_template("website/fields-and-rules.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Fields & Rules",
-                           year=year,
-                           user_info=get_user_information())
+    return render_template(
+        "website/fields-and-rules.html",
+        base=base_data(year),
+        title="Fields & Rules",
+        year=year,
+        user_info=get_user_information()
+    )
 
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):

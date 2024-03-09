@@ -2,7 +2,6 @@
 """ Pages and routes related to the league schedule. """
 from flask import \
     render_template, url_for, redirect, request, Response
-from api.routes import Routes
 from api.cached_items import \
     get_league_map, get_league_schedule, get_divisions_for_league_and_year
 from api.website import website_blueprint
@@ -19,14 +18,15 @@ def schedule(league_id, year):
     divisions = get_divisions_for_league_and_year(year, league_id)
     if len(divisions) == 1:
         divisions = []
-    return render_template("website/schedule.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Schedule",
-                           league=league,
-                           divisions=divisions,
-                           year=year,
-                           user_info=get_user_information())
+    return render_template(
+        "website/schedule.html",
+        base=base_data(year),
+        title="Schedule",
+        league=league,
+        divisions=divisions,
+        year=year,
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route(

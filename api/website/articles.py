@@ -6,7 +6,6 @@
 """
 from flask import render_template, send_from_directory
 from api.variables import NOTFOUND, PICTURES, POSTS
-from api.routes import Routes
 from api.cached_items import get_upcoming_games
 from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
@@ -17,14 +16,15 @@ import json
 
 @website_blueprint.route("/website/<int:year>")
 def index(year):
-    return render_template("website/index.html",
-                           route=Routes,
-                           base=base_data(year),
-                           title="Recent news",
-                           year=year,
-                           games=get_upcoming_games(year),
-                           news=get_summaries(year),
-                           user_info=get_user_information())
+    return render_template(
+        "website/index.html",
+        base=base_data(year),
+        title="Recent news",
+        year=year,
+        games=get_upcoming_games(year),
+        news=get_summaries(year),
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/website/posts/<int:year>")
@@ -55,21 +55,23 @@ def checkout_post(year, date, file_name):
     file_name = date + "_" + file_name
     template = "/".join(["website", "posts", str(year), file_name])
     if template.endswith(".html"):
-        return render_template(template,
-                               route=Routes,
-                               base=base_data(year),
-                               title="Posts",
-                               year=year,
-                               games=get_upcoming_games(year),
-                               user_info=get_user_information())
+        return render_template(
+            template,
+            base=base_data(year),
+            title="Posts",
+            year=year,
+            games=get_upcoming_games(year),
+            user_info=get_user_information()
+        )
     else:
-        return render_template("website/notFound.html",
-                               route=Routes,
-                               base=base_data(year),
-                               title="Posts not Found",
-                               year=year,
-                               games=get_upcoming_games(year),
-                               user_info=get_user_information())
+        return render_template(
+            "website/notFound.html",
+            base=base_data(year),
+            title="Posts not Found",
+            year=year,
+            games=get_upcoming_games(year),
+            user_info=get_user_information()
+        )
 
 
 @website_blueprint.route("/website/post/pictures/<name>")

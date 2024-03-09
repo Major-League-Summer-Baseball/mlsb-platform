@@ -10,7 +10,6 @@ from api.authentication import \
     is_facebook_supported, is_github_supported, is_gmail_supported, \
     is_azure_supported
 from api.model import JoinLeagueRequest, Player
-from api.routes import Routes
 from api.logging import LOGGER
 from api.cached_items import get_website_base_data as get_base_data
 from api.authentication import get_user_information
@@ -21,31 +20,33 @@ from api.website import website_blueprint
 def need_to_login():
     """A route used to indicate the user needs to authenicate for some page."""
     year = date.today().year
-    return render_template("website/login.html",
-                           message="Need to login to proceed further.",
-                           route=Routes,
-                           year=year,
-                           base=get_base_data(year),
-                           github_enabled=is_github_supported(),
-                           azure_enabled=is_azure_supported(),
-                           facebook_enabled=is_facebook_supported(),
-                           gmail_enabled=is_gmail_supported(),
-                           user_info=get_user_information())
+    return render_template(
+        "website/login.html",
+        message="Need to login to proceed further.",
+        year=year,
+        base=get_base_data(year),
+        github_enabled=is_github_supported(),
+        azure_enabled=is_azure_supported(),
+        facebook_enabled=is_facebook_supported(),
+        gmail_enabled=is_gmail_supported(),
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/login")
 def loginpage():
     """A route to login the user."""
     year = date.today().year
-    return render_template("website/login.html",
-                           base=get_base_data(year),
-                           route=Routes,
-                           year=year,
-                           github_enabled=is_github_supported(),
-                           azure_enabled=is_azure_supported(),
-                           facebook_enabled=is_facebook_supported(),
-                           gmail_enabled=is_gmail_supported(),
-                           user_info=get_user_information())
+    return render_template(
+        "website/login.html",
+        base=get_base_data(year),
+        year=year,
+        github_enabled=is_github_supported(),
+        azure_enabled=is_azure_supported(),
+        facebook_enabled=is_facebook_supported(),
+        gmail_enabled=is_gmail_supported(),
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/logout")
@@ -88,9 +89,10 @@ def league_request_sent():
     message = ("Submitted request to join."
                " Please wait until a convenor/captain responds")
     year = date.today().year
-    return render_template("website/error.html",
-                           route=Routes,
-                           year=year,
-                           base=get_base_data(year),
-                           message=message,
-                           user_info=get_user_information())
+    return render_template(
+        "website/error.html",
+        year=year,
+        base=get_base_data(year),
+        message=message,
+        user_info=get_user_information()
+    )
