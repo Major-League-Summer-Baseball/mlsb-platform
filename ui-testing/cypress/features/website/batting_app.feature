@@ -43,12 +43,12 @@ Scenario: Players hits a sacrifice-fly
      And there is 1 out
 
 Scenario: Only eligble players can get Sapporo Singles
-    When the batter is eligble
+    When the batter is eligible
      And the batter hits a "SS"
     Then the batter advances to "first"
 
 Scenario: Non-eligble players do not see Sapporo Singles
-    When the batter is not eligble
+    When the batter is not eligible
     Then they cannot hit a "SS"
 
 # GAME LOGIC
@@ -75,8 +75,8 @@ Scenario: Able to move player to bottom of the lineup
     When I move a player to the bottom of the lineup
     Then they are on the bottom of the lineup
 
-Scenario: Able to move player to bottom of the lineup
-    When I move a plyer to the top of the lineup
+Scenario: Able to move player to top of the lineup
+    When I move a player to the top of the lineup
     Then they are at the top of the lineup
 
 # GAME CONTROLS - SUBMISSION AND RESTART

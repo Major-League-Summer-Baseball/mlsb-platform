@@ -5,7 +5,6 @@ from flask_login import login_user, logout_user
 from sqlalchemy import and_
 from api.extensions import DB
 from api.model import Player, JoinLeagueRequest, Team, Game, Division
-from api.bot.get_captain_games import games_without_scores
 from api.logging import LOGGER
 from api.errors import TeamDoesNotExist
 from datetime import datetime
@@ -86,8 +85,9 @@ def create_league_request():
 def get_active_team():
     """Get some active team."""
     year = datetime.now().year
-    team = Team.query.filter(and_(Team.year == year,
-                                  Team.player_id is not None)).first()
+    team = Team.query.filter(
+        and_(Team.year == year, Team.player_id is not None)
+    ).first()
     if team is None:
         raise TeamDoesNotExist("No team for current year")
     return Response(
@@ -98,7 +98,10 @@ def get_active_team():
 @testing_blueprint.post("/api/team/<int:team_id>/game_without_score")
 def game_without_score(team_id: int):
     """Ensure the given team has a game today"""
-    games = games_without_scores(team_id)
+    team = Team.query.get(team_id)
+    if team is None:
+        return Response(json.dumps(False), 404, mimetype='application/json')
+    games = Game.games_needing_scores([team], year=team.year)
     if len(games) == 0:
         today = datetime.now()
         other_team = Team.query.filter(and_(Team.year == today.year,

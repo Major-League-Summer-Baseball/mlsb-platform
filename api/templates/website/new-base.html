@@ -208,7 +208,7 @@
                                         </li>
                                     {% endfor %}
                                     </ul>
-                                </li>                                    
+                                </li>
                                 {% if not user_info.logged_in %}
                                   <li>
                                       <a
@@ -228,26 +228,20 @@
                                         Profile <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        {% for team in user_info.teams %}
+                                        {% if user_info.captain %}
                                         <li>
-                                            {% if team.captain is not none and team.captain.player_id ==  user_info.player_information.player_id %}
                                             <a
-                                              href="{{ url_for('website.captain_score_games', team_id=team.team_id) }}"
-                                              hx-get="{{ url_for('website.captain_score_games', team_id=team.team_id) }}"
-                                              hx-target="#website-body"
-                                              hx-push-url="true"
+                                            href="{{ url_for('website.captain_games', year=year) }}"
+                                            hx-get="{{ url_for('website.captain_games', year=year) }}"
+                                            hx-target="#website-body"
+                                            hx-push-url="true"
                                             >
                                                 Submit Scores
                                             </a>
-                                            <a
-                                              href="{{ url_for('website.captain_batting_app', team_id=team.team_id) }}"
-                                              hx-get="{{ url_for('website.captain_batting_app', team_id=team.team_id) }}"
-                                              hx-target="#website-body"
-                                              hx-push-url="true"
-                                            >
-                                                Batting app
-                                            </a>
-                                            {% endif %}
+                                        </li>
+                                        {% endif %}
+                                        {% for team in user_info.teams %}
+                                        <li>
                                             <a
                                               href="{{ url_for('website.team_page', year=year, team_id=team.team_id) }}"
                                               hx-get="{{ url_for('website.team_page', year=year, team_id=team.team_id) }}"
@@ -364,6 +358,10 @@
                 </div>
             </div>
         </footer><!--/#footer-->
+        <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
+        <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
         <script src="{{ url_for('static', filename="js/jquery.js") }}"></script>
         <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
         <script src="{{ url_for('static', filename="js/wow.min.js") }}"></script>
@@ -372,8 +370,10 @@
         <script src="{{ url_for('static', filename="js/sly.js") }} "></script>
         <script src="{{ url_for('static', filename="js/flickity.min.js") }}"></script>
         <script src="{{url_for('static', filename="d3/liquidFillGauge.js" ) }}" defer></script>
-        <script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
-        <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
+        <script src="{{url_for('static', filename="js/vue/batting.js" ) }}" defer></script>
+        <script src="{{url_for('static', filename="js/vue/score.js" ) }}" defer></script>
+        
+        
         
         <!-- Google Analytics -->
         <script>

@@ -1,6 +1,6 @@
 from typing import TypedDict, Callable
 from functools import wraps
-from sqlalchemy.sql import func, and_
+from sqlalchemy.sql import func
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.github import make_github_blueprint
 from flask_dance.contrib.facebook import make_facebook_blueprint
@@ -98,9 +98,7 @@ def oauth_service_provider_logged_in(blueprint: Blueprint, token: str) -> bool:
         # remember their email in session in case they want to join
         session["oauth_email"] = user_info["email"]
         # check if they have a pending request
-        is_pending = JoinLeagueRequest.query.filter(
-            and_(JoinLeagueRequest.email == session["oauth_email"],
-                 JoinLeagueRequest.pending == True)).first()
+        is_pending = JoinLeagueRequest.find_request(session["oauth_email"])
         if is_pending is not None:
             raise HaveLeagueRequestException()
         # see if they part of the legaue
@@ -230,11 +228,19 @@ def find_player(user_info: UserInfo) -> Player:
 
 def get_user_information() -> dict:
     """Returns information about the logged in user."""
+    logged_in = are_logged_in()
+    teams = get_player_teams()
+    player_id = get_player_id()
+    is_captain = False if teams is None else any(
+        team['captain'] is not None and
+        team['captain']['player_id'] == player_id for team in teams
+    )
     return {
-        'logged_in': are_logged_in(),
+        'logged_in': logged_in,
         'email': get_login_email(),
         'player_information': get_player_information(),
-        'teams': get_player_teams()
+        'teams': teams,
+        'captain': is_captain
     }
 
 
@@ -345,6 +351,15 @@ def api_require_captain(f: Callable) -> Callable:
     return decorated
 
 
+def require_login(f: Callable) -> Callable:
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return redirect(url_for("website.loginpage"))
+        return f(*args, **kwargs)
+    return decorated
+
+
 def require_captain(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -356,6 +371,21 @@ def require_captain(f: Callable) -> Callable:
             raise TeamDoesNotExist(payload={"details": team_id})
         if team.player_id != current_user.id:
             raise NotTeamCaptain(payload={"details": team_id})
+        return f(*args, **kwargs)
+    return decorated
+
+
+def require_to_be_a_captain(f: Callable) -> Callable:
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return redirect(url_for("website.loginpage"))
+        teams = Player.get_teams_captained(current_user.id)
+        team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
+        if len(teams) == 0:
+            raise NotTeamCaptain(payload={"details": team_id})
+        if Team.query.get(team_id) is None:
+            raise TeamDoesNotExist(payload={"details": team_id})
         return f(*args, **kwargs)
     return decorated
 

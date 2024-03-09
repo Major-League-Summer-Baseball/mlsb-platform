@@ -3,15 +3,13 @@
 from flask import render_template, session, request, url_for, redirect
 from flask_login import \
     current_user, logout_user, login_required, login_user
-from sqlalchemy import func
 from datetime import date
 from api.extensions import DB
-from api.errors import \
-    HaveLeagueRequestException, TeamDoesNotExist, OAuthException
+from api.errors import OAuthException
 from api.authentication import \
     is_facebook_supported, is_github_supported, is_gmail_supported, \
     is_azure_supported
-from api.model import JoinLeagueRequest, Player, Team
+from api.model import JoinLeagueRequest, Player
 from api.routes import Routes
 from api.logging import LOGGER
 from api.cached_items import get_website_base_data as get_base_data
@@ -73,24 +71,14 @@ def join_league():
     if player is not None:
         login_user(player)
         return redirect(url_for("homepage"))
-    # double check this is not refresh page issue
-    pending_request = JoinLeagueRequest.query.filter(
-        func.lower(JoinLeagueRequest.email) == email.lower()).first()
-    if pending_request is not None:
-        raise HaveLeagueRequestException("Double submit on form")
-    # ensure the selected team exists
-    team_id = request.form.get("team", None)
-    if team_id is None:
-        raise TeamDoesNotExist(f"Team does not exist - {team_id}")
-    team = Team.query.get(team_id)
-    if team is None:
-        raise TeamDoesNotExist(f"Team does not exist - {team_id}")
-
-    # save the request
-    player_name = request.form.get("name", None)
     gender = "F" if request.form.get("is_female", False) else "M"
-    league_request = JoinLeagueRequest(email, player_name, team, gender)
-    DB.session.add(league_request)
+    player_name = request.form.get("name", None)
+    team_id = request.form.get("team", None)
+
+    # create a request
+    DB.session.add(
+        JoinLeagueRequest.create_request(player_name, email, gender, team_id)
+    )
     DB.session.commit()
     return redirect(url_for("website.league_request_sent"))
 
@@ -98,7 +86,7 @@ def join_league():
 @website_blueprint.route("/request_sent", methods=["GET"])
 def league_request_sent():
     message = ("Submitted request to join."
-               " Please wait until a convenor responds")
+               " Please wait until a convenor/captain responds")
     year = date.today().year
     return render_template("website/error.html",
                            route=Routes,
