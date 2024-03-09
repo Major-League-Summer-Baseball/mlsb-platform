@@ -4,7 +4,6 @@
 """
 from flask import render_template, send_from_directory
 from api.variables import PICTURES, CSS_FOLDER
-from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
 from api.website import website_blueprint
 import os.path
@@ -14,7 +13,6 @@ import os.path
 def promos_page(year):
     return render_template(
         "website/promos.html",
-        base=base_data(year),
         title="Pump-Up Videos",
         year=year,
         user_info=get_user_information()

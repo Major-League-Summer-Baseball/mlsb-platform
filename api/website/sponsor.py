@@ -9,7 +9,6 @@ from api.variables import PICTURES, NOTFOUND
 from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map
 from api.authentication import get_user_information
-from api.cached_items import get_website_base_data as base_data
 from api.website import website_blueprint
 import os.path
 import json
@@ -38,7 +37,6 @@ def sponsor_picture(name):
 def sponsors_page(year):
     return render_template(
         "website/sponsors.html",
-        base=base_data(year),
         title="Sponsors",
         year=year,
         user_info=get_user_information()
@@ -51,7 +49,6 @@ def sponsor_page(year, sponsor_id):
     if sponsor is None:
         page = render_template(
             "website/notFound.html",
-            base=base_data(year),
             title="Not Found",
             year=year,
             user_info=get_user_information()
@@ -59,7 +56,6 @@ def sponsor_page(year, sponsor_id):
     else:
         page = render_template(
             "website/sponsor.html",
-            base=base_data(year),
             sponsor=sponsor,
             title="Sponsor | " + sponsor.get('sponsor_name', 'No Name'),
             year=year,
@@ -72,7 +68,6 @@ def sponsor_page(year, sponsor_id):
 def sponsor_breakdown(year):
     return render_template(
         "website/sponsor_breakdown.html",
-        base=base_data(year),
         title="ESPYS Breakdown by Sponsor",
         year=year,
         teams=get_teams(year),

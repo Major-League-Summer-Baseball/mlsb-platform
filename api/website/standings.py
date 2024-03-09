@@ -6,7 +6,6 @@ from api.cached_items import \
     get_league_map, get_league_leaders, \
     get_espys_breakdown, get_divisions_for_league_and_year
 from api.website import website_blueprint
-from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
 
 
@@ -21,7 +20,6 @@ def standings(league_id, year):
     return render_template(
         "website/standings.html",
         team_route=url_for('vteam'),
-        base=base_data(year),
         league=league,
         divisions=divisions,
         title="Standings",
@@ -35,7 +33,6 @@ def stats_page(year):
     players = player_summary(year=year)
     return render_template(
         "website/stats.html",
-        base=base_data(year),
         title="Players Stats",
         year=year,
         players=players,
@@ -49,7 +46,6 @@ def leaders_page(year):
     men = get_league_leaders("hr", year=year)[:5]
     return render_template(
         "website/new-leaders.html",
-        base=base_data(year),
         men=men,
         women=women,
         title="League Leaders",
@@ -66,7 +62,6 @@ def all_time_leaders_page(year):
     ssAllSeason = get_league_leaders("ss", group_by_team=True)
     return render_template(
         "website/all-time-leaders.html",
-        base=base_data(year),
         hrSingleSeason=hrSingleSeason,
         ssSingleSeason=ssSingleSeason,
         hrAllSeason=hrAllSeason,

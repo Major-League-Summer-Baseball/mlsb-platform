@@ -11,7 +11,6 @@ from api.authentication import \
     is_azure_supported
 from api.model import JoinLeagueRequest, Player
 from api.logging import LOGGER
-from api.cached_items import get_website_base_data as get_base_data
 from api.authentication import get_user_information
 from api.website import website_blueprint
 
@@ -24,7 +23,6 @@ def need_to_login():
         "website/login.html",
         message="Need to login to proceed further.",
         year=year,
-        base=get_base_data(year),
         github_enabled=is_github_supported(),
         azure_enabled=is_azure_supported(),
         facebook_enabled=is_facebook_supported(),
@@ -39,7 +37,6 @@ def loginpage():
     year = date.today().year
     return render_template(
         "website/login.html",
-        base=get_base_data(year),
         year=year,
         github_enabled=is_github_supported(),
         azure_enabled=is_azure_supported(),
@@ -92,7 +89,6 @@ def league_request_sent():
     return render_template(
         "website/error.html",
         year=year,
-        base=get_base_data(year),
         message=message,
         user_info=get_user_information()
     )

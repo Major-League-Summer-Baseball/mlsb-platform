@@ -3,7 +3,6 @@
 from flask import redirect, render_template, Response, request, url_for
 from flask_login import current_user
 from api.variables import UNASSIGNED
-from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, require_captain, api_require_captain, \
     require_to_be_a_captain
@@ -45,7 +44,6 @@ def captain_score_app_game(year: int, team_id: int, game_id: int):
         captain_info=captain_info,
         team_id=team_id,
         game=game.json(),
-        base=base_data(year),
         title="Captain Submit Score",
         year=year,
         user_info=get_user_information()
@@ -78,7 +76,6 @@ def captain_batting_app_game(year: int, team_id: int, game_id: int):
         captain_info=captain_info,
         game=game.json(),
         team_id=team_id,
-        base=base_data(year),
         title="Captain In-Game Batting App",
         year=year,
         user_info=get_user_information()
@@ -125,7 +122,6 @@ def captain_games(year: int):
     ]
     return render_template(
         "website/captain_games.html",
-        base=base_data(year),
         title="Captain - Submit Scores",
         year=year,
         user_info=get_user_information(),

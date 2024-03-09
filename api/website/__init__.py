@@ -9,8 +9,7 @@ from flask import \
     redirect, render_template, send_from_directory, url_for, Blueprint, request
 from datetime import date
 from api import app
-from api.cached_items import get_website_base_data as base_data
-from api.cached_items import get_upcoming_games
+from api.cached_items import get_upcoming_games, get_leagues
 from api.authentication import get_user_information
 import pkgutil
 import inspect
@@ -51,7 +50,6 @@ def general_about():
 def about(year):
     return render_template(
         "website/about.html",
-        base=base_data(year),
         title="About",
         year=year,
         games=get_upcoming_games(year),
@@ -88,7 +86,6 @@ def robot():
 def league_not_found(year):
     return render_template(
         "website/leagueNotFound.html",
-        base=base_data(year),
         title="League not found",
         year=year,
         user_info=get_user_information()
@@ -99,7 +96,6 @@ def league_not_found(year):
 def rules_fields(year):
     return render_template(
         "website/fields-and-rules.html",
-        base=base_data(year),
         title="Fields & Rules",
         year=year,
         user_info=get_user_information()

@@ -7,7 +7,6 @@
 from flask import render_template, send_from_directory
 from api.variables import NOTFOUND, PICTURES, POSTS
 from api.cached_items import get_upcoming_games
-from api.cached_items import get_website_base_data as base_data
 from api.authentication import get_user_information
 from api.website import website_blueprint
 import os.path
@@ -18,7 +17,6 @@ import json
 def index(year):
     return render_template(
         "website/index.html",
-        base=base_data(year),
         title="Recent news",
         year=year,
         games=get_upcoming_games(year),
@@ -57,7 +55,6 @@ def checkout_post(year, date, file_name):
     if template.endswith(".html"):
         return render_template(
             template,
-            base=base_data(year),
             title="Posts",
             year=year,
             games=get_upcoming_games(year),
@@ -66,7 +63,6 @@ def checkout_post(year, date, file_name):
     else:
         return render_template(
             "website/notFound.html",
-            base=base_data(year),
             title="Posts not Found",
             year=year,
             games=get_upcoming_games(year),

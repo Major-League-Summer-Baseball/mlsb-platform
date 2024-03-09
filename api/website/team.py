@@ -10,7 +10,6 @@ from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES, PLAYER_PAGE_SIZE
 from api.website.helpers import get_team
 from api.advanced.players_stats import post as player_summary
 from api.cached_items import get_team_map
-from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, get_team_authorization, require_captain, require_login
 from api.website import website_blueprint
@@ -45,7 +44,6 @@ def team_page(year, team_id):
     if team is None:
         return render_template(
             "website/notFound.html",
-            base=base_data(year),
             team=team,
             title="Team not found",
             year=year,
@@ -69,7 +67,6 @@ def team_page(year, team_id):
         ]
     return render_template(
         "website/team.html",
-        base=base_data(year),
         team=team,
         team_id=team_id,
         title="Team - " + str(team['name']),
@@ -87,7 +84,6 @@ def player_page(year, player_id):
     if player is None:
         return render_template(
             "website/notFound.html",
-            base=base_data(year),
             title="Player not found",
             year=year,
             user_info=get_user_information()
@@ -126,7 +122,6 @@ def player_page(year, player_id):
         stats.append(player)
     return render_template(
         "website/player.html",
-        base=base_data(year),
         stats=stats,
         title="Player Stats",
         name=name,

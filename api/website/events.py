@@ -4,7 +4,6 @@ from flask import render_template, send_from_directory, Response
 from api.extensions import DB
 from api.model import LeagueEvent, LeagueEventDate
 from api.website import website_blueprint
-from api.cached_items import get_website_base_data as base_data
 from api.authentication import \
     get_user_information, api_require_login, are_logged_in, get_player_id
 from api.advanced.league_event import get_year_events
@@ -89,7 +88,6 @@ def events_page(year):
     return render_template(
         "website/events.html",
         dates=events,
-        base=base_data(year),
         title="Events",
         year=year,
         user_info=get_user_information()
