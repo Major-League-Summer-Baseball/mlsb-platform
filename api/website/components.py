@@ -5,7 +5,7 @@
 from flask import render_template
 from api.routes import Routes
 from api.cached_items import get_upcoming_games, get_fun_meter, \
-    get_sponsor_banner
+    get_sponsor_banner, get_fun_counts
 from api.website import website_blueprint
 
 
@@ -15,6 +15,7 @@ def component_fun_meter(year):
         "website/components/fun_meter.html",
         route=Routes,
         fun=get_fun_meter(year),
+        funs=get_fun_counts(),
         year=year
     )
 
