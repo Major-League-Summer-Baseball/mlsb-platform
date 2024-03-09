@@ -19,14 +19,17 @@ def standings(league_id, year):
     divisions = get_divisions_for_league_and_year(year, league_id)
     if len(divisions) == 1:
         divisions = []
-    return render_template("website/standings.html",
-                           route=Routes,
-                           base=base_data(year),
-                           league=league,
-                           divisions=divisions,
-                           title="Standings",
-                           year=year,
-                           user_info=get_user_information())
+    return render_template(
+        "website/standings.html",
+        route=Routes,
+        team_route=url_for('vteam'),
+        base=base_data(year),
+        league=league,
+        divisions=divisions,
+        title="Standings",
+        year=year,
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/website/stats/<int:year>")

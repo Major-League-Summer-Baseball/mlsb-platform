@@ -166,7 +166,7 @@ function loadDivision(year, league_id, division_id) {
   });
   $.ajax ({
         type: "POST",
-        url: "{{route.vteam}}",
+        url: "{{team_route}}",
         contentType: "application/json",
         dataType: 'json',
         data: rest_data,
@@ -189,7 +189,7 @@ function loadLeague(year, league_id){
   });
   $.ajax ({
         type: "POST",
-        url: "{{route.vteam}}",
+        url: "{{team_route}}",
         contentType: "application/json",
         dataType: 'json',
         data: rest_data,
