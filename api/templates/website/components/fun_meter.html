@@ -14,28 +14,11 @@
     config1.displayPercent = false;
     config1.maxValue = 500;
     var gauge2= loadLiquidFillGauge("fillgauge2", {{fun.count}}, config1);
-    var funs = [];
+    var funs = JSON.parse('{{ funs | tojson | safe }}');
     var funIndex = 0
     function updateGauge(){
         funIndex = (funIndex + 1) % funs.length;
         gauge2.update(funs[funIndex].count)
         $('#funMeter').text('Fun Meter ' + funs[funIndex].year);
     }
-    $(document).ready(function() {
-        $.ajax
-        ({
-            type: "POST",
-            url: "{{route.vfun}}",
-            contentType: "application/json",
-            data: JSON.stringify({}),
-            dataType: 'json',
-            async: true,
-            dataType: "json",
-            success: function (result){
-                funs = result
-            }, error: function(request, error){
-                funs = [{'count':{{fun.count}}, 'year': {{year}} }]
-            } 
-        });
-    });
     </script>
