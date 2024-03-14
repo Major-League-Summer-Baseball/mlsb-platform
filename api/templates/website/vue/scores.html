@@ -1,0 +1,91 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+<div id="submitScoreApp">
+    <div>
+        <h2>[[game_selected.home_team]] vs [[game_selected.away_team]]</h2>
+        <div class="form-inline">
+            <label for="scoreInput">
+                Score:
+            </label>
+            <input
+                id="scoreInput"
+                v-model="score"
+                placeholder="Your team score"
+                class="form-control input--sm"
+                type="number"
+                aria-describedby="scoreInput"
+                min=0>
+            <p class="error" v-if="score < 0" id="negativeScoreError">
+                *Score cannot be negative
+            </p>
+            <div
+                class="alert alert-danger mt-3"
+                role="alert"
+                id="homerunError"
+                v-if="score < hr"
+            >
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                Can't be more homeruns than runs scored
+            </div>
+        </div>
+        
+        <h3>
+            Homeruns
+        </h3>
+        <ul>   
+            <li
+             v-for="player in players"
+             v-bind:id="'li-hr-' + player.player_id">
+                <player-stat :player.sync="player" :stat="'hr'" :number.sync="player.hr" @clicked="statChange"></player-stat>
+            </li>
+        </ul>
+        <h3>
+            Sapporo Singles
+        </h3>
+        <ul>   
+            <li
+             v-for="player in players.filter(p => p.gender == 'f')"
+             v-bind:id="'li-ss-' + player.player_id">
+                <player-stat :player.sync="player" :stat="'ss'" :number.sync="player.ss" @clicked="statChange"></player-stat>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-xs-offset-2 col-sm-offset-5 col-xs-10 col-sm-4 col-centered">
+                <button
+                 class="btn btn-lg btn-success"
+                 v-on:click="submitScore"
+                 :disabled="score < hr || this.submitting"
+                 id="submitButton">
+                    Submit
+                </button>
+                <a
+                    href="{{ url_for('website.captain_games', year=year) }}"
+                    hx-get="{{ url_for('website.captain_games', year=year) }}"
+                    hx-target="#website-body"
+                    hx-push-url="true"
+                    class="btn btn-lg btn-danger"
+                    id="cancelButton"
+                >
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+
+<script>
+    $(document).ready(() => {
+        const captain_info = JSON.parse('{{ captain_info | tojson | safe }}');
+        const game = JSON.parse('{{ game | tojson | safe }}');
+        const next_url = "{{ url_for('website.captain_games', year=year) }}";
+        const submission_url = "{{ url_for('website.captain_submit_score', team_id=team_id) }}";
+        console.log("Ready to start score app");
+        console.log({captain_info, game, next_url, submission_url});
+        window.startScoreApp(captain_info, game, submission_url, next_url);
+        window.appReady = true;
+    });
+</script>
+{% endblock %}

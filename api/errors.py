@@ -6,6 +6,7 @@ LDNESC = 404
 GDNESC = 404
 SDNESC = 404
 BDNESC = 404
+JLRDNESC = 404
 EDNESC = 404
 FDNESC = 404
 NUESC = 400
@@ -28,6 +29,7 @@ class BaseException(Exception):
 
     def __init__(self, status_code=None, payload=None):
         Exception.__init__(self)
+
         self.message = self.message
         if status_code is not None:
             self.status_code = status_code
@@ -37,6 +39,9 @@ class BaseException(Exception):
         rv = dict(self.payload or ())
         rv['message'] = self.message
         return rv
+
+    def __str__(self):
+        return f"{self.status_code}:{self.message} with {self.payload}"
 
 
 class FunDoesNotExist(BaseException):
@@ -97,6 +102,11 @@ class TeamAlreadyHasCaptain(BaseException):
 class BatDoesNotExist(BaseException):
     status_code = BDNESC
     message = "Bat does not exist"
+
+
+class RequestDoesNotExist(BaseException):
+    status_code = JLRDNESC
+    message = "League Request does not exist"
 
 
 class EspysDoesNotExist(BaseException):

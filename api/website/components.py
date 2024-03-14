@@ -3,9 +3,8 @@
     Any routes related to small web components
 """
 from flask import render_template
-from api.routes import Routes
 from api.cached_items import get_upcoming_games, get_fun_meter, \
-    get_sponsor_banner
+    get_sponsor_banner, get_fun_counts
 from api.website import website_blueprint
 
 
@@ -13,8 +12,8 @@ from api.website import website_blueprint
 def component_fun_meter(year):
     return render_template(
         "website/components/fun_meter.html",
-        route=Routes,
         fun=get_fun_meter(year),
+        funs=get_fun_counts(),
         year=year
     )
 
@@ -23,7 +22,6 @@ def component_fun_meter(year):
 def component_score_banner(year):
     return render_template(
         "website/components/score_banner.html",
-        route=Routes,
         games=get_upcoming_games(year)
     )
 
@@ -32,6 +30,5 @@ def component_score_banner(year):
 def component_sponsor_banner(year):
     return render_template(
         "website/components/sponsor_banner.html",
-        route=Routes,
         sponsors=get_sponsor_banner(year)
     )

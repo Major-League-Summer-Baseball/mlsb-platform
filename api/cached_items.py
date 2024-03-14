@@ -172,10 +172,16 @@ def get_website_base_data(year):
     base['current_year'] = datetime.now().year
     base['games'] = get_upcoming_games(year)
     base['sponsors'] = get_sponsor_banner(year)
-    base['leagues'] = [league.json() for league in League.query.all()]
+    base['leagues'] = get_leagues()
     base['fun'] = get_fun_meter(year)
     base['today'] = datetime.now().strftime("%Y-%m-%d")
     return base
+
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
+def get_leagues():
+    """Returns a cache of all the leagues"""
+    return [league.json() for league in League.query.all()]
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)

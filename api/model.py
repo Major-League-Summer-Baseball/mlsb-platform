@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from sqlalchemy.orm import column_property
-from sqlalchemy import and_, select, func, or_
+from sqlalchemy import and_, select, func, or_, desc, asc, not_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
@@ -14,6 +14,7 @@ from api.validators import rbi_validator, hit_validator, inning_validator, \
     string_validator, date_validator, time_validator, \
     field_validator, year_validator, gender_validator, \
     float_validator, boolean_validator
+from api.variables import PLAYER_PAGE_SIZE, UNASSIGNED_EMAIL
 
 
 roster = DB.Table('roster',
@@ -692,6 +693,10 @@ class Player(UserMixin, DB.Model):
         self.active = False
 
     @classmethod
+    def get_teams_captained(cls, player_id: str) -> list['Team']:
+        return Team.query.filter(Team.player_id == player_id).all()
+
+    @classmethod
     def does_player_exist(cls, player_id: str) -> bool:
         return Player.query.get(player_id) is not None
 
@@ -713,6 +718,28 @@ class Player(UserMixin, DB.Model):
         return Player.query.filter(
             func.lower(Player.email) == Player.normalize_email(email)
         ).first()
+
+    @classmethod
+    def search_player(
+        cls,
+        search_phrase: str,
+        page_size: int = PLAYER_PAGE_SIZE
+    ) -> list["Player"]:
+        """Returns all players who meet the search phrase"""
+        return Player.query.filter(
+            and_(
+                or_(
+                    func.lower(Player.email).contains(search_phrase.lower()),
+                    func.lower(Player.name).contains(search_phrase.lower())
+                ),
+                not_(Player.email.ilike(UNASSIGNED_EMAIL))
+            )
+        ).limit(page_size).all()
+
+    @classmethod
+    def get_unassigned_player(cls) -> "Player":
+        """Returns the player used for unassigned bats"""
+        return Player.query.filter(Player.email.ilike(UNASSIGNED_EMAIL)).first()
 
     @classmethod
     def is_email_unique(cls, email: str) -> bool:
@@ -1744,6 +1771,11 @@ class Game(DB.Model):
             if self.home_team_hits is not None else 0
         }
 
+    def get_team_bats(self, team_id: int):
+        """Remove score for the given team from the game."""
+        print(self.bats)
+        return [bat for bat in self.bats if bat.team_id == team_id]
+
     @classmethod
     def does_game_exist(cls, game_id: str) -> bool:
         return Game.query.get(game_id) is not None
@@ -1752,6 +1784,60 @@ class Game(DB.Model):
     def normalize_field(cls, field: str) -> str:
         """Normalized the field """
         return normalize_string(field)
+
+    @classmethod
+    def games_with_scores(
+            cls,
+            teams: list[Team],
+            year: int = datetime.today().year
+    ) -> list['Game']:
+        """Return games that have a score for the given year & list of teams
+
+        If given a empty list of teams will get all games for all
+        teams in the given year
+        """
+        team_ids = [team.id for team in teams] if len(teams) > 0 else [
+            team.id for team in Team.query.filter(Team.year == year).all()
+        ]
+        games = Game.query.filter(
+            or_(
+                Game.away_team_id.in_(team_ids),
+                Game.home_team_id.in_(team_ids),
+            )
+        ).filter(
+            Game.bats.any(Bat.team_id.in_(team_ids))
+        ).order_by(desc(Game.date)).all()
+        return games
+
+    @classmethod
+    def games_needing_scores(
+            cls,
+            teams: list[Team],
+            year: int = datetime.today().year
+    ) -> list['Game']:
+        """Return games that are elible for a score submission without one
+
+        If given a empty list of teams will get all games for all
+        teams in the given year
+        """
+        today = datetime.today()
+        end_of_today = datetime(
+            today.year, today.month, today.day, hour=23, minute=59
+        )
+        team_ids = [team.id for team in teams] if len(teams) > 0 else [
+            team.id for team in Team.query.filter(Team.year == year).all()
+        ]
+        games = Game.query.filter(
+            or_(
+                Game.away_team_id.in_(team_ids),
+                Game.home_team_id.in_(team_ids),
+            )
+        ).filter(
+            not_(Game.bats.any(Bat.team_id.in_(team_ids)))
+        ).filter(
+            Game.date <= end_of_today
+        ).order_by(asc(Game.date)).all()
+        return games
 
 
 class JoinLeagueRequest(DB.Model):
@@ -1790,7 +1876,7 @@ class JoinLeagueRequest(DB.Model):
         validate(
             -1 if team is None or not isinstance(team, Team) else team.id,
             lambda id: Team.does_team_exist(id),
-            TeamDoesNotExist("Given team does not exist")
+            TeamDoesNotExist(payload={"details": "Given team does not exist"})
         )
 
         self.email = Player.normalize_email(email)
@@ -1803,7 +1889,9 @@ class JoinLeagueRequest(DB.Model):
         """Accept the request and add the player to the team"""
         # create a player if they do not exit already
         if not self.pending:
-            raise HaveLeagueRequestException("Request already submitted")
+            raise HaveLeagueRequestException(
+                payload={"details": "Request already submitted"}
+            )
 
         player = Player.find_by_email(self.email)
         if player is None:
@@ -1833,3 +1921,34 @@ class JoinLeagueRequest(DB.Model):
             "player_name": self.name,
             "gender": self.gender
         }
+
+    @classmethod
+    def create_request(
+        cls,
+        player_name: str,
+        player_email: str,
+        gender: str,
+        team_id: int,
+    ) -> 'JoinLeagueRequest':
+        """Create a join league request"""
+        pending_request = JoinLeagueRequest.query.filter(
+            func.lower(JoinLeagueRequest.email) == player_email.lower()
+        ).first()
+        if pending_request is not None:
+            raise HaveLeagueRequestException(
+                payload={'detail': "Already pending request"}
+            )
+
+        return JoinLeagueRequest(
+            player_email, player_name, Team.query.get(team_id), gender
+        )
+
+    @classmethod
+    def find_request(cls, player_email: str) -> 'JoinLeagueRequest':
+        """Find a pending request for the given email"""
+        return JoinLeagueRequest.query.filter(
+            and_(
+                JoinLeagueRequest.email == player_email,
+                JoinLeagueRequest.pending == True
+            )
+        ).first()

@@ -6,81 +6,236 @@
     <strong>Record:</strong> {{team.wins}} - {{team.losses}} - {{team.ties}}<br/>
 </p>
 
-<h4>
+<h3 class="mt-2">
     Roster
     {% if team_authorization.logged_in and not team_authorization.pending_request and not team_authorization.on_team %}
-        <button class="btn btn-success" id="join_team" onclick="joinTeam('{{ url_for ('website.request_to_join_team', team_id=team_id) }}')">
+        <form
+            action="{{ url_for ('website.request_to_join_team', team_id=team_id, year=year) }}"
+            method="post"
+            hx-post="{{ url_for ('website.request_to_join_team', team_id=team_id, year=year) }}"
+            hx-target="#website-body"
+        >
+            <button class="btn btn-success" id="join_team" type="submit">
+                Join Team
+            </button>
+        </form>
+    {% elif not team_authorization.logged_in and not team_authorization.pending_request and not team_authorization.on_team %}
+        <button class="btn btn-success" id="join_team" onclick="document.querySelector('#joinTeamRequest').showModal();">
             Join Team
         </button>
+        <dialog id="joinTeamRequest">
+            <form
+                action="{{ url_for('website.join_team_request', team_id=team_id, year=year) }}"
+                method="POST"
+                id="leagueRequest"
+            >
+                <div class="form-group">
+                    <label for="joinTeamRequestInputName">
+                        Name
+                    </label>
+                    <input
+                        name="name"
+                        type="name"
+                        class="form-control"
+                        id="joinTeamRequestInputName"
+                        aria-describedby="nameHelp"
+                        placeholder="Enter name"
+                        required
+                    >
+                    <small id="nameHelp" class="form-text text-muted">Your name will appear on team page and leaders page.</small>
+                    <br /><br />
+
+                    <label for="joinTeamRequestInputEmail">Email</label>
+                    <input
+                        name="email"
+                        type="email"
+                        class="form-control"
+                        id="joinTeamRequestInputEmail"
+                        placeholder="Enter Email"
+                        required
+                    >
+                    
+                    <br />
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Eligible for Sapporo Singles
+                    </label>
+                    <input class="form-check-input" type="checkbox" name="is_female" id="flexCheckDefault">
+                </div>
+                <button type="submit" class="btn btn-primary" id="joinTeamRequestSubmit">
+                    Submit
+                </button>
+                <button class="btn btn-secondary" onclick="document.querySelector('#joinTeamRequest').close();">
+                    Cancel
+                </button>
+            </form>
+        </dialog>
     {% endif %}
-</h4>
+</h3>
 <ul class="listgroup leadersList" id="teamPlayers">
     {% for player in team.players %}
         <li class="list-group-item leaderPoint" id="player{{player.player_id}}">
             {{player.player_name}}
             {% if team_authorization.is_captain %}
-                &nbsp;    
-                <button class="btn btn-danger" id="removePlayer{{player.player_id}}" alt="Remove player" onclick="dropPlayer('{{ url_for ('website.team_remove_player', team_id=team_id, player_id=player.player_id)}}', {{player.player_id}} )">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
+                &nbsp;
+                <form
+                    action="{{ url_for ('website.team_remove_player', team_id=team_id, player_id=player.player_id, year=year)}}"
+                    method="post"
+                    hx-post="{{ url_for ('website.team_remove_player', team_id=team_id, player_id=player.player_id, year=year)}}"
+                    hx-target="#website-body"
+                    class="d-inline-block"
+                >
+                    <button
+                        class="btn btn-danger"
+                        id="removePlayer{{player.player_id}}"
+                        type="submit"
+                        alt="Remove player"
+                    >
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </form>
+                
             {% endif %}
         </li>
     {% endfor %}
 </ul>
 
 {% if team_authorization.is_captain and team_requests|length > 0 %}
-    <h4>
+    <h3 class="mt-2">
         Team Requests
-    </h4>
+    </h3>
     {% for league_request in team_requests %}
-        <div id="league_request{{request.id}}" class="row column-padding">
-            <div class="col-xs-4">
-                <label>
-                    {{league_request.email}}
-                    <br>to join {{league_request.team.team_name}}
-                    <br>
-                    {% if league_request.gender == 'f' %}
-                        <small>Eligible for sapporo singles</small>
-                    {% endif %}
-                </label>
-            </div>
-            <div class="col-xs-4">
-                <button
-                    class="btn btn-info"
-                    id="acceptRequest{{league_request.id}}"
-                    onclick="respondToRequest('{{ url_for ('website.captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', true, 'league_request{{request.id}}')">
-                    Accept
-                </button>
-            </div>
-            <div class="col-xs-4">
-                <button
-                    class="btn btn-warning"
-                    id="rejectRequest{{league_request.id}}"
-                    onclick="respondToRequest('{{ url_for ('website.captain_respond_league_request', team_id=team_id, request_id=league_request.id) }}', false, 'league_request{{request.id}}');">
-                    Decline
-                </button>
+        <div id="league_request{{request.id}}" class="rosterRequests">
+            <label class="rosterRequests__player">
+                {{league_request.player_name}} ({{league_request.email}})
+                <br>
+                {% if league_request.gender == 'f' %}
+                    <small>Eligible for sapporo singles</small>
+                {% endif %}
+            </label>
+            <div class="d-flex">
+                <form
+                    action="{{ url_for ('website.captain_respond_league_request_form', team_id=team_id, year=year) }}"
+                    method="post"
+                    hx-post="{{ url_for ('website.captain_respond_league_request_form', team_id=team_id, year=year) }}"
+                    hx-target="#website-body"
+                >
+                    <input type="hidden" name="accept" value="true">
+                    <input type="hidden" name="request_id" value="{{league_request.id}}">
+                    <button
+                        class="btn btn-primary mr-2 mt-0"
+                        id="acceptRequest{{league_request.id}}"
+                        type="submit"
+                    >
+                        Accept
+                    </button>    
+                </form>
+                <br>
+                <form
+                    hx-post="{{ url_for ('website.captain_respond_league_request_form', team_id=team_id, year=year) }}"
+                    action="{{ url_for ('website.captain_respond_league_request_form', team_id=team_id, year=year) }}"
+                    method="post"
+                    hx-target="#website-body"
+                >
+                    <input type="hidden" name="accept" value="false">
+                    <input type="hidden" name="request_id" value="{{league_request.id}}">
+                    <button
+                        class="btn btn-danger btn-mlsb mt-0"
+                        id="rejectRequest{{league_request.id}}"
+                        type="submit"
+                    >
+                        Reject
+                    </button>    
+                </form>
             </div>
         </div>
     {% endfor %}
 {% endif %}
 
 {% if team_authorization.is_captain %}
-<div style="padding-top: 20px; padding-bottom: 20px;">
-    <h4>Add existing player</h4>
-    <select id="selectPlayer" class="form form-control">
-        {% for player in all_players %}
-            <option value="{{ player.player_id }}" id="playerOption{{player.player_id}}">
-                {{player.player_name}} ({{player.email}})
-            </option>
-        {% endfor %}
-    </select>
-    <button
-        id="addPlayer"
-        class="btn btn-success"
-        style="margin-top: 20px;"
-        onclick="addPlayer({{team_id}});")>
-        Add
-    </button>
+<div class="rosterManagement" id="rosterManagement">
+    <h3 class="mt-2">Add Players</h3>
+    <label for="searchPlayer">Search</label>
+    <input
+        name="player"
+        type="name"
+        class="form-control"
+        id="searchPlayer"
+        aria-describedby="nameHelp"
+        placeholder="Enter player to add"
+        hx-post="{{ url_for('website.search_players', team_id=team_id) }}"
+        hx-trigger="keyup changed delay:500ms"
+        hx-target="#playerSearchResults"
+        required
+    >
+    <form
+        hx-post="{{ url_for ('website.team_add_player_form', team_id=team_id, year=year) }}"
+        action="{{ url_for ('website.team_add_player_form', team_id=team_id, year=year) }}"
+        method="post"
+        hx-target="#website-body"
+        id="addPlayerForm"
+    >
+        <input type="hidden" name="player_id" value="" id="playerToAddId">
+        <button type="hidden" action="submit" id="addPlayerButton" class="hidden"></button>
+        <div
+            hx-trigger="createNewPlayer"
+            id="playerSearchResults"
+            _="
+                on selectedPlayer(player_id) put `` into me then set #playerToAddId.value to player_id then document.querySelector('#addPlayerButton').click() end
+                on createNewPlayer put `` into me then document.querySelector('#newPlayerModal').showModal() end
+            "
+        >
+    </form>
+
+    </div>
+    <dialog id="newPlayerModal">
+        <form
+            action="{{ url_for('website.add_new_player', team_id=team_id, year=year) }}"
+            method="POST"
+            id="leagueRequest"
+        >
+            <div class="form-group">
+                <label for="newPlayerModalInputName">Name</label>
+                <input name="name" type="name" class="form-control" id="newPlayerModalInputName" aria-describedby="nameHelp" placeholder="Enter name" required>
+                <small id="nameHelp" class="form-text text-muted">Their name will appear on team page and leaders page.</small>
+                <br /><br />
+
+                <label for="newPlayerModalInputEmail">Email</label>
+                <input
+                    name="email"
+                    type="email"
+                    class="form-control"
+                    id="newPlayerModalInputEmail"
+                    placeholder="Enter Email"
+                    required
+                >
+                
+                <br />
+                <label
+                    class="form-check-label"
+                    for="flexCheckDefault"
+                >
+                    Eligible for Sapporo Singles
+                </label>
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="is_female"
+                    id="flexCheckDefault"
+                >
+            </div>
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="newPlayerModalSubmit"
+            >Submit</button>
+            <button
+                class="btn btn-secondary"
+                onclick="document.querySelector('#newPlayerModal').close();"
+            >
+                Cancel
+            </button>
+        </form>
+    </dialog>
 </div>
 {% endif %}
 
@@ -125,86 +280,6 @@
         $('#teamTable').DataTable({
             "order": [[6, "desc"]],
             "responsive": true
-        });
-    }
-    function respondToRequest(url, value, element){
-        var data = {"accept": value};
-        $.ajax({
-            type: "POST",
-                url: url,
-                contentType: "application/json",
-                dataType: 'json',
-                async: false,
-                data: JSON.stringify(data),
-                success: function (success){
-                    if (success != true){
-                        alert("Unable to respond to team request");
-                    }
-                    $('#' + element).hide();
-                }, error: function(request, error){
-                    alert("Error on submission")
-                    console.log(request);
-                    console.log(error);
-                }
-        });
-    }
-    function joinTeam(url) {
-        $.ajax({
-            type: "POST",
-                url: url,
-                contentType: "application/json",
-                dataType: 'json',
-                async: false,
-                success: function (success){
-                    $('#join_team').hide();
-                }, error: function(request, error){
-                    alert("Failed while trying to make team request");
-                    console.log(request);
-                    console.log(error);
-                }
-        });
-    }
-
-    function dropPlayer(url, player_id) {
-        $.ajax({
-            type: "POST",
-                url: url,
-                contentType: "application/json",
-                dataType: 'json',
-                async: false,
-                success: function (success){
-                    $('#player' + player_id).hide();
-                }, error: function(request, error){
-                    alert("Failed to remove player from team");
-                    console.log(request);
-                    console.log(error);
-                }
-        });
-    }
-
-    function addPlayer(team_id) {
-        var player_id = $('#selectPlayer').val();
-        var player_name = $('#selectPlayer option:selected').text();
-        var url = `/website/teams/${team_id}/add_player/${player_id}`;
-
-        $.ajax({
-            type: "POST",
-                url: url,
-                contentType: "application/json",
-                dataType: 'json',
-                async: false,
-                success: function (success){
-                    $('#addPlayer' + player_id).hide();
-                    $('#teamPlayers').append('<li class="list-group-item leaderPoint" id="player'+ player_id + '">'+ player_name +'</li>');
-                }, error: function(request, error){
-                    if (request.responseText) {
-                        alert("Failed to add player to team" + request.responseText);
-                    } else {
-                        alert("Failed to add player to team");
-                    }
-                    console.log(request);
-                    console.log(error);
-                }
         });
     }
 </script>

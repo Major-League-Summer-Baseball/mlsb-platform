@@ -1,3 +1,4 @@
+# DEPRECATED - no longer needed - just use url_for
 Routes = {}
 # -----------------------------------------------------------------------------
 # APIs

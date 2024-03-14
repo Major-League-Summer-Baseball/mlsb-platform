@@ -48,6 +48,18 @@ body {
     border-radius: 50%;
 }
 
+.mr-2 {
+  margin-right: 36px;
+}
+
+.mt-0 {
+  margin-top: 0 !important;
+}
+
+.mt-2 {
+  margin-top: 36px;
+}
+
 .games-container {
     border-bottom: 1px solid #dcdcdc;
     color: white;
@@ -309,8 +321,27 @@ hr {
   margin-top: 10px;
 }
 
+.btn-mlsb {
+  padding: 8px 20px;
+  margin-top: 10px;
+}
+
 .btn-primary:hover,
 .btn-primary:focus{
+  outline: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  padding: 8px 20px;
+  color: #fff;
+  border-radius: 4px;
+  border:none;
+  margin-top: 10px;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
   outline: none;
   box-shadow: none;
 }
@@ -556,6 +587,43 @@ ul.social_icons li  a i{
   border-radius: 60px
 }
 
+.d-flex {
+  display: flex;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.hidden {
+  display: none;
+}
+
+.rosterRequests {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 16px;
+
+}
+
+.rosterRequests__player {
+  width: 100%;
+  max-width: 400px;
+}
+
+
+.rosterManagement {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.rosterManagement__submit {
+  margin-top: 20px;
+}
+
 .navlinks{
   color: #000000;
 }
@@ -675,6 +743,10 @@ a {
  .glyphicon.spinning {
   animation: spin 1s infinite linear;
   -webkit-animation: spin2 1s infinite linear;
+}
+
+.hoverable:hover {
+  cursor: pointer;
 }
 
 @keyframes spin {

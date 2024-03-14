@@ -1,0 +1,38 @@
+name: Feature Request
+description: File a feature request
+title: "[Feature]: "
+labels: ["feature", "enhancement"]
+projects: ["Major-League-Summer-Baseball/2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the feature request/enhancement.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Description
+      description: A concise description of the enhancement.
+    validations:
+      required: true
+ - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Include any additional information that may be useful in understanding the enhancement.
+
+        Tip: You can click this area to highlight it and then drag files or images in.

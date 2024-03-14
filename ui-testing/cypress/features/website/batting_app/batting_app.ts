@@ -3,10 +3,11 @@ import { Team } from '../../../interfaces/team';
 import { Game } from '../../../interfaces/game';
 import { Player } from '../../../interfaces/player';
 import { CaptainGames } from '../../../interfaces/captain_games';
-import { create_player, generate_player } from '../../global/login'
+import { create_player } from '../../global/login'
 
 /** The URL for the captain app page. */
 const CAPTAIN_BATTING_PAGE = 'captain/batting_app/';
+const YEAR = new Date().getFullYear();
 
 /** Hook for the score app. */
 const scoreappHook = (): void => {
@@ -47,30 +48,10 @@ Given(`my team had a game`, teamHasGame);
 const navigateToBattingAppForGame = (): void => {
     
     cy.get<Player>('@captain').then((captain: Player) => {
-        // filter out to just two players the captain and sapporo eligble player
-        cy.intercept("GET", '/captain/api/games/**', (req) => {
-                req.continue((res) => {
-                    let players = res.body;
-                    players = res.body.players.slice(0,2);
-                    const female_player = res.body.players.find(player => player.gender == 'f');
-                    players[0] = captain;
-                    players[1] = female_player;
-                    res.body.players = players;
-                    res.send();
-                });
-            }
-        ).as('teamRoster');
         create_player(captain);
         cy.get<Team>('@team').then((team: Team) => {
-            cy.visit(`${CAPTAIN_BATTING_PAGE}/${team.team_id}`);
             cy.get<Game>("@game").then((game: Game) => {
-                cy.get(`#game-${game.game_id}`).click();
-                cy.wait('@teamRoster').then((intercept) => {
-                    // expecting 200
-                    expect(intercept.response?.statusCode).to.be.eq(200);
-                    const players = intercept.response?.body.players;
-                    cy.wrap(players.find(p => p.gender == 'f')).as('female_player');
-                });
+                cy.visit(`${CAPTAIN_BATTING_PAGE}/${YEAR}/${game.game_id}/${team.team_id}`);
             });
         });
     });
@@ -94,16 +75,41 @@ When(`the bases are loaded`, loadUpBases);
 
 /** Find the elgible batter for sapporos. */
 const findEligbleBatter = (): void => {
-    batterHasAnAtBat("s");
+    const femaleMatcher = new RegExp('female', 'i');
+    cy.get('#player-lineup li div').contains(femaleMatcher).parent('div').invoke('attr', 'id').then((id) => {
+        const player_id = id.split("-")[1];
+        console.log(id);
+        cy.wrap(player_id).as('female_player');
+    });
+    cy.get<string>('@female_player').then((player_id: string) => {
+        // click a handful of times so they are at the top
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+    });
 };
-When(`the batter is eligble`, findEligbleBatter);
+When(`the batter is eligible`, findEligbleBatter);
 
 /** Find a batter who is not elgible sapporos. */
 const findNotEligbleBatter = (): void => {
-    // can assume captain at top
-    // since sorting by player id
+    const maleMatcher = new RegExp(/^(?!.*female).*male/, 'i');
+    cy.get('#player-lineup li div').contains(maleMatcher).parent('div').invoke('attr', 'id').then((id) => {
+        const player_id = id.split("-")[1];
+        console.log(id);
+        cy.wrap(player_id).as('male_player');
+    });
+    cy.get<string>('@male_player').then((player_id: string) => {
+        // click a handful of times so they are at the top
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
+    });
 };
-When(`the batter is not eligble`, findNotEligbleBatter)
+When(`the batter is not eligible`, findNotEligbleBatter)
 
 /** Undo the previous hit. */
 const undoHit = (): void => {
@@ -119,18 +125,29 @@ const removePlayerFromLineup = (): void => {
 };
 When(`I remove a player from the lineup`, removePlayerFromLineup);
 
-/** Move a player from top to bottom of lineup. */
+/** Move a player from bottom to top of lineup. */
 const movePlayerTopOfLineup = (): void => {
-    cy.get<Player>('@female_player').then((female: Player) => {
-        cy.get(`#rosterUp-${female.player_id}`).click();
+    cy.get("#player-lineup li").last().invoke('attr', 'id').then((id) => {
+        const player_id = id.split("-")[2];
+        console.log(id);
+        cy.wrap(player_id).as('last_player');
+    })
+    cy.get<string>('@last_player').then((player_id: string) => {
+        cy.get(`#rosterUp-${player_id}`).click();
+        cy.get(`#rosterUp-${player_id}`).click();
     });
 };
-When("I move a plyer to the top of the lineup", movePlayerTopOfLineup);
+When("I move a player to the top of the lineup", movePlayerTopOfLineup);
 
-/** Move a player from bottom to top of lineup. */
+/** Move a player from top to bottom of lineup. */
 const movePlayerBottomOfLineup = (): void => {
-    cy.get<Player>('@captain').then((player: Player) => {
-        cy.get(`#rosterDown-${player.player_id}`).click();
+    cy.get("#player-lineup li").last().invoke('attr', 'id').then((id) => {
+        const player_id = id.split("-")[2];
+        cy.wrap(player_id).as('first_player');
+    })
+    cy.get<string>('@first_player').then((player_id: string) => {
+        cy.get(`#rosterDown-${player_id}`).click();
+        cy.get(`#rosterDown-${player_id}`).click();
     });
 };
 When("I move a player to the bottom of the lineup", movePlayerBottomOfLineup);
@@ -188,18 +205,18 @@ Then(`they are not in the lineup`, assertNotInLineup);
 
 /** Assert the player is bottom of the lineup. */
 const assertBottomOfLineup = (): void => {
-    cy.get<Player>('@captain').then((player: Player) => {
-        cy.get(`#rosterDown-${player.player_id}`).should("have.attr", "disabled", "disabled");
-        cy.get(`#rosterUp-${player.player_id}`).should("not.have.attr", "disabled", "disabled");
+    cy.get<string>('@first_player').then((player_id: string) => {
+        cy.get(`#rosterDown-${player_id}`).should("have.attr", "disabled", "disabled");
+        cy.get(`#rosterUp-${player_id}`).should("not.have.attr", "disabled", "disabled");
     });
 };
 Then(`they are on the bottom of the lineup`, assertBottomOfLineup);
 
 /** Assert the player is bottom of the lineup. */
 const assertTopOfLineup = (): void => {
-    cy.get<Player>('@female_player').then((player: Player) => {
-        cy.get(`#rosterUp-${player.player_id}`).should("have.attr", "disabled", "disabled");
-        cy.get(`#rosterDown-${player.player_id}`).should("not.have.attr", "disabled", "disabled");
+    cy.get<string>('@last_player').then((player_id: string) => {
+        cy.get(`#rosterUp-${player_id}`).should("have.attr", "disabled", "disabled");
+        cy.get(`#rosterDown-${player_id}`).should("not.have.attr", "disabled", "disabled");
     });
 };
 Then(`they are at the top of the lineup`, assertTopOfLineup);

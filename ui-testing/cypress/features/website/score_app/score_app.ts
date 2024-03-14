@@ -5,7 +5,8 @@ import { Player } from '../../../interfaces/player';
 import { create_player } from '../../global/login'
 
 /** The URL for the captain app page. */
-const CAPTAIN_APP_PAGE = 'captain/game_summary/';
+const CAPTAIN_APP_PAGE = 'captain/game';
+const YEAR = new Date().getFullYear();
 
 /** Hook for the score app. */
 const scoreappHook = (): void => {
@@ -44,20 +45,14 @@ Given(`my team had a game`, teamHasGame);
 
 /**  Navigate to score app for some team and game. */
 const navigateToScoreAppForGame = (): void => {
-    navigateToScoreApp();
-    teamHasGame().then((game: Game) => {
-        cy.get(`#game-${game.game_id}`).click();
+    cy.get<Team>('@team').then((team: Team) => {
+        teamHasGame().then((game: Game) => {
+            cy.visit(`${CAPTAIN_APP_PAGE}/${YEAR}/${game.game_id}/${team.team_id}`);
+        });
     });
+    
 };
 Given(`submitting a score for a game`, navigateToScoreAppForGame);
-
-/** Navigate to score app for some team. */
-const navigateToScoreApp = (): void => {
-    cy.get<Team>('@team').then((team: Team) => {
-        cy.visit(`${CAPTAIN_APP_PAGE}/${team.team_id}`);
-    })
-};
-When(`I view the list of Games`, navigateToScoreApp);
 
 /**
  * Set the score the game.
@@ -94,12 +89,13 @@ const assertGameVisible = (): void => {
 Then(`I see the game`, assertGameVisible);
 
 /** Assert that expected game is visible. */
-const assertGameNotVisible = (): void => {
+const assertGameCanBeResubmitted = (): void => {
+    
     cy.get<Game>('@game').then((game: Game) => {
-        cy.get(`#game-${game.game_id}`).should('not.exist');
+        cy.get(`#game-${game.game_id}-resubmit`).should("exist");
     });
 };
-Then(`I no longer see the game`, assertGameNotVisible);
+Then(`I see the game can be resubmitted`, assertGameCanBeResubmitted);
 
 /** Assert the submission is blocked. */
 const assertSubmissionBlocked = (): void => {
