@@ -394,12 +394,12 @@ def requires_admin(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
-        elif 'admin' in session and 'password' in session:
+        if 'admin' in session and 'password' in session:
             # check if user signed in already
             logged = check_auth(session['admin'], session['password'])
             if not logged:
                 return authenticate()
+        elif not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
         return f(*args, **kwargs)
     return decorated
