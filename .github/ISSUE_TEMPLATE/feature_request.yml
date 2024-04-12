@@ -29,7 +29,7 @@ body:
       description: A concise description of the enhancement.
     validations:
       required: true
- - type: textarea
+  - type: textarea
     attributes:
       label: Anything else?
       description: |
