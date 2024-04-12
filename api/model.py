@@ -536,6 +536,7 @@ class Player(UserMixin, DB.Model):
                            lazy='dynamic')
     active = DB.Column(DB.Boolean)
     kik = DB.Column(DB.String(120))
+    is_convenor = DB.Column(DB.Boolean)
 
     def __init__(self,
                  name: str,
@@ -660,6 +661,14 @@ class Player(UserMixin, DB.Model):
                 False otherwise
         """
         return check_password_hash(self.password, password)
+
+    def make_convenor(self) -> None:
+        """Make the player a convenor."""
+        self.is_convenor = True
+
+    def remove_convenor(self) -> None:
+        """The player is no longer a convenor."""
+        self.is_convenor = False
 
     def __repr__(self) -> str:
         """Return the string representation of the player."""
