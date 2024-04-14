@@ -687,11 +687,14 @@ class Player(UserMixin, DB.Model):
 
     def admin_json(self) -> dict:
         """Returns a jsonserializable object."""
-        return {"player_id": self.id,
-                "player_name": self.name,
-                "gender": self.gender,
-                "email": self.email,
-                "active": self.active}
+        return {
+            "player_id": self.id,
+            "player_name": self.name,
+            "gender": self.gender,
+            "email": self.email,
+            "active": self.active,
+            "is_convenor": self.is_convenor
+        }
 
     def activate(self) -> None:
         """Activate the player."""

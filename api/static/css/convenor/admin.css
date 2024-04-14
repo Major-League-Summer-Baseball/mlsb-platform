@@ -1,0 +1,19 @@
+input[disabled] {
+    color: #DCDAD1;
+    padding: 2px;
+    margin: 0 0 0 0;
+    background-image: none;
+}
+
+
+.mt-1 {
+    margin-top: 12px;
+}
+
+.mt-2 {
+    margin-top: 24px;
+}
+
+.mt-3 {
+    margin-top: 36px;
+}
