@@ -6,7 +6,7 @@ from api.variables import NOTFOUND, PICTURES, POSTS
 from api.cached_items import get_upcoming_games
 from api.authentication import get_user_information
 from api.convenor import convenor_blueprint
-from api.model import Player
+from api.model import JoinLeagueRequest, Player
 import os.path
 import json
 
@@ -45,6 +45,7 @@ def submit_player():
     player_name = request.form.get("name", None)
     email = request.form.get("email")
     player_id = request.form.get("player_id", None)
+
     try:
         if is_empty(player_id):
             player = Player(player_name, email, gender)
@@ -66,15 +67,38 @@ def submit_player():
         player.make_convenor()
     elif player.is_convenor and not is_convenor:
         player.remove_convenor()
+
     DB.session.commit()
     return redirect(url_for("convenor.players_page"))
 
 
 @convenor_blueprint.route("players")
 def players_page():
+    league_requests = JoinLeagueRequest.query.filter(
+        JoinLeagueRequest.pending == True).all()
+    league_requests = [request.json() for request in league_requests]
     return render_template(
         "convenor/players.html",
+        league_requests=league_requests
     )
+
+
+@convenor_blueprint.route(
+    "/player/league_request/<int:request_id>/<int:accept>",
+    methods=["POST"]
+)
+def respond_league_request(request_id: int, accept: int):
+    league_request = JoinLeagueRequest.query.get(request_id)
+    if league_request is None:
+        session['error'] = f"Player request does not exist {request_id}" 
+        return redirect(url_for("convenor.error_page"))
+    accept = accept > 0
+    if accept:
+        league_request.accept_request()
+    else:
+        league_request.decline_request()
+    return redirect(url_for("convenor.players_page"))
+
 
 @convenor_blueprint.route(
     "players/search", methods=["POST"]
