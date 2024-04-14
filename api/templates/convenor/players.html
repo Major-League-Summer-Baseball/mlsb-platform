@@ -1,0 +1,49 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+<div class="playerSearch" id="playerSearch">
+    <h3>Find Player</h3>
+    <label for="searchPlayer">Email/Name</label>
+    <input
+        name="player"
+        type="name"
+        class="form-control"
+        id="searchPlayer"
+        aria-describedby="nameHelp"
+        placeholder="Enter player to add"
+        hx-post="{{ url_for('convenor.search_players') }}"
+        hx-trigger="keyup changed delay:500ms"
+        hx-target="#playerSearchResults"
+        required
+    >
+    <form
+        method="get"
+        id="editPlayerForm"
+        action="{{ url_for ('convenor.edit_player_page') }}"
+        hx-get="{{ url_for ('convenor.edit_player_page') }}"
+        hx-push-url="true"
+        hx-target="#convenorBody"
+    >
+        <input type="hidden" name="player_id" value="" id="playerToAddId">
+        <button type="hidden" action="submit" id="editPlayerSubmit" class="hidden"></button>
+    </form>
+    <div
+        id="playerSearchResults"
+        _="
+                on selectedPlayer(player_id) put `` into me then set #playerToAddId.value to player_id then document.querySelector('#editPlayerSubmit').click() end
+                on createNewPlayer put `` into me then document.querySelector('#newPlayerLink').click() end
+        "
+    >
+    </div>
+
+    <a
+        id="newPlayerLink"
+        class="btn btn-primary mt-1"
+        action="{{ url_for ('convenor.new_player_page') }}"
+        hx-get="{{ url_for ('convenor.new_player_page') }}"
+        hx-target="#convenorBody"
+        hx-push-url="true"
+    >
+        Add Player
+    </a>
+</div>
+{% endblock %}
