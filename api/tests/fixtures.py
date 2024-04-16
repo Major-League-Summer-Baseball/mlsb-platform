@@ -38,6 +38,22 @@ def mlsb_app():
 
 
 @pytest.fixture(scope="session")
+def convenor(mlsb_app) -> "Player":
+    """A convenor to use for testing all admin routes."""
+    with mlsb_app.app_context():
+        name = random_name("Convenor")
+        email = random_email()
+        player = Player(
+            name=name,
+            email=email,
+        )
+        player.make_convenor()
+        DB.session.add(player)
+        DB.session.commit()
+        return Player.query.get(player.id)
+
+
+@pytest.fixture(scope="session")
 def client(mlsb_app):
     return mlsb_app.test_client()
 

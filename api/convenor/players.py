@@ -4,7 +4,7 @@ from datetime import date
 from api.extensions import DB
 from api.variables import NOTFOUND, PICTURES, POSTS
 from api.cached_items import get_upcoming_games
-from api.authentication import get_user_information
+from api.authentication import get_user_information, require_to_be_convenor
 from api.convenor import convenor_blueprint
 from api.model import JoinLeagueRequest, Player
 import os.path
@@ -14,6 +14,7 @@ PAGE_LIMIT_SIZE = 20
 
 
 @convenor_blueprint.route("players/edit")
+@require_to_be_convenor
 def edit_player_page():
     """Page to edit a player"""
     player_id = request.args.get("player_id", -1)
@@ -25,6 +26,7 @@ def edit_player_page():
 
 
 @convenor_blueprint.route("players/new")
+@require_to_be_convenor
 def new_player_page():
     return render_template(
         "convenor/player.html",
@@ -38,6 +40,7 @@ def new_player_page():
 
 
 @convenor_blueprint.route("players/submit", methods=["POST"])
+@require_to_be_convenor
 def submit_player():
     """Submit new player or changes to a player"""
     is_convenor = request.form.get("is_convenor", False)
@@ -45,7 +48,6 @@ def submit_player():
     player_name = request.form.get("name", None)
     email = request.form.get("email")
     player_id = request.form.get("player_id", None)
-
     try:
         if is_empty(player_id):
             player = Player(player_name, email, gender)
@@ -73,6 +75,7 @@ def submit_player():
 
 
 @convenor_blueprint.route("players")
+@require_to_be_convenor
 def players_page():
     league_requests = JoinLeagueRequest.query.filter(
         JoinLeagueRequest.pending == True).all()
@@ -87,6 +90,7 @@ def players_page():
     "/player/league_request/<int:request_id>/<int:accept>",
     methods=["POST"]
 )
+@require_to_be_convenor
 def respond_league_request(request_id: int, accept: int):
     league_request = JoinLeagueRequest.query.get(request_id)
     if league_request is None:
@@ -103,6 +107,7 @@ def respond_league_request(request_id: int, accept: int):
 @convenor_blueprint.route(
     "players/search", methods=["POST"]
 )
+@require_to_be_convenor
 def search_players():
     # ensure only search by logged in captain
     if request.is_json:
