@@ -228,6 +228,13 @@
                                         Profile <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu">
+                                        {% if user_info.convenor %}
+                                        <li>
+                                            <a href="{{ url_for('convenor.players_page') }}">
+                                                Convenor
+                                            </a>
+                                        </li>
+                                        {% endif %}
                                         {% if user_info.captain %}
                                         <li>
                                             <a
