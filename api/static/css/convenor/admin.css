@@ -17,3 +17,32 @@ input[disabled] {
 .mt-3 {
     margin-top: 36px;
 }
+
+.sponsors-container {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+.sponsor-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 10px 20px;
+    padding-bottom: 10px;
+}
+
+.dashed-line {
+    border: none;
+    border-top: 2px dotted grey;
+    color: #fff;
+    background-color: #fff;
+    height: 1px;
+    width: 50%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
