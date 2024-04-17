@@ -5,7 +5,7 @@ from api.extensions import DB
 from api.variables import NOTFOUND, PICTURES, POSTS
 from api.cached_items import get_upcoming_games
 from api.authentication import get_user_information, require_to_be_convenor
-from api.convenor import convenor_blueprint
+from api.convenor import convenor_blueprint, is_empty
 from api.model import JoinLeagueRequest, Player
 import os.path
 import json
@@ -129,9 +129,4 @@ def search_players():
         players=player_data,
         show_add=len(players) <= PAGE_LIMIT_SIZE
     )
-
-
-def is_empty(value) -> bool:
-    """Check if given value is None or empty string."""
-    return value is None or value == ""
 
