@@ -536,7 +536,7 @@ class Player(UserMixin, DB.Model):
                            lazy='dynamic')
     active = DB.Column(DB.Boolean)
     kik = DB.Column(DB.String(120))
-    is_convenor = DB.Column(DB.Boolean)
+    is_convenor = DB.Column(DB.Boolean, default=False)
 
     def __init__(self,
                  name: str,
@@ -570,7 +570,7 @@ class Player(UserMixin, DB.Model):
             gender_validator,
             InvalidField(payload={'details': "Player - gender"})
         )
-
+        self.is_convenor = False
         self.__update(
             name=name,
             email=email,
