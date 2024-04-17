@@ -13,6 +13,26 @@ import inspect
 convenor_blueprint = Blueprint("convenor", __name__, url_prefix="/convenor")
 
 
+def normalize_model(models: list[dict]) -> list[dict]:
+    """Normalize a model replace None with empty string"""
+    for index in range(len(models)):
+        model = models[index]
+        for key, value in model.items():
+            if value is None:
+                model[key] = ''
+    return models
+
+
+def is_empty(value) -> bool:
+    """Check if given value is None or empty string."""
+    return value is None or value == ""
+
+
+def normalize_field(value):
+    """Returns a normalize input field"""
+    return None if value == "" else value
+
+
 @convenor_blueprint.route("error")
 def error_page():
     error_message = session.pop('error')
