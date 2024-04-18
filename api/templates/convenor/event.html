@@ -1,0 +1,122 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+<a href="{{ url_for('convenor.events_page') }}">
+    <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
+</a>
+<h1>
+    League Event - {{league_event.name}}
+</h1>
+<div class="events-container">
+    {% for date in dates %}
+        <form
+            class="event-container form-inline"
+            method="post"
+            action="{{ url_for ('convenor.submit_event_date', league_event_id=date.league_event_id) }}"
+            hx-post="{{ url_for ('convenor.submit_event_date', league_event_id=date.league_event_id) }}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <input
+                type="hidden"
+                name="league_event_date_id"
+                value="{{date.league_event_date_id}}"
+                id="leagueEventDateId"
+            />
+            <input
+                type="date"
+                value="{{date.date}}"
+                id="date{{date.league_event_date_id}}"
+                name="date"
+                min="2016-01-01"
+                required
+            />
+            <input
+                type="time"
+                value="{{date.time}}"
+                id="time{{date.league_event_date_id}}"
+                name="time"
+                min="08:00"
+                max="23:00"
+                required
+            />
+            <button
+                type="submit"
+                class="btn btn-primary constrain-btn"
+                id="leagueEventDateSubmit{{date.league_event_date_id}}"
+            >
+                Update
+            </button>
+            <button
+                hx-trgger="click"
+                type="button"
+                _="
+                    on click document.querySelector('#leagueEventAttendees{{date.league_event_date_id}}').showModal() end
+                "
+                class="btn btn-warning constrain-btn"
+                id="leagueEventDateAttendance{{date.league_event_date_id}}"
+            >
+                See Attendance
+            </button>
+        </form>
+        <hr class="dashed-line">
+        <dialog id="leagueEventAttendees{{date.league_event_date_id}}">
+            <button
+                type="button"
+                class="close"
+                onclick="document.querySelector('#leagueEventAttendees{{date.league_event_date_id}}').close();"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h1>Players Attendance</h1>
+            {% if date.attendees|length == 0 %}
+                <p>No attendees yet</p>
+            {% endif %}
+            <ul class="list-group">
+                {% for attendee in date.attendees %}
+                    <li class="list-group-item">
+                        {{attendee.player_name}} - {{attendee.email}}
+                    </li>
+                {% endfor %}
+            </ul>
+            <button
+                class="btn btn-warning float-right"
+                onclick="document.querySelector('#leagueEventAttendees{{date.league_event_date_id}}').close();"
+            >
+                Close
+            </button>
+        </dialog>
+    {% endfor %}
+</div>
+<form
+    id="leagueEventDateForm"
+    method="post"
+    action="{{ url_for ('convenor.submit_event_date', league_event_id=league_event.league_event_id) }}"
+    hx-post="{{ url_for ('convenor.submit_event_date', league_event_id=league_event.league_event_id) }}"
+    class="event-container form-inline mt-2"
+    hx-push-url="true"
+    hx-target="#convenorBody"
+>
+    <input
+        type="date"
+        id="newDate"
+        name="date"
+        min="2016-01-01"
+        required
+    />
+    <input
+        type="time"
+        id="newTime"
+        name="time"
+        min="08:00"
+        max="23:00"
+        required
+    />
+    <button
+        type="submit"
+        class="btn btn-primary constrain-btn"
+        id="leagueEventDateCreate"
+    >
+        Create
+    </button>
+</form>
+{% endblock %}

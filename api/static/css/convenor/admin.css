@@ -18,7 +18,8 @@ input[disabled] {
     margin-top: 36px;
 }
 
-.sponsors-container {
+.sponsors-container,
+.events-container {
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -26,7 +27,8 @@ input[disabled] {
     gap: 16px;
 }
 
-.sponsor-container {
+.sponsor-container,
+.event-container {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -45,4 +47,12 @@ input[disabled] {
     width: 50%;
     margin-top: 0px;
     margin-bottom: 0px;
+}
+
+.constrain-btn {
+    max-height: 36px;
+}
+
+.float-right {
+    float: right;
 }
