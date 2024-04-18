@@ -5,9 +5,6 @@ from api.extensions import DB
 from flask import url_for
 
 
-NONEXISTENT = -1
-
-
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
@@ -108,8 +105,9 @@ def test_convenor_edit_sponsor(
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('auth')
 def test_only_convenor_edit_sponsor(
-    mlsb_app, client, sponsor_factory
+    mlsb_app, client, sponsor_factory, auth
 ):
     """Test only convenors can update/create sponsors"""
     with mlsb_app.app_context():
@@ -117,6 +115,7 @@ def test_only_convenor_edit_sponsor(
         name = random_name('sponsor')
         description = "some description"
         link = "https://github.com"
+        auth.logout()
         response = client.post(
             url_for("convenor.submit_sponsor"),
             follow_redirects=True,
@@ -192,6 +191,7 @@ def test_only_convenor_change_sponsor_visibility(
     """Test only convenors can change a sponsor visibility."""
     with mlsb_app.app_context():
         sponsor = sponsor_factory()
+        auth.logout()
         response = client.post(
             url_for(
                 "convenor.change_visibility", sponsor_id=sponsor.id, visible=0

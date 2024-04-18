@@ -10,14 +10,16 @@ NONEXISTENT = -1
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
 @pytest.mark.parametrize("route", [
     "edit_player_page",
     "new_player_page",
     "players_page"
 ])
-def test_all_routes_require_convenor_auth(mlsb_app, client, route):
+def test_all_routes_require_convenor_auth(mlsb_app, client, route, auth):
     with mlsb_app.app_context():
         url = url_for(f"convenor.{route}")
+        auth.logout()
         response = client.get(url, follow_redirects=True)
         assert url_for("website.loginpage").endswith(response.request.path)
         assert response.status_code == 200
@@ -148,11 +150,15 @@ def test_search_player(mlsb_app, client, player_factory, auth, convenor):
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('player_factory')
-def test_search_player_only_convenor(mlsb_app, client, player_factory):
+@pytest.mark.usefixtures('auth')
+def test_search_player_only_convenor(
+    mlsb_app, client, player_factory, auth
+):
     """Test search players page."""
     with mlsb_app.app_context():
         player = player_factory()
         player_factory()
+        auth.logout()
         response = client.post(
             url_for("convenor.search_players"),
             follow_redirects=True,
@@ -191,10 +197,12 @@ def test_submit_valid_new_player(mlsb_app, client, auth, convenor):
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
-def test_submit_player_only_convenor(mlsb_app, client):
+@pytest.mark.usefixtures('auth')
+def test_submit_player_only_convenor(mlsb_app, client, auth):
     """Test able to create a player."""
     with mlsb_app.app_context():
         email = random_email()
+        auth.logout()
         response = client.post(
             url_for("convenor.submit_player"),
             follow_redirects=True,
@@ -375,17 +383,20 @@ def test_rejecting_league_request(
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('join_league_request_factory')
 def test_accepting_league_request_only_convenor(
     mlsb_app,
     client,
     team_factory,
-    join_league_request_factory
+    join_league_request_factory,
+    auth
 ):
     """Test able to accept a join league request."""
     with mlsb_app.app_context():
         team = team_factory()
         league_request = join_league_request_factory(team)
+        auth.logout()
         response = client.post(
             url_for(
                 "convenor.respond_league_request",
