@@ -4,7 +4,7 @@ from api.model import Player
 from flask import url_for
 
 
-NONEXISTENT=-1
+NONEXISTENT = -1
 
 
 @pytest.mark.convenor
@@ -42,7 +42,6 @@ def test_edit_player(mlsb_app, client, player_factory, auth, convenor):
         data = response.data
         assert player.email in str(data)
         assert not url_for("website.loginpage").endswith(response.request.path)
-        
 
 
 @pytest.mark.convenor
@@ -136,7 +135,7 @@ def test_search_player(mlsb_app, client, player_factory, auth, convenor):
         response = client.post(
             url_for("convenor.search_players"),
             follow_redirects=True,
-             json={"player": player.email}
+            json={"player": player.email}
         )
         assert response.status_code == 200
         data = response.data
@@ -153,11 +152,11 @@ def test_search_player_only_convenor(mlsb_app, client, player_factory):
     """Test search players page."""
     with mlsb_app.app_context():
         player = player_factory()
-        another_player = player_factory()
+        player_factory()
         response = client.post(
             url_for("convenor.search_players"),
             follow_redirects=True,
-             json={"player": player.email}
+            json={"player": player.email}
         )
         assert response.status_code == 200
         assert url_for("website.loginpage").endswith(response.request.path)
@@ -176,11 +175,11 @@ def test_submit_valid_new_player(mlsb_app, client, auth, convenor):
         response = client.post(
             url_for("convenor.submit_player"),
             follow_redirects=True,
-             data={
-                 "is_female": False,
-                 "email": email,
-                 "name": random_name("convenor-testing"),
-                 "is_convenor": False
+            data={
+                "is_female": False,
+                "email": email,
+                "name": random_name("convenor-testing"),
+                "is_convenor": False
             }
         )
         assert response.status_code == 200
@@ -199,17 +198,16 @@ def test_submit_player_only_convenor(mlsb_app, client):
         response = client.post(
             url_for("convenor.submit_player"),
             follow_redirects=True,
-             data={
-                 "is_female": False,
-                 "email": email,
-                 "name": random_name("convenor-testing"),
-                 "is_convenor": False
+            data={
+                "is_female": False,
+                "email": email,
+                "name": random_name("convenor-testing"),
+                "is_convenor": False
             }
         )
         assert response.status_code == 200
         assert Player.is_email_unique(email) is True
         assert url_for("website.loginpage").endswith(response.request.path)
-
 
 
 @pytest.mark.convenor
@@ -229,12 +227,12 @@ def test_submit_valid_update_player(
         response = client.post(
             url_for("convenor.submit_player"),
             follow_redirects=True,
-             data={
-                 "is_female": False,
-                 "email": new_email,
-                 "name": random_name("convenor-testing"),
-                 "is_convenor": False,
-                 "player_id": player.id
+            data={
+                "is_female": False,
+                "email": new_email,
+                "name": random_name("convenor-testing"),
+                "is_convenor": False,
+                "player_id": player.id
             }
         )
         assert response.status_code == 200
@@ -260,11 +258,11 @@ def test_submit_player_handles_errors(
         response = client.post(
             url_for("convenor.submit_player"),
             follow_redirects=True,
-             data={
-                 "is_female": False,
-                 "email": player.email,
-                 "name": random_name("convenor-testing"),
-                 "is_convenor": False,
+            data={
+                "is_female": False,
+                "email": player.email,
+                "name": random_name("convenor-testing"),
+                "is_convenor": False,
             }
         )
         assert response.status_code == 200
@@ -289,12 +287,12 @@ def test_submit_player_handles_making_convenor(
         response = client.post(
             url_for("convenor.submit_player"),
             follow_redirects=True,
-             data={
-                 "is_female": False,
-                 "email": player.email,
-                 "name": random_name("convenor-testing"),
-                 "is_convenor": True,
-                 "player_id": player.id
+            data={
+                "is_female": False,
+                "email": player.email,
+                "name": random_name("convenor-testing"),
+                "is_convenor": True,
+                "player_id": player.id
             }
         )
         assert response.status_code == 200

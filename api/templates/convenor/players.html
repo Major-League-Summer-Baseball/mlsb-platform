@@ -20,6 +20,7 @@
                             <form
                                 method="post"
                                 id="editPlayerForm"
+                                method="post"
                                 action="{{ url_for ('convenor.respond_league_request', request_id=league_request.id, accept=1) }}"
                                 hx-post="{{ url_for ('convenor.respond_league_request', request_id=league_request.id, accept=1) }}"
                                 hx-push-url="true"
