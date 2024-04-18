@@ -6,7 +6,7 @@ from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist, \
     LeagueDoesNotExist, SponsorDoesNotExist, \
     PlayerNotOnTeam, FunDoesNotExist, \
     EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain, \
-    TeamAlreadyHasCaptain, PlayerNotSubscribed, NotLeagueConvenor,\
+    TeamAlreadyHasCaptain, PlayerNotSubscribed, NotLeagueConvenor, \
     BadRequestError, TeamNotPartOfLeague, DivisionDoesNotExist, \
     OAuthException, HaveLeagueRequestException, NotPartOfLeagueException, \
     LeagueEventDateDoesNotExist, LeagueEventDoesNotExist, \

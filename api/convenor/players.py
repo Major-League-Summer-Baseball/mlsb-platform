@@ -1,14 +1,10 @@
 from flask import\
-    flash, redirect, render_template, send_from_directory, request, session, url_for
+    flash, redirect, render_template, request, session, url_for
 from datetime import date
 from api.extensions import DB
-from api.variables import NOTFOUND, PICTURES, POSTS
-from api.cached_items import get_upcoming_games
-from api.authentication import get_user_information, require_to_be_convenor
+from api.authentication import require_to_be_convenor
 from api.convenor import convenor_blueprint, is_empty
 from api.model import JoinLeagueRequest, Player
-import os.path
-import json
 
 PAGE_LIMIT_SIZE = 20
 

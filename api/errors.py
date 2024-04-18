@@ -24,7 +24,6 @@ HLRESC = 403
 NPOLESC = 403
 
 
-
 class BaseException(Exception):
     status_code = FDNESC
     message = "Fun count does not exist"

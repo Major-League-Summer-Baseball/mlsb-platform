@@ -14,7 +14,7 @@ from flask import request, Blueprint, session, Response, redirect, \
 from api.extensions import DB
 from api.model import Player, OAuth, JoinLeagueRequest, Team
 from api.errors import OAuthException, NotPartOfLeagueException, \
-    HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist,\
+    HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist, \
     NotLeagueConvenor
 from api.logging import LOGGER
 import os
@@ -278,6 +278,7 @@ def get_player_teams() -> list[dict]:
 def is_convenor() -> bool:
     """Returns whether user is a convenor or not."""
     return are_logged_in() and current_user.is_convenor
+
 
 def is_gmail_supported() -> bool:
     """Returns whether current setup support Gmail authentication."""

@@ -268,7 +268,7 @@ class LeagueEventDate(DB.Model):
             'description': self.event.description,
             'name': self.event.name,
             'active': self.event.active,
-            'attendance': len(self.players)
+            'attendance': len(self.players),
         }
 
 

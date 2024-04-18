@@ -1,11 +1,6 @@
 __all__ = []
-from flask import \
-    redirect, render_template, send_from_directory, session, url_for,\
-    Blueprint, request
+from flask import render_template, session, Blueprint, request
 from datetime import date
-from api import app
-from api.cached_items import get_upcoming_games, get_leagues
-from api.authentication import get_user_information
 import pkgutil
 import inspect
 
@@ -40,13 +35,14 @@ def error_page():
 
 
 @convenor_blueprint.app_context_processor
-def inject_htmx():
+def inject_year():
     return dict(year=date.today().year)
 
 
 @convenor_blueprint.app_context_processor
 def inject_htmx():
     return dict(snippet=request.headers.get("Hx-Request", False))
+
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
     module = loader.find_module(name).load_module(name)
