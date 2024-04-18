@@ -76,9 +76,6 @@
                 <li class="indent-nav editsSidebar">
                     <a
                       href="{{ url_for('convenor.events_page') }}"
-                      hx-get="{{ url_for('convenor.events_page') }}"
-                      hx-target="#convenorBody"
-                      hx-push-url="true"
                     >
                       Events
                     </a>
@@ -129,6 +126,7 @@
     <script src="{{ url_for('static', filename="js/chosen.jquery.min.js") }}"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
+    <script src="https://cdn.ckeditor.com/4.10.0/full/ckeditor.js"></script>
   </body>
   <footer>
     <a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=year) }}">About</a>
