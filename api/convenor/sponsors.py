@@ -1,14 +1,10 @@
 from flask import\
     render_template, request, flash, session, redirect, url_for
-from api.variables import NOTFOUND, PICTURES, POSTS
-from api.cached_items import get_upcoming_games
-from api.authentication import get_user_information, require_to_be_convenor
+from api.authentication import require_to_be_convenor
 from api.convenor import\
     convenor_blueprint, normalize_model, is_empty, normalize_field
 from api.model import Sponsor
 from api.extensions import DB
-import os.path
-import json
 
 
 @convenor_blueprint.route("sponsors")
@@ -23,6 +19,7 @@ def sponsors_page():
         "convenor/sponsors.html",
         sponsors=normalize_model(sponsors)
     )
+
 
 @convenor_blueprint.route("sponsors/submit", methods=["POST"])
 @require_to_be_convenor
@@ -40,14 +37,14 @@ def submit_sponsor():
         else:
             sponsor = Sponsor.query.get(sponsor_id)
             if sponsor is None:
-                session['error'] = f"Sponsor does not exist {sponsor_id}" 
+                session['error'] = f"Sponsor does not exist {sponsor_id}"
                 return redirect(url_for('convenor.error_page'))
             sponsor.update(
                 name=sponsor_name, link=link, description=description
             )
             flash("sponsor updated")
     except Exception as e:
-        session['error'] = str(e) 
+        session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
     DB.session.commit()
     return redirect(url_for("convenor.sponsors_page"))
@@ -61,7 +58,7 @@ def change_visibility(sponsor_id: int, visible: int):
     active = True if visible > 0 else False
     sponsor = Sponsor.query.get(sponsor_id)
     if sponsor is None:
-        session['error'] = f"Sponsor does not exist {sponsor_id}" 
+        session['error'] = f"Sponsor does not exist {sponsor_id}"
         return redirect(url_for('convenor.error_page'))
     sponsor.update(active=active)
     DB.session.commit()

@@ -6,6 +6,7 @@
             <form
                 class="sponsor-container form-inline"
                 action="{{ url_for ('convenor.submit_sponsor') }}"
+                method="post"
                 hx-post="{{ url_for ('convenor.submit_sponsor') }}"
                 hx-push-url="true"
                 hx-target="#convenorBody"
@@ -67,6 +68,7 @@
     <form
         class="sponsor-container form-inline mt-3"
         action="{{ url_for ('convenor.submit_sponsor') }}"
+        method="post"
         hx-post="{{ url_for ('convenor.submit_sponsor') }}"
         hx-push-url="true"
         hx-target="#convenorBody"
