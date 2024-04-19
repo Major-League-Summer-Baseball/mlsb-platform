@@ -1,7 +1,6 @@
 import pytest
 from api.tests.fixtures import random_name
 from api.model import League, Division
-from api.extensions import DB
 from flask import url_for
 
 
@@ -120,12 +119,6 @@ def test_only_convenor_submit_league(
             }
         )
         assert url_for("website.loginpage").endswith(response.request.path)
-
-
-
-
-
-
 
 
 @pytest.mark.convenor

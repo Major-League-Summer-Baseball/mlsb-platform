@@ -16,7 +16,7 @@ def edit_player_page():
     player_id = request.args.get("player_id", -1)
     player = Player.query.get(player_id)
     if player is None:
-        session['error'] = f"Player does not exist {player_id}" 
+        session['error'] = f"Player does not exist {player_id}"
         return redirect(url_for("convenor.error_page"))
     return render_template("convenor/player.html", player=player.admin_json())
 
@@ -52,15 +52,15 @@ def submit_player():
         else:
             player = Player.query.get(player_id)
             if player is None:
-                session['error'] = f"Player does not exist {player_id}" 
+                session['error'] = f"Player does not exist {player_id}"
                 return redirect(url_for('convenor.error_page'))
             email = None if email == player.email else email
             player.update(name=player_name, email=email, gender=gender)
             flash("Player updated")
     except Exception as e:
-        session['error'] = str(e) 
+        session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
-        
+
     if is_convenor:
         player.make_convenor()
     elif player.is_convenor and not is_convenor:
@@ -90,7 +90,7 @@ def players_page():
 def respond_league_request(request_id: int, accept: int):
     league_request = JoinLeagueRequest.query.get(request_id)
     if league_request is None:
-        session['error'] = f"Player request does not exist {request_id}" 
+        session['error'] = f"Player request does not exist {request_id}"
         return redirect(url_for("convenor.error_page"))
     accept = accept > 0
     if accept:
@@ -125,4 +125,3 @@ def search_players():
         players=player_data,
         show_add=len(players) <= PAGE_LIMIT_SIZE
     )
-

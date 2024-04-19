@@ -1,12 +1,8 @@
 from flask import render_template, request, flash, redirect, url_for, session
-from api.variables import NOTFOUND, PICTURES, POSTS
-from api.cached_items import get_upcoming_games
 from api.authentication import require_to_be_convenor
 from api.convenor import convenor_blueprint, normalize_field, is_empty
 from api.extensions import DB
 from api.model import League, Division
-import os.path
-import json
 
 
 @convenor_blueprint.route("leagues")
