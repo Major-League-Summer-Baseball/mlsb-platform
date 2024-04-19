@@ -4,8 +4,13 @@ from datetime import date
 import pkgutil
 import inspect
 
-
+ALLOWED_EXTENSIONS = set(['csv'])
 convenor_blueprint = Blueprint("convenor", __name__, url_prefix="/convenor")
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 def normalize_model(models: list[dict]) -> list[dict]:

@@ -1,4 +1,182 @@
 {% extends "convenor/base.html" %}
 {% block content %}
-    SOME GAME
+    <div class="flex-container">
+        <h1>Games</h1>
+        <a class="btn btn-info" href="{{template}}" target="_blank">
+            Download Game Template
+        </a>
+        <button
+            class="btn btn-success"
+            hx-trgger="click"
+            type="button"
+            _="
+                on click document.querySelector('#uploadGamesModal').showModal() end
+            "
+            id="openGamesModal"
+        >
+            Upload Games
+        </button>
+        <div class="btn-group">
+            <button
+                type="button"
+                class="btn btn-primary dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                New Game <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% for league in leagues %}
+                    <li>
+                        <a href="{{ url_for('convenor.new_game_page', league_id=league.league_id)}}">
+                            {{league.league_name}}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <dialog id="uploadGamesModal">
+            <button
+                type="button"
+                class="close"
+                onclick="document.querySelector('#uploadGamesModal').close();"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <form
+                id="uploadGameFile"
+                method="post"
+                enctype="multipart/form-data"
+                action="{{ url_for('convenor.submit_game_template') }}"
+                hx-post="{{ url_for('convenor.submit_game_template') }}"
+                hx-target="#convenorBody"
+                hx-push-url="true"
+            >
+                <fieldset>
+                    <input name="file" type="file" id="gamesTemplateFile" required>
+                </fieldset>
+                <br/>
+                <fieldset>
+                    <button
+                        id="submitGamesTemplate"
+                        type="submit"
+                        class=" btn btn-success"
+                    >
+                        Upload games
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-warning float-right"
+                        onclick="document.querySelector('#uploadGamesModal').close();"
+                        id="cancelGamesTemplate"
+                    >
+                        Close
+                    </button>
+                </fieldset>
+            </form>
+        </dialog>
+    </div>
+    
+    <div class="game-filters">
+        <div class="flex-container">
+            <h2>
+                Filters
+            </h2>
+            <span
+                class="glyphicon glyphicon-info-sign"
+                aria-hidden="true"
+                title="Click game to edit"
+            ></span>
+        </div>
+        
+
+        <form
+            class="inline-form"
+            action="{{ url_for('convenor.games_page')}}"
+            method="get"
+            hx-get="{{ url_for('convenor.games_page')}}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <label>
+                Filter by year:
+            </label>
+            <select
+                class="form-control"
+                name="year"
+                onchange="this.form.submit()"
+            >
+                {% for year in years %}
+                    {% if selected_year == year %}
+                        <option value="{{year}}" selected>
+                            {{year}}
+                        </option>
+                    {% else %}
+                        <option value="{{year}}">
+                            {{year}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            {% if teams|length > 0 %}
+            <label class="mt-2">
+                Filter by team
+            </label>
+            <select
+                class="form-control"
+                name="team_id"
+                onchange="this.form.submit()"
+            >
+                {% if team_id is none %}
+                    <option value="" selected>
+                        ---
+                    </option>
+                {% else %}
+                    <option value="">
+                        ---
+                    </option>
+                {% endif %}
+
+                {% for team in teams %}
+                    {% if team.team_id == team_id  %}
+                        <option value="{{team.team_id}}" selected>
+                            {{team.team_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{team.team_id}}">
+                            {{team.team_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            {% endif %}
+            
+        </form>
+    </div>
+    <div class="games-container mt-3">
+        {% if games|length == 0 %}
+            <p>
+                No games matched
+            </p>
+        {% else %}
+            <div class="list-group">
+                {% for game in games %}
+                    <a class="list-group-item" href="{{ url_for('convenor.edit_game_page', game_id=game.game_id) }}">
+                        <span class="badge">
+                            {{game.field}}
+                        </span>
+                        {{game.home_team}}
+                        vs
+                        {{game.away_team}}
+                        @
+                        {{game.date}} 
+                        {{game.time}}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif%}
+        
+        
+    </div>
 {% endblock %}

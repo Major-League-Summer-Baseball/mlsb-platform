@@ -1785,7 +1785,6 @@ class Game(DB.Model):
 
     def get_team_bats(self, team_id: int):
         """Remove score for the given team from the game."""
-        print(self.bats)
         return [bat for bat in self.bats if bat.team_id == team_id]
 
     @classmethod
