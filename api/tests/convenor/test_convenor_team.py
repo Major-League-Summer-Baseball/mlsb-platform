@@ -309,7 +309,7 @@ def test_convenor_add_team_epsy(
         )
         assert not url_for("website.loginpage").endswith(response.request.path)
         assert response.status_code == 200
-        assert "Espy add to team" in str(response.data)
+        assert "Espy added to team" in str(response.data)
         updated_team = Team.query.get(team.id)
         assert updated_team.espys_total == points
         espy = updated_team.espys[0]

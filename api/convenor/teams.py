@@ -200,7 +200,7 @@ def add_team_espy(team_id: int):
     """Remove/Add player from/to the given team"""
     try:
         sponsor_id = get_int(request.form.get("sponsor_id", None))
-        description = request.form.get("year", None)
+        description = request.form.get("description", None)
         points = float(request.form.get('points', 0.0))
         receipt = request.form.get('receipt', None)
         time = request.form.get('time', None)
