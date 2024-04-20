@@ -1133,6 +1133,8 @@ class Team(DB.Model):
             raise PlayerDoesNotExist(payload={'details': player_id})
         if not self.is_player_on_team(player):
             raise PlayerNotOnTeam(payload={'details': player_id})
+        if self.player_id == player_id:
+            self.player_id = None
         self.players.remove(player)
 
     def is_player_on_team(self, player: 'Player') -> bool:
