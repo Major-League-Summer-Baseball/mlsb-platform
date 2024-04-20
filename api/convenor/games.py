@@ -3,6 +3,7 @@ from flask import render_template, request, session, url_for, redirect, \
 from sqlalchemy import or_
 from datetime import date, time, datetime
 from api.advanced.import_league import LeagueList
+from api.authentication import require_to_be_convenor
 from api.extensions import DB
 from api.variables import FILES, BATS
 from api.convenor import allowed_file, convenor_blueprint, is_empty
@@ -11,6 +12,7 @@ from os import path
 
 
 @convenor_blueprint.route("games/new/<int:league_id>")
+@require_to_be_convenor
 def new_game_page(league_id: int):
     league = League.query.get(league_id)
     if league is None:
@@ -49,6 +51,7 @@ def new_game_page(league_id: int):
 @convenor_blueprint.route(
     "games/<int:game_id>", methods=["GET", "POST", "DELETE"]
 )
+@require_to_be_convenor
 def edit_game_page(game_id: int):
     game = Game.query.get(game_id)
     if game is None:
@@ -102,10 +105,10 @@ def edit_game_page(game_id: int):
 
 
 @convenor_blueprint.route("games")
+@require_to_be_convenor
 def games_page():
     year = request.args.get('year', date.today().year)
     team_id = request.args.get('team_id', None)
-
     teams = []
     games = Game.query
     if year is not None:
@@ -143,6 +146,7 @@ def games_page():
 
 
 @convenor_blueprint.route("games", methods=["POST"])
+@require_to_be_convenor
 def submit_game():
     """Submit edit/create a game."""
     home_team_id = int(request.form.get("home_team_id"))
@@ -194,6 +198,7 @@ def submit_game():
 @convenor_blueprint.route(
     "games/<int:game_id>/team/<int:team_id>/bat", methods=["POST"]
 )
+@require_to_be_convenor
 def submit_bat(game_id: int, team_id: int):
     """Submit edit/create a game."""
     player_id = int(request.form.get("player_id"))
@@ -218,7 +223,10 @@ def submit_bat(game_id: int, team_id: int):
     return redirect(url_for("convenor.edit_game_page", game_id=game_id))
 
 
-@convenor_blueprint.route("games/<int:game_id>/bat/<int:bat_id>", methods=["DELETE"])
+@convenor_blueprint.route(
+    "games/<int:game_id>/bat/<int:bat_id>", methods=["DELETE"]
+)
+@require_to_be_convenor
 def delete_bat(game_id: int, bat_id: int):
     """Submit edit/create a game."""
     bat = Bat.query.get(bat_id)
@@ -231,6 +239,7 @@ def delete_bat(game_id: int, bat_id: int):
 
 
 @convenor_blueprint.route("games/template")
+@require_to_be_convenor
 def game_template():
     uploads = path.join(FILES, "game_template.csv")
     result = ""
@@ -244,6 +253,7 @@ def game_template():
 
 
 @convenor_blueprint.route("games/template/submit", methods=["POST"])
+@require_to_be_convenor
 def submit_game_template():
     file = request.files['file']
 

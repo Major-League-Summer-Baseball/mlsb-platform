@@ -64,15 +64,17 @@
                     name="home_team_id"
                     id="homeTeam"
                 >
-                {% if team.team_id == game.home_team_id %}
-                    <option value="{{team.team_id}}" selected>
-                        {{team.team_name}}
-                    </option>
-                {% else %}
-                    <option value="{{team.team_id}}">
-                        {{team.team_name}}
-                    </option>
-                {% endif %}
+                {% for team in teams %}
+                    {% if team.team_id == game.home_team_id %}
+                        <option value="{{team.team_id}}" selected>
+                            {{team.team_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{team.team_id}}">
+                            {{team.team_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
                 </select>
             </div>
         {% else %}
