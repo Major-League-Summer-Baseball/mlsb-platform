@@ -1,0 +1,197 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+    <a href="{{ url_for('convenor.teams_page') }}">
+        <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
+    </a>
+    {% if team.team_id is not none %}
+        <h1>
+            Team - {{team.team_name}}
+        </h1>
+    {% else %}
+        <h1>
+            New Team
+        </h1>
+    {% endif %}
+    <form
+        class="game-container max-420"
+        method="post"
+        action="{{ url_for('convenor.submit_team') }}"
+        hx-post="{{ url_for('convenor.submit_team') }}"
+        hx-push-url="true"
+        hx-target="#convenorBody"
+        >
+        {% if team.team_id is not none %}
+            <input
+                type="hidden"
+                name="team_id"
+                value="{{team.team_id}}"
+                id="teamId"
+            />
+            <div class="flex-container justify-content-space-between">
+                <label for="year">
+                    Captain:
+                </label>
+                <p>
+                    {% if team.captain is not none %}
+                        {{team.captain.player_name}}
+                    {% else %}
+                        No captain
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+        
+        <div class="flex-container justify-content-space-between">
+            <label for="year">
+                Year:
+            </label>
+            <input
+                class="form-control max-245"
+                value="{{team.year}}"
+                id="year"
+                name="year"
+                required
+            />
+        </div>
+        <div class="flex-container justify-content-space-between">
+            <label for="color">
+                Color:
+            </label>
+            <input
+                class="form-control max-245"
+                value="{{team.color}}"
+                id="color"
+                name="color"
+                required
+            />
+        </div>
+        <div class="flex-container justify-content-space-between">
+            <label for="sponsor">
+                Sponsor:
+            </label>
+            <select
+                class="form-control max-245"
+                id="sponsor"
+                name="sponsor_id"
+                required
+            >
+                {% for sponsor in sponsors %}
+                    {% if team.sponsor_id == sponsor.sponsor_id %}
+                        <option value="{{sponsor.sponsor_id}}" selected>
+                            {{sponsor.sponsor_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{sponsor.sponsor_id}}">
+                            {{sponsor.sponsor_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex-container justify-content-space-between">
+            <label for="sponsor">
+                League:
+            </label>
+            <select
+                class="form-control max-245"
+                id="league"
+                name="league_id"
+                required
+            >
+                {% for league in leagues %}
+                    {% if team.league_id == league.league_id %}
+                        <option value="{{league.league_id}}" selected>
+                            {{league.league_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{league.league_id}}">
+                            {{league.league_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="w-100">
+            <button class="btn btn-primary float-right max-72" type="submit" id="submitGame">
+                {% if team.team_id is not none %}
+                    Update
+                {% else %}
+                    Create
+                {% endif %}
+            </button>
+        </div>
+    </form>
+    {% if team.team_id is not none %}
+
+        <div class="flex-container mt-2">
+            <h2>
+                Players
+            </h2>
+            <input
+                name="player"
+                type="name"
+                class="form-control"
+                id="searchPlayer"
+                aria-describedby="nameHelp"
+                placeholder="Add player (name/email)"
+                hx-post="{{ url_for('convenor.search_players') }}"
+                hx-trigger="keyup changed delay:500ms"
+                hx-target="#playerSearchResults"
+                required
+            >
+            <form
+                method="post"
+                id="addPlayerForm"
+                action="{{ url_for ('convenor.add_player_team_form', team_id=team.team_id) }}"
+                hx-post="{{ url_for ('convenor.add_player_team_form', team_id=team.team_id) }}"
+                hx-push-url="true"
+                hx-target="#convenorBody"
+            >
+                <input type="hidden" name="player_id" value="" id="playerToAddId">
+                <button type="hidden" action="submit" id="addPlayerSubmit" class="hidden"></button>
+            </form>
+        </div>
+        <div
+            id="playerSearchResults"
+            _="
+                    on selectedPlayer(player_id) put `` into me then set #playerToAddId.value to player_id then document.querySelector('#addPlayerSubmit').click() end
+                    on createNewPlayer  go to url {{ url_for('convenor.new_player_page')}} in new window end
+            "
+        >
+        </div>
+        <div class="list-group mt-1">
+            {% for player in players %}
+                <li class="list-group-item">
+                    <form
+                        hx-delete="{{ url_for('convenor.remove_player_team', team_id=team.team_id, player_id=player.player_id)}}"
+                        hx-target="#convenorBody"
+                        class="d-inline-block"
+                    >
+                        {% if team.captain is not none and team.captain.player_id == player.player_id %}
+                            <span class="glyphicon glyphicon-user"></span>
+                        {% endif %}
+                        {{player.player_name}} ({{player.email}})
+                        {% if team.captain is none or team.captain.player_id != player.player_id %}
+                            <button
+                                class="btn btn-warning"
+                                type="submit"
+                                title="Make Captain"
+                                hx-post="{{ url_for('convenor.add_player_team', team_id=team.team_id, player_id=player.player_id, captain=1)}}"
+                            >
+                                <span class="glyphicon glyphicon-user"></span>
+                            </button>
+                        {% endif %}
+                        <button
+                            class="btn btn-danger"
+                            type="submit"
+                            title="Remove player"
+                        >
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock %}
