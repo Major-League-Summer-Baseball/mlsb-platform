@@ -109,6 +109,7 @@ def edit_game_page(game_id: int):
 def games_page():
     year = request.args.get('year', date.today().year)
     team_id = request.args.get('team_id', None)
+    pending_score = request.args.get('pending_score', "off") == "on"
     teams = []
     games = Game.query
     if year is not None:
@@ -129,7 +130,11 @@ def games_page():
             Game.away_team_id == team_id,
             Game.home_team_id == team_id
         ))
-
+    if pending_score:
+        games = games.filter(or_(
+            Game.away_team_hits == 0,
+            Game.home_team_hits == 0)
+        )
     games = [game.json() for game in games.order_by(Game.date).all()]
     years = [year for year in range(2016, date.today().year + 1)]
     leagues = [league.json() for league in League.query.all()]
@@ -141,7 +146,8 @@ def games_page():
         leagues=leagues,
         selected_year=year,
         team_id=team_id,
-        template=url_for('convenor.game_template')
+        template=url_for('convenor.game_template'),
+        pending_score=pending_score
     )
 
 

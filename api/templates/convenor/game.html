@@ -1,5 +1,8 @@
 {% extends "convenor/base.html" %}
 {% block content %}
+    <a href="{{ url_for('convenor.games_page') }}">
+        <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
+    </a>
     {% if game.game_id is not none %}
     <h1>
         Game - {{game.home_team}} vs {{game.away_team}}

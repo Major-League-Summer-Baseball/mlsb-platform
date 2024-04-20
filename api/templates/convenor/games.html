@@ -89,8 +89,6 @@
                 title="Click game to edit"
             ></span>
         </div>
-        
-
         <form
             class="inline-form"
             action="{{ url_for('convenor.games_page')}}"
@@ -120,37 +118,58 @@
                 {% endfor %}
             </select>
             {% if teams|length > 0 %}
-            <label class="mt-2">
-                Filter by team
-            </label>
-            <select
-                class="form-control"
-                name="team_id"
-                onchange="this.form.submit()"
-            >
-                {% if team_id is none %}
-                    <option value="" selected>
-                        ---
-                    </option>
-                {% else %}
-                    <option value="">
-                        ---
-                    </option>
-                {% endif %}
-
-                {% for team in teams %}
-                    {% if team.team_id == team_id  %}
-                        <option value="{{team.team_id}}" selected>
-                            {{team.team_name}}
+                <label class="mt-2">
+                    Filter by team
+                </label>
+                <select
+                    class="form-control"
+                    name="team_id"
+                    onchange="this.form.submit()"
+                >
+                    {% if team_id is none %}
+                        <option value="" selected>
+                            ---
                         </option>
                     {% else %}
-                        <option value="{{team.team_id}}">
-                            {{team.team_name}}
+                        <option value="">
+                            ---
                         </option>
                     {% endif %}
-                {% endfor %}
-            </select>
+
+                    {% for team in teams %}
+                        {% if team.team_id == team_id  %}
+                            <option value="{{team.team_id}}" selected>
+                                {{team.team_name}}
+                            </option>
+                        {% else %}
+                            <option value="{{team.team_id}}">
+                                {{team.team_name}}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
             {% endif %}
+            <div class="pt-1">
+                <label for="pendingScore">
+                    Games missing score:
+                </label>
+                {% if pending_score %}
+                    <input
+                        type="checkbox"
+                        id="pendingScore"
+                        name="pending_score"
+                        onchange="this.form.submit()"
+                        checked
+                    />
+                {% else %}
+                    <input
+                        type="checkbox"
+                        id="pendingScore"
+                        name="pending_score"
+                        onchange="this.form.submit()"
+                    />
+                {% endif %}
+            </div>
             
         </form>
     </div>

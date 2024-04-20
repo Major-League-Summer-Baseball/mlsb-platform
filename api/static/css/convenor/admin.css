@@ -18,6 +18,9 @@ input[disabled] {
     margin-top: 36px;
 }
 
+.pt-1 {
+    padding-top: 12px;
+}
 
 
 .sponsors-container,
