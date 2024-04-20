@@ -18,6 +18,10 @@ input[disabled] {
     margin-top: 36px;
 }
 
+.mt-4 {
+    margin-top: 72px;
+}
+
 .pt-1 {
     padding-top: 12px;
 }

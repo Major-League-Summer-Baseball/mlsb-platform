@@ -241,7 +241,6 @@ def test_convenor_submit_team_template(
         captain = player_factory()
         some_player = player_factory()
         color = "Pink"
-        game_date, game_time = split_datetime(datetime.today())
         template = f"""Sponsor:,{sponsor.name},
 Color:,{color},
 Captain:,{captain.name},
@@ -262,13 +261,93 @@ Player Name,Player Email,Gender (M/F)
         )
         assert not url_for("website.loginpage").endswith(response.request.path)
         assert response.status_code == 200
-        print(response.data)
         teams = Team.query.filter(Team.league_id == league.id).all()
         assert len(teams) > 0
         team = teams[0]
         assert team.color == color
         assert team.sponsor_id == sponsor.id
         assert len(team.players) == 2
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('sponsor_factory')
+def test_convenor_add_team_epsy(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    team_factory,
+    sponsor_factory
+):
+    """Test convenor able to remove espy from team"""
+    with mlsb_app.app_context():
+        team = team_factory()
+        sponsor = sponsor_factory()
+        description = "some description"
+        points = 1.1
+        receipt = "BARCODE"
+        date, time = split_datetime(datetime.today())
+        auth.login(convenor.email)
+        response = client.post(
+            url_for(
+                "convenor.add_team_espy", team_id=team.id
+            ),
+            follow_redirects=True,
+            data={
+                'sponsor_id': sponsor.id,
+                'description': description,
+                'points': points,
+                'receipt': receipt,
+                'time': time,
+                'date': date
+            }
+        )
+        assert not url_for("website.loginpage").endswith(response.request.path)
+        assert response.status_code == 200
+        assert "Espy add to team" in str(response.data)
+        updated_team = Team.query.get(team.id)
+        assert updated_team.espys_total == points
+        espy = updated_team.espys[0]
+        assert espy.receipt == receipt
+        assert espy.description == description
+        assert espy.sponsor_id == sponsor.id
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('espys_factory')
+def test_convenor_remove_team_epsy(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    team_factory,
+    espys_factory
+):
+    """Test convenor able to remove espy from team"""
+    with mlsb_app.app_context():
+        team = team_factory()
+        espy = espys_factory(team, points=10)
+        auth.login(convenor.email)
+        response = client.delete(
+            url_for(
+                "convenor.remove_team_espy", team_id=team.id, espy_id=espy.id
+            ),
+            follow_redirects=True,
+        )
+        assert not url_for("website.loginpage").endswith(response.request.path)
+        assert response.status_code == 200
+        updated_team = Team.query.get(team.id)
+        assert updated_team.espys_total is None or updated_team.espys_total == 0
 
 
 @pytest.mark.convenor
@@ -392,6 +471,36 @@ def test_only_convenor_submit_team_template(mlsb_app, client, auth):
         auth.logout()
         response = client.post(
             url_for("convenor.submit_team_template"),
+            follow_redirects=True
+        )
+        assert url_for("website.loginpage").endswith(response.request.path)
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+def test_only_convenor_add_team_espy(mlsb_app, client, auth):
+    """Test only convenor can add espy to team"""
+    with mlsb_app.app_context():
+        auth.logout()
+        response = client.post(
+            url_for("convenor.add_team_espy", team_id=1),
+            follow_redirects=True
+        )
+        assert url_for("website.loginpage").endswith(response.request.path)
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+def test_only_convenor_remove_team_espy(mlsb_app, client, auth):
+    """Test only convenor can remove espy from team"""
+    with mlsb_app.app_context():
+        auth.logout()
+        response = client.delete(
+            url_for("convenor.remove_team_espy", team_id=1, espy_id=1),
             follow_redirects=True
         )
         assert url_for("website.loginpage").endswith(response.request.path)

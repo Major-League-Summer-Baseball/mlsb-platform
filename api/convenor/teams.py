@@ -4,8 +4,8 @@ from api.advanced.import_team import TeamList
 from api.extensions import DB
 from api.variables import FILES
 from api.authentication import require_to_be_convenor
-from api.convenor import allowed_file, convenor_blueprint, is_empty
-from api.model import Team, League, Sponsor
+from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int
+from api.model import Team, League, Sponsor, Espys
 from datetime import date
 from os import path
 
@@ -161,6 +161,66 @@ def remove_player_team(team_id: int, player_id: int):
             return redirect(url_for('convenor.error_page'))
         team.remove_player(player_id)
         flash("Player removed from team")
+    except Exception as e:
+        session['error'] = str(e)
+        return redirect(url_for('convenor.error_page'))
+    DB.session.commit()
+    return redirect(url_for("convenor.edit_team_page", team_id=team_id))
+
+
+@convenor_blueprint.route(
+    "team/<int:team_id>/espys/<int:espy_id>", methods=["DELETE"]
+)
+@require_to_be_convenor
+def remove_team_espy(team_id: int, espy_id: int):
+    """Remove espy from given team"""
+    try:
+        team = Team.query.get(team_id)
+        espys = Espys.query.get(espy_id)
+        if team is None:
+            session['error'] = f"Team does not exist {team_id}"
+            return redirect(url_for('convenor.error_page'))
+        if espys is None:
+            session['error'] = f"Espy does not exist {espy_id}"
+            return redirect(url_for('convenor.error_page'))
+        DB.session.delete(espys)
+        flash("Espys removed from team")
+    except Exception as e:
+        session['error'] = str(e)
+        return redirect(url_for('convenor.error_page'))
+    DB.session.commit()
+    return redirect(url_for("convenor.edit_team_page", team_id=team_id))
+
+
+@convenor_blueprint.route(
+    "team/<int:team_id>/espys", methods=["POST"]
+)
+@require_to_be_convenor
+def add_team_espy(team_id: int):
+    """Remove/Add player from/to the given team"""
+    try:
+        sponsor_id = get_int(request.form.get("sponsor_id", None))
+        description = request.form.get("year", None)
+        points = float(request.form.get('points', 0.0))
+        receipt = request.form.get('receipt', None)
+        time = request.form.get('time', None)
+        date = request.form.get('date', None)
+
+        team = Team.query.get(team_id)
+        if team is None:
+            session['error'] = f"Team does not exist {team_id}"
+            return redirect(url_for('convenor.error_page'))
+        espy = Espys(
+            team_id,
+            sponsor_id=sponsor_id,
+            description=description,
+            points=points,
+            receipt=receipt,
+            time=time,
+            date=date
+        )
+        DB.session.add(espy)
+        flash("Espy added to team")
     except Exception as e:
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))

@@ -19,7 +19,7 @@
         hx-post="{{ url_for('convenor.submit_team') }}"
         hx-push-url="true"
         hx-target="#convenorBody"
-        >
+    >
         {% if team.team_id is not none %}
             <input
                 type="hidden"
@@ -192,6 +192,134 @@
                 </li>
             {% endfor %}
         </div>
+
+        <h2 class="mt-4">
+            Team ESPYS
+        </h2>
+        <div class="list-group mt-1">
+            {% for espy in espys %}
+                <li class="list-group-item">
+                    <form
+                        hx-delete="{{ url_for('convenor.remove_team_espy', team_id=team.team_id, espy_id=espy.espy_id)}}"
+                        hx-target="#convenorBody"
+                        class="d-inline-block"
+                    >
+                        {% if espy.receipt is not none %}
+                            <strong>{{espy.receipt}}:</strong>
+                        {% endif %}
+                        {{espy.points}} pts
+                        {% if espy.sponsor_id is not none %}
+                            at {{espy.sponsor}}
+                        {% endif %}
+                        for {{espy.description}}
+                        on
+                        {{espy.date}} {{espy.time}}
+                        <button
+                            class="btn btn-danger"
+                            type="submit"
+                            title="Remove espy"
+                        >
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </div>
+        <h3>
+            Add ESPY
+        </h3>
+        <form
+            class="game-container max-420"
+            method="post"
+            action="{{ url_for('convenor.add_team_espy', team_id=team.team_id) }}"
+            hx-post="{{ url_for('convenor.add_team_espy', team_id=team.team_id) }}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <div class="flex-container justify-content-space-between">
+                <label for="sponsor">
+                    Sponsor:
+                </label>
+                <select
+                    class="form-control max-245"
+                    id="sponsor"
+                    name="sponsor_id"
+                    required
+                >
+                    <option value="" selected>--</option>
+                    {% for sponsor in sponsors %}
+                        <option value="{{sponsor.sponsor_id}}">
+                            {{sponsor.sponsor_name}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex-container justify-content-space-between">
+                <label for="receipt">
+                    Receipt:
+                </label>
+                <input
+                    class="form-control max-245"
+                    id="receipt"
+                    name="receipt"
+                    required
+                />
+            </div>
+            <div class="flex-container justify-content-space-between">
+                <label for="description">
+                    Description:
+                </label>
+                <input
+                    class="form-control max-245"
+                    id="description"
+                    name="description"
+                    required
+                />
+            </div>
+            <div class="flex-container justify-content-space-between">
+                <label for="points">
+                    Points:
+                </label>
+                <input
+                    class="form-control max-245"
+                    id="points"
+                    name="points"
+                    min="0"
+                    required
+                />
+            </div>
+            <div class="flex-container justify-content-space-between">
+                <label for="date">
+                    Date:
+                </label>
+                <input
+                    type="date"
+                    id="espyDate"
+                    name="date"
+                    min="2016-01-01"
+                    required
+                />
+            </div>
+            <div class="flex-container justify-content-space-between">
+                <label for="time">
+                    Time:
+                </label>
+                <input
+                    type="time"
+                    id="espyTime"
+                    name="time"
+                    min="01:00"
+                    max="23:59"
+                    required
+                />
+            </div>
+            <div class="w-100">
+                <button class="btn btn-primary float-right max-72" type="submit" id="submitEspy">
+                    Add
+                </button>
+            </div>
+        </form>
+
     {% endif %}
 
 {% endblock %}

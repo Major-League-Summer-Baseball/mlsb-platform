@@ -33,6 +33,11 @@ def normalize_field(value):
     return None if value == "" else value
 
 
+def get_int(value: str | None) -> int | None:
+    """Get int of value"""
+    return None if value is None or value == '' else int(value)
+
+
 @convenor_blueprint.route("error", methods=["POST", "GET", "DELETE"])
 def error_page():
     error_message = session.pop('error')
