@@ -33,7 +33,7 @@ def normalize_field(value):
     return None if value == "" else value
 
 
-def get_int(value: str | None) -> int | None:
+def get_int(value: str) -> int:
     """Get int of value"""
     return None if value is None or value == '' else int(value)
 
