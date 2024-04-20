@@ -33,7 +33,7 @@ def normalize_field(value):
     return None if value == "" else value
 
 
-@convenor_blueprint.route("error")
+@convenor_blueprint.route("error", methods=["POST", "GET", "DELETE"])
 def error_page():
     error_message = session.pop('error')
     return render_template("convenor/error.html", error_message=error_message)
