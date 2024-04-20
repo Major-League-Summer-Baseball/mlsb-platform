@@ -107,20 +107,17 @@ def edit_game_page(game_id: int):
 @convenor_blueprint.route("games")
 @require_to_be_convenor
 def games_page():
-    year = request.args.get('year', date.today().year)
+    year = int(request.args.get('year', date.today().year))
     team_id = request.args.get('team_id', None)
     pending_score = request.args.get('pending_score', "off") == "on"
-    teams = []
-    games = Game.query
-    if year is not None:
-        year = int(year)
-        start = datetime.combine(date(year, 1, 1), time(0, 0))
-        end = datetime.combine(date(year, 12, 30), time(23, 59))
-        games = games.filter(Game.date.between(start, end))
-        teams = [
-            team.json()
-            for team in Team.query.filter(Team.year == year).all()
-        ]
+
+    start = datetime.combine(date(year, 1, 1), time(0, 0))
+    end = datetime.combine(date(year, 12, 30), time(23, 59))
+    games = Game.query.filter(Game.date.between(start, end))
+    teams = [
+        team.json()
+        for team in Team.query.filter(Team.year == year).all()
+    ]
 
     if is_empty(team_id):
         team_id = None
@@ -272,13 +269,13 @@ def submit_game_template():
     lines = lines.split("\n")
 
     try:
-        team = LeagueList(lines)
-        team.import_league_functional()
-        if len(team.errors) > 0:
-            session['error'] = ",".join(team.errors)
+        games = LeagueList(lines)
+        games.import_league_functional()
+        if len(games.errors) > 0:
+            session['error'] = ",".join(games.errors)
             return redirect(url_for('convenor.error_page'))
-        if len(team.warnings) > 0:
-            flash(",".join(team.warnings))
+        if len(games.warnings) > 0:
+            flash(",".join(games.warnings))
         else:
             flash("Games added!")
     except Exception as e:

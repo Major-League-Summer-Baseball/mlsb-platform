@@ -4,13 +4,13 @@
         <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
     </a>
     {% if game.game_id is not none %}
-    <h1>
-        Game - {{game.home_team}} vs {{game.away_team}}
-    </h1>
+        <h1>
+            Game - {{game.home_team}} vs {{game.away_team}}
+        </h1>
     {% else %}
-    <h1>
-        New Game - {{league.league_name}}
-    </h1>
+        <h1>
+            New Game - {{league.league_name}}
+        </h1>
     {% endif %}
     <form
         class="game-container max-420"
@@ -267,7 +267,6 @@
                                         </option>
                                     {% endfor %}
                                     </select>
-                                    
                                 </th>
                                 <th>
                                     <button
