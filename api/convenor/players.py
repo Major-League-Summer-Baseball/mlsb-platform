@@ -95,8 +95,10 @@ def respond_league_request(request_id: int, accept: int):
     accept = accept > 0
     if accept:
         league_request.accept_request()
+        flash("request accepted")
     else:
         league_request.decline_request()
+        flash("request rejected")
     return redirect(url_for("convenor.players_page"))
 
 
