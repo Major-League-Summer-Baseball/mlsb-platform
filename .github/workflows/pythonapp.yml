@@ -63,6 +63,8 @@ jobs:
         with:
           files: ./coverage.xml
           flags: unittests # optional
+          name: unittest
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   pytest:
     runs-on: ubuntu-20.04
@@ -93,6 +95,8 @@ jobs:
         with:
           files: ./coverage.xml
           flags: unittests # optional
+          name: pytest
+          token: ${{ secrets.CODECOV_TOKEN }}
   
   cypress:
     runs-on: ubuntu-20.04
