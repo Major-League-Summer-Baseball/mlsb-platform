@@ -2,7 +2,7 @@ import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";import { S
 import { randomName } from "./helper";
 import { Player } from "../../interfaces/player";
 import { Team } from "../../interfaces/team";
-import { JoinLeagueRequest } from "../../interfaces/league";
+import { JoinLeagueRequest, League } from "../../interfaces/league";
 ;
 
 /** Generate sponsor data. */
@@ -49,14 +49,44 @@ const createPlayer = () => {
 };
 Given(`a player exists`, createPlayer);
 
-/** Get an existing team. */
-const getTeam = () => {
-    cy.request('GET', '/rest/team').then((response) => {
+/** Get an existing league. */
+const getLeague = () => {
+    cy.request('GET', '/rest/league').then((response) => {
         expect(response.isOkStatusCode).to.be.true;
         expect(response.body.total).to.be.greaterThan(0);
-        const team: Team = response.body.items[0];
-        cy.wrap(team).as('team');
+        const league: League = response.body.items[0];
+        cy.wrap(league).as('league');
     });
+};
+
+/** Get an existing sponsor. */
+const getSponsor = () => {
+    cy.request('GET', '/rest/sponsor').then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        expect(response.body.total).to.be.greaterThan(0);
+        const sponsor: Sponsor = response.body.items[0];
+        cy.wrap(sponsor).as('sponsor');
+    });
+};
+
+/** Get an existing team. */
+const getTeam = () => {
+    getLeague();
+    getSponsor();
+    cy.get<League>('@league').then((league: League) => {
+        cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
+            cy.request('POST', '/rest/team', {
+                color: randomName(),
+                sponsor_id: sponsor.sponsor_id,
+                league_id: league.league_id,
+                year: new Date().getFullYear() 
+            }).then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+                const team: Team = response.body;
+                cy.wrap(team).as('team');
+            })
+        })
+    })
 };
 
 /** Create a request to join the league */

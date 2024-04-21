@@ -6,6 +6,7 @@ Feature: Convenor able to manage players
 Background:
     Given I am logged in as a convenor
 
+
 Scenario: Able to add a new player
     When I navigate to the "players" page
      And I click "Add Player"
@@ -15,11 +16,11 @@ Scenario: Able to add a new player
 
 Scenario: Able to edit a player
     Given a player exists
-    When I navigate to the "players" page
-     And I search for the player
-     And I select the player
-     And I update the player details
-    Then I see player was updated
+     When I navigate to the "players" page
+      And I search for the player
+      And I select the player
+      And I update the player details
+     Then I see player was updated
 
 Scenario: Able to respond to league request
     Given a player has requested to join league
