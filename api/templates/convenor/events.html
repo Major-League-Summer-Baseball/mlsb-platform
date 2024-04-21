@@ -29,6 +29,7 @@
                     type="button"
                     class="btn btn-success constrain-btn"
                     href="{{ url_for ('convenor.change_event_visibility', league_event_id=event.league_event_id, visible=0) }}"
+                    id="leagueEventHide{{event.league_event_id}}"
                 >
                     <span class="glyphicon glyphicon-eye-open" aria-label="Visible" title="visible"></span>
                 </a>
@@ -37,6 +38,7 @@
                     type="button"
                     class="btn btn-warning constrain-btn"
                     href="{{ url_for ('convenor.change_event_visibility', league_event_id=event.league_event_id, visible=1) }}"
+                    id="leagueEventShow{{event.league_event_id}}"
                 >
                     <span class="glyphicon glyphicon-eye-close" aria-label="Hidden" title="hidden"></span>
                 </a>
@@ -51,6 +53,7 @@
                 type="button"
                 class="btn btn-primary constrain-btn"
                 href="{{ url_for ('convenor.event_page', league_event_id=event.league_event_id) }}"
+                id="leagueEventSeeDates{{event.league_event_id}}"
             >
                 See Dates
             </a>

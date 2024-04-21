@@ -1,8 +1,10 @@
 import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";import { Sponsor } from "../../interfaces/sponsor";
-import { randomName } from "./helper";
+import { getDateString, getTimeString, randomName } from "./helper";
 import { Player } from "../../interfaces/player";
 import { Team } from "../../interfaces/team";
 import { JoinLeagueRequest, League } from "../../interfaces/league";
+import { LeagueEvent } from "../../interfaces/league_event";
+import { LeagueEventDate } from "../../interfaces/league_event_date";
 ;
 
 /** Generate sponsor data. */
@@ -25,7 +27,41 @@ export const generatePlayer = (): Player => {
         gender: "m",
         active: true,
     };
-}
+};
+
+/** Generate league event. */
+export const generateLeagueEvent = (): LeagueEvent => {
+    return {
+        league_event_id: Math.round(Math.random() * 99),
+        name: `${randomName()} Event`,
+        description: `
+        ${randomName()} ${randomName()} ${randomName()} ${randomName()}
+        `,
+        active: 1,
+    };
+};
+
+/** Generate a league event date. */
+export const generateLeagueEventDate = (): LeagueEventDate => {
+    const date = new Date();
+    return {
+        league_event_id: Math.round(Math.random() * 99),
+        league_event_date_id: Math.round(Math.random() * 99),
+        date: getDateString(date),
+        time: getTimeString(date)
+    };
+};
+
+/** Create a league event */
+const createLeagueEvent = () => {
+    const data = generateLeagueEvent();
+    cy.request('POST', '/rest/league_event', data).then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const leagueEvent: LeagueEvent = response.body;
+        cy.wrap(leagueEvent).as('leagueEvent');
+    });
+};
+Given(`a league event exists`, createLeagueEvent);
 
 /** Create a sponsor through a form request */
 const createSponsor = () => {
@@ -69,6 +105,7 @@ const getSponsor = () => {
     });
 };
 
+
 /** Get an existing team. */
 const getTeam = () => {
     getLeague();
@@ -85,8 +122,8 @@ const getTeam = () => {
                 const team: Team = response.body;
                 cy.wrap(team).as('team');
             })
-        })
-    })
+        });
+    });
 };
 
 /** Create a request to join the league */
@@ -119,3 +156,4 @@ const assertFlashMessage = (model: string, result: string) => {
     cy.contains(matcher).should('be.visible');
 };
 Then(`I see {word} was {word}`, assertFlashMessage);
+Then(`I see {string} was {string}`, assertFlashMessage);

@@ -59,6 +59,25 @@ function parseFirstPositiveInt(phrase: string): number {
 }
 
 /**
+ * Get a string representation of the date.
+ * @param date the date 
+ * @returns string version of the date
+ */
+export function getDateString(date: Date): string {
+    return date.toISOString().split('T')[0];
+};
+
+/**
+ * Get a string representation of the time.
+ * @param date the date to get tiome from
+ * @returns string version of the time
+ */
+export function getTimeString(date: Date): string {
+    const timeParts = date.toISOString().split('T')[1].split(":");
+    return timeParts[0] + ":" + timeParts[1];
+};
+
+/**
  * Parse English to create a date object.
  * <p>The date Strings that are are parsed can be written. </p>
  * <ul>

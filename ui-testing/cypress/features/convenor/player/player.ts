@@ -1,7 +1,5 @@
-import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { Sponsor } from "../../../interfaces/sponsor";
-import { randomName } from "../../global/helper";
-import {generatePlayer} from "../../global/convenor";
+import { When } from "@badeball/cypress-cucumber-preprocessor";
+import { generatePlayer } from "../../global/convenor";
 import { Player } from "../../../interfaces/player";
 
 

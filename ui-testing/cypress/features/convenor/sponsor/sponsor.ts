@@ -1,7 +1,6 @@
-import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+import { When, Then } from "@badeball/cypress-cucumber-preprocessor";
 import { Sponsor } from "../../../interfaces/sponsor";
-import { randomName } from "../../global/helper";
-import {generateSponsor} from "../../global/convenor";
+import { generateSponsor } from "../../global/convenor";
 
 /** Fill out the sponsor details for adding a sponsor. */
 const fillOutSponsorDetails = () => {
