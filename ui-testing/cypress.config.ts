@@ -52,6 +52,6 @@ export default defineConfig({
     baseUrl: "http://localhost:5000/",
     supportFile: "cypress/support/e2e.ts",
     setupNodeEvents,
-    
+    video: true,
   },
 });
