@@ -26,7 +26,11 @@
                     name="league_name"
                     required
                 />
-                <button type="submit" class="btn btn-primary" id="leagueSubmit">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="leagueSubmit{{league.league_id}}"
+                >
                     Update
                 </button>
             </form>
@@ -47,7 +51,11 @@
                 placeholder="League Name"
                 required
             />
-            <button type="submit" class="btn btn-primary" id="leagueCreate">
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="leagueCreate"
+            >
                 Create
             </button>
         </form>
@@ -84,7 +92,11 @@
                     id='divisionShortName{{division.division_id}}'
                     name="division_shortname"
                 />
-                <button type="submit" class="btn btn-primary" id="divisionSubmit">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="divisionSubmit{{division.division_id}}"
+                >
                     Update
                 </button>
             </form>

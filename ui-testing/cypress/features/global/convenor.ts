@@ -2,7 +2,7 @@ import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";import { S
 import { getDateString, getTimeString, randomName } from "./helper";
 import { Player } from "../../interfaces/player";
 import { Team } from "../../interfaces/team";
-import { JoinLeagueRequest, League } from "../../interfaces/league";
+import { Division, JoinLeagueRequest, League } from "../../interfaces/league";
 import { LeagueEvent } from "../../interfaces/league_event";
 import { LeagueEventDate } from "../../interfaces/league_event_date";
 ;
@@ -41,6 +41,22 @@ export const generateLeagueEvent = (): LeagueEvent => {
     };
 };
 
+/** Generate league. */
+export const generateLeague = (): League => {
+    return {
+        league_id: Math.round(Math.random() * 99),
+        league_name: `League-${randomName()}`,
+    };
+};
+
+/** Generate division. */
+export const generateDivision = (): Division => {
+    return {
+        division_id: Math.round(Math.random() * 99),
+        division_name: `Division-${randomName()}`,
+    };
+};
+
 /** Generate a league event date. */
 export const generateLeagueEventDate = (): LeagueEventDate => {
     const date = new Date();
@@ -51,6 +67,28 @@ export const generateLeagueEventDate = (): LeagueEventDate => {
         time: getTimeString(date)
     };
 };
+
+/** Create a league event */
+const createDivision = () => {
+    const data = generateDivision();
+    cy.request('POST', '/rest/division', data).then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const division: Division = response.body;
+        cy.wrap(division).as('division');
+    });
+};
+Given(`a division exists`, createDivision);
+
+/** Create a league event */
+const createLeague = () => {
+    const data = generateLeague();
+    cy.request('POST', '/rest/league', data).then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const league: League = response.body;
+        cy.wrap(league).as('league');
+    });
+};
+Given(`a league exists`, createLeague);
 
 /** Create a league event */
 const createLeagueEvent = () => {
