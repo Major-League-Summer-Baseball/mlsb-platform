@@ -31,6 +31,27 @@ def create_and_login():
     return Response(json.dumps(player.json()), 200, mimetype='application/json')
 
 
+@testing_blueprint.post("/api/convenor/login")
+def login_convenor():
+    """Login as convenor - create one if doesn't exist."""
+    convenor = Player.query.filter(Player.is_convenor == True).first()
+    print(convenor)
+    if convenor is None:
+        LOGGER.info(f"Adding convenor for testing")
+        convenor = Player(
+            str(uuid.uuid1()),
+            str(uuid.uuid1()) + "convenor-testing@mlsb.ca",
+            gender="m"
+        )
+        convenor.make_convenor()
+        DB.session.add(convenor)
+        DB.session.commit()
+    login_user(convenor)
+    return Response(
+        json.dumps(convenor.admin_json()), 200, mimetype='application/json'
+    )
+
+
 @testing_blueprint.post("/api/logout")
 def logout():
     """Logout a test user."""
