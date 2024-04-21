@@ -2,19 +2,24 @@ import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";import { S
 import { randomName } from "./helper";
 ;
 
+/** Generate sponsor data. */
 export const generateSponsor = (): Sponsor => {
     return {
         sponsor_id: Math.round(Math.random() * 99),
         sponsor_name: randomName(),
         link: `http://${randomName()}.ca`,
-        description: `${randomName()} is great`
+        description: `${randomName()} is great`,
+        active: true
     };
 };
 
+/** Create a sponsor through a form request */
 const createSponsor = () => {
     const data = generateSponsor();
-    cy.request('POST', '/convenors/sponsors/submit', data).then((sponsor) => {
-
+    cy.request('POST', '/rest/sponsor', data).then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const sponsor: Sponsor = response.body;
+        cy.wrap(sponsor).as('sponsor');
     });
 };
 Given(`a sponsor exists`, createSponsor);

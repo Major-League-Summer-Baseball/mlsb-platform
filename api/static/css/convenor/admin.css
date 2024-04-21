@@ -5,7 +5,6 @@ input[disabled] {
     background-image: none;
 }
 
-
 .mt-1 {
     margin-top: 12px;
 }
@@ -26,7 +25,6 @@ input[disabled] {
     padding-top: 12px;
 }
 
-
 .sponsors-container,
 .events-container,
 .leagues-container,
@@ -37,7 +35,6 @@ input[disabled] {
     justify-content: flex-start;
     gap: 16px;
 }
-
 
 .game-container {
     display: flex;
@@ -74,12 +71,13 @@ input[disabled] {
     max-height: 36px;
 }
 
-
-
 .float-right {
     float: right;
 }
 
+.text-center {
+    text-align: center;
+}
 
 .tooltip {
     position: relative;

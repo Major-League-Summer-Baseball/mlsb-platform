@@ -37,7 +37,7 @@ def login_convenor():
     convenor = Player.query.filter(Player.is_convenor == True).first()
     print(convenor)
     if convenor is None:
-        LOGGER.info(f"Adding convenor for testing")
+        LOGGER.info("Adding convenor for testing")
         convenor = Player(
             str(uuid.uuid1()),
             str(uuid.uuid1()) + "convenor-testing@mlsb.ca",
