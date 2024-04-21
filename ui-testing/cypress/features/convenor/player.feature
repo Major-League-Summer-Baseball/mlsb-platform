@@ -21,7 +21,6 @@ Scenario: Able to edit a player
      And I update the player details
     Then I see player was updated
 
-@focus
 Scenario: Able to respond to league request
     Given a player has requested to join league
      When I navigate to the "players" page

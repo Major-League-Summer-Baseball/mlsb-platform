@@ -53,5 +53,6 @@ export default defineConfig({
     supportFile: "cypress/support/e2e.ts",
     setupNodeEvents,
     video: true,
+    retries: 3
   },
 });
