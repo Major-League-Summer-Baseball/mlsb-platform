@@ -1,9 +1,7 @@
 import { When, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { Sponsor } from "../../../interfaces/sponsor";
-import { generateGame, generateTeam } from "../../global/convenor";
+import { generateGame } from "../../global/convenor";
 import { Division, League } from "../../../interfaces/league";
 import { Team } from "../../../interfaces/team";
-import { Player } from "../../../interfaces/player";
 import { Game } from "../../../interfaces/game";
 import * as path from 'path';
 
@@ -16,7 +14,6 @@ const chooseNewGame = () => {
 };
 When(`choose new game`, chooseNewGame);
 
-
 /** Choose the wrapped game. */
 const chooseGame = () => {
     cy.get<Game>('@game').then((game: Game) => {
@@ -25,6 +22,7 @@ const chooseGame = () => {
 };
 When(`choose the game`, chooseGame);
 
+/** Select the game template. */
 const downloadGameTemplate = () => {
     cy.get('#gameTemplate').click();
 };
@@ -57,8 +55,9 @@ const updateGameDetails = () => {
 }
 When(`I update the game details`, updateGameDetails);
 
+/** Assert the game template was downloaded. */
 const assertGameTemplateDownload = () => {
     const downloadsFolder = Cypress.config("downloadsFolder");
     cy.readFile(path.join(downloadsFolder, "team_template.csv"));
 };
-Then(`the game templated is downloaded`, assertGameTemplateDownload);
+Then(`the game template is downloaded`, assertGameTemplateDownload);

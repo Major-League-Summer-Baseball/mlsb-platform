@@ -4,7 +4,7 @@ import { generateTeam } from "../../global/convenor";
 import { League } from "../../../interfaces/league";
 import { Team } from "../../../interfaces/team";
 import { Player } from "../../../interfaces/player";
-
+import * as path from 'path';
 
 /** Choose a option for new team. */
 const chooseNewTeam = () => {
@@ -19,6 +19,12 @@ const chooseWrappedTeam = () => {
     });
 }
 When(`choose the team`, chooseWrappedTeam);
+
+/** Select the team template. */
+const downloadTeamGameTemplate = () => {
+    cy.get('#teamTemplate').click();
+};
+When(`select team template`, downloadTeamGameTemplate);
 
 /**  Fill out teams details using wrapped sponsor and league. */
 const fillOutTeamDetails = () => {
@@ -93,3 +99,9 @@ const assertPlayerCaptain = () => {
 };
 Then(`I see they the captain`, assertPlayerCaptain);
 
+/** Assert the team template is download. */
+const assertTeamTemplateDownload = () => {
+    const downloadsFolder = Cypress.config("downloadsFolder");
+    cy.readFile(path.join(downloadsFolder, "team_template.csv"));
+};
+Then(`the team template is downloaded`, assertTeamTemplateDownload);

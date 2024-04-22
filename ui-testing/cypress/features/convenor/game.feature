@@ -23,4 +23,4 @@ Scenario: Able to add a update game
 Scenario: Able to download the game template
     When I navigate to the "games" page
      And select game template
-    Then the game templated is downloaded
+    Then the game template is downloaded

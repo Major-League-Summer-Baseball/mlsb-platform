@@ -54,4 +54,3 @@ const assertHiddenSponsor = () => {
     });
 };
 Then(`sponsor is no longer visible`, assertHiddenSponsor);
-

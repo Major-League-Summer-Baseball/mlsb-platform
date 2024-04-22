@@ -29,7 +29,6 @@ const updateLeagueDetails = () => {
 };
 When(`I update the league details`, updateLeagueDetails);
 
-
 /** Update the division details. */
 const updateDivisionDetails = () => {
     const updatedDivision = generateDivision();
@@ -48,7 +47,7 @@ const submitLeague = () => {
 };
 When(`I submit league`, submitLeague);
 
-/** Submit league. */
+/** Submit division. */
 const submitDivision = () => {
     cy.get("#divisionCreate").click();
 };

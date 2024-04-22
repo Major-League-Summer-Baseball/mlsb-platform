@@ -2,7 +2,6 @@ import { When } from "@badeball/cypress-cucumber-preprocessor";
 import { generatePlayer } from "../../global/convenor";
 import { Player } from "../../../interfaces/player";
 
-
 /** Click something based upon text. */
 const clickByText = (btnText: string) => {
     cy.findByText(btnText).click();
@@ -46,7 +45,7 @@ const searchPlayer = () => {
 };
 When(`I search for the player`, searchPlayer);
 
-/** Select a player */
+/** Select a playe.r */
 const selectPlayer = () => {
     cy.get<Player>('@player').then((player: Player) => {
         cy.get(`#playerList${player.player_id}`).click();

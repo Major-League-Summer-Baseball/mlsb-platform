@@ -56,3 +56,8 @@ Scenario: Able to select player as captain
       And I add the player to team
       And I make them the captain
      Then I see they the captain
+
+Scenario: Able to download the team template
+    When I navigate to the "teams" page
+     And select team template
+    Then the team template is downloaded

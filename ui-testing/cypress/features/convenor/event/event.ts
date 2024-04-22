@@ -11,7 +11,6 @@ const fillOutLeagueEventDetails = () => {
 };
 When(`I fill out the league events details`, fillOutLeagueEventDetails);
 
-
 /** Update the league event details. */
 const updateLeagueEventDetails = () => {
     const updatedEvent = generateLeagueEvent();
@@ -23,7 +22,6 @@ const updateLeagueEventDetails = () => {
     });
 };
 When(`I update the league event details`, updateLeagueEventDetails);
-
 
 /** Hide the wrapped league event. */
 const hideLeagueEvent = () => {
