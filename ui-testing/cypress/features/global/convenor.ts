@@ -1,5 +1,5 @@
 import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";import { Sponsor } from "../../interfaces/sponsor";
-import { getDateString, getTimeString, randomName } from "./helper";
+import { getCurrentYear, getDateString, getTimeString, randomId, randomName } from "./helper";
 import { Player } from "../../interfaces/player";
 import { Team } from "../../interfaces/team";
 import { Division, JoinLeagueRequest, League } from "../../interfaces/league";
@@ -10,7 +10,7 @@ import { LeagueEventDate } from "../../interfaces/league_event_date";
 /** Generate sponsor data. */
 export const generateSponsor = (): Sponsor => {
     return {
-        sponsor_id: Math.round(Math.random() * 99),
+        sponsor_id: randomId(),
         sponsor_name: randomName(),
         link: `http://${randomName()}.ca`,
         description: `${randomName()} is great`,
@@ -21,7 +21,7 @@ export const generateSponsor = (): Sponsor => {
 /** Generate player data. */
 export const generatePlayer = (): Player => {
     return {
-        player_id: Math.round(Math.random() * 99),
+        player_id: randomId(),
         email: `${randomName()}@mlsb.ca`,
         player_name: randomName(),
         gender: "m",
@@ -29,10 +29,40 @@ export const generatePlayer = (): Player => {
     };
 };
 
+/** Generate team data. */
+export const generateTeam = (): Team => {
+    return {
+        team_id: randomId(),
+        league_id: randomId(),
+        sponsor_id: randomId(),
+        color: `${randomName()}-Color`,
+        year: getCurrentYear(),
+        espys: 0,
+        team_name: null,
+        captain: null
+    };
+};
+
+/** Generate league. */
+export const generateLeague = (): League => {
+    return {
+        league_id: randomId(),
+        league_name: `League-${randomName()}`,
+    };
+};
+
+/** Generate division. */
+export const generateDivision = (): Division => {
+    return {
+        division_id: randomId(),
+        division_name: `Division-${randomName()}`,
+    };
+};
+
 /** Generate league event. */
 export const generateLeagueEvent = (): LeagueEvent => {
     return {
-        league_event_id: Math.round(Math.random() * 99),
+        league_event_id: randomId(),
         name: `${randomName()} Event`,
         description: `
         ${randomName()} ${randomName()} ${randomName()} ${randomName()}
@@ -41,30 +71,14 @@ export const generateLeagueEvent = (): LeagueEvent => {
     };
 };
 
-/** Generate league. */
-export const generateLeague = (): League => {
-    return {
-        league_id: Math.round(Math.random() * 99),
-        league_name: `League-${randomName()}`,
-    };
-};
-
-/** Generate division. */
-export const generateDivision = (): Division => {
-    return {
-        division_id: Math.round(Math.random() * 99),
-        division_name: `Division-${randomName()}`,
-    };
-};
-
 /** Generate a league event date. */
 export const generateLeagueEventDate = (): LeagueEventDate => {
     const date = new Date();
     return {
-        league_event_id: Math.round(Math.random() * 99),
-        league_event_date_id: Math.round(Math.random() * 99),
+        league_event_id: randomId(),
+        league_event_date_id: randomId(),
         date: getDateString(date),
-        time: getTimeString(date)
+        time: "10:00"
     };
 };
 
@@ -112,7 +126,7 @@ const createSponsor = () => {
 };
 Given(`a sponsor exists`, createSponsor);
 
-/** Create a player through a form request */
+/** Create a player through a rest request */
 const createPlayer = () => {
     const data = generatePlayer();
     cy.request('POST', '/rest/player', data).then((response) => {
@@ -122,6 +136,27 @@ const createPlayer = () => {
     });
 };
 Given(`a player exists`, createPlayer);
+
+/** Create a team through a rest request */
+const createTeam = () => {
+    createSponsor();
+    createLeague();
+    cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
+        cy.get<League>('@league').then((league: League) => {
+            cy.request('POST', '/rest/team', {
+                color: randomName(),
+                year: getCurrentYear(),
+                sponsor_id: sponsor.sponsor_id,
+                league_id: league.league_id
+            }).then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+                const team: Team = response.body;
+                cy.wrap(team).as('team');
+            });
+        });
+    });
+};
+Given(`a team exists`, createTeam);
 
 /** Get an existing league. */
 const getLeague = () => {

@@ -16,14 +16,16 @@
         >
             Upload Team
         </button>
-        <div class="btn-group">
-            <a
-                class="btn btn-primary"
-                href="{{ url_for('convenor.new_team_page')}}"
-            >
+        <a  
+            class="btn btn-primary"
+            id="newTeam"
+            href="{{ url_for('convenor.new_team_page')}}"
+            hx-get="{{ url_for('convenor.new_team_page')}}"
+            hx-target="#convenorBody"
+            hx-push-url="true"
+        >
                 New Team
-            </a>
-        </div>
+        </a>
         <dialog id="uploadTeamModal">
             <button
                 type="button"
@@ -147,7 +149,14 @@
         {% else %}
             <div class="list-group">
                 {% for team in teams %}
-                    <a class="list-group-item" href="{{ url_for('convenor.edit_team_page', team_id=team.team_id) }}">
+                    <a
+                        class="list-group-item"
+                        id="editTeam{{team.team_id}}"
+                        href="{{ url_for('convenor.edit_team_page', team_id=team.team_id) }}"
+                        hx-get="{{ url_for('convenor.edit_team_page', team_id=team.team_id) }}"
+                        hx-push-url="true"
+                        hx-target="#convenorBody"
+                    >
                         {{team.team_name}}
                         ({{team.year}})
                     </a>

@@ -23,6 +23,14 @@ export function randomName(): string {
 }
 
 /**
+ * Generate a random id.
+ * @returns a random number to be used as id
+ */
+export function randomId(): number {
+    return Math.round(Math.random() * 99999);
+}
+
+/**
  * Creates a random email to use for testing.
  * @return {string} - a random email with domain of @mlsb.ca
  * @example
