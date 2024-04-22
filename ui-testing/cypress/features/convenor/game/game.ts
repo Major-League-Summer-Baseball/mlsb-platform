@@ -59,6 +59,6 @@ When(`I update the game details`, updateGameDetails);
 
 const assertGameTemplateDownload = () => {
     const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.readFile(downloadsFolder + "/" + "team_template.csv");
+    cy.readFile(path.join(downloadsFolder, "team_template.csv"));
 };
 Then(`the game templated is downloaded`, assertGameTemplateDownload);
