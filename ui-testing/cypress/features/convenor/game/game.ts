@@ -5,6 +5,7 @@ import { Division, League } from "../../../interfaces/league";
 import { Team } from "../../../interfaces/team";
 import { Player } from "../../../interfaces/player";
 import { Game } from "../../../interfaces/game";
+import * as path from 'path';
 
 /** Choose a option for new team. */
 const chooseNewGame = () => {
@@ -24,6 +25,10 @@ const chooseGame = () => {
 };
 When(`choose the game`, chooseGame);
 
+const downloadGameTemplate = () => {
+    cy.get('#gameTemplate').click();
+};
+When(`select game template`, downloadGameTemplate);
 
 /** Fill out game details. */
 const fillOutGameDetails = () => {
@@ -51,3 +56,9 @@ const updateGameDetails = () => {
     cy.get('#submitGame').click();
 }
 When(`I update the game details`, updateGameDetails);
+
+const assertGameTemplateDownload = () => {
+    const downloadsFolder = Cypress.config("downloadsFolder");
+    cy.readFile(downloadsFolder + "/" + "team_template.csv");
+};
+Then(`the game templated is downloaded`, assertGameTemplateDownload);

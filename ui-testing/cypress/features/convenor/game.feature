@@ -13,7 +13,6 @@ Scenario: Able to add a new game
       And I fill out the game details
      Then I see game was created
 
-
 Scenario: Able to add a update game
     Given a game exists
      When I navigate to the "games" page
@@ -21,3 +20,7 @@ Scenario: Able to add a update game
       And I update the game details
      Then I see game was updated
 
+Scenario: Able to download the game template
+    When I navigate to the "games" page
+     And select game template
+    Then the game templated is downloaded
