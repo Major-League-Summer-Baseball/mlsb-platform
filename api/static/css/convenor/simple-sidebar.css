@@ -99,6 +99,19 @@
     margin-left:20px;
 }
 
+.footer {
+    margin-left: 0px;
+}
+
+.mobile-only {
+    visibility: visible;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
 @media(min-width:768px) {
     #wrapper {
         padding-left: 250px;
@@ -123,5 +136,13 @@
     #wrapper.toggled #page-content-wrapper {
         position: relative;
         margin-right: 0;
+    }
+
+    .mobile-only {
+        visibility: hidden;
+    }
+
+    .footer {
+        margin-left: 250px;
     }
 }

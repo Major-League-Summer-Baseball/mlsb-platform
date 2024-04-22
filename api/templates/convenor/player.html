@@ -1,5 +1,8 @@
 {% extends "convenor/base.html" %}
 {% block content %}
+<a href="{{ url_for('convenor.players_page') }}">
+    <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
+</a>
 <form
     action="{{ url_for('convenor.submit_player') }}"
     hx-post="{{ url_for('convenor.submit_player') }}"

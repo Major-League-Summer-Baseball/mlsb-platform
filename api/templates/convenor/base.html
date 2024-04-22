@@ -96,6 +96,53 @@
 
         <div id="page-content-wrapper">
             <div class="container-fluid">
+                <div class="row mobile-only">
+                          <a
+                            href="{{ url_for('convenor.players_page') }}"
+                            hx-get="{{ url_for('convenor.players_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                            Players
+                          </a>
+                          <a
+                            href="{{ url_for('convenor.teams_page') }}"
+                            hx-get="{{ url_for('convenor.teams_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                            Teams
+                          </a>
+                          <a
+                            href="{{ url_for('convenor.sponsors_page') }}"
+                            hx-get="{{ url_for('convenor.sponsors_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                            Sponsors
+                          </a>
+                          <a
+                            href="{{ url_for('convenor.games_page') }}"
+                            hx-get="{{ url_for('convenor.games_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                            Games
+                          </a>
+                          <a
+                            href="{{ url_for('convenor.events_page') }}"
+                          >
+                            Events
+                          </a>
+                          <a
+                            href="{{ url_for('convenor.leagues_page') }}"
+                            hx-get="{{ url_for('convenor.leagues_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                            Leagues & Divisions
+                          </a>
+                </div>
                 <div class="row">
                     <div class="col-lg-12" id="convenorBody">
 {% endif %}
@@ -128,7 +175,7 @@
     <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
     <script src="https://cdn.ckeditor.com/4.10.0/full/ckeditor.js"></script>
   </body>
-  <footer class="text-center">
+  <footer class="footer text-center">
     <a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=year) }}">About</a>
     <a class="btn btn-mini btn-link " href="/rest/swagger">Documentation</a>
     <a class="btn btn-mini btn-link " href="https://github.com/fras2560"> Author</a>
