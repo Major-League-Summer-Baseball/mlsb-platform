@@ -53,12 +53,43 @@ const addPlayerToTeam = () => {
 };
 When(`I add the player to team`, addPlayerToTeam);
 
+/**  Remove wrapped player from the team. */
+const removePlayerFromTeam = () => {
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get(`#removePlayer${player.player_id}`).click();
+    })
+};
+When(`I remove the player to team`, removePlayerFromTeam);
+
+/**  Make wrapped player the captain. */
+const makePlayerCaptain = () => {
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get(`#makePlayerCaptain${player.player_id}`).click();
+    })
+};
+When(`I make them the captain`, makePlayerCaptain);
 
 /**  Assert player is on team. */
-const asserPlayerOnTeam = () => {
+const assertPlayerOnTeam = () => {
     cy.get<Player>('@player').then((player: Player) => {
         cy.get('.list-group-item').contains(player.email).should('be.visible');
     })
 };
-When(`I see them on the team`, asserPlayerOnTeam);
+Then(`I see them on the team`, assertPlayerOnTeam);
+
+/**  Assert player is not on team. */
+const assertPlayerNotOnTeam = () => {
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get(`player${player.player_id}`).should('not.exist');
+    })
+};
+Then(`I dont see them on the team`, assertPlayerNotOnTeam);
+
+/**  Assert player is captain of team. */
+const assertPlayerCaptain = () => {
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get(`#makePlayerCaptain${player.player_id}`).should('not.exist');
+    })
+};
+Then(`I see they the captain`, assertPlayerCaptain);
 

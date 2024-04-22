@@ -34,3 +34,25 @@ Scenario: Able to add a player to a team
       And choose the team
       And I add the player to team
      Then I see them on the team
+
+Scenario: Able to add a player to a team
+    Given a sponsor exists
+      And a league exists
+      And a team exists
+      And a player exists
+      And player is on the team
+     When I navigate to the "teams" page
+      And choose the team
+      And I remove the player to team
+     Then I dont see them on the team
+
+Scenario: Able to select player as captain
+    Given a sponsor exists
+      And a league exists
+      And a team exists
+      And a player exists
+     When I navigate to the "teams" page
+      And choose the team
+      And I add the player to team
+      And I make them the captain
+     Then I see they the captain

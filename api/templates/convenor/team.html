@@ -161,7 +161,7 @@
         </div>
         <div class="list-group mt-1">
             {% for player in players %}
-                <li class="list-group-item">
+                <li class="list-group-item" id="player{{player.playder_id}}">
                     <form
                         hx-delete="{{ url_for('convenor.remove_player_team', team_id=team.team_id, player_id=player.player_id)}}"
                         hx-target="#convenorBody"
@@ -176,6 +176,7 @@
                                 class="btn btn-warning"
                                 type="submit"
                                 title="Make Captain"
+                                id="makePlayerCaptain{{player.player_id}}"
                                 hx-post="{{ url_for('convenor.add_player_team', team_id=team.team_id, player_id=player.player_id, captain=1)}}"
                             >
                                 <span class="glyphicon glyphicon-user"></span>
@@ -185,6 +186,7 @@
                             class="btn btn-danger"
                             type="submit"
                             title="Remove player"
+                            id="removePlayer{{player.player_id}}"
                         >
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>

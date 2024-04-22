@@ -158,6 +158,18 @@ const createTeam = () => {
 };
 Given(`a team exists`, createTeam);
 
+
+const addPlayerToTeam = () => {
+    cy.get<Player>('@player').then((player: Player) => {
+        cy.get<Team>('@team').then((team: Team) => {
+            cy.request('POST', `/testing/api/${team.team_id}/add_player/${player.player_id}`).then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+            });
+        });
+    });
+};
+Given(`player is on the team`, addPlayerToTeam);
+
 /** Get an existing league. */
 const getLeague = () => {
     cy.request('GET', '/rest/league').then((response) => {
