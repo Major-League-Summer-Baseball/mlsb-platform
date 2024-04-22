@@ -5,6 +5,7 @@ import { Team } from "../../interfaces/team";
 import { Division, JoinLeagueRequest, League } from "../../interfaces/league";
 import { LeagueEvent } from "../../interfaces/league_event";
 import { LeagueEventDate } from "../../interfaces/league_event_date";
+import { Game } from "../../interfaces/game";
 ;
 
 /** Generate sponsor data. */
@@ -56,6 +57,23 @@ export const generateDivision = (): Division => {
     return {
         division_id: randomId(),
         division_name: `Division-${randomName()}`,
+    };
+};
+
+/** Generate game. */
+export const generateGame = (): Game => {
+    return {
+        game_id: randomId(),
+        home_team_id: randomId(),
+        home_team: randomName(),
+        away_team: randomName(),
+        away_team_id: randomId(),
+        league_id: randomId(),
+        division_id: randomId(),
+        date: getDateString(new Date()),
+        time: "11:00",
+        status: "",
+        field: "WP1"
     };
 };
 
@@ -158,7 +176,65 @@ const createTeam = () => {
 };
 Given(`a team exists`, createTeam);
 
+/** Create a two teams. */
+const createTwoTeams = () => {
+    createSponsor();
+    createLeague();
+    cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
+        cy.get<League>('@league').then((league: League) => {
+            cy.request('POST', '/rest/team', {
+                color: randomName(),
+                year: getCurrentYear(),
+                sponsor_id: sponsor.sponsor_id,
+                league_id: league.league_id
+            }).then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+                const team: Team = response.body;
+                cy.wrap(team).as('home_team');
+            });
+            cy.request('POST', '/rest/team', {
+                color: randomName(),
+                year: getCurrentYear(),
+                sponsor_id: sponsor.sponsor_id,
+                league_id: league.league_id
+            }).then((response) => {
+                expect(response.isOkStatusCode).to.be.true;
+                const team: Team = response.body;
+                cy.wrap(team).as('away_team');
+            });
+        });
+    });
+};
+Given(`two team exists`, createTwoTeams);
 
+
+const createGame = () => {
+    createTwoTeams();
+    createDivision();
+    cy.get<Team>('@home_team').then((homeTeam: Team) => {
+        cy.get<Team>('@away_team').then((awayTeam: Team) => {
+            cy.get<Division>('@division').then((division: Division) => {
+                cy.request('POST', '/rest/game', {
+                    'home_team_id': homeTeam.team_id,
+                    'away_team_id': awayTeam.team_id,
+                    'league_id': homeTeam.league_id,
+                    'division_id': division.division_id,
+                    'status': '',
+                    'field': 'WP1',
+                    'time': '11:00',
+                    'date': getDateString(new Date())
+                }).then((response) => {
+                    expect(response.isOkStatusCode).to.be.true;
+                    const game: Game = response.body;
+                    cy.wrap(game).as('game');
+                });
+            });
+        });
+    });
+}
+Given(`a game exists`, createGame);
+
+/** Add a player to a team. */
 const addPlayerToTeam = () => {
     cy.get<Player>('@player').then((player: Player) => {
         cy.get<Team>('@team').then((team: Team) => {
@@ -189,7 +265,6 @@ const getSponsor = () => {
         cy.wrap(sponsor).as('sponsor');
     });
 };
-
 
 /** Get an existing team. */
 const getTeam = () => {

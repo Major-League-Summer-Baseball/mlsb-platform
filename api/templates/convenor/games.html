@@ -20,6 +20,7 @@
             <button
                 type="button"
                 class="btn btn-primary dropdown-toggle"
+                id="newGames"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
@@ -29,7 +30,13 @@
             <ul class="dropdown-menu">
                 {% for league in leagues %}
                     <li>
-                        <a href="{{ url_for('convenor.new_game_page', league_id=league.league_id)}}">
+                        <a
+                            id="newGame{{league.league_id}}"
+                            href="{{ url_for('convenor.new_game_page', league_id=league.league_id)}}"
+                            hx-get="{{ url_for('convenor.new_game_page', league_id=league.league_id)}}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                        >
                             {{league.league_name}}
                         </a>
                     </li>
@@ -181,7 +188,15 @@
         {% else %}
             <div class="list-group">
                 {% for game in games %}
-                    <a class="list-group-item" href="{{ url_for('convenor.edit_game_page', game_id=game.game_id) }}">
+                    <a
+                        class="list-group-item"
+                        href="{{ url_for('convenor.edit_game_page', game_id=game.game_id) }}"
+                        id="game{{game.game_id}}"
+                        hx-get="{{ url_for('convenor.edit_game_page', game_id=game.game_id) }}"
+                        hx-target="#convenorBody"
+                        hx-push-url="true"
+                    >
+                        
                         <span class="badge">
                             {{game.field}}
                         </span>

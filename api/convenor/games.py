@@ -6,7 +6,7 @@ from api.advanced.import_league import LeagueList
 from api.authentication import require_to_be_convenor
 from api.extensions import DB
 from api.variables import FILES, BATS
-from api.convenor import allowed_file, convenor_blueprint, is_empty
+from api.convenor import allowed_file, convenor_blueprint, is_empty, normalize_field
 from api.model import Game, Team, Division, League, Player, Bat
 from os import path
 
@@ -158,7 +158,7 @@ def submit_game():
     division_id = int(request.form.get("division_id"))
     date_str = request.form.get("date")
     time_str = request.form.get("time")
-    status = request.form.get("status")
+    status = normalize_field(request.form.get("status", None))
     field = request.form.get("field")
     game_id = request.form.get("game_id", None)
     try:
