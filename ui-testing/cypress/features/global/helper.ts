@@ -23,6 +23,14 @@ export function randomName(): string {
 }
 
 /**
+ * Generate a random id.
+ * @returns a random number to be used as id
+ */
+export function randomId(): number {
+    return Math.round(Math.random() * 99999);
+}
+
+/**
  * Creates a random email to use for testing.
  * @return {string} - a random email with domain of @mlsb.ca
  * @example
@@ -57,6 +65,25 @@ function parseFirstPositiveInt(phrase: string): number {
     }
     return i;
 }
+
+/**
+ * Get a string representation of the date.
+ * @param date the date 
+ * @returns string version of the date
+ */
+export function getDateString(date: Date): string {
+    return date.toISOString().split('T')[0];
+};
+
+/**
+ * Get a string representation of the time.
+ * @param date the date to get tiome from
+ * @returns string version of the time
+ */
+export function getTimeString(date: Date): string {
+    const timeParts = date.toISOString().split('T')[1].split(":");
+    return timeParts[0] + ":" + timeParts[1];
+};
 
 /**
  * Parse English to create a date object.

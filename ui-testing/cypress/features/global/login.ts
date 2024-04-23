@@ -33,6 +33,19 @@ export const create_player = (player: Player): Cypress.Chainable<Player> => {
 };
 
 /**
+ * Login as a convenor and wrap it to convenor
+ * @returns the convenor
+ */
+export const login_convenor = () => {
+    cy.request('POST','/testing/api/convenor/login').then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const created_player: Player = response.body;
+        cy.wrap(create_player).as('convenor');
+    })
+    return cy.get<Player>(`@convenor`);
+}
+
+/**
  * A global step that creates a random user for the given roll and then
  * logins by making a POST request.
  * @param {string} role - the role of the user to log in as.
@@ -52,3 +65,11 @@ const login_as_player = (): void => {
     })
 };
 Given(`I am logged in as a player`, login_as_player);
+
+
+/** Login as a convenor. */
+const login_as_convenor = (): void => {
+    login_convenor();
+};
+Given(`I am logged in as a convenor`, login_as_convenor);
+

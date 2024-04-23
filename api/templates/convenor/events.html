@@ -1,0 +1,88 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+<h1>
+    League Events
+</h1>
+<div class="events-container">
+    {% for event in events %}
+        <form
+            class="event-container form-inline"
+            action="{{ url_for ('convenor.submit_event') }}"
+            method="post"
+        >
+            <input
+                type="hidden"
+                name="league_event_id"
+                value="{{event.league_event_id}}"
+                id="leagueEventId"
+            />
+            <input
+                class="input form-control"
+                value="{{event.name}}"
+                id='leagueEventName{{event.league_event_id}}'
+                name="name"
+                placeholder="League Event Name"
+            />
+            {{ ckeditor.create(name="description", value=event.description) }}
+            {% if event.active %}
+                <a
+                    type="button"
+                    class="btn btn-success constrain-btn"
+                    href="{{ url_for ('convenor.change_event_visibility', league_event_id=event.league_event_id, visible=0) }}"
+                    id="leagueEventHide{{event.league_event_id}}"
+                >
+                    <span class="glyphicon glyphicon-eye-open" aria-label="Visible" title="visible"></span>
+                </a>
+            {% else %}
+                <a
+                    type="button"
+                    class="btn btn-warning constrain-btn"
+                    href="{{ url_for ('convenor.change_event_visibility', league_event_id=event.league_event_id, visible=1) }}"
+                    id="leagueEventShow{{event.league_event_id}}"
+                >
+                    <span class="glyphicon glyphicon-eye-close" aria-label="Hidden" title="hidden"></span>
+                </a>
+            {% endif %}
+            <button
+                type="submit"
+                class="btn btn-primary constrain-btn"
+                id="leagueEventSubmit{{event.league_event_id}}">
+                Update
+            </button>
+            <a
+                type="button"
+                class="btn btn-primary constrain-btn"
+                href="{{ url_for ('convenor.event_page', league_event_id=event.league_event_id) }}"
+                id="leagueEventSeeDates{{event.league_event_id}}"
+            >
+                See Dates
+            </a>
+        </form>
+        <hr class="dashed-line">
+    {% endfor %}
+</div>
+<form
+    class="event-container form-inline mt-3"
+    action="{{ url_for ('convenor.submit_event') }}"
+    method="post"
+>
+    <input
+        class="input form-control"
+        value=""
+        id='newLeagueEventName'
+        placeholder="League Event Name"
+        name="name"
+        required
+    />
+    <div>
+        {{ ckeditor.create(name="description") }}
+        <label class="mt-2">
+            Event Description - shows up event page
+        </label>
+    </div>
+    <button type="submit" class="btn btn-success constrain-btn" id="leagueEventCreate">
+        Create
+    </button>
+</form>
+{{ ckeditor.load(pkg_type="basic") }}
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+    <div class="flex-container">
+        <h1>Teams</h1>
+        <a
+            class="btn btn-info"
+            id="teamTemplate"
+            href="{{template}}"
+            target="_blank"
+        >
+            Download Team Template
+        </a>
+        <button
+            class="btn btn-success"
+            hx-trgger="click"
+            type="button"
+            _="
+                on click document.querySelector('#uploadTeamModal').showModal() end
+            "
+            id="openTeamModal"
+        >
+            Upload Team
+        </button>
+        <a  
+            class="btn btn-primary"
+            id="newTeam"
+            href="{{ url_for('convenor.new_team_page')}}"
+            hx-get="{{ url_for('convenor.new_team_page')}}"
+            hx-target="#convenorBody"
+            hx-push-url="true"
+        >
+                New Team
+        </a>
+        <dialog id="uploadTeamModal">
+            <button
+                type="button"
+                class="close"
+                onclick="document.querySelector('#uploadTeamModal').close();"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <form
+                id="uploadTeamFile"
+                method="post"
+                enctype="multipart/form-data"
+                action="{{ url_for('convenor.submit_team_template') }}"
+                hx-post="{{ url_for('convenor.submit_team_template') }}"
+                hx-target="#convenorBody"
+                hx-push-url="true"
+            >
+                <fieldset>
+                    <input name="file" type="file" id="teamTemplateFile" required>
+                </fieldset>
+                <br/>
+                <fieldset>
+                    <button
+                        id="submitTeamTemplate"
+                        type="submit"
+                        class=" btn btn-success"
+                    >
+                        Upload team
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-warning float-right"
+                        onclick="document.querySelector('#uploadTeamModal').close();"
+                        id="cancelTeamTemplate"
+                    >
+                        Close
+                    </button>
+                </fieldset>
+            </form>
+        </dialog>
+    </div>
+    <div class="team-filters">
+        <div class="flex-container">
+            <h2>
+                Filters
+            </h2>
+            <span
+                class="glyphicon glyphicon-info-sign"
+                aria-hidden="true"
+                title="Click team to edit"
+            ></span>
+        </div>
+        <form
+            class="inline-form"
+            action="{{ url_for('convenor.teams_page')}}"
+            method="get"
+            hx-get="{{ url_for('convenor.teams_page')}}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <label>
+                Filter by year:
+            </label>
+            <select
+                class="form-control"
+                name="year"
+                onchange="this.form.submit()"
+            >
+                {% for year in years %}
+                    {% if year == selected_year %}
+                        <option value="{{year}}" selected>
+                            {{year}}
+                        </option>
+                    {% else %}
+                        <option value="{{year}}">
+                            {{year}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <div class="mt-2"></div>
+            <label>
+                Filter by league:
+            </label>
+            <select
+                class="form-control"
+                id="leagueId"
+                name="league_id"
+                onchange="this.form.submit()"
+            >
+                {% if team_id is none %}
+                    <option value="" selected>
+                        ---
+                    </option>
+                {% else %}
+                    <option value="">
+                        ---
+                    </option>
+                {% endif %}
+
+                {% for league in leagues %}
+                    {% if league.league_id == league_id %}
+                        <option value="{{league.league_id}}" selected>
+                            {{league.league_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{league.league_id}}">
+                            {{league.league_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    <div class="teams-container mt-3">
+        <h2>Matched Teams</h2>
+        {% if teams|length == 0 %}
+            <p>
+                No teams matched
+            </p>
+        {% else %}
+            <div class="list-group">
+                {% for team in teams %}
+                    <a
+                        class="list-group-item"
+                        id="editTeam{{team.team_id}}"
+                        href="{{ url_for('convenor.edit_team_page', team_id=team.team_id) }}"
+                        hx-get="{{ url_for('convenor.edit_team_page', team_id=team.team_id) }}"
+                        hx-push-url="true"
+                        hx-target="#convenorBody"
+                    >
+                        {{team.team_name}}
+                        ({{team.year}})
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif%}
+    </div>
+{% endblock %}

@@ -268,7 +268,7 @@ class LeagueEventDate(DB.Model):
             'description': self.event.description,
             'name': self.event.name,
             'active': self.event.active,
-            'attendance': len(self.players)
+            'attendance': len(self.players),
         }
 
 
@@ -536,6 +536,7 @@ class Player(UserMixin, DB.Model):
                            lazy='dynamic')
     active = DB.Column(DB.Boolean)
     kik = DB.Column(DB.String(120))
+    is_convenor = DB.Column(DB.Boolean, default=False)
 
     def __init__(self,
                  name: str,
@@ -569,7 +570,7 @@ class Player(UserMixin, DB.Model):
             gender_validator,
             InvalidField(payload={'details': "Player - gender"})
         )
-
+        self.is_convenor = False
         self.__update(
             name=name,
             email=email,
@@ -661,6 +662,14 @@ class Player(UserMixin, DB.Model):
         """
         return check_password_hash(self.password, password)
 
+    def make_convenor(self) -> None:
+        """Make the player a convenor."""
+        self.is_convenor = True
+
+    def remove_convenor(self) -> None:
+        """The player is no longer a convenor."""
+        self.is_convenor = False
+
     def __repr__(self) -> str:
         """Return the string representation of the player."""
         return self.name
@@ -678,11 +687,14 @@ class Player(UserMixin, DB.Model):
 
     def admin_json(self) -> dict:
         """Returns a jsonserializable object."""
-        return {"player_id": self.id,
-                "player_name": self.name,
-                "gender": self.gender,
-                "email": self.email,
-                "active": self.active}
+        return {
+            "player_id": self.id,
+            "player_name": self.name,
+            "gender": self.gender,
+            "email": self.email,
+            "active": self.active,
+            "is_convenor": self.is_convenor
+        }
 
     def activate(self) -> None:
         """Activate the player."""
@@ -1121,6 +1133,8 @@ class Team(DB.Model):
             raise PlayerDoesNotExist(payload={'details': player_id})
         if not self.is_player_on_team(player):
             raise PlayerNotOnTeam(payload={'details': player_id})
+        if self.player_id == player_id:
+            self.player_id = None
         self.players.remove(player)
 
     def is_player_on_team(self, player: 'Player') -> bool:
@@ -1773,7 +1787,6 @@ class Game(DB.Model):
 
     def get_team_bats(self, team_id: int):
         """Remove score for the given team from the game."""
-        print(self.bats)
         return [bat for bat in self.bats if bat.team_id == team_id]
 
     @classmethod

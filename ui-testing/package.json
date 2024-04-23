@@ -22,18 +22,28 @@
     "@badeball/cypress-cucumber-preprocessor": "latest",
     "@cypress/webpack-preprocessor": "latest",
     "@testing-library/cypress": "latest",
-    "axe-core": "^4.4.2",
+    "axe-core": "^4.9.0",
     "babel-loader": "latest",
-    "cypress": "latest",
-    "cypress-axe": "^1.0.0",
+    "cypress": "^13.8.0",
+    "cypress-axe": "^1.5.0",
     "ts-loader": "latest",
     "typescript": "latest",
     "webpack": "latest"
   },
-  "stepDefinitions": [
-    "[filepath]/**/*.{js,ts}",
-    "[filepath].{js,ts}",
-    "cypress/features/global/**/*.{js,ts}",
-    "cypress/features/global/login.{js,ts}"
-  ]
+  "cypress-cucumber-preprocessor": {
+    "stepDefinitions": [
+      "cypress/features/global/**/*.{js,ts}",
+      "cypress/features/global/login.{js,ts}",
+      "cypress/features/global/convenor.{js,ts}",
+      "cypress/features/global/navigation.{js,ts}",
+      "cypress/features/[filepath]/**/*.{js,mjs,ts,tsx}",
+      "cypress/features/[filepath].{js,mjs,ts,tsx}"
+    ],
+    "json": {
+      "enabled": true
+    }
+  },
+  "dependencies": {
+    "path-browserify": "^1.0.1"
+  }
 }

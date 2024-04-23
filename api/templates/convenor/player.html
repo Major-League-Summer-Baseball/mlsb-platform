@@ -1,0 +1,103 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+<a href="{{ url_for('convenor.players_page') }}">
+    <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
+</a>
+<form
+    action="{{ url_for('convenor.submit_player') }}"
+    hx-post="{{ url_for('convenor.submit_player') }}"
+    method="post"
+    hx-target="#convenorBody"
+    id="playerForm"
+>   
+    <input type="hidden" name="player_id" value="{{player.player_id}}" id="playerToAddId">
+    <div class="form-group">
+        <label for="newPlayerModalInputName">Name</label>
+        <input
+            name="name"
+            type="name"
+            value="{{player.player_name}}"
+            class="form-control"
+            id="newPlayerModalInputName"
+            aria-describedby="nameHelp"
+            placeholder="Enter name"
+            required>
+        <small id="nameHelp" class="form-text text-muted">Their name will appear on team page and leaders page.</small>
+        <br /><br />
+        <label for="newPlayerModalInputEmail">Email</label>
+        <input
+            name="email"
+            type="email"
+            value="{{player.email}}"
+            class="form-control"
+            id="newPlayerModalInputEmail"
+            placeholder="Enter Email"
+            required
+        >
+        <br /><br />
+        <label
+            class="form-check-label"
+            for="flexCheckDefault"
+        >
+            Eligible for Sapporo Singles
+        </label>
+        {% if player.gender|lower == "f" %}
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="is_female"
+                id="flexCheckDefault"
+                checked
+            >
+        {% else %}
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="is_female"
+                id="flexCheckDefault"
+            >
+        {% endif %}
+
+        <br /><br />
+        <label
+            class="form-check-label"
+            for="flexConvenor"
+        >
+            Is Convenor
+        </label>
+        {% if player.is_convenor %}
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="is_convenor"
+                id="flexConvenor"
+                checked
+            >
+        {% else %}
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="is_convenor"
+                id="flexConvenor"
+            >
+        {% endif %}
+    </div>
+    <button
+        type="submit"
+        class="btn btn-primary"
+        id="playerSubmit"
+    >
+        Save
+    </button>
+    <a
+        class="btn btn-danger"
+        href="{{ url_for('convenor.players_page') }}"
+        hx-get="{{ url_for('convenor.players_page') }}"
+        hx-target="#convenorBody"
+        hx-push-url="true"
+        id="cancelPlayer"
+    >
+        Cancel
+    </a>
+</form>
+{% endblock %}

@@ -17,6 +17,7 @@ PNOT = 400
 PAST = 400
 PNS = 401
 NTCSC = 401
+NLC = 401
 BRSC = 400
 OAESC = 400
 HLRESC = 403
@@ -47,6 +48,11 @@ class BaseException(Exception):
 class FunDoesNotExist(BaseException):
     status_code = FDNESC
     message = "Fun count does not exist"
+
+
+class NotLeagueConvenor(BaseException):
+    status_code = NLC
+    message = "Not a league convenor"
 
 
 class TeamDoesNotExist(BaseException):
@@ -182,6 +188,10 @@ ERRORS = {
     'LeagueEventDoesNotExist': {
         'message': LeagueEventDoesNotExist.message,
         'status_code': LeagueEventDoesNotExist.status_code,
+    },
+    'NotConvenor': {
+        'message': LeagueEventDateDoesNotExist.message,
+        'status_code': LeagueEventDateDoesNotExist.status_code,
     },
     'LeagueEventDateDoesNotExist': {
         'message': LeagueEventDateDoesNotExist.message,

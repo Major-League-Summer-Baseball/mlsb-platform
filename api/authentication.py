@@ -14,7 +14,8 @@ from flask import request, Blueprint, session, Response, redirect, \
 from api.extensions import DB
 from api.model import Player, OAuth, JoinLeagueRequest, Team
 from api.errors import OAuthException, NotPartOfLeagueException, \
-    HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist
+    HaveLeagueRequestException, NotTeamCaptain, TeamDoesNotExist, \
+    NotLeagueConvenor
 from api.logging import LOGGER
 import os
 
@@ -230,6 +231,7 @@ def get_user_information() -> dict:
     """Returns information about the logged in user."""
     logged_in = are_logged_in()
     teams = get_player_teams()
+    teams.sort(key=lambda team: team['year'], reverse=True)
     player_id = get_player_id()
     is_captain = False if teams is None else any(
         team['captain'] is not None and
@@ -240,7 +242,8 @@ def get_user_information() -> dict:
         'email': get_login_email(),
         'player_information': get_player_information(),
         'teams': teams,
-        'captain': is_captain
+        'captain': is_captain,
+        'convenor': is_convenor()
     }
 
 
@@ -266,9 +269,15 @@ def get_player_information() -> dict:
 
 def get_player_teams() -> list[dict]:
     """Returns a list of teams associated with the player"""
-    return (None
-            if not are_logged_in()
-            else [team.json() for team in current_user.teams])
+    return (
+        [] if not are_logged_in()
+        else [team.json() for team in current_user.teams]
+    )
+
+
+def is_convenor() -> bool:
+    """Returns whether user is a convenor or not."""
+    return are_logged_in() and current_user.is_convenor
 
 
 def is_gmail_supported() -> bool:
@@ -390,6 +399,18 @@ def require_to_be_a_captain(f: Callable) -> Callable:
     return decorated
 
 
+def require_to_be_convenor(f: Callable) -> Callable:
+    """Route requires person to be a convenor."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not are_logged_in():
+            return redirect(url_for("website.loginpage"))
+        if not current_user.is_convenor:
+            raise NotLeagueConvenor(payload={"details": current_user.id})
+        return f(*args, **kwargs)
+    return decorated
+
+
 def requires_admin(f: Callable) -> Callable:
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -399,6 +420,8 @@ def requires_admin(f: Callable) -> Callable:
             logged = check_auth(session['admin'], session['password'])
             if not logged:
                 return authenticate()
+        elif are_logged_in() and current_user.is_convenor:
+            return f(*args, **kwargs)
         elif not auth or not check_auth(auth.username, auth.password):
             return authenticate()
         return f(*args, **kwargs)

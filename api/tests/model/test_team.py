@@ -143,6 +143,18 @@ def test_team_remove_player(mlsb_app, player_factory, team_factory):
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('player_factory')
 @pytest.mark.usefixtures('mlsb_app')
+def test_team_remove_captain(mlsb_app, player_factory, team_factory):
+    with mlsb_app.app_context():
+        captain = player_factory()
+        team = team_factory(players=[captain], captain=captain)
+        team.remove_player(captain.id)
+        assert team.is_player_on_team(captain) is False
+        assert team.player_id is None
+
+
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('mlsb_app')
 def test_team_cannot_remove_player_twice(
     mlsb_app,
     player_factory,
