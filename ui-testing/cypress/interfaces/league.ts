@@ -4,6 +4,12 @@ export interface League {
     league_name: string;
 };
 
+/** The league interface. */
+export interface Division {
+    division_id: number;
+    division_name: string;
+};
+
 /** A request to join the league or a team. */
 export interface JoinLeagueRequest {
     email: string;

@@ -6,7 +6,7 @@ from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist, \
     LeagueDoesNotExist, SponsorDoesNotExist, \
     PlayerNotOnTeam, FunDoesNotExist, \
     EspysDoesNotExist, BatDoesNotExist, NotTeamCaptain, \
-    TeamAlreadyHasCaptain, PlayerNotSubscribed, \
+    TeamAlreadyHasCaptain, PlayerNotSubscribed, NotLeagueConvenor, \
     BadRequestError, TeamNotPartOfLeague, DivisionDoesNotExist, \
     OAuthException, HaveLeagueRequestException, NotPartOfLeagueException, \
     LeagueEventDateDoesNotExist, LeagueEventDoesNotExist, \
@@ -49,6 +49,7 @@ def handle_not_part_of_league():
 
 @current_app.errorhandler(BatDoesNotExist)
 @current_app.errorhandler(NotTeamCaptain)
+@current_app.errorhandler(NotLeagueConvenor)
 @current_app.errorhandler(TeamAlreadyHasCaptain)
 @current_app.errorhandler(PlayerNotSubscribed)
 @current_app.errorhandler(BadRequestError)

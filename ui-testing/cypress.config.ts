@@ -14,6 +14,9 @@ async function setupNodeEvents(
       webpackOptions: {
         resolve: {
           extensions: [".ts", ".js"],
+          fallback: {
+            "path": require.resolve("path-browserify")
+          }
         },
         module: {
           rules: [
@@ -52,6 +55,7 @@ export default defineConfig({
     baseUrl: "http://localhost:5000/",
     supportFile: "cypress/support/e2e.ts",
     setupNodeEvents,
-    
+    video: true,
+    retries: 3
   },
 });

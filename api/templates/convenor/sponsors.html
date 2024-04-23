@@ -1,0 +1,109 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+    <h1>Sponsors</h1>
+    <div class="sponsors-container">
+        {% for sponsor in sponsors %}
+            <form
+                class="sponsor-container form-inline"
+                action="{{ url_for ('convenor.submit_sponsor') }}"
+                method="post"
+                hx-post="{{ url_for ('convenor.submit_sponsor') }}"
+                hx-push-url="true"
+                hx-target="#convenorBody"
+            >
+                <input
+                    type="hidden"
+                    name="sponsor_id"
+                    value="{{sponsor.sponsor_id}}"
+                    id="sponsorId"
+                />
+                <input
+                    class="input form-control"
+                    value="{{sponsor.sponsor_name}}"
+                    id='sponsorName{{sponsor.sponsor_id}}'
+                    name="sponsor_name"
+                />
+                <input
+                    class="input form-control"
+                    value="{{sponsor.link}}"
+                    id='sponsorLink{{sponsor.sponsor_id}}'
+                    name="link"
+                    placeholder="Link to Sponsor"
+                />
+                <input
+                    class="input form-control"
+                    value="{{sponsor.description}}"
+                    id='sponsorDescription{{sponsor.sponsor_id}}'
+                    name="description"
+                    placeholder="Description"
+                />
+                {% if sponsor.active %}
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        hx-post="{{ url_for ('convenor.change_visibility', sponsor_id=sponsor.sponsor_id, visible=0) }}"
+                        hx-push-url="true"
+                        hx-target="#convenorBody"
+                        id="sponsorInactive{{sponsor.sponsor_id}}"
+                    >
+                        <span class="glyphicon glyphicon-eye-open" aria-label="Visible" title="visible"></span>
+                    </button>
+                {% else %}
+                    <button
+                        type="button"
+                        class="btn btn-warning"
+                        hx-post="{{ url_for ('convenor.change_visibility', sponsor_id=sponsor.sponsor_id, visible=1) }}"
+                        hx-push-url="true"
+                        hx-target="#convenorBody"
+                        id="sponsorActive{{sponsor.sponsor_id}}"
+                    >
+                        <span class="glyphicon glyphicon-eye-close" aria-label="Hidden" title="hidden"></span>
+                    </button>
+                {% endif %}
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="sponsorSubmit{{sponsor.sponsor_id}}"
+                >
+                    Update
+                </button>
+            </form>
+            <hr class="dashed-line">
+        {% endfor %}
+    </div>
+    <form
+        class="sponsor-container form-inline mt-3"
+        action="{{ url_for ('convenor.submit_sponsor') }}"
+        method="post"
+        hx-post="{{ url_for ('convenor.submit_sponsor') }}"
+        hx-push-url="true"
+        hx-target="#convenorBody"
+    >
+        <input
+            class="input form-control"
+            value=""
+            id='newSponsorName'
+            placeholder="Sponsor Name"
+            name="sponsor_name"
+            required
+        />
+        <input
+            class="input form-control"
+            value=""
+            id='newSponsorLink'
+            name="link"
+            placeholder="Link to Sponsor"
+        />
+        <input
+            class="input form-control"
+            value=""
+            id='newSponsorDescription'
+            name="description"
+            placeholder="Description"
+        />
+        <button type="submit" class="btn btn-success" id="sponsorCreate">
+            Create
+        </button>
+    </form>
+    
+{% endblock %}

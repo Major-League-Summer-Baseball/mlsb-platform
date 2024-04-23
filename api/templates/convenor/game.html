@@ -1,0 +1,429 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+    <a href="{{ url_for('convenor.games_page') }}">
+        <span class="glyphicon glyphicon-arrow-left" aria-label="Visible" title="visible"></span> 
+    </a>
+    {% if game.game_id is not none %}
+        <h1>
+            Game - {{game.home_team}} vs {{game.away_team}}
+        </h1>
+    {% else %}
+        <h1>
+            New Game - {{league.league_name}}
+        </h1>
+    {% endif %}
+    <form
+        class="game-container max-420"
+        method="post"
+        action="{{ url_for('convenor.submit_game') }}"
+        hx-post="{{ url_for('convenor.submit_game') }}"
+        hx-push-url="true"
+        hx-target="#convenorBody"
+        >
+        <input
+            type="hidden"
+            name="league_id"
+            value="{{league.league_id}}"
+            id="leagueId"
+        />
+        {% if game.game_id is not none %}
+            <input
+                type="hidden"
+                name="game_id"
+                value="{{game.game_id}}"
+                id="gameId"
+            />
+        {% endif %}
+        <div class="flex-container justify-content-space-between">
+            <label for="date">
+                Date:
+            </label>
+            <input
+                type="date"
+                value="{{game.date}}"
+                id="date"
+                name="date"
+                min="2016-01-01"
+                required
+            />
+            <label for="time">
+                Time:
+            </label>
+            <input
+                type="time"
+                value="{{game.time}}"
+                id="time"
+                name="time"
+                min="08:00"
+                max="23:00"
+                required
+            />
+        </div>
+        {% if game.home_bats|length == 0 %}
+            <div class="flex-container justify-content-space-between">
+                <label>Home Team:</label>
+                <select
+                    class="form-control max-245 "
+                    name="home_team_id"
+                    id="homeTeam"
+                >
+                {% for team in teams %}
+                    {% if team.team_id == game.home_team_id %}
+                        <option value="{{team.team_id}}" selected>
+                            {{team.team_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{team.team_id}}">
+                            {{team.team_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+                </select>
+            </div>
+        {% else %}
+            <div class="flex-container justify-content-space-between">
+                <label>Home Team:</label>
+                {{game.home_team}}
+                <span
+                    class="glyphicon glyphicon-info-sign"
+                    aria-hidden="true"
+                    title="Remove Bats to edit team"
+                ></span>
+                <input
+                    type="hidden"
+                    name="home_team_id"
+                    value="{{game.home_team_id}}"
+                    id="homeTeam"
+                />
+            </div>
+        {% endif %}
+        {% if game.away_bats|length == 0 %}
+            <div class="flex-container justify-content-space-between">
+                <label>Away Team:</label>
+                <select
+                    class="form-control max-245 "
+                    name="away_team_id"
+                    id="awayTeam"
+                >
+                    {% for team in teams %}
+                        {% if team.team_id == game.away_team_id %}
+                            <option value="{{team.team_id}}" selected>
+                                {{team.team_name}}
+                            </option>
+                        {% else %}
+                            <option value="{{team.team_id}}">
+                                {{team.team_name}}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        {% else %}
+            <div class="flex-container justify-content-space-between">
+                <label>Away Team:</label>
+                {{game.away_team}}
+                <span
+                    class="glyphicon glyphicon-info-sign"
+                    aria-hidden="true"
+                    title="Remove Bats to edit team"
+                ></span>
+                <input
+                    type="hidden"
+                    name="away_team_id"
+                    value="{{game.away_team_id}}"
+                    id="awayTeam"
+                />
+            </div>
+        {% endif %}
+        <div class="flex-container justify-content-space-between">
+            <label for="division">
+                Game Division:
+            </label>
+            <select
+                class="form-control max-245 "
+                name="division_id"
+                id="division"
+                required
+            >
+                {% if game.division_id is none %}
+                    <option value="" selected disabled>
+                        Select Division
+                    </option>
+                {% endif %}
+                {% for division in divisions %}
+                    {% if division.division_id == game.division_id %}
+                        <option value="{{division.division_id}}" selected>
+                            {{division.division_name}}
+                        </option>
+                    {% else %}
+                        <option value="{{division.division_id}}">
+                            {{division.division_name}}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex-container justify-content-space-between">
+            <label for="division">
+                Field:
+            </label>
+            <input
+                class="input form-control max-245 "
+                value="{{game.field}}"
+                id="field"
+                name="field"
+                placeholder="Game Field"
+            />
+        </div>
+        <div class="flex-container justify-content-space-between">
+            <label for="division">
+                Status:
+            </label>
+            <input
+                class="input form-control max-245"
+                value="{{game.status}}"
+                id="status"
+                name="status"
+                placeholder="Game Status"
+            />
+        </div>
+        <div class="w-100">
+            <button class="btn btn-primary float-right max-72" type="submit" id="submitGame">
+                {% if game.game_id is not none %}
+                    Update
+                {% else %}
+                    Create
+                {% endif %}
+            </button>
+        </div>
+    </form>
+    {% if game.game_id is not none %}
+        <div class="bats-container">
+            <div class="team-bats-container">
+                <h2>
+                    {{game.home_team}} - Score:{{game.home_score}}
+                </h2>
+                <table class="table table-striped tabled-bordered">
+                    <thead>
+                        <tr>
+                            <form
+                                action="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.home_team_id)}}"
+                                method="post"
+                                hx-post="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.home_team_id)}}"
+                                hx-push-url="true"
+                                hx-target="#convenorBody"
+                            >
+                                <th>
+                                    <label for="player">
+                                        Player:
+                                    </label>
+                                    <select
+                                        class="form-control"
+                                        id="player"
+                                        name="player_id"
+                                        required
+                                    >
+                                        {% for player in game.home_players %}
+                                            <option value="{{player.player_id}}">
+                                                {{player.player_name}}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </th>
+                                <th>
+                                    <label for="rbi">
+                                        RBIS:
+                                    </label>
+                                    <input
+                                        class="input form-control max-245"
+                                        name="rbi"
+                                        id="rbi"
+                                        required
+                                    />
+                                </th>
+                                <th>
+                                    <label for="inning">
+                                        Inning:
+                                    </label>
+                                    <input
+                                        class="input form-control max-245"
+                                        name="inning"
+                                        id="inning"
+                                        required
+                                    />
+                                </th>
+                                <th>
+                                    <label for="hit">
+                                        Hit:
+                                    </label>
+                                    <select
+                                        class="form-control"
+                                        name="hit"
+                                        id="hit"
+                                        required
+                                    >
+                                    {% for bat in bats %}
+                                        <option value="{{bat}}">
+                                            {{bat}}
+                                        </option>
+                                    {% endfor %}
+                                    </select>
+                                </th>
+                                <th>
+                                    <button
+                                        class="btn btn-success"
+                                        type="submit"
+                                    >
+                                        Add
+                                    </button>
+                                </th>
+                            </form>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bat in game.home_bats%}
+                            <tr>
+                                <td>
+                                    {{bat.player}}
+                                </td>
+                                <td>
+                                    {{bat.rbi}}
+                                </td>
+                                <td>
+                                    {{bat.inning}}
+                                </td>
+                                <td>
+                                    {{bat.hit}}
+                                </td>
+                                <td>
+                                    <button
+                                        class="btn btn-danger"
+                                        hx-delete="{{ url_for('convenor.delete_bat', game_id=game.game_id, bat_id=bat.bat_id)}}"
+                                        hx-push-url="true"
+                                        hx-target="#convenorBody"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+            <div class="team-bats-container">
+                <h2>
+                    {{game.away_team}} - Score:{{game.away_score}}
+                </h2>
+                <table class="table table-striped tabled-bordered">
+                    <thead>
+                        <tr>
+                            <form
+                                action="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.away_team_id)}}"
+                                method="post"
+                                hx-post="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.away_team_id)}}"
+                                hx-push-url="true"
+                                hx-target="#convenorBody"
+                            >
+                                <th>
+                                    <label for="player">
+                                        Player:
+                                    </label>
+                                    <select
+                                        class="form-control"
+                                        id="player"
+                                        name="player_id"
+                                        required
+                                    >
+                                        {% for player in game.away_players %}
+                                            <option value="{{player.player_id}}">
+                                                {{player.player_name}}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </th>
+                                <th>
+                                    <label for="rbi">
+                                        RBIS:
+                                    </label>
+                                    <input
+                                        class="input form-control max-245"
+                                        name="rbi"
+                                        id="rbi"
+                                        required
+                                    />
+                                </th>
+                                <th>
+                                    <label for="inning">
+                                        Inning:
+                                    </label>
+                                    <input
+                                        class="input form-control max-245"
+                                        name="inning"
+                                        id="inning"
+                                        required
+                                    />
+                                </th>
+                                <th>
+                                    <label for="hit">
+                                        Hit:
+                                    </label>
+                                    <select
+                                        class="form-control"
+                                        name="hit"
+                                        id="hit"
+                                        required
+                                    >
+                                    {% for bat in bats %}
+                                        <option value="{{bat}}">
+                                            {{bat}}
+                                        </option>
+                                    {% endfor %}
+                                    </select>
+                                    
+                                </th>
+                                <th>
+                                    <button
+                                        class="btn btn-success"
+                                        type="submit"
+                                    >
+                                        Add
+                                    </button>
+                                </th>
+                            </form>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bat in game.away_bats%}
+                            <tr>
+                                <td>
+                                    {{bat.player}}
+                                </td>
+                                <td>
+                                    {{bat.rbi}}
+                                </td>
+                                <td>
+                                    {{bat.inning}}
+                                </td>
+                                <td>
+                                    {{bat.hit}}
+                                </td>
+                                <td>
+                                    <button
+                                        class="btn btn-danger"
+                                        hx-delete="{{ url_for('convenor.delete_bat', game_id=game.game_id, bat_id=bat.bat_id)}}"
+                                        hx-push-url="true"
+                                        hx-target="#convenorBody"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+    <h1>
+        Leagues
+    </h1>
+    <div class="leagues-container">
+        {% for league in leagues %}
+            <form
+                class="league-container form-inline"
+                action="{{ url_for ('convenor.submit_league') }}"
+                method="post"
+                hx-post="{{ url_for ('convenor.submit_league') }}"
+                hx-push-url="true"
+                hx-target="#convenorBody"
+            >
+                <input
+                    type="hidden"
+                    name="league_id"
+                    value="{{league.league_id}}"
+                    id="leagueId{{league.league_id}}"
+                />
+                <input
+                    class="input form-control"
+                    value="{{league.league_name}}"
+                    id='leagueName{{league.league_id}}'
+                    name="league_name"
+                    required
+                />
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="leagueSubmit{{league.league_id}}"
+                >
+                    Update
+                </button>
+            </form>
+            <hr class="dashed-line">
+        {% endfor %}
+        <form
+            class="league-container form-inline"
+            action="{{ url_for ('convenor.submit_league') }}"
+            method="post"
+            hx-post="{{ url_for ('convenor.submit_league') }}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <input
+                class="input form-control"
+                id='leagueName'
+                name="league_name"
+                placeholder="League Name"
+                required
+            />
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="leagueCreate"
+            >
+                Create
+            </button>
+        </form>
+    </div>
+    <h1>
+        Divisions
+    </h1>
+    <div class="divisions-container">
+        {% for division in divisions %}
+            <form
+                class="division-container form-inline"
+                action="{{ url_for ('convenor.submit_division') }}"
+                method="post"
+                hx-post="{{ url_for ('convenor.submit_division') }}"
+                hx-push-url="true"
+                hx-target="#convenorBody"
+            >
+                <input
+                    type="hidden"
+                    name="division_id"
+                    value="{{division.division_id}}"
+                    id="divisionId{{division.division_id}}"
+                />
+                <input
+                    class="input form-control"
+                    value="{{division.division_name}}"
+                    id='divisionName{{division.division_id}}'
+                    name="division_name"
+                    required
+                />
+                <input
+                    class="input form-control"
+                    value="{{division.division_shortname}}"
+                    id='divisionShortName{{division.division_id}}'
+                    name="division_shortname"
+                />
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="divisionSubmit{{division.division_id}}"
+                >
+                    Update
+                </button>
+            </form>
+            <hr class="dashed-line">
+        {% endfor %}
+        <form
+            class="division-container form-inline"
+            action="{{ url_for ('convenor.submit_division') }}"
+            method="post"
+            hx-post="{{ url_for ('convenor.submit_division') }}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <input
+                class="input form-control"
+                id='divisionName'
+                placeholder="Division Name"
+                name="division_name"
+                required
+            />
+            <input
+                class="input form-control"
+                placeholder="Division Shortname"
+                id='divisionShortName'
+                name="division_shortname"
+            />
+            <button type="submit" class="btn btn-primary" id="divisionCreate">
+                Create
+            </button>
+        </form>
+    </div>
+{% endblock %}

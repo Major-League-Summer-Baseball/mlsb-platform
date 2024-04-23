@@ -6,12 +6,13 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from os.path import join
 from api.variables import PICTURES, CSS_FOLDER, POSTS, FILES
 from api.routes import Routes
-from api.extensions import api, cache, DB, login_manager, tailsman
+from api.extensions import api, cache, DB, login_manager, tailsman, ckeditor
 from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
 from api.documentation import documentation_blueprint
 from api.admin import admin_blueprint
 from api.website import website_blueprint
+from api.convenor import convenor_blueprint
 from api.testing_blueprint import testing_blueprint
 from api.mock_database import init_database
 from api.commands import database_command
@@ -40,6 +41,8 @@ def register_extensions(app):
     cache.init_app(app)
     DB.init_app(app)
     login_manager.init_app(app)
+    ckeditor.init_app(app)
+    app.config['CKEDITOR_PKG_TYPE'] = 'full'
     if app.config["ENV"] != "development":
         csp = {
             'default-src': [
@@ -106,6 +109,7 @@ def register_blueprint(app):
     app.register_blueprint(documentation_blueprint)
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(website_blueprint)
+    app.register_blueprint(convenor_blueprint)
 
 
 def register_commands(app):

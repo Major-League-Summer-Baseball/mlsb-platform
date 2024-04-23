@@ -7,7 +7,11 @@
                     {{game.date}}
                 </div>
                 <div class="team away-team">
-                   <img src="{{ url_for('website.sponsor_picture', name=game.away_team.sponsor_id) }}"  alt="" style="">
+                    {% if game.away_team is not none and game.away_team.sponsor_id is not none %}
+                        <img src="{{ url_for('website.sponsor_picture', name=game.away_team.sponsor_id) }}"  alt="" style="">
+                    {% else %}
+                        <img src="{{ url_for('website.sponsor_picture', name='None') }}"  alt="" style="">
+                    {% endif %}
                    {{game.away_team.team_name}}:
                    {% if game.away_bats|length > 0 %}
                      {{game.away_score}}
@@ -16,7 +20,11 @@
                    {% endif %}
                 </div>
                 <div class="team home-team">
-                    <img src="{{ url_for('website.sponsor_picture', name=game.home_team.sponsor_id) }}"  alt="" style="">
+                    {% if game.home_team is not none and game.home_team.sponsor_id is not none %}
+                        <img src="{{ url_for('website.sponsor_picture', name=game.home_team.sponsor_id) }}"  alt="" style="">
+                    {% else %}
+                        <img src="{{ url_for('website.sponsor_picture', name='None') }}"  alt="" style="">
+                    {% endif %}
                     {{game.home_team.team_name}}:
                     {% if game.home_bats|length > 0 %}
                       {{game.home_score}}
