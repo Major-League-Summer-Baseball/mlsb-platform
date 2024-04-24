@@ -2,7 +2,7 @@ from flask import render_template, request, flash, session, redirect, url_for
 from sqlalchemy import desc
 from api.authentication import require_to_be_convenor
 from api.convenor import convenor_blueprint, is_empty
-from api.model import Fun, LeagueEventDate
+from api.model import Fun
 from api.extensions import DB
 
 
@@ -18,6 +18,7 @@ def fun_page():
         "convenor/funs.html",
         funs=funs
     )
+
 
 @convenor_blueprint.route("funs/submit", methods=["POST"])
 @require_to_be_convenor
