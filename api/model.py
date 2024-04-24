@@ -289,10 +289,12 @@ class Fun(DB.Model):
         self.year = year
         self.count = count
 
-    def update(self, count=None):
+    def update(self, count=None, year=None):
         """Update an existing fun count."""
         if count is not None:
             self.count = count
+        if year is not None:
+            self.year = year
 
     def increment(self, change):
         """Increment the fun count.
@@ -304,7 +306,11 @@ class Fun(DB.Model):
 
     def json(self):
         """Returns a jsonserializable object."""
-        return {'year': self.year, 'count': self.count}
+        return {
+            'fun_id': self.id,
+            'year': self.year,
+            'count': self.count
+        }
 
 
 class Espys(DB.Model):

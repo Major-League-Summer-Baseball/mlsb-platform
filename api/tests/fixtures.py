@@ -7,7 +7,7 @@ from flask import url_for
 from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
-    LeagueEventDate, Team, League, Game, Division, Bat, Espys
+    LeagueEventDate, Team, League, Game, Division, Bat, Espys, Fun
 import os
 
 
@@ -104,6 +104,17 @@ def sponsor_factory(
     DB.session.add(sponsor)
     DB.session.commit()
     return sponsor
+
+
+@factory_fixture
+def fun_factory(
+    year: int = date.today().year,
+    count: int = 1
+) -> Fun:
+    fun = Fun(year=year, count=count)
+    DB.session.add(fun)
+    DB.session.commit()
+    return fun
 
 
 @factory_fixture

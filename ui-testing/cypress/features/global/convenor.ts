@@ -1,12 +1,12 @@
 import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";import { Sponsor } from "../../interfaces/sponsor";
-import { getCurrentYear, getDateString, getTimeString, randomId, randomName } from "./helper";
+import { getCurrentYear, getDateString, randomId, randomName, getRandomInt } from "./helper";
 import { Player } from "../../interfaces/player";
 import { Team } from "../../interfaces/team";
 import { Division, JoinLeagueRequest, League } from "../../interfaces/league";
 import { LeagueEvent } from "../../interfaces/league_event";
 import { LeagueEventDate } from "../../interfaces/league_event_date";
 import { Game } from "../../interfaces/game";
-;
+import { Fun } from "../../interfaces/fun";
 
 /** Generate sponsor data. */
 export const generateSponsor = (): Sponsor => {
@@ -16,6 +16,15 @@ export const generateSponsor = (): Sponsor => {
         link: `http://${randomName()}.ca`,
         description: `${randomName()} is great`,
         active: true
+    };
+};
+
+/** Generate fun. */
+export const generateFun = (): Fun => {
+    return {
+        fun_id: randomId(),
+        year: getCurrentYear(),
+        count: getRandomInt(999),
     };
 };
 
@@ -100,7 +109,18 @@ export const generateLeagueEventDate = (): LeagueEventDate => {
     };
 };
 
-/** Create a league event */
+/** Create a fun count */
+const createFun = () => {
+    const data = generateFun();
+    cy.request('POST', '/rest/fun', data).then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const fun: Fun = response.body;
+        cy.wrap(fun).as('fun');
+    });
+};
+Given(`a fun exists`, createFun);
+
+/** Create a division event */
 const createDivision = () => {
     const data = generateDivision();
     cy.request('POST', '/rest/division', data).then((response) => {

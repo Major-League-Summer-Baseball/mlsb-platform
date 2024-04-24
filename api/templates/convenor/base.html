@@ -90,6 +90,16 @@
                       Leagues & Divisions
                     </a>
                 </li>
+                <li class="indent-nav editsSidebar">
+                  <a
+                    href="{{ url_for('convenor.fun_page') }}"
+                    hx-get="{{ url_for('convenor.fun_page') }}"
+                    hx-target="#convenorBody"
+                    hx-push-url="true"
+                  >
+                    Fun
+                  </a>
+                </li>
             </ul>
         </div><!-- /#sidebar-wrapper -->
         <!-- Page Content -->
@@ -142,6 +152,14 @@
                           >
                             Leagues & Divisions
                           </a>
+                          <a
+                            href="{{ url_for('convenor.fun_page') }}"
+                            hx-get="{{ url_for('convenor.fun_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                          Fun
+                        </a>
                 </div>
                 <div class="row">
                     <div class="col-lg-12" id="convenorBody">
