@@ -1,0 +1,88 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+<h1>
+    Fun
+</h1>
+<p id="description">
+    This is the keg count for each year. It is a bit of an easter egg on the site.
+    <br/>
+    If you click on the fill meter you can checkout each year. 2015 is the current GOAT.
+</p>
+<div class="fun-container mt-3">
+    {% for fun in funs %}
+        <form
+            class="event-container form-inline"
+            method="post"
+            action="{{ url_for ('convenor.submit_fun') }}"
+            hx-post="{{ url_for ('convenor.submit_fun') }}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <input
+                type="hidden"
+                name="fun_id"
+                value="{{fun.fun_id}}"
+                id="funId"
+            />
+            <input
+                class="input form-control"
+                value="{{fun.year}}"
+                type="number"
+                id='year{{fun.fun_id}}'
+                name="year"
+                placeholder="League Year"
+                min="2002"
+            />
+            <input
+                class="input form-control"
+                type="number"
+                value="{{fun.count}}"
+                id='count{{fun.fun_id}}'
+                name="count"
+                placeholder="Fun Count"
+                min="10"
+            />
+            <button
+                type="submit"
+                class="btn btn-primary constrain-btn"
+                id="funSubmit{{fun.fun_id}}">
+                Update
+            </button>
+        </form>
+        <hr class="dashed-line">
+    {% endfor %}
+</div>
+<form
+    class="event-container form-inline mt-3"
+    method="post"
+    action="{{ url_for ('convenor.submit_fun') }}"
+    hx-post="{{ url_for ('convenor.submit_fun') }}"
+    hx-push-url="true"
+    hx-target="#convenorBody"
+    
+>
+    <input
+        class="input form-control"
+        type="number"
+        id='newFunYear'
+        placeholder="League Year"
+        name="year"
+        required
+    />
+    <input
+        class="input form-control"
+        type="number"
+        id='newFunCount'
+        placeholder="Fun Count"
+        name="count"
+        required
+    />
+    <button
+        type="submit"
+        class="btn btn-success constrain-btn"
+        id="funCreate"
+    >
+        Create
+    </button>
+</form>
+{% endblock %}
