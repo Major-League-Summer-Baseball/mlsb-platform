@@ -1,10 +1,3 @@
-'''
-@author: Dallas Fraser
-@since: 2020-02-29
-@organization: MLSB API
-@summary: Holds various cached items that allow API and website to speed up
-'''
-
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from datetime import date, datetime, time
@@ -16,7 +9,7 @@ from api.errors import LeagueDoesNotExist
 from api.variables import LONG_TERM_CACHE
 from api.tables import Tables
 from api.advanced.league_leaders import get_leaders, \
-    get_leaders_not_grouped_by_team
+    get_leaders_not_grouped_by_team, get_single_game_leader
 from api.routes import Routes
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response_items
@@ -122,9 +115,11 @@ def get_team_map():
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
-def get_league_leaders(stat, year=None, group_by_team=False):
+def get_league_leaders(stat, year=None, group_by_team=False, single_game=False):
     """Get the league leaders for the given stat"""
-    if group_by_team:
+    if single_game:
+        return get_single_game_leader(stat, year=year)
+    elif group_by_team:
         return get_leaders_not_grouped_by_team(stat, year=year)
     else:
         return get_leaders(stat, year=year)

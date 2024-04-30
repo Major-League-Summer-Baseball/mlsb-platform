@@ -54,7 +54,7 @@ def leaders_page(year):
     )
 
 
-@website_blueprint.route("/website/leaders/alltime/<int:year>")
+@website_blueprint.route("/website/hall-of-fame/<int:year>")
 def all_time_leaders_page(year):
     hrSingleSeason = get_league_leaders("hr")
     ssSingleSeason = get_league_leaders("ss")

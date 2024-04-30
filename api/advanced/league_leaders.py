@@ -51,13 +51,13 @@ def get_single_game_leader(hit: str, year=None):
             Player.name,
             Team,
             func.count(Bat.player_id).label("total"),
-        )   
+        )
         .join(Player, Player.id == Bat.player_id)
         .join(Team, Team.id == Bat.team_id)
         .join(Game, Game.id == Bat.game_id)
         .filter(Bat.classification == hit)
         .filter(Game.date.between(start, end))
-        .filter(Game.division_id != 3) # remove any WNL stats
+        .filter(Game.division_id != 3)  # remove any WNL stats
         .filter(Bat.player_id != unassigned_id)
         .group_by(Player)
         .group_by(Bat.classification)
