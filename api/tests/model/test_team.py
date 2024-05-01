@@ -1,3 +1,4 @@
+from datetime import date
 import pytest
 from api.errors import InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
     PlayerNotOnTeam, SponsorDoesNotExist
@@ -188,9 +189,36 @@ def test_determine_not_captain(mlsb_app, player_factory):
         assert team.check_captain("Some other name", "default") is False
 
 
-@pytest.mark.usefixtures('player_factory')
 @pytest.mark.usefixtures('mlsb_app')
-def test_determine_not_captain_no_team_captain(mlsb_app, player_factory):
+def test_determine_not_captain_no_team_captain(mlsb_app):
     with mlsb_app.app_context():
         team = Team()
         assert team.check_captain("Some other name", "default") is False
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_captain_multiple_teams(mlsb_app, player_factory, team_factory):
+    with mlsb_app.app_context():
+        player = player_factory()
+        current_team = team_factory(captain=player)
+        old_team = team_factory(year=date.today().year - 1, captain=player)
+        teams = Team.get_teams_captained(player.id)
+        assert len(teams) == 2
+        team_ids = [current_team.id, old_team.id]
+        assert teams[0].id in team_ids
+        assert teams[1].id in team_ids
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_not_captain_no_teams(mlsb_app, player_factory, team_factory):
+    with mlsb_app.app_context():
+        player = player_factory()
+        not_captain = player_factory()
+        team_factory(captain=player)
+        team_factory(year=date.today().year - 1, captain=player)
+        teams = Team.get_teams_captained(not_captain.id)
+        assert len(teams) == 0

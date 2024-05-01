@@ -389,7 +389,7 @@ def require_to_be_a_captain(f: Callable) -> Callable:
     def decorated(*args, **kwargs):
         if not are_logged_in():
             return redirect(url_for("website.loginpage"))
-        teams = Player.get_teams_captained(current_user.id)
+        teams = Team.get_teams_captained(current_user.id)
         team_id = kwargs.get('team_id', 1 if not (len(args) > 0) else args[0])
         if len(teams) == 0:
             raise NotTeamCaptain(payload={"details": team_id})
