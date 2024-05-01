@@ -1,6 +1,5 @@
 import pytest
 import uuid
-from datetime import date
 from api.errors import InvalidField, NonUniqueEmail
 from api.model import Player
 from api.variables import UNASSIGNED_EMAIL

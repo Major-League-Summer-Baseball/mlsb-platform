@@ -8,7 +8,7 @@ from api.authentication import \
     require_to_be_a_captain
 from api.bot.submit_scores import remove_submitted_score, submit_bats, \
     submit_score
-from api.model import Bat, Team, Player, Game
+from api.model import Bat, Team, Game
 from api.errors import GameDoesNotExist, NotTeamCaptain, TeamDoesNotExist
 from api.website import website_blueprint
 import json
