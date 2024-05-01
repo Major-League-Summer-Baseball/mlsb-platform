@@ -6,7 +6,6 @@
 '''
 
 from sqlalchemy import func
-from sqlalchemy.orm import undefer
 from sqlalchemy.sql.expression import and_, or_
 from datetime import date, datetime, time
 from flask import url_for
@@ -303,7 +302,7 @@ def team_stats(team_id, year, league_id, division_id=None):
 
 
 def single_team(team_id):
-    team_query = Team.query.options(undefer('espys_total')).get(team_id)
+    team_query = Team.query.get(team_id)
     if team_query is None:
         return {}
     games = (DB.session.query(Game)
@@ -362,7 +361,7 @@ def filter_teams_by_map(result, team_map):
 def multiple_teams(year, league_id, division_id=None):
     t = time(0, 0)
     games = DB.session.query(Game)
-    teams = DB.session.query(Team).options(undefer('espys_total'))
+    teams = DB.session.query(Team)
     team_map = {}
     if year is not None:
         d1 = date(year, 1, 1)

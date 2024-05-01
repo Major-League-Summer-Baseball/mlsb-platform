@@ -8,7 +8,7 @@ from api.authentication import \
     require_to_be_a_captain
 from api.bot.submit_scores import remove_submitted_score, submit_bats, \
     submit_score
-from api.model import Bat, Team, Player, Game
+from api.model import Bat, Team, Game
 from api.errors import GameDoesNotExist, NotTeamCaptain, TeamDoesNotExist
 from api.website import website_blueprint
 import json
@@ -100,7 +100,7 @@ def captain_remove_submitted_score(year: int, game_id: int, team_id: int):
 @require_to_be_a_captain
 def captain_games(year: int):
     """Route for captain submitting games for the given year"""
-    teams = Player.get_teams_captained(current_user.id)
+    teams = Team.get_teams_captained(current_user.id)
     team_ids = [team.id for team in teams]
     open_games = [
         (
