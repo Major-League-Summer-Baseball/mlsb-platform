@@ -270,13 +270,20 @@ p.primary{
   text-transform: uppercase;
 }
 
-.leaderTitle{
+.leaderTitle {
   font-size: 30px;
   font-weight: 800;
   line-height: 36px;
-  margin: 0 0 24px;
+  margin: 24px 0 12px 0;
   text-align: center;
 }
+
+.leaderSubTitle {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .leadersList li{
   margin: 0px 0px 24px;
   line-height: 18px;
@@ -288,9 +295,8 @@ p.primary{
     width: 22px;
     border-radius: 50%;
     border: 1px solid #dcdcdc;
-    display: inline-block;
     margin-right: 6px;
-    float:right;
+    float: right;
 }
 
 .leadersList>.leaderPoint >.leaderBadge{

@@ -1,9 +1,33 @@
 {% extends "website/new-base.html" %}
 {% block content %}
 <div class="row">
+    <h2 class="leaderTitle">
+        Sleeman Slugger
+    </h2>
     <div class="col-xs-12 col-sm-6">
-        <h4 class="leaderTitle sleeman">
-        Single Season Sleeman Slugger
+        <h4 class="leaderSubTitle">
+            Game
+        </h4>
+        <ul class="listgroup leadersList sleemanList singleSeason">
+        {% for player in hrSingleGame %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge">
+                    {{loop.index}}
+                </span>
+                {{player.year}}
+                -
+                <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
+                    {{player.name}}
+                </a>
+                - <span data-cy="allTimeSingleSeasonHomeruns">{{player.hits}}</span>
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}" >
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <h4 class="leaderSubTitle">
+            Season
         </h4>
         <ul class="listgroup leadersList sleemanList singleSeason">
         {% for player in hrSingleSeason %}
@@ -12,16 +36,19 @@
                     {{loop.index}}
                 </span>
                 {{player.year}}
-                - {{player.name}}
+                -
+                <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
+                    {{player.name}}
+                </a>
                 - <span data-cy="allTimeSingleSeasonHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}"  alt="" style="">
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
             </li>
         {% endfor %}
         </ul>
     </div>
     <div class="col-xs-12 col-sm-6">
-        <h4 class="leaderTitle sleeman">
-        All-Time Sleeman Slugger <a href="#" data-toggle="toolip" title="For those who played too long">[?]</a>
+        <h4 class="leaderSubTitle">
+            Career<a href="#" data-toggle="toolip" title="For those who played too long">[?]</a>
         </h4>
         <ul class="listgroup leadersList sleemanList allTimeCareer">
         {% for player in hrAllSeason %}
@@ -29,9 +56,11 @@
                 <span class="badge leaderBadge">
                     {{loop.index}}
                 </span>
-                {{player.name}}
+                <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
+                    {{player.name}}
+                </a>
                 - <span data-cy="allTimeCareerHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}"  alt="" style="">
+                <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}">
             </li>
         {% endfor %}
         </ul>
@@ -39,9 +68,33 @@
 </div>
 
 <div class="row">
+    <h2 class="leaderTitle">
+        Sapporo Singles
+    </h2>
     <div class="col-xs-12 col-sm-6" >
-        <h4 class="leaderTitle sapporo">
-        Single Season Sapporo Singles
+        <h4 class="leaderSubTitle">
+            Game
+        </h4>
+        <ol class="listgroup leadersList sapporoList singleSeason">
+        {% for player in ssSingleGame %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge" data-cy="AllTimeSapporo">
+                    {{loop.index}}
+                </span>
+                 {{player.year}}
+                 -
+                 <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
+                    {{player.name}}
+                </a>
+                 - <span data-cy="allTimeSingleSeasonSingles">{{player.hits}}</span>
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderSubTitle">
+        Season
         </h4>
         <ol class="listgroup leadersList sapporoList singleSeason">
         {% for player in ssSingleSeason %}
@@ -50,17 +103,20 @@
                     {{loop.index}}
                 </span>
                  {{player.year}}
-                 - {{player.name}}
+                 -
+                 <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
+                    {{player.name}}
+                </a>
                  - <span data-cy="allTimeSingleSeasonSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}"  alt="" style="">
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
             </li>
         {% endfor %}
         </ol>
     </div>
 
     <div class="col-xs-12 col-sm-6" >
-        <h4 class="leaderTitle sapporo">
-        All-Time Sapporo Singles
+        <h4 class="leaderSubTitle">
+        Career
         </h4>
         <ol class="listgroup leadersList sapporList allTimeCareer">
         {% for player in ssAllSeason %}
@@ -68,9 +124,101 @@
                 <span class="badge leaderBadge">
                     {{loop.index}}
                 </span>
-                 {{player.name}}
+                <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
+                    {{player.name}}
+                </a>
                  - <span data-cy="allTimeCareerSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}"  alt="" style="">
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}">
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <h2 class="leaderTitle">
+        Team Rankings
+    </h2>
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderSubTitle">
+            By Espys
+        </h4>
+        <ol class="listgroup leadersList sleemanList espsyRanking">
+        {% for team in espysTeamAllTime %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge" data-cy="allTimeTeamEspys">
+                    {{loop.index}}
+                </span>
+                 {{team.year}}
+                 - 
+                 <a href="{{ url_for('website.team_page', team_id=team.team_id, year=year)}}">
+                    {{team.team_name}}
+                 </a>
+                 - <span data-cy="allTimeTeamEspysValue">{{team.total}}</span>
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderSubTitle">
+            By Homeruns
+        </h4>
+        <ol class="listgroup leadersList sleemanList espsyRanking">
+        {% for team in hrTeamAllTime %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge" data-cy="allTimeTeamEspys">
+                    {{loop.index}}
+                </span>
+                 {{team.year}}
+                 -
+                 <a href="{{ url_for('website.team_page', team_id=team.team_id, year=year)}}">
+                    {{team.team_name}}
+                 </a>
+                 - <span data-cy="allTimeTeamEspysValue">{{team.total}}</span>
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderSubTitle">
+            By Runs Scored
+        </h4>
+        <ol class="listgroup leadersList sleemanList espsyRanking">
+        {% for team in runsForTeamAllTime %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge" data-cy="allTimeTeamEspys">
+                    {{loop.index}}
+                </span>
+                 {{team.year}}
+                 -
+                 <a href="{{ url_for('website.team_page', team_id=team.team_id, year=year)}}">
+                    {{team.team_name}}
+                 </a>
+                 - <span data-cy="allTimeTeamEspysValue">{{team.total}}</span>
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+    <div class="col-xs-12 col-sm-6" >
+        <h4 class="leaderSubTitle">
+            By Wins
+        </h4>
+        <ol class="listgroup leadersList sleemanList espsyRanking">
+        {% for team in winsForTeamAllTime %}
+            <li class="list-group-item leaderPoint">
+                <span class="badge leaderBadge" data-cy="allTimeTeamEspys">
+                    {{loop.index}}
+                </span>
+                 {{team.year}}
+                 -
+                 <a href="{{ url_for('website.team_page', team_id=team.team_id, year=year)}}">
+                    {{team.team_name}}
+                 </a>
+                 - <span data-cy="allTimeTeamEspysValue">{{team.wins}}</span>
+                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
             </li>
         {% endfor %}
         </ol>
