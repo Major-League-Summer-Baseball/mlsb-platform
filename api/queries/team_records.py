@@ -46,6 +46,12 @@ def get_team_records(
         )
         .join(home_record, Team.id == home_record.c.id, isouter=True)
         .join(away_record, Team.id == away_record.c.id, isouter=True)
+        .order_by(
+            desc(
+                coalesce(home_record.c.wins, 0) +
+                coalesce(away_record.c.wins, 0)
+            )
+        )
     )
 
     # additional filters
