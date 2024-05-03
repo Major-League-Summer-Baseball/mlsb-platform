@@ -591,8 +591,12 @@ class Game(DB.Model):
             .join(away_score, Game.id == away_score.c.id)
         )
         if year is not None:
-            start = datetime.combine(date(year, 1, 1), time(0, 0))
-            end = datetime.combine(date(year, 12, 30), time(0, 0))
+            if year == datetime.now().year:
+                start = datetime.combine(date(year, 1, 1), time(0, 0))
+                end = datetime.now()
+            else:
+                start = datetime.combine(date(year, 1, 1), time(0, 0))
+                end = datetime.combine(date(year, 12, 30), time(0, 0))
             query = query.filter(Game.date.between(start, end))
         if league_id is not None:
             query = query.filter(Game.league_id == league_id)
