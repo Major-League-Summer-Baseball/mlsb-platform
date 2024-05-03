@@ -51,10 +51,9 @@ def test_get_team(mlsb_app, team_factory, player_factory, league_factory):
 
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('sponsor_factory')
-@pytest.mark.usefixtures('player_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
-def test_get_team_no_captain(mlsb_app, team_factory, player_factory, league_factory):
+def test_get_team_no_captain(mlsb_app, team_factory, league_factory):
     with mlsb_app.app_context():
         league = league_factory()
         team = team_factory(league=league)
