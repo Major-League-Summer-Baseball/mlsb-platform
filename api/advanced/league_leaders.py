@@ -64,7 +64,7 @@ def get_single_game_leader(hit: str, year=None):
         .group_by(Bat.game_id)
         .group_by(Team)
         .order_by(func.count(Bat.player_id).desc())
-        .limit(10)
+        .limit(HALL_OF_FAME_SIZE)
     ).all()
     for player in players:
         team = player[4]
@@ -76,7 +76,7 @@ def get_single_game_leader(hit: str, year=None):
                 'team': str(team),
                 'team_id': team.id,
                 'game_id': player[0],
-                'total': player[5],
+                'hits': player[5],
                 'hit': player[1]
             }
         )

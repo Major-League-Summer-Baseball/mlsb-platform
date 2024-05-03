@@ -78,6 +78,7 @@ def get_team_records(
         teams.append(team)
     return teams
 
+
 def rank_teams_by_stats(
     stat: str, limit: int = HALL_OF_FAME_SIZE
 ) -> list['Team']:

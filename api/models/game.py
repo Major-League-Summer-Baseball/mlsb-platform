@@ -10,7 +10,7 @@ from api.models.shared import convert_date, notNone, split_datetime, validate
 from sqlalchemy import and_, select, func, or_, desc, asc, not_, case
 from sqlalchemy.orm import column_property, PropComparator
 from sqlalchemy.sql.expression import Alias
-from sqlalchemy.sql.functions import  coalesce
+from sqlalchemy.sql.functions import coalesce
 from api.models.player import Player
 from api.models.league import Division, League
 
