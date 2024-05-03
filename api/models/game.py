@@ -600,7 +600,7 @@ class Game(DB.Model):
             query = query.filter(Game.date.between(start, end))
         else:
             start = datetime.combine(date(2014, 1, 1), time(0, 0))
-            end = datetime.combine(date.today(), time(23,59))
+            end = datetime.combine(date.today(), time(23, 59))
             query = query.filter(Game.date.between(start, end))
         if league_id is not None:
             query = query.filter(Game.league_id == league_id)
