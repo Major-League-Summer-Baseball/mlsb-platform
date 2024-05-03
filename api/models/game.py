@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 from api.extensions import DB
 from api.errors import DivisionDoesNotExist, GameDoesNotExist, InvalidField, \
     LeagueDoesNotExist, PlayerDoesNotExist, TeamDoesNotExist
@@ -7,8 +7,10 @@ from api.models.team import Team
 from api.validators import date_validator, field_validator, hit_validator, \
     inning_validator, rbi_validator, string_validator, time_validator
 from api.models.shared import convert_date, notNone, split_datetime, validate
-from sqlalchemy.orm import column_property
-from sqlalchemy import and_, select, func, or_, desc, asc, not_
+from sqlalchemy import and_, select, func, or_, desc, asc, not_, case
+from sqlalchemy.orm import column_property, PropComparator
+from sqlalchemy.sql.expression import Alias
+from sqlalchemy.sql.functions import  coalesce
 from api.models.player import Player
 from api.models.league import Division, League
 
@@ -239,6 +241,8 @@ class Game(DB.Model):
     date = DB.Column(DB.DateTime)
     status = DB.Column(DB.String(120))
     field = DB.Column(DB.String(120))
+
+    # use this column property sparingly
     away_team_score = column_property(
         select([func.sum(Bat.rbi)])
         .where(
@@ -251,6 +255,7 @@ class Game(DB.Model):
         deferred=True,
         group='summary'
     )
+    # use this column property sparingly
     home_team_score = column_property(
         select([func.sum(Bat.rbi)])
         .where(
@@ -543,6 +548,136 @@ class Game(DB.Model):
         return games
 
     @classmethod
+    def get_game_results_query(
+        cls, league_id: int = None, division_id: int = None, year: int = None
+    ) -> list[Alias]:
+        """Returns a subquery for getting home"""
+        home_score = (
+            DB.session.query(
+                Game.id, coalesce(func.sum(Bat.rbi), 0).label('runs')
+            )
+            .select_from(Game).join(
+                Bat,
+                and_(
+                    Bat.team_id == Game.home_team_id,
+                    Bat.game_id == Game.id
+                ),
+                isouter=True
+            ).group_by(Game.id).subquery()
+        )
+        away_score = (
+            DB.session.query(
+                Game.id, coalesce(func.sum(Bat.rbi), 0).label('runs')
+            )
+            .select_from(Game).join(
+                Bat,
+                and_(
+                    Bat.team_id == Game.away_team_id,
+                    Bat.game_id == Game.id
+                ),
+                isouter=True
+            ).group_by(Game.id).subquery()
+        )
+        query = (
+            DB.session.query(
+                Game.id,
+                Game.away_team_id,
+                Game.home_team_id,
+                away_score.c.runs.label('away_score'),
+                home_score.c.runs.label('home_score')
+            )
+            .select_from(Game)
+            .join(home_score, Game.id == home_score.c.id)
+            .join(away_score, Game.id == away_score.c.id)
+        )
+        if year is not None:
+            start = datetime.combine(date(year, 1, 1), time(0, 0))
+            end = datetime.combine(date(year, 12, 30), time(0, 0))
+            query = query.filter(Game.date.between(start, end))
+        if league_id is not None:
+            query = query.filter(Game.league_id == league_id)
+        if division_id is not None:
+            query = query.filter(Game.division_id == division_id)
+        return query.subquery()
+
+    @classmethod
+    def get_record_queries(
+        cls, league_id: int = None, division_id: int = None, year: int = None
+    ) -> list[Alias, Alias]:
+        """Returns subqueries for home/away record that can be used"""
+        home_results = cls.get_game_results_query(
+            league_id=league_id, division_id=division_id, year=year
+        )
+        away_results = cls.get_game_results_query(
+            league_id=league_id, division_id=division_id, year=year
+        )
+        home_losses = generate_sum_of_case(and_(
+            Team.id == home_results.c.home_team_id,
+            home_results.c.home_score < home_results.c.away_score
+        ), 1)
+        home_ties = generate_sum_of_case(and_(
+            Team.id == home_results.c.home_team_id,
+            home_results.c.home_score == home_results.c.away_score
+        ), 1)
+        home_wins = generate_sum_of_case(and_(
+            Team.id == home_results.c.home_team_id,
+            home_results.c.home_score > home_results.c.away_score
+        ), 1)
+        home_runs_for = generate_sum_of_case(
+            Team.id == home_results.c.home_team_id, home_results.c.home_score
+        )
+        home_runs_against = generate_sum_of_case(
+            Team.id == home_results.c.home_team_id, home_results.c.away_score
+        )
+        home_record = (
+            DB.session.query(
+                Team.id,
+                home_losses.label('losses'),
+                home_ties.label('ties'),
+                home_wins.label('wins'),
+                home_runs_for.label('runs_for'),
+                home_runs_against.label('runs_against')
+
+            )
+            .select_from(Team)
+            .join(home_results, home_results.c.home_team_id == Team.id)
+            .group_by(Team.id)
+        ).subquery()
+
+        away_losses = generate_sum_of_case(and_(
+            Team.id == away_results.c.away_team_id,
+            away_results.c.away_score < away_results.c.home_score
+        ), 1)
+        away_ties = generate_sum_of_case(and_(
+            Team.id == away_results.c.away_team_id,
+            away_results.c.away_score == away_results.c.home_score
+        ), 1)
+        away_wins = generate_sum_of_case(and_(
+            Team.id == away_results.c.away_team_id,
+            away_results.c.away_score > away_results.c.home_score
+        ), 1)
+        away_runs_for = generate_sum_of_case(
+            Team.id == away_results.c.away_team_id, away_results.c.away_score
+        )
+        away_runs_against = generate_sum_of_case(
+            Team.id == away_results.c.away_team_id, away_results.c.home_score
+        )
+        away_record = (
+            DB.session.query(
+                Team.id,
+                away_losses.label('losses'),
+                away_ties.label('ties'),
+                away_wins.label('wins'),
+                away_runs_for.label('runs_for'),
+                away_runs_against.label('runs_against')
+            )
+            .select_from(Team)
+            .join(away_results, away_results.c.away_team_id == Team.id)
+            .group_by(Team.id)
+        ).subquery()
+        return [away_record, home_record]
+
+    @classmethod
     def games_needing_scores(
             cls,
             teams: list[Team],
@@ -571,3 +706,8 @@ class Game(DB.Model):
             Game.date <= end_of_today
         ).order_by(asc(Game.date)).all()
         return games
+
+
+def generate_sum_of_case(condition: PropComparator, count) -> Alias:
+    """Generate a func to sum the given condition"""
+    return func.sum(case([(condition, count)], else_=0))
