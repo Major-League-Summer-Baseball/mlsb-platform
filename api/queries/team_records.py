@@ -1,9 +1,11 @@
 from sqlalchemy import func, desc
+from sqlalchemy.sql.functions import coalesce
 from api.models.espys import Espys
 from api.models.team import Team
 from api.models.game import Bat, Game
 from api.extensions import DB
 from api.variables import HALL_OF_FAME_SIZE
+
 
 def get_team_records(
     team_id: int = None,
@@ -19,22 +21,31 @@ def get_team_records(
     query = (
         DB.session.query(
             Team,
-            home_record.c.wins + away_record.c.wins,
-            home_record.c.losses + away_record.c.losses,
-            home_record.c.ties + away_record.c.ties,
+            coalesce(home_record.c.wins, 0) + coalesce(away_record.c.wins, 0),
             (
-                home_record.c.wins +
-                away_record.c.wins +
-                home_record.c.losses +
-                away_record.c.losses +
-                home_record.c.ties +
-                away_record.c.ties
+                coalesce(home_record.c.losses, 0) +
+                coalesce(away_record.c.losses, 0)
             ),
-            home_record.c.runs_for + away_record.c.runs_for,
-            home_record.c.runs_against + away_record.c.runs_against
+            coalesce(home_record.c.ties, 0) + coalesce(away_record.c.ties, 0),
+            (
+                coalesce(home_record.c.wins, 0) +
+                coalesce(away_record.c.wins, 0) +
+                coalesce(home_record.c.losses, 0) +
+                coalesce(away_record.c.losses, 0) +
+                coalesce(home_record.c.ties, 0) +
+                coalesce(away_record.c.ties, 0)
+            ),
+            (
+                coalesce(home_record.c.runs_for, 0) +
+                coalesce(away_record.c.runs_for, 0)
+            ),
+            (
+                coalesce(home_record.c.runs_against, 0) +
+                coalesce(away_record.c.runs_against, 0)
+            )
         )
-        .join(home_record, Team.id == home_record.c.id)
-        .join(away_record, Team.id == away_record.c.id)
+        .join(home_record, Team.id == home_record.c.id, isouter=True)
+        .join(away_record, Team.id == away_record.c.id, isouter=True)
     )
 
     # additional filters
