@@ -303,12 +303,7 @@ def single_team(team_id):
     if team_query is None:
         return {}
     records = get_team_records(team_id=team_id)
-    if len(records) == 0:
-        team = team_query.json()
-        records = [
-            team
-        ]
-    return {team_id: get_team_records(team_id=team_id)[0]}
+    return {team_id: records[0]}
 
 
 def multiple_teams(year, league_id, division_id=None):

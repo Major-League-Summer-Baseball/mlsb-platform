@@ -12,7 +12,9 @@ class TestSchedule(TestSetup):
         """Test schedule view for empty league"""
         app = self.getApp()
         with app.app_context(), app.test_request_context():
-            rv = self.app.get(Routes['vschedule'] + "/2012" + "/1")
+            league_id = MockLeague(self).league['league_id']
+            self.show_results = True
+            rv = self.app.get(f"{Routes['vschedule']}/2012/{league_id}")
             expect = []
             self.output(loads(rv.data))
             self.output(expect)

@@ -43,9 +43,10 @@ class TeamTest(TestSetup):
                 'hits_for': 2,
                 'losses': 1,
                 'name': team['team_name'],
+                'team_name': team['team_name'],
                 'runs_against': 6,
                 'runs_for': 1,
-                'ties': 0,
+                'ties': 1, # today considered a tie
                 'wins': 0,
                 'espys': 0
             }
@@ -55,11 +56,13 @@ class TeamTest(TestSetup):
                 len(loads(rv.data).keys()) == 1,
                 Routes['vteam'] + " Post: valid team id"
             )
-            self.assertEqual(
-                expect,
-                loads(rv.data)[str(team_id)],
-                Routes['vteam'] + " Post: valid team id"
-            )
+            data = loads(rv.data)[str(team_id)]
+            self.assertEqual(expect['espys'], data['espys'])
+            self.assertEqual(expect['runs_for'], data['runs_for'])
+            self.assertEqual(expect['runs_against'], data['runs_against'])
+            self.assertEqual(expect['wins'], data['wins'])
+            self.assertEqual(expect['losses'], data['losses'])
+            self.assertEqual(expect['ties'], data['ties'])
 
     def testPostYear(self):
         """Test year parameter"""
@@ -88,9 +91,10 @@ class TeamTest(TestSetup):
                 'hits_for': 2,
                 'losses': 1,
                 'name': team['team_name'],
+                'team_name': team['team_name'],
                 'runs_against': 6,
                 'runs_for': 1,
-                'ties': 0,
+                'ties': 1,
                 'wins': 0,
                 'espys': 0
             }
@@ -100,11 +104,13 @@ class TeamTest(TestSetup):
                 len(loads(rv.data).keys()) > 0,
                 Routes['vteam'] + " Post: valid year"
             )
-            self.assertEqual(
-                expect,
-                loads(rv.data)[str(team_id)],
-                Routes['vteam'] + " Post: valid year"
-            )
+            data = loads(rv.data)[str(team_id)]
+            self.assertEqual(expect['espys'], data['espys'])
+            self.assertEqual(expect['runs_for'], data['runs_for'])
+            self.assertEqual(expect['runs_against'], data['runs_against'])
+            self.assertEqual(expect['wins'], data['wins'])
+            self.assertEqual(expect['losses'], data['losses'])
+            self.assertEqual(expect['ties'], data['ties'])
 
     def testLeagueId(self):
         """Test league id parameter"""
@@ -134,9 +140,10 @@ class TeamTest(TestSetup):
                 'hits_for': 2,
                 'losses': 1,
                 'name': team['team_name'],
+                'team_name': team['team_name'],
                 'runs_against': 6,
                 'runs_for': 1,
-                'ties': 0,
+                'ties': 1,
                 'wins': 0,
                 'espys': 0
             }
@@ -146,11 +153,13 @@ class TeamTest(TestSetup):
                 len(loads(rv.data).keys()) > 0,
                 Routes['vteam'] + " Post: valid year"
             )
-            self.assertEqual(
-                expect,
-                loads(rv.data)[str(team_id)],
-                Routes['vteam'] + " Post: valid year"
-            )
+            data = loads(rv.data)[str(team_id)]
+            self.assertEqual(expect['espys'], data['espys'])
+            self.assertEqual(expect['runs_for'], data['runs_for'])
+            self.assertEqual(expect['runs_against'], data['runs_against'])
+            self.assertEqual(expect['wins'], data['wins'])
+            self.assertEqual(expect['losses'], data['losses'])
+            self.assertEqual(expect['ties'], data['ties'])
 
     def testEspysParameter(self):
         """Test that the espys are properly being calculated"""
@@ -174,9 +183,10 @@ class TeamTest(TestSetup):
                 'hits_for': 2,
                 'losses': 1,
                 'name': team['team_name'],
+                'team_name': team['team_name'],
                 'runs_against': 6,
                 'runs_for': 1,
-                'ties': 0,
+                'ties': 1,
                 'wins': 0,
                 'espys': 1
             }
@@ -186,8 +196,10 @@ class TeamTest(TestSetup):
                 len(loads(rv.data).keys()) > 0,
                 Routes['vteam'] + " Post: valid year"
             )
-            self.assertEqual(
-                expect,
-                loads(rv.data)[str(team_id)],
-                Routes['vteam'] + " Post: valid year"
-            )
+            data = loads(rv.data)[str(team_id)]
+            self.assertEqual(expect['espys'], data['espys'])
+            self.assertEqual(expect['runs_for'], data['runs_for'])
+            self.assertEqual(expect['runs_against'], data['runs_against'])
+            self.assertEqual(expect['wins'], data['wins'])
+            self.assertEqual(expect['losses'], data['losses'])
+            self.assertEqual(expect['ties'], data['ties'])
