@@ -46,7 +46,7 @@ class TeamTest(TestSetup):
                 'team_name': team['team_name'],
                 'runs_against': 6,
                 'runs_for': 1,
-                'ties': 1, # today considered a tie
+                'ties': 1,  # today considered a tie
                 'wins': 0,
                 'espys': 0
             }
