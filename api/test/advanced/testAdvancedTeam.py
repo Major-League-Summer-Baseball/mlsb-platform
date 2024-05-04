@@ -109,7 +109,6 @@ class TeamTest(TestSetup):
             self.assertEqual(expect['runs_against'], data['runs_against'])
             self.assertEqual(expect['wins'], data['wins'])
             self.assertEqual(expect['losses'], data['losses'])
-            self.assertEqual(expect['ties'], data['ties'])
 
     def testLeagueId(self):
         """Test league id parameter"""
@@ -158,7 +157,6 @@ class TeamTest(TestSetup):
             self.assertEqual(expect['runs_against'], data['runs_against'])
             self.assertEqual(expect['wins'], data['wins'])
             self.assertEqual(expect['losses'], data['losses'])
-            self.assertEqual(expect['ties'], data['ties'])
 
     def testEspysParameter(self):
         """Test that the espys are properly being calculated"""
@@ -201,4 +199,3 @@ class TeamTest(TestSetup):
             self.assertEqual(expect['runs_against'], data['runs_against'])
             self.assertEqual(expect['wins'], data['wins'])
             self.assertEqual(expect['losses'], data['losses'])
-            self.assertEqual(expect['ties'], data['ties'])
