@@ -1,0 +1,73 @@
+{% extends "website/posts/article-base.html" %}
+{% block article %}
+<h3>MLSB Hall of Fame</h3>
+<p>
+    The website was created 8 years ago.
+    Since then there has been <strong>4497 players, 2684 games and 6014 home runs hit</strong>.
+    Over 80 sponsors have stepped up to help keep the league going.
+    A total "1696 fun" has been had!
+</p>
+<p>
+    By special request the MLSB <a href="{{url_for('website.all_time_leaders_page', year=year)}}">hall-of-fame</a> has been added.
+    It ranks the best players and the best teams to have ever played.
+</p>
+<h4 class="mt-2">
+    Sleeman Sluggers
+</h4>
+<p>
+    <strong>No one is touching</strong> <a href="{{url_for('website.player_page', player_id=345, year=year)}}">Jack Romano</a> for career homerun list.
+    A double degree who put up double digits homeruns for 5 different teams from 2016 to 2018.
+    Will be a tough record for anyone to touch unless they play three years or just a shit ton of MLSB Alumni Tournaments (yeah they still count).
+</p>
+<center>
+    <img src="{{ url_for('static', filename="pictures/posts/all-time-great.jpg") }}"  alt="All-time homerun leader" class="postImage">
+</center>
+<p>
+    2023 was a good season for homeruns.
+    <a href="{{url_for('website.player_page', player_id=4604, year=year)}}">Curtis McCully</a> won a tight homerun race with <a href="{{url_for('website.player_page', player_id=4168, year=year)}}">Aaron McConnell</a> and clinched the all-time best season for homeruns with 31.
+    Someone will have to have a hell of a season to ever beat that record.
+</p>
+
+<h4 class="mt-2">
+    Sapporo Singles
+</h4>
+<p>
+    Nothing is more controversial than the Sapporo Singles category.
+    Especially in 2022 when the rulings of Sapporo Singles shifted and it inflated the numbers.
+    It is no coincidence that all the single season leaders are from 2022.
+    It is like the <strong>Steroid Era</strong> of the MLSB.
+    However, great players still find a way to climb to the top and <a href="{{url_for('website.player_page', player_id=1818, year=year)}}">Kim Gubbels</a> still sits on top for the career Sapporo Singles.
+</p>
+
+<h4 class="mt-2">
+    Team Rankings
+</h4>
+<p>
+    Of the <strong>300 teams</strong> to have played one is at the top of rankings and that is the <a href="{{url_for('website.team_page', team_id=12, year=year)}}">2016 SportZone</a>.
+    The team won every game they played including league player, playoffs and 4 tournaments.
+    This team dominated by averaging 21 runs a game and hitting 164 homeruns.
+    They put up a <strong>whopping 11269 espys</strong> which is a record not likely to ever be beat.
+</p>
+
+<center>
+    <img src="{{ url_for('static', filename="pictures/posts/sportszone-2016.jpg") }}"  alt="All-time homerun leader" class="postImage">
+</center>
+<p class="mt-2">
+    However, all of this is in the past.
+    With a new season quickly approaching there will be more homeruns, more storylines, and best of all more beer!
+    Whether you are a 3rd year looking for their first crack of the bat or a fourth year looking to top the rankings.
+    One thing is certain <strong>History will be made this summer</strong>!
+</p>
+<center>
+    <iframe
+        class="mobile-video"
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/TEO5KFcZV3Q"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        title="History will be made">
+    </iframe>
+</center>
+{% endblock %}
