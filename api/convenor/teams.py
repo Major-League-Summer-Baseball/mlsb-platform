@@ -4,7 +4,8 @@ from api.advanced.import_team import TeamList
 from api.extensions import DB
 from api.variables import FILES
 from api.authentication import require_to_be_convenor
-from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int
+from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int,\
+    get_teams_sorted
 from api.model import Team, League, Sponsor, Espys
 from datetime import date
 from os import path
@@ -22,8 +23,11 @@ def teams_page():
     else:
         league_id = int(league_id)
         team_query = team_query.filter(Team.league_id == league_id)
-    teams = [team.json() for team in team_query.order_by(Team.year).all()]
-    teams.sort(key=lambda t: t['team_name'])
+    teams = [
+        team.json()
+        for team in team_query.order_by(Team.year).all()
+    ]
+    teams.sort(key=lambda t: t['team_name'].strip())
     years = [year for year in range(2016, date.today().year + 1)]
     return render_template(
         "convenor/teams.html",
