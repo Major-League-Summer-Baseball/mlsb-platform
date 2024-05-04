@@ -19,7 +19,7 @@
                 <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
                     {{player.name}}
                 </a>
-                - <span data-cy="allTimeSingleSeasonHomeruns">{{player.hits}}</span>
+                - <span data-cy="allTimeSingleGameHomeruns">{{player.hits}}</span>
                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}" >
             </li>
         {% endfor %}
@@ -86,7 +86,7 @@
                  <a href="{{ url_for('website.player_page', player_id=player.id, year=year)}}">
                     {{player.name}}
                 </a>
-                 - <span data-cy="allTimeSingleSeasonSingles">{{player.hits}}</span>
+                 - <span data-cy="allTimeSingleGameSingles">{{player.hits}}</span>
                  <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
             </li>
         {% endfor %}
