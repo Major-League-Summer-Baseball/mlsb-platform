@@ -6,7 +6,8 @@ from api.advanced.import_league import LeagueList
 from api.authentication import require_to_be_convenor
 from api.extensions import DB
 from api.variables import FILES, BATS
-from api.convenor import allowed_file, convenor_blueprint, is_empty, normalize_field
+from api.convenor import allowed_file, convenor_blueprint, is_empty, \
+    normalize_field
 from api.model import Game, Team, Division, League, Player, Bat
 from os import path
 
@@ -22,6 +23,7 @@ def new_game_page(league_id: int):
         team.json()
         for team in Team.query.filter(Team.league_id == league_id).all()
     ]
+    teams.sort(key=lambda t: t['team_name'].strip())
     game_data = {
         "home_team_id": None,
         "away_team_id": None,
@@ -59,12 +61,13 @@ def edit_game_page(game_id: int):
         return redirect(url_for('convenor.error_page'))
     game_data = game.json()
 
-    away_team = Team.query.get(game.home_team_id)
+    away_team = Team.query.get(game.away_team_id)
     away_players = [
         Player.get_unassigned_player().json()
     ] + ([] if away_team is None else [
         player.json() for player in away_team.players
     ])
+    away_players.sort(key=lambda player: player['player_name'])
     game_data['away_score'] = game.away_team_score
     game_data['away_players'] = away_players
     game_data['away_bats'] = [
@@ -78,21 +81,19 @@ def edit_game_page(game_id: int):
     ] + ([] if home_team is None else [
         player.json() for player in home_team.players
     ])
+    home_players.sort(key=lambda player: player['player_name'])
     game_data['home_score'] = game.home_team_score
     game_data['home_bats'] = [
         bat.json()
         for bat in game.get_team_bats(game.home_team_id)
     ]
     game_data['home_players'] = home_players
-
     teams = [
         team.json()
         for team in Team.query.filter(Team.league_id == game.league_id).all()
     ]
-    divisions = [
-        division.json()
-        for division in Division.query.all()
-    ]
+    teams.sort(key=lambda t: t['team_name'].strip())
+    divisions = [division.json() for division in Division.query.all()]
     league = League.query.get(game.league_id)
     return render_template(
         "convenor/game.html",
@@ -114,11 +115,11 @@ def games_page():
     start = datetime.combine(date(year, 1, 1), time(0, 0))
     end = datetime.combine(date(year, 12, 30), time(23, 59))
     games = Game.query.filter(Game.date.between(start, end))
-    teams = [
+    teams = teams = [
         team.json()
         for team in Team.query.filter(Team.year == year).all()
     ]
-
+    teams.sort(key=lambda t: t['team_name'].strip())
     if is_empty(team_id):
         team_id = None
     else:
