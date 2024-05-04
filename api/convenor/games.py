@@ -18,10 +18,7 @@ def new_game_page(league_id: int):
     if league is None:
         session['error'] = f"League does not exist {league_id}"
         return redirect(url_for('convenor.error_page'))
-    teams = [
-        team.json()
-        for team in Team.query.filter(Team.league_id == league_id).all()
-    ]
+    teams = get_teams_sorted(league_id=league_id)
     game_data = {
         "home_team_id": None,
         "away_team_id": None,
@@ -59,12 +56,15 @@ def edit_game_page(game_id: int):
         return redirect(url_for('convenor.error_page'))
     game_data = game.json()
 
-    away_team = Team.query.get(game.home_team_id)
+    away_team = Team.query.get(game.away_team_id)
     away_players = [
         Player.get_unassigned_player().json()
     ] + ([] if away_team is None else [
         player.json() for player in away_team.players
     ])
+    away_players = sorted(
+        away_players, key=lambda player: player['player_name']
+    )
     game_data['away_score'] = game.away_team_score
     game_data['away_players'] = away_players
     game_data['away_bats'] = [
@@ -78,22 +78,21 @@ def edit_game_page(game_id: int):
     ] + ([] if home_team is None else [
         player.json() for player in home_team.players
     ])
+    home_players = sorted(
+        home_players, key=lambda player: player['player_name']
+    )
     game_data['home_score'] = game.home_team_score
     game_data['home_bats'] = [
         bat.json()
         for bat in game.get_team_bats(game.home_team_id)
     ]
     game_data['home_players'] = home_players
-
-    teams = [
-        team.json()
-        for team in Team.query.filter(Team.league_id == game.league_id).all()
-    ]
-    divisions = [
-        division.json()
-        for division in Division.query.all()
-    ]
+    teams = get_teams_sorted(league_id=game.league_id)
+    divisions = [division.json() for division in Division.query.all()]
     league = League.query.get(game.league_id)
+    print(game_data['away_players'])
+    print()
+    print(game_data['home_players'])
     return render_template(
         "convenor/game.html",
         game=game_data,
@@ -114,10 +113,7 @@ def games_page():
     start = datetime.combine(date(year, 1, 1), time(0, 0))
     end = datetime.combine(date(year, 12, 30), time(23, 59))
     games = Game.query.filter(Game.date.between(start, end))
-    teams = [
-        team.json()
-        for team in Team.query.filter(Team.year == year).all()
-    ]
+    teams = get_teams_sorted(year=year)
 
     if is_empty(team_id):
         team_id = None
@@ -282,3 +278,19 @@ def submit_game_template():
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
     return redirect(url_for('convenor.games_page'))
+
+
+def get_teams_sorted(year: int = None, league_id: int = None) -> list['Team']:
+    """Get the teams sorted by"""
+    team_query = Team.query
+    if league_id is not None:
+        team_query = team_query.filter(Team.league_id == league_id)
+    if year is not None:
+        team_query = team_query.filter(Team.year == year)
+    return [
+        team.json()
+        for team in team_query
+        .order_by(Team.sponsor_name)
+        .order_by(Team.color)
+        .all()
+    ]
