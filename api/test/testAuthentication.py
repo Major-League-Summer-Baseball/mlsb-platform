@@ -4,7 +4,7 @@ from api.test.BaseTest import TestSetup
 from api.authentication import \
     oauth_service_provider_error, load_user, get_oauth, find_player, \
     is_facebook_supported, is_github_supported, is_gmail_supported
-from api.model import DB
+from api.extensions import DB
 from api.errors import OAuthException, NotPartOfLeagueException
 import uuid
 

@@ -9,6 +9,15 @@ export function getCurrentYear(): number {
 }
 
 /**
+ * Get a random number between 1 and max
+ * @param max  max value
+ * @returns a number
+ */
+export function getRandomInt(max): number {
+    return Math.floor(Math.random() * max) + 1;
+}
+
+/**
  * Creates a random name to use for testing.
  * @return {string} - a random name
  * @example

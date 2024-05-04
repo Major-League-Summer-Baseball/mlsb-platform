@@ -5,7 +5,6 @@ from api.errors import \
     SponsorDoesNotExist, NonUniqueEmail, GameDoesNotExist, \
     DivisionDoesNotExist, HaveLeagueRequestException
 from api.test.BaseTest import TestSetup, INVALID_ID, VALID_YEAR
-from sqlalchemy.orm import undefer
 from datetime import datetime
 import unittest
 import uuid
@@ -478,8 +477,7 @@ class TeamModelTest(TestSetup):
 
             # assert that their total is 3 points
             self.assertEqual(
-                Team.query.options(
-                    undefer('espys_total')).get(team['team_id']).espys_total,
+                Team.query.get(team['team_id']).espys_total,
                 espy_one['points'] + espy_two['points'],
                 "Expecting 3 espys points to be awarded"
             )

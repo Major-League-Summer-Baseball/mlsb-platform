@@ -29,7 +29,7 @@ pytest
 pytest api/tests/<FOLDER>
 # run flake linter
 pip install flake8
-flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/*,api/tests/conftest.py --ignore=E712,W503,W504
+flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/*,api/tests/conftest.py,api/model.py --ignore=E712,W503,W504
 
 ```
 

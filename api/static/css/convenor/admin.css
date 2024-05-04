@@ -28,7 +28,8 @@ input[disabled] {
 .sponsors-container,
 .events-container,
 .leagues-container,
-.divisions-container {
+.divisions-container,
+.fun-container {
     display: flex;
     flex-direction: column;
     align-content: center;

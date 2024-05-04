@@ -27,6 +27,15 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="js/chosen.jquery.min.js") }}"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
+    <script src="https://cdn.ckeditor.com/4.10.0/full/ckeditor.js"></script>
   </head>
   <body>
       <div id="wrapper">
@@ -90,6 +99,16 @@
                       Leagues & Divisions
                     </a>
                 </li>
+                <li class="indent-nav editsSidebar">
+                  <a
+                    href="{{ url_for('convenor.fun_page') }}"
+                    hx-get="{{ url_for('convenor.fun_page') }}"
+                    hx-target="#convenorBody"
+                    hx-push-url="true"
+                  >
+                    Fun
+                  </a>
+                </li>
             </ul>
         </div><!-- /#sidebar-wrapper -->
         <!-- Page Content -->
@@ -142,6 +161,14 @@
                           >
                             Leagues & Divisions
                           </a>
+                          <a
+                            href="{{ url_for('convenor.fun_page') }}"
+                            hx-get="{{ url_for('convenor.fun_page') }}"
+                            hx-target="#convenorBody"
+                            hx-push-url="true"
+                          >
+                          Fun
+                        </a>
                 </div>
                 <div class="row">
                     <div class="col-lg-12" id="convenorBody">
@@ -166,14 +193,6 @@
             </div>
         </div><!-- /#page-content-wrapper -->
     </div><!-- /#wrapper -->
-    <!-- jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- bootstrap js -->
-    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/chosen.jquery.min.js") }}"></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
-    <script src="https://cdn.ckeditor.com/4.10.0/full/ckeditor.js"></script>
   </body>
   <footer class="footer text-center">
     <a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=year) }}">About</a>

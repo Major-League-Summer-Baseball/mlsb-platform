@@ -33,18 +33,16 @@ fun_payload = fun_api.model('FunPayload', {
         max=10000,
         description="The total count of all the fun"
     ),
-})
-fun = fun_api.inherit('Fun', fun_payload, {
     'year': fields.Integer(
         min=2016,
         max=datetime.now().year,
         description="The year the fun occurred"
     ),
-    'count': fields.Integer(
-        min=0,
-        max=10000,
-        description="The total count of all the fun"
-    ),
+})
+fun = fun_api.inherit('Fun', fun_payload, {
+    'fun_id': fields.Integer(
+        description="The id of fun"
+    )
 })
 pagination = get_pagination(fun_api)
 fun_pagination = fun_api.inherit("FunPagination", pagination, {
@@ -113,7 +111,7 @@ class FunListAPI(Resource):
 
     @requires_admin
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
-    @fun_api.expect(fun)
+    @fun_api.expect(fun_payload)
     @fun_api.marshal_with(fun)
     def post(self):
         args = post_parser.parse_args()
@@ -123,7 +121,7 @@ class FunListAPI(Resource):
         DB.session.add(fun)
         DB.session.commit()
         handle_table_change(Tables.FUN, item=fun.json())
-        return fun
+        return fun.json()
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \

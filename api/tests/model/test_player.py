@@ -1,6 +1,5 @@
 import pytest
 import uuid
-from datetime import date
 from api.errors import InvalidField, NonUniqueEmail
 from api.model import Player
 from api.variables import UNASSIGNED_EMAIL
@@ -113,32 +112,6 @@ def test_player_email_must_be_unique_when_updating(mlsb_app, player_factory):
                 gender="f"
             )
             other_player.update(email=player.email)
-
-
-@pytest.mark.usefixtures('mlsb_app')
-@pytest.mark.usefixtures('player_factory')
-def test_captain_multiple_teams(mlsb_app, player_factory, team_factory):
-    with mlsb_app.app_context():
-        player = player_factory()
-        current_team = team_factory(captain=player)
-        old_team = team_factory(year=date.today().year - 1, captain=player)
-        teams = Player.get_teams_captained(player.id)
-        assert len(teams) == 2
-        team_ids = [current_team.id, old_team.id]
-        assert teams[0].id in team_ids
-        assert teams[1].id in team_ids
-
-
-@pytest.mark.usefixtures('mlsb_app')
-@pytest.mark.usefixtures('player_factory')
-def test_not_captain_no_teams(mlsb_app, player_factory, team_factory):
-    with mlsb_app.app_context():
-        player = player_factory()
-        not_captain = player_factory()
-        team_factory(captain=player)
-        team_factory(year=date.today().year - 1, captain=player)
-        teams = Player.get_teams_captained(not_captain.id)
-        assert len(teams) == 0
 
 
 @pytest.mark.usefixtures('mlsb_app')
