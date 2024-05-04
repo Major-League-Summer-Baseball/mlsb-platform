@@ -13,7 +13,6 @@ class TestSchedule(TestSetup):
         app = self.getApp()
         with app.app_context(), app.test_request_context():
             league_id = MockLeague(self).league['league_id']
-            self.show_results = True
             rv = self.app.get(f"{Routes['vschedule']}/2012/{league_id}")
             expect = []
             self.output(loads(rv.data))
