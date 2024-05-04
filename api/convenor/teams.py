@@ -4,8 +4,7 @@ from api.advanced.import_team import TeamList
 from api.extensions import DB
 from api.variables import FILES
 from api.authentication import require_to_be_convenor
-from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int,\
-    get_teams_sorted
+from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int
 from api.model import Team, League, Sponsor, Espys
 from datetime import date
 from os import path
