@@ -277,5 +277,13 @@ class Team(DB.Model):
         return Team.query.filter(Team.player_id == player_id).all()
 
     @classmethod
+    def get_teams(cls, player_id: str) -> list['Team']:
+        return (
+            DB.session.query(Team)
+            .join(roster)
+            .filter(roster.c.player_id == player_id)
+        ).all()
+
+    @classmethod
     def does_team_exist(cls, team_id: str) -> bool:
         return Team.query.get(team_id) is not None
