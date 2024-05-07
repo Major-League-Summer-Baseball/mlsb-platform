@@ -5,6 +5,7 @@ from api.extensions import DB
 from api.authentication import require_to_be_convenor
 from api.convenor import convenor_blueprint, is_empty
 from api.model import JoinLeagueRequest, Player
+from api.models.team import Team
 
 PAGE_LIMIT_SIZE = 20
 
@@ -127,3 +128,50 @@ def search_players():
         players=player_data,
         show_add=len(players) <= PAGE_LIMIT_SIZE
     )
+
+
+@convenor_blueprint.route(
+    "players/merge",
+    methods=["POST"]
+)
+def merge_players():
+    """Merge the duplicated player into main account."""
+    main_player_id = request.form.get('main_player_id', -1)
+    duplicated_player_id = request.form.get('duplicated_player_id', -1)
+    if main_player_id == duplicated_player_id:
+        session['error'] = f"Same player selected for merging {main_player_id}"
+        return redirect(url_for("convenor.error_page"))
+    if main_player_id == -1 or duplicated_player_id == -1:
+        session['error'] = f"Player does not exist {-1}"
+        return redirect(url_for("convenor.error_page"))
+
+    duplicated = Player.query.get(duplicated_player_id)
+    player = Player.query.get(main_player_id)
+
+    if player is None:
+        session['error'] = f"Player does not exist {main_player_id}"
+        return redirect(url_for("convenor.error_page"))
+
+    if duplicated is None:
+        session['error'] = f"Player does not exist {duplicated_player_id}"
+        return redirect(url_for("convenor.error_page"))
+
+    # change over bats
+    for bat in duplicated.bats:
+
+        bat.player_id = player.id
+
+    # change over captain
+    captain_teams = Team.get_teams_captained(duplicated.id)
+    for team in captain_teams:
+        team.insert_player(player.id, captain=True)
+
+    # change over roster
+    teams = Team.get_teams(duplicated.id)
+    for team in teams:
+        team.insert_player(player.id)
+        team.remove_player(duplicated.id)
+    DB.session.delete(duplicated)
+    DB.session.commit()
+    flash("player merged")
+    return redirect(url_for("convenor.edit_player_page", player_id=player.id))
