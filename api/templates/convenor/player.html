@@ -99,5 +99,78 @@
     >
         Cancel
     </a>
+    <button
+        type="button"
+        class="btn btn-warning"
+        id="mergePlayer"
+        onclick="document.querySelector('#mergePlayerModal').showModal();"
+    >
+        Merge Player
+    </button>
 </form>
+
+<dialog id="mergePlayerModal">
+    <button
+        type="button"
+        class="close"
+        onclick="document.querySelector('#mergePlayerModal').close();"
+        aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <form
+        id="uploadGameFile"
+        method="post"
+        enctype="multipart/form-data"
+        action="{{ url_for('convenor.merge_players') }}"
+        hx-post="{{ url_for('convenor.merge_players') }}"
+        hx-target="#convenorBody"
+        hx-push-url="true"
+    >
+    <input type="hidden" name="main_player_id" value="" id="mainPlayerId" required>
+    <input type="hidden" name="duplicated_player_id" value="{{player.player_id}}" id="duplicatedPlayerId" required>
+    <div>
+            Merge {{player.email}} into
+    </div>
+        <input
+            name="player"
+            type="name"
+            class="form-control"
+            id="searchPlayer"
+            placeholder="Enter player to merge into to"
+            hx-post="{{ url_for('convenor.search_players', team_id=team_id) }}"
+            hx-push-url="false"
+            hx-trigger="keyup changed delay:500ms"
+            hx-target="#playerSearchResults"
+            required
+        >
+        <div
+            hx-trigger="mergePlayerr"
+            id="playerSearchResults"
+            _="
+                on selectedPlayer(player_id) put `` into me then set #mainPlayerId.value to player_id end
+                on mergePlayer put `` into me then alert('Select existing player') end
+            "
+        >
+        </div>
+        
+        <br/>
+        <fieldset>
+            <button
+                id="submitGamesTemplate"
+                type="submit"
+                class=" btn btn-success"
+            >
+                Merge
+            </button>
+            <button
+                type="button"
+                class="btn btn-warning float-right"
+                onclick="document.querySelector('#mergePlayerModal').close();"
+                id="cancelGamesTemplate"
+            >
+                Close
+            </button>
+        </fieldset>
+    </form>
+</dialog>
 {% endblock %}
