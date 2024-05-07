@@ -1,6 +1,7 @@
 import pytest
 from api.tests.fixtures import random_email, random_name
 from api.model import Player
+from api.models.team import Team
 from flask import url_for
 
 
@@ -408,3 +409,67 @@ def test_accepting_league_request_only_convenor(
         assert response.status_code == 200
         assert Player.is_email_unique(league_request.email) is True
         assert url_for("website.loginpage").endswith(response.request.path)
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_merge_player(
+    mlsb_app, client, player_factory, auth, convenor, team_factory
+):
+    """Test able to make someone a convenor."""
+    with mlsb_app.app_context():
+        main_player = player_factory()
+        duplicated_player = player_factory()
+        team = team_factory(players=[duplicated_player])
+        auth.login(convenor.email)
+        response = client.post(
+            url_for("convenor.merge_players"),
+            follow_redirects=True,
+            data={
+                "main_player_id": main_player.id,
+                "duplicated_player_id": duplicated_player.id,
+            }
+        )
+
+        assert response.status_code == 200
+        assert "Error:" not in str(response.data)
+
+        assert "player merged" in str(response.data)
+        updated_team = Team.query.get(team.id)
+        players = [
+            player.json()['player_id'] for player in updated_team.players
+        ]
+        assert main_player.id in players
+        assert duplicated_player.id not in players
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_merge_player_handle_errors(
+    mlsb_app, client, player_factory, auth, convenor, team_factory
+):
+    """Test able to make someone a convenor."""
+    with mlsb_app.app_context():
+        main_player = player_factory()
+        auth.login(convenor.email)
+        response = client.post(
+            url_for("convenor.merge_players"),
+            follow_redirects=True,
+            data={
+                "main_player_id": main_player.id,
+                "duplicated_player_id": -1
+            }
+        )
+
+        assert response.status_code == 200
+        assert "Error:" in str(response.data)
