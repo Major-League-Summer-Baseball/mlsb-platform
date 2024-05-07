@@ -438,7 +438,7 @@ def test_merge_player(
 
         assert response.status_code == 200
         assert "Error:" not in str(response.data)
-        
+
         assert "player merged" in str(response.data)
         updated_team = Team.query.get(team.id)
         players = [
@@ -446,6 +446,7 @@ def test_merge_player(
         ]
         assert main_player.id in players
         assert duplicated_player.id not in players
+
 
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')

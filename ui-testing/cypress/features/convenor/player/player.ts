@@ -58,3 +58,14 @@ const acceptPlayerRequest = () => {
     cy.findAllByText("Accept").first().click();
 }
 When(`I respond to their request`, acceptPlayerRequest);
+
+/** Merge the player in second player. */
+const mergePlayer = () => {
+    cy.get<Player>('@secondPlayer').then((player: Player) => {
+        cy.get('#mergePlayer').click();
+        cy.get('#searchPlayer').type(player.player_name);
+        cy.get(`#playerList${player.player_id}`).click();
+        cy.get('#submitMergePlayer').click();
+    });
+}
+When(`I merge the player`, mergePlayer);
