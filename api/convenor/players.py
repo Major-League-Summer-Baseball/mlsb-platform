@@ -134,6 +134,7 @@ def search_players():
     "players/merge",
     methods=["POST"]
 )
+@require_to_be_convenor
 def merge_players():
     """Merge the duplicated player into main account."""
     main_player_id = request.form.get('main_player_id', -1)

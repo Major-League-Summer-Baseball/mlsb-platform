@@ -8,9 +8,11 @@ from flask import url_for
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
-def test_sponsor_page_only_convenors(mlsb_app, client):
+@pytest.mark.usefixtures('auth')
+def test_sponsor_page_only_convenors(mlsb_app, client, auth):
     """Test only convenors can edit/add sponsors"""
     with mlsb_app.app_context():
+        auth.logout()
         url = url_for("convenor.sponsors_page")
         response = client.get(url, follow_redirects=True)
         assert url_for("website.loginpage").endswith(response.request.path)
