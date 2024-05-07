@@ -175,6 +175,18 @@ const createPlayer = () => {
 };
 Given(`a player exists`, createPlayer);
 
+/** Create two player through a rest request */
+const createTwoPlayer = () => {
+    createPlayer();
+    const data2 = generatePlayer();
+    cy.request('POST', '/rest/player', data2).then((response) => {
+        expect(response.isOkStatusCode).to.be.true;
+        const player: Player = response.body;
+        cy.wrap(player).as('secondPlayer');
+    });
+};
+Given(`a players exists`, createTwoPlayer);
+
 /** Create a team through a rest request */
 const createTeam = () => {
     createSponsor();
