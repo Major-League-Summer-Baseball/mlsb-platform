@@ -34,9 +34,45 @@
                         <th>Score</th>
                         <th>Status</th>
                         <th>Division</th>
+                        <th>Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for game in schedule %}
+                        <tr>
+                            <td>
+                                {{game.date}}
+                            </td>
+                            <td>
+                                {{game.time}}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('website.team_page', year=year, team_id=game.home_team_id) }}">
+                                    {{game.home_team}}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('website.team_page', year=year, team_id=game.away_team_id) }}">
+                                    {{game.away_team}}
+                                </a>
+                            </td>
+                            <td>
+                                {{game.field}}
+                            </td>
+                            <td>
+                                {{game.score}}
+                            </td>
+                            <td>
+                                {{game.status}}
+                            </td>
+                            <td>
+                                {{game.division_id}}
+                            </td>
+                            <td>
+                                {{game.timestamp}}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -46,27 +82,33 @@
 <script>
 
 /** Displays the given league and its games as Data Table.*/
-function displayLeague(league_id, games){
+function displayLeague(league_id){
     var table = $('#'+ league_id +'League').DataTable({
-                    "data": games,
                     "responsive": true,
-                    "order": [[0, "asc"]],
+                    "order": [[7, "asc"]],
                     "columns": [
                         {"data": "date"},
                         {"data": "time"},
-                        {"data": "home_team", "render": homeTeamLinkRender},
-                        {"data": "away_team", "render": awayTeamLinkRender},
+                        {"data": "home_team"},
+                        {"data": "away_team"},
                         {"data": "field"},
                         {"data": "score"},
                         {"data": "status"},
-                        {"data": "division_id", "visible": false,
-                         "searchable": true}
+                        {
+                            "data": "division_id",
+                            "visible": false,
+                            "searchable": true
+                        },
+                        {
+                            "data": "timestamp",
+                            "visible": false
+                        }
                     ]
                     
     });
 
     // jump to todays date
-    table.page.jumpToData("{{today}}", 0);
+    // table.page.jumpToData("{{today}}", 0);
     $('#loader' + league_id).hide();
 }
 
@@ -80,51 +122,6 @@ function filterByDivision(division) {
     }
 }
 
-/** Renders the away team as a link. */
-function awayTeamLinkRender(data, type, row, meta){
-    if(type === 'display'){
-        const teamPageUrl = "{{ url_for('website.team_page', year=year, team_id=9999) }}";
-        data = `<a href="${teamPageUrl.replace('9999', row.away_team_id)}">${row.away_team}</a>`;
-    }
-    return data;
-}
-
-/** Renders the home team as a link*/
-function homeTeamLinkRender(data, type, row, meta){
-    if(type === 'display'){
-        const teamPageUrl = "{{ url_for('website.team_page', year=year, team_id=9999) }}";
-        data = `<a href="${teamPageUrl.replace('9999', row.home_team_id)}">${row.home_team}</a>`;
-    }
-    return data;
-}
-
-/**
-* Load the given league.
-* 
-* @param {int} league_id - the id of the league
-* @param {string} url - the get url request
-* @param {Array.<Object>} games - a list of games
-*/
-function loadLeague(league_id, url, games){
-    $.ajax ({
-        type: "GET",
-        url: url,
-        contentType: "application/json",
-        dataType: 'json',
-        async: true,
-        success: function (result){
-            games = games.concat(result.items);
-            if(result.has_next === true){
-                loadLeague(league_id, result.next_url, games)
-            } else{
-                displayLeague(league_id, games)
-            }
-        }, error: function(request, error){
-            console.error(request);
-            console.error(error);
-        }
-    })
-}
 
 /** Called when document is ready. */
 $(document).ready(ready());
@@ -141,9 +138,7 @@ function ready(){
      
         return this;
     } );
-
-    // load the table for the schedule using ajax
-    loadLeague({{league.league_id}}, "{{ url_for('website.cache_schedule_page', year=year, league_id=league.league_id)}}", []);
+    displayLeague({{league.league_id}});
 }
 </script>
 {% endblock %}

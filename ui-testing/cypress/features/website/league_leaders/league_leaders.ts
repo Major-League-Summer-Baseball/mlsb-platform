@@ -5,7 +5,7 @@ import { getCurrentYear } from '../../global/helper';
 const LEADERS_PAGE = 'website/leaders/';
 
 /** The URL for the all-time leaders page. */
-const ALL_TIME_LEADERS_PAGE = LEADERS_PAGE + 'alltime/';
+const ALL_TIME_LEADERS_PAGE = 'website/hall-of-fame/';
 
 /**
  * A function to assert the given list is in descending order
@@ -39,7 +39,7 @@ When(`I navigate to the league leaders page`, navigateToLeagueLeaderPage);
 export const navigateToAllTimeLeaderPage = (): void => {
     cy.visit({ url: ALL_TIME_LEADERS_PAGE + getCurrentYear(), method: 'GET' });
 };
-When(`I navigate to the all-time leaders page`, navigateToAllTimeLeaderPage);
+When(`I navigate to the hall-of-fame page`, navigateToAllTimeLeaderPage);
 
 /**
  * A step to assert that the homeruns are in descending order.

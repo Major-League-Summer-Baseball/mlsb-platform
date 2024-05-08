@@ -78,7 +78,7 @@ def team_page(year, team_id):
     )
 
 
-@website_blueprint.route("/website/player<int:year>/<int:player_id>")
+@website_blueprint.route("/website/player/<int:year>/<int:player_id>")
 def player_page(year, player_id):
     player = Player.query.get(player_id)
     if player is None:

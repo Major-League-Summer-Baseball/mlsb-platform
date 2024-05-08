@@ -8,6 +8,6 @@ Scenario: Current Season leader page
      And there is a descending ordered list of players for singles
 
 Scenario: All-time leader page
-    When I navigate to the all-time leaders page
+    When I navigate to the hall-of-fame page
     Then there is a descending ordered list of players for all-time homeruns
      And there is a descending ordered list of players for all-time singles
