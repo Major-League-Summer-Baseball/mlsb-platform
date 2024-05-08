@@ -130,6 +130,7 @@ def get_leaders(hit, year=None):
         .group_by(Player)
         .group_by(Team)
         .order_by(func.count(Bat.player_id).desc())
+        .order_by(Team.year)
         .limit(HALL_OF_FAME_SIZE)
     ).all()
     for record in records:
