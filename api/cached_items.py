@@ -127,6 +127,45 @@ def get_league_leaders(stat, year=None, group_by_team=False, single_game=False):
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
+def get_full_league_schedule(year, league_id):
+    """Get the full league schedule for the given league and year"""
+    team_mapper = get_team_map()
+    if league_id not in get_league_map().keys():
+        raise LeagueDoesNotExist(payload={'details': league_id})
+    start = datetime.combine(date(year, 1, 1), time(0, 0))
+    end = datetime.combine(date(year, 12, 30), time(23, 0))
+    games_query = Game.get_game_results_query(league_id=league_id, year=year)
+
+    games = (
+        DB.session.query(
+            Game,
+            games_query.c.away_score,
+            games_query.c.home_score,
+        )
+        .join(games_query, games_query.c.id == Game.id, isouter=True)
+        .filter(
+            and_(
+                Game.league_id == league_id,
+                Game.date.between(start, end)
+            )
+        )
+        .order_by(Game.date)
+        .all()
+    )
+    data = []
+    for game in games:
+        game_model = game[0]
+        away_score = game[1]
+        home_score = game[2]
+        result = game_to_json(game_model, team_mapper)
+        if game_model.date.date() <= datetime.today().date():
+            result['score'] = f"{home_score} - {away_score}"
+        else:
+            result['score'] = ""
+        data.append(result)
+    return data
+
+@cache.memoize(timeout=LONG_TERM_CACHE)
 def get_league_schedule(year, league_id, page):
     """Get a page of the league schedule for the given league and year"""
     url_route = url_for(
@@ -285,6 +324,7 @@ def game_to_json(game, team_mapper):
         'division_id': game.division_id,
         'date': game.date.strftime("%Y-%m-%d"),
         'time': game.date.strftime("%H:%M"),
+        'timestamp': game.date.timestamp(),
         'status': game.status,
         'field': game.field}
 
