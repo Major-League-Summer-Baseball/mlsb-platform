@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse
 from flask import Response
 from json import dumps
 from api.cached_items import team_stats
+
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
