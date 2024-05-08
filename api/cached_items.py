@@ -165,6 +165,7 @@ def get_full_league_schedule(year, league_id):
         data.append(result)
     return data
 
+
 @cache.memoize(timeout=LONG_TERM_CACHE)
 def get_league_schedule(year, league_id, page):
     """Get a page of the league schedule for the given league and year"""
