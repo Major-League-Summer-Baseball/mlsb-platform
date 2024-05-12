@@ -24,7 +24,7 @@ def sponsor_picture(name):
             name = sponsor['sponsor_name']
         else:
             name = "notFound"
-    name = name.lower().replace(" ", "_") + ".png"
+    name = name.strip().lower().replace(" ", "_").replace(".", "_") + ".png"
     f = os.path.join(PICTURES, "sponsors", name)
     fp = os.path.join(PICTURES, "sponsors")
     if os.path.isfile(f):
