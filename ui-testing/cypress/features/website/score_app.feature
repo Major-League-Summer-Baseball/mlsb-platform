@@ -17,7 +17,15 @@ Feature: The captain score app
          Then I am unable to submit score
           And see prompt about "homerun"
 
-    Scenario: Able to submit a score
+    Scenario: Able to submit a score with no runs
+        Given I am captain of a team
+          And submitting a score for a game
+         When score is 0
+          And I am able to submit
+         Then the score is submitted
+          And I see the game can be resubmitted
+
+    Scenario: Able to submit a score with homerun
         Given I am captain of a team
           And submitting a score for a game
          When score is 5
