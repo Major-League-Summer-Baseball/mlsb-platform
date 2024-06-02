@@ -98,7 +98,8 @@ def submit_score(
                 unassigned_id, team.id, game.id, "fo", inning=1, rbi=0
             )
         )
-    elif score < (0 if homeruns is None else len(homeruns)):
+
+    if score < (0 if homeruns is None else len(homeruns)):
         raise InvalidField(payload={'details': "More hr than score"})
 
     for player_id in homeruns if homeruns is not None else []:

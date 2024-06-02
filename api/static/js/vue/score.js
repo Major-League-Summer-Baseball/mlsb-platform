@@ -32,7 +32,7 @@ function startApp(captain_information, game, submission_url, next_step_url) {
                    type="number"
                    min=0
                    v-model="number"
-                   class="form-control input-number"
+                   class="form-control input-number score-control"
                    v-bind:id="'input-'  + stat + '-' + player.player_id"
                    readonly>
                   <span class="input-group-btn">
@@ -82,16 +82,20 @@ function startApp(captain_information, game, submission_url, next_step_url) {
       },
       delimiters: ['[[', ']]'],
       methods: {
+          initPlayerStats: function() {
+            this.players = this.players.map(function(player) {
+                player.hr = 0;
+                player.ss = 0;
+                return player;
+            });
+          },
           gameWasSelected: function(game) {
               this.game_selected = game;
               this.hr = 0;
               this.ss = 0;
               this.score = 0;
-              this.players = this.players.map(function(player) {
-                  player.hr = 0;
-                  player.ss = 0;
-                  return player;
-              });
+              this.initPlayerStats();
+
           },
           statChange: function(change, stat) {
               if (stat == 'hr') {
@@ -140,7 +144,9 @@ function startApp(captain_information, game, submission_url, next_step_url) {
                   }
               });
           }
-
+      },
+      beforeMount() {
+        this.initPlayerStats();
       }
   });
   if (window.Cypress) {
