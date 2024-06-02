@@ -1,5 +1,6 @@
 import pytest
 from datetime import date
+from api.helper import loads
 from api.model import Game
 from flask import url_for
 
@@ -172,6 +173,106 @@ def test_captain_score_app_game(
         assert 'id="submitScoreApp"' in html_response
         assert str(game.home_team) in html_response
         assert str(game.away_team) in html_response
+
+
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('league_factory')
+def test_captain_submit_score(
+        mlsb_app,
+        client,
+        auth,
+        player_factory,
+        team_factory,
+        game_factory,
+        division_factory,
+        league_factory
+):
+    with mlsb_app.app_context():
+        # setup game
+        (game, captain, home_team) = create_game(
+            player_factory,
+            team_factory,
+            game_factory,
+            division_factory,
+            league_factory
+        )
+
+        # login as some captain
+        auth.login(captain.email)
+        url = url_for(
+            "website.captain_submit_score",
+            year=THIS_YEAR,
+            game_id=game.id,
+            team_id=home_team.id
+        )
+        response = client.post(
+            url,
+            json={
+                'game_id': game.id,
+                'score': 0,
+                'hr': [],
+                'ss': []
+            },
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert data is True
+
+
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('player_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('league_factory')
+def test_captain_cannot_submit_score_more_hrs_than_runs(
+        mlsb_app,
+        client,
+        auth,
+        player_factory,
+        team_factory,
+        game_factory,
+        division_factory,
+        league_factory
+):
+    with mlsb_app.app_context():
+        # setup game
+        (game, captain, home_team) = create_game(
+            player_factory,
+            team_factory,
+            game_factory,
+            division_factory,
+            league_factory
+        )
+
+        # login as some captain
+        auth.login(captain.email)
+        url = url_for(
+            "website.captain_submit_score",
+            year=THIS_YEAR,
+            game_id=game.id,
+            team_id=home_team.id
+        )
+        response = client.post(
+            url,
+            json={
+                'game_id': game.id,
+                'score': 0,
+                'hr': [captain.id],
+                'ss': []
+            },
+            follow_redirects=True
+        )
+        assert response.status_code == 400
 
 
 @pytest.mark.usefixtures('client')
