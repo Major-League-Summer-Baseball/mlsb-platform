@@ -132,6 +132,8 @@ const assertScoreSubmission = (): void => {
                     expect(submission.team_id).to.be.eq(team.team_id)
                     expect(parseInt(submission.score)).to.be.eq(score);
 
+                    expect(parseInt(submission.score)).to.be.gte(submission.hr.length);
+
                     // ensure got a success response body
                     const success: boolean = interception.response?.body as boolean;
                     expect(success).to.be.true;                    
@@ -141,4 +143,3 @@ const assertScoreSubmission = (): void => {
     });
 };
 Then(`the score is submitted`, assertScoreSubmission);
-

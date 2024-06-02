@@ -35,3 +35,15 @@ button:disabled {
 #homerunError {
     margin-top: 16px;
 }
+
+/* Chrome, Safari, Edge, Opera */
+.score-control::-webkit-outer-spin-button,
+.score-control::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.score-control[type=number] {
+  -moz-appearance: textfield;
+}
