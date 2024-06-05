@@ -173,7 +173,7 @@ def merge_players():
     for team in teams:
         team.insert_player(player.id)
         team.remove_player(duplicated.id)
-    
+
     # change all oauths as well
     oauths = OAuth.query.filter_by(player_id=duplicated.id).all()
     for oauth in oauths:
