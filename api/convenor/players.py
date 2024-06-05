@@ -5,6 +5,7 @@ from api.extensions import DB
 from api.authentication import require_to_be_convenor
 from api.convenor import convenor_blueprint, is_empty
 from api.model import JoinLeagueRequest, Player
+from api.models.player import OAuth
 from api.models.team import Team
 
 PAGE_LIMIT_SIZE = 20
@@ -172,6 +173,12 @@ def merge_players():
     for team in teams:
         team.insert_player(player.id)
         team.remove_player(duplicated.id)
+    
+    # change all oauths as well
+    oauths = OAuth.query.filter_by(player_id=duplicated.id).all()
+    for oauth in oauths:
+        oauth.player_id = player.id
+
     DB.session.delete(duplicated)
     DB.session.commit()
     flash("player merged")
