@@ -35,7 +35,7 @@ const fillOutTeamDetails = () => {
             cy.get('#sponsor').select(`${sponsor.sponsor_id}`);
             cy.get('#year').clear().type(`${data.year}`);
             cy.get('#color').clear().type(data.color);
-            cy.get('#submitGame').click();
+            cy.get('#submitTeam').click();
         });
     });
 };
@@ -46,7 +46,7 @@ const updateTeamDetails = () => {
     const data = generateTeam();
     cy.get('#year').clear().type(`${data.year}`);
     cy.get('#color').clear().type(data.color);
-    cy.get('#submitGame').click();
+    cy.get('#submitTeam').click();
 };
 When(`I update the team details`, updateTeamDetails);
 
@@ -74,6 +74,12 @@ const makePlayerCaptain = () => {
     })
 };
 When(`I make them the captain`, makePlayerCaptain);
+
+/** Remove the team. */
+const removeTeam = () => {
+    cy.get('#removeTeam').click();
+};
+When(`I remove the team`, removeTeam);
 
 /**  Assert player is on team. */
 const assertPlayerOnTeam = () => {

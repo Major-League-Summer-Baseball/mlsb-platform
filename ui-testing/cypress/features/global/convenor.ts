@@ -344,7 +344,7 @@ Given(`a player has requested to join league`, createJoinRequest);
  * @param result  the result of the action
  */
 const assertFlashMessage = (model: string, result: string) => {
-    const matcher = new RegExp(`${model} ${result}`, 'i');
+    const matcher = new RegExp(`${model} ${result}|${model} was ${result}`, 'i');
     cy.contains(matcher).should('be.visible');
 };
 Then(`I see {word} was {word}`, assertFlashMessage);

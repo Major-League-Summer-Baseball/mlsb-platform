@@ -55,6 +55,12 @@ const updateGameDetails = () => {
 }
 When(`I update the game details`, updateGameDetails);
 
+/** Remove the game. */
+const removeGame = () => {
+    cy.get('#removeGame').click();
+}
+When(`I remove the game`, removeGame);
+
 /** Assert the game template was downloaded. */
 const assertGameTemplateDownload = () => {
     const downloadsFolder = Cypress.config("downloadsFolder");

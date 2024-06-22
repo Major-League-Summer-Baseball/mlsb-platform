@@ -82,6 +82,100 @@ def test_convenor_edit_game_page(
 @pytest.mark.usefixtures('division_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('game_factory')
+def test_convenor_remove_game(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory
+):
+    """Test convenor can remove game."""
+    with mlsb_app.app_context():
+        home_team = team_factory()
+        away_team = team_factory()
+        league = league_factory()
+        division = division_factory()
+        game_date, game_time = split_datetime(datetime.today())
+        game = game_factory(
+            home_team,
+            away_team,
+            league,
+            division,
+            date=game_date,
+            time=game_time
+        )
+        auth.login(convenor.email)
+        response = client.delete(
+            url_for("convenor.delete_game", game_id=game.id),
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        assert not url_for("website.loginpage").endswith(response.request.path)
+        assert Game.query.get(game.id) is None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('bat_factory')
+@pytest.mark.usefixtures('player_factory')
+def test_convenor_cannot_remove_game_with_scores(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    bat_factory,
+    player_factory
+):
+    """Test convenor cannot remove game with scores."""
+    with mlsb_app.app_context():
+        home_team = team_factory()
+        away_team = team_factory()
+        league = league_factory()
+        division = division_factory()
+        player = player_factory()
+        game_date, game_time = split_datetime(datetime.today())
+        game = game_factory(
+            home_team,
+            away_team,
+            league,
+            division,
+            date=game_date,
+            time=game_time
+        )
+        bat_factory(game, player, home_team,)
+        auth.login(convenor.email)
+        response = client.delete(
+            url_for("convenor.delete_game", game_id=game.id),
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        assert url_for("convenor.error_page").endswith(response.request.path)
+        assert Game.query.get(game.id) is not None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
 def test_convenor_games_page(
     mlsb_app,
     client,
