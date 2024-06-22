@@ -61,3 +61,12 @@ Scenario: Able to download the team template
     When I navigate to the "teams" page
      And select team template
     Then the team template is downloaded
+
+Scenario: Able to remove a team
+    Given a sponsor exists
+      And a league exists
+      And a team exists
+     When I navigate to the "teams" page
+      And choose the team
+      And I remove the team
+     Then I see team was removed

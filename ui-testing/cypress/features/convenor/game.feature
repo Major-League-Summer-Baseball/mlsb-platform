@@ -24,3 +24,10 @@ Scenario: Able to download the game template
     When I navigate to the "games" page
      And select game template
     Then the game template is downloaded
+
+Scenario: Able to remove a game
+    Given a game exists
+     When I navigate to the "games" page
+      And choose the game
+      And I remove the game
+     Then I see game was removed

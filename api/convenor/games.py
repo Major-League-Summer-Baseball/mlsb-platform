@@ -149,7 +149,7 @@ def games_page():
     )
 
 
-@convenor_blueprint.route("games", methods=["POST"])
+@convenor_blueprint.route("games/submit", methods=["POST"])
 @require_to_be_convenor
 def submit_game():
     """Submit edit/create a game."""

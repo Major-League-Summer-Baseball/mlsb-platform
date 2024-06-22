@@ -203,6 +203,7 @@
                             hx-delete="{{ url_for('convenor.delete_game', game_id=game.game_id)}}"
                             hx-push-url="true"
                             hx-target="#convenorBody"
+                            id="removeGame"
                         >
                             Delete
                         </button>
@@ -211,6 +212,7 @@
                             class="btn btn-danger max-72 disabled"
                             disabled="disabled"
                             title="Delete bats to remove game"
+                            id="removeGame"
                         >
                             Delete
                         </button>
