@@ -195,6 +195,26 @@
                     Create
                 {% endif %}
             </button>
+            {% if game.game_id is not none %}
+                {% if game.away_bats|length == 0 and game.home_bats|length == 0 %}
+                    <button
+                        class="btn btn-danger float-right max-72"
+                        hx-delete="{{ url_for('convenor.delete_game', game_id=game.game_id)}}"
+                        hx-push-url="true"
+                        hx-target="#convenorBody"
+                    >
+                        Delete
+                    </button>
+                {% else %}
+                    <button
+                        class="btn btn-danger float-right max-72"
+                        disabled
+                        title="Delete bats to remove game"
+                    >
+                        Delete
+                    </button>
+                {% endif %}
+            {% endif %}
         </div>
     </form>
     {% if game.game_id is not none %}

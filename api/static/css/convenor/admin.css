@@ -5,6 +5,10 @@ input[disabled] {
     background-image: none;
 }
 
+.mr-1 {
+    margin-right: 12px;
+}
+
 .mt-1 {
     margin-top: 12px;
 }
@@ -133,3 +137,8 @@ input[disabled] {
 #mergePlayerModal {
     min-width: 360px;
 }
+
+
+.disabled:hover {
+    pointer-events:all !important;
+  }

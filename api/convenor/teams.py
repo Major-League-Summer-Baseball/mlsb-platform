@@ -2,12 +2,21 @@ from flask import render_template, request, session, url_for, redirect, \
     make_response, flash
 from api.advanced.import_team import TeamList
 from api.extensions import DB
+from api.models.join_league_request import JoinLeagueRequest
 from api.variables import FILES
 from api.authentication import require_to_be_convenor
 from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int
 from api.model import Team, League, Sponsor, Espys
 from datetime import date
 from os import path
+
+
+def team_has_games(team: Team) -> bool:
+    """Does the team have any games."""
+    return (
+        team.away_games.first() is not None or
+        team.home_games.first() is not None
+    )
 
 
 @convenor_blueprint.route("teams")
@@ -78,8 +87,43 @@ def edit_team_page(team_id: int):
         espys=espys,
         leagues=leagues,
         players=players,
+        has_games=team_has_games(team),
         sponsors=[sponsor.json() for sponsor in Sponsor.query.all()]
     )
+
+
+@convenor_blueprint.route(
+    "team/<int:team_id>/delete", methods=["DELETE"]
+)
+def remove_team(team_id: int):
+    """Delete the team."""
+    try:
+        team = Team.query.get(team_id)
+
+        if team is None:
+            session['error'] = f"Team does not exist {team_id}"
+            return redirect(url_for('convenor.error_page'))
+        if len(team.away_games) > 0 or len(team.home_games) > 0:
+            tid = team_id
+            session['error'] = f"Please edit/remove games involving team {tid}"
+            return redirect(url_for('convenor.error_page'))
+
+        # clean up certain team data
+        for espys in team.espys:
+            DB.session.delete(espys)
+        team_requests = JoinLeagueRequest.query.filter_by(
+            JoinLeagueRequest.team_id == team_id
+        ).all()
+        for team_request in team_requests:
+            DB.session.delete(team_request)
+
+        DB.session.delete(team)
+        DB.session.commit()
+    except Exception as e:
+        session['error'] = str(e)
+        return redirect(url_for('convenor.error_page'))
+    flash("Team was removed")
+    return redirect(url_for("convenor.teams_page"))
 
 
 @convenor_blueprint.route("team/submit", methods=["POST"])

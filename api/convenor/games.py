@@ -227,12 +227,28 @@ def submit_bat(game_id: int, team_id: int):
     return redirect(url_for("convenor.edit_game_page", game_id=game_id))
 
 
+@convenor_blueprint.route("games/<int:game_id>", methods=["DELETE"])
+@require_to_be_convenor
+def delete_game(game_id: int):
+    """Delete a game."""
+    game = Game.query.get(game_id)
+    if game is None:
+        session['error'] = f"Game does not exist {game_id}"
+        return redirect(url_for('convenor.error_page'))
+    if len(game.bats) > 0:
+        session['error'] = f"Please remove bats before deleting game {game_id}"
+        return redirect(url_for('convenor.error_page'))
+    DB.sesison.delete(game)
+    DB.session.commit()
+    return redirect(url_for("convenor.games_page"))
+
+
 @convenor_blueprint.route(
     "games/<int:game_id>/bat/<int:bat_id>", methods=["DELETE"]
 )
 @require_to_be_convenor
 def delete_bat(game_id: int, bat_id: int):
-    """Submit edit/create a game."""
+    """Delete a bat from the given game."""
     bat = Bat.query.get(bat_id)
     if bat is None:
         session['error'] = f"Bat does not exist {bat_id}"
