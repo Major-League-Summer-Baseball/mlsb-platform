@@ -4,6 +4,7 @@ from flask import url_for
 import io
 import pytest
 
+NON_EXISTENT = 99999999
 
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')
@@ -45,6 +46,117 @@ def test_convenor_create_team(
         assert team.color == color
         assert team.sponsor_id == sponsor.id
         assert team.year == year
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('team_factory')
+def test_convenor_remove_team(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    team_factory
+):
+    """Test convenor able to remove team."""
+    with mlsb_app.app_context():
+        auth.login(convenor.email)
+        team = team_factory()
+        response = client.delete(
+            url_for("convenor.remove_team", team_id=team.id),
+            follow_redirects=True,
+        )
+        assert not url_for("website.loginpage").endswith(response.request.path)
+        assert Team.query.get(team.id) is None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('join_league_request_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_convenor_remove_team_with_requests(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    join_league_request_factory,
+    team_factory
+):
+    """Test convenor able to remove team that has join requests."""
+    with mlsb_app.app_context():
+        auth.login(convenor.email)
+        team = team_factory()
+        join_league_request_factory(team)
+        response = client.delete(
+            url_for("convenor.remove_team", team_id=team.id),
+            follow_redirects=True,
+        )
+        assert not url_for("website.loginpage").endswith(response.request.path)
+        assert Team.query.get(team.id) is None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('join_league_request_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('game_factory')
+def test_convenor_cannot_remove_team_with_games(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    join_league_request_factory,
+    team_factory,
+    game_factory
+):
+    """Test convenor cannot remove team with games."""
+    with mlsb_app.app_context():
+        auth.login(convenor.email)
+        league = league_factory()
+        division = division_factory()
+        team = team_factory(league=league)
+        another_team = team_factory(league=league)
+        game_factory(team, another_team, league, division)
+        response = client.delete(
+            url_for("convenor.remove_team", team_id=team.id),
+            follow_redirects=True,
+        )
+        assert url_for("convenor.error_page").endswith(response.request.path)
+        assert Team.query.get(team.id) is not None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_convenor_cannot_remove_nonexistent_team(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+):
+    """Test convenor able to remove team."""
+    with mlsb_app.app_context():
+        auth.login(convenor.email)
+        response = client.delete(
+            url_for("convenor.remove_team", team_id=NON_EXISTENT),
+            follow_redirects=True,
+        )
+        assert url_for("convenor.error_page").endswith(response.request.path)
 
 
 @pytest.mark.convenor

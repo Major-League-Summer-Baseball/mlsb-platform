@@ -139,6 +139,6 @@ input[disabled] {
 }
 
 
-.disabled:hover {
+.disabled {
     pointer-events:all !important;
   }

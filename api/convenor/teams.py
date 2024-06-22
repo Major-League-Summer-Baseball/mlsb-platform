@@ -19,7 +19,7 @@ def team_has_games(team: Team) -> bool:
     )
 
 
-@convenor_blueprint.route("teams")
+@convenor_blueprint.route("teams", methods=["DELETE", "GET", "POST"])
 @require_to_be_convenor
 def teams_page():
     year = int(request.args.get('year', date.today().year))
@@ -103,7 +103,7 @@ def remove_team(team_id: int):
         if team is None:
             session['error'] = f"Team does not exist {team_id}"
             return redirect(url_for('convenor.error_page'))
-        if len(team.away_games) > 0 or len(team.home_games) > 0:
+        if team_has_games(team):
             tid = team_id
             session['error'] = f"Please edit/remove games involving team {tid}"
             return redirect(url_for('convenor.error_page'))
@@ -111,7 +111,7 @@ def remove_team(team_id: int):
         # clean up certain team data
         for espys in team.espys:
             DB.session.delete(espys)
-        team_requests = JoinLeagueRequest.query.filter_by(
+        team_requests = JoinLeagueRequest.query.filter(
             JoinLeagueRequest.team_id == team_id
         ).all()
         for team_request in team_requests:

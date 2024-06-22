@@ -105,7 +105,7 @@ def edit_game_page(game_id: int):
     )
 
 
-@convenor_blueprint.route("games")
+@convenor_blueprint.route("games", methods=["DELETE", "GET", "POST"])
 @require_to_be_convenor
 def games_page():
     year = int(request.args.get('year', date.today().year))
@@ -227,7 +227,7 @@ def submit_bat(game_id: int, team_id: int):
     return redirect(url_for("convenor.edit_game_page", game_id=game_id))
 
 
-@convenor_blueprint.route("games/<int:game_id>", methods=["DELETE"])
+@convenor_blueprint.route("games/<int:game_id>/delete", methods=["DELETE"])
 @require_to_be_convenor
 def delete_game(game_id: int):
     """Delete a game."""
@@ -235,11 +235,12 @@ def delete_game(game_id: int):
     if game is None:
         session['error'] = f"Game does not exist {game_id}"
         return redirect(url_for('convenor.error_page'))
-    if len(game.bats) > 0:
+    if game.bats.first() is not None:
         session['error'] = f"Please remove bats before deleting game {game_id}"
         return redirect(url_for('convenor.error_page'))
-    DB.sesison.delete(game)
+    DB.session.delete(game)
     DB.session.commit()
+    flash("Game was removed")
     return redirect(url_for("convenor.games_page"))
 
 
