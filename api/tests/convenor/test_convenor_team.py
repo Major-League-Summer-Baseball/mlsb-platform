@@ -6,6 +6,7 @@ import pytest
 
 NON_EXISTENT = 99999999
 
+
 @pytest.mark.convenor
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
