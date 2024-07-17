@@ -30,13 +30,17 @@ def handle_table_change(table_changed: 'Tables', item=None):
     if table_changed == Tables.BAT or table_changed == Tables.GAME:
         cache.delete_memoized(team_stats)
         cache.delete_memoized(get_league_schedule)
+        cache.delete_memoized(get_full_league_schedule)
         cache.delete_memoized(get_upcoming_games)
         cache.delete_memoized(get_league_leaders)
+        cache.delete_memoized(get_league_standings)
+        
 
     # team mape needs to change if either team or sponsor changes
     # since sponsor affects the team name
     if table_changed == Tables.SPONSOR or table_changed == Tables.TEAM:
         cache.delete_memoized(get_team_map)
+        cache.delete_memoized(get_league_map)
 
     #  update league standings if esyps change
     # also update the esyps break down
