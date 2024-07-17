@@ -85,6 +85,7 @@
 function displayLeague(league_id){
     var table = $('#'+ league_id +'League').DataTable({
                     "responsive": true,
+                    "pageLength": 25,
                     "order": [[7, "asc"]],
                     "columns": [
                         {"data": "date"},
@@ -108,7 +109,7 @@ function displayLeague(league_id){
     });
 
     // jump to todays date
-    // table.page.jumpToData("{{today}}", 0);
+    table.page.jumpToData("{{today}}", 0);
     $('#loader' + league_id).hide();
 }
 
@@ -117,8 +118,10 @@ function filterByDivision(division) {
     var table = $('#'+ league_id +'League').DataTable();
     if (division == null) {
         table.column(7).search("").draw();
+        table.page.jumpToData("{{today}}", 0);
     } else {
         table.column(7).search(division).draw();
+        table.page.jumpToData("{{today}}", 0);
     }
 }
 
@@ -138,6 +141,7 @@ function ready(){
      
         return this;
     } );
+
     displayLeague({{league.league_id}});
 }
 </script>
