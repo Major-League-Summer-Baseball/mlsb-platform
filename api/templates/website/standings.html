@@ -221,6 +221,7 @@ function display_table(teams, selector) {
   var table = $(selector).DataTable({
                   "data": convert_teams_formatting(teams),
                   "responsive": true,
+                  "pageLength": 25,
                   "order": [[1, "desc"]],
                   "columns": [
                       {"data": "name", "render": renderTeamLink},
