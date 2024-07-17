@@ -1,10 +1,12 @@
 from flask import render_template, request, session, url_for, redirect, \
     make_response, flash
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from datetime import date, time, datetime
 from api.advanced.import_league import LeagueList
 from api.authentication import require_to_be_convenor
+from api.cached_items import handle_table_change
 from api.extensions import DB
+from api.tables import Tables
 from api.variables import FILES, BATS
 from api.convenor import allowed_file, convenor_blueprint, is_empty, \
     normalize_field
@@ -21,7 +23,9 @@ def new_game_page(league_id: int):
         return redirect(url_for('convenor.error_page'))
     teams = [
         team.json()
-        for team in Team.query.filter(Team.league_id == league_id).all()
+        for team in Team.query.filter(
+            and_(Team.league_id == league_id, Team.year == date.today().year)
+        ).all()
     ]
     teams.sort(key=lambda t: t['team_name'].strip())
     game_data = {
@@ -90,7 +94,9 @@ def edit_game_page(game_id: int):
     game_data['home_players'] = home_players
     teams = [
         team.json()
-        for team in Team.query.filter(Team.league_id == game.league_id).all()
+        for team in Team.query.filter(
+            and_(Team.league_id == game.league_id, Team.year == game.date.year)
+        ).all()
     ]
     teams.sort(key=lambda t: t['team_name'].strip())
     divisions = [division.json() for division in Division.query.all()]
@@ -176,6 +182,7 @@ def submit_game():
             )
             DB.session.add(game)
             flash("Game created")
+            handle_table_change(Tables.GAME)
         else:
             game = Game.query.get(game_id)
             if game is None:
@@ -192,6 +199,7 @@ def submit_game():
                 field=field
             )
             flash("Game updated")
+            handle_table_change(Tables.GAME)
     except Exception as e:
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
@@ -220,6 +228,7 @@ def submit_bat(game_id: int, team_id: int):
         )
         DB.session.add(bat)
         flash("Bat created")
+        handle_table_change(Tables.BAT)
     except Exception as e:
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
@@ -241,6 +250,7 @@ def delete_game(game_id: int):
     DB.session.delete(game)
     DB.session.commit()
     flash("Game was removed")
+    handle_table_change(Tables.GAME)
     return redirect(url_for("convenor.games_page"))
 
 
@@ -256,6 +266,7 @@ def delete_bat(game_id: int, bat_id: int):
         return redirect(url_for('convenor.error_page'))
     DB.session.delete(bat)
     DB.session.commit()
+    handle_table_change(Tables.BAT)
     return redirect(url_for("convenor.edit_game_page", game_id=game_id))
 
 
@@ -296,6 +307,7 @@ def submit_game_template():
             flash(",".join(games.warnings))
         else:
             flash("Games added!")
+            handle_table_change(Tables.GAME)
     except Exception as e:
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
