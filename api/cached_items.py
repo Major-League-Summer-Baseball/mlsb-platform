@@ -34,7 +34,6 @@ def handle_table_change(table_changed: 'Tables', item=None):
         cache.delete_memoized(get_upcoming_games)
         cache.delete_memoized(get_league_leaders)
         cache.delete_memoized(get_league_standings)
-        
 
     # team mape needs to change if either team or sponsor changes
     # since sponsor affects the team name
