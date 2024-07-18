@@ -5,8 +5,10 @@ from api.extensions import DB
 from api.models.join_league_request import JoinLeagueRequest
 from api.variables import FILES
 from api.authentication import require_to_be_convenor
+from api.cached_items import handle_table_change
 from api.convenor import allowed_file, convenor_blueprint, is_empty, get_int
 from api.model import Team, League, Sponsor, Espys
+from api.tables import Tables
 from datetime import date
 from os import path
 
@@ -123,6 +125,7 @@ def remove_team(team_id: int):
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
     flash("Team was removed")
+    handle_table_change(Tables.TEAM)
     return redirect(url_for("convenor.teams_page"))
 
 
@@ -145,6 +148,7 @@ def submit_team():
             )
             DB.session.add(team)
             flash("Team created")
+            handle_table_change(Tables.TEAM)
         else:
             team = Team.query.get(team_id)
             if team is None:
@@ -157,6 +161,7 @@ def submit_team():
                 year=year
             )
             flash("Team updated")
+            handle_table_change(Tables.TEAM)
     except Exception as e:
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
@@ -312,6 +317,7 @@ def submit_team_template():
             flash(",".join(team.warnings))
         else:
             flash("Team added!")
+            handle_table_change(Tables.TEAM)
     except Exception as e:
         session['error'] = str(e)
         return redirect(url_for('convenor.error_page'))
