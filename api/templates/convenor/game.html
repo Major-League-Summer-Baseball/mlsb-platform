@@ -230,13 +230,6 @@
                 <table class="table table-striped tabled-bordered">
                     <thead>
                         <tr>
-                            <form
-                                action="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.home_team_id)}}"
-                                method="post"
-                                hx-post="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.home_team_id)}}"
-                                hx-push-url="true"
-                                hx-target="#convenorBody"
-                            >
                                 <th>
                                     <label for="player">
                                         Player:
@@ -245,6 +238,7 @@
                                         class="form-control"
                                         id="player"
                                         name="player_id"
+                                        form="addBat"
                                         required
                                     >
                                         {% for player in game.home_players %}
@@ -262,6 +256,7 @@
                                         class="input form-control max-245"
                                         name="rbi"
                                         id="rbi"
+                                        form="addBat"
                                         required
                                     />
                                 </th>
@@ -273,6 +268,7 @@
                                         class="input form-control max-245"
                                         name="inning"
                                         id="inning"
+                                        form="addBat"
                                         required
                                     />
                                 </th>
@@ -284,6 +280,7 @@
                                         class="form-control"
                                         name="hit"
                                         id="hit"
+                                        form="addBat"
                                         required
                                     >
                                     {% for bat in bats %}
@@ -294,14 +291,22 @@
                                     </select>
                                 </th>
                                 <th>
-                                    <button
-                                        class="btn btn-success"
-                                        type="submit"
+                                    <form
+                                        id="addBat"
+                                        action="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.home_team_id)}}"
+                                        method="post"
+                                        hx-post="{{ url_for('convenor.submit_bat', game_id=game.game_id, team_id=game.home_team_id)}}"
+                                        hx-push-url="true"
+                                        hx-target="#convenorBody"
                                     >
-                                        Add
-                                    </button>
+                                        <button
+                                            class="btn btn-success"
+                                            type="submit"
+                                        >
+                                            Add
+                                        </button>
+                                    </form>
                                 </th>
-                            </form>
                         </tr>
                     </thead>
                     <tbody>
