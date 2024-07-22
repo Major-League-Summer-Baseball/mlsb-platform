@@ -1,0 +1,44 @@
+{% extends "website/posts/article-base.html" %}
+{% block article %}
+<h3>Another Tournament for the Books!</h3>
+<p>
+    Another beautiful hot sunny 🌞 day for the MLSB Alumni Tournament🍻.
+    Ten teams showed up and there were too many home runs to count.
+    However, one team was able to go undefeated on the day and hit in 82 runs⚾.
+</p>
+<center>
+    <img src="{{ url_for('static', filename="pictures/posts/2024-alumni-champions.jpg") }}"  alt="" class="postImage">
+</center>
+<p>
+    <a href="{{url_for('website.team_page', team_id=455, year=2024)}}">Super Seniors</a> beat <a href="{{url_for('website.team_page', team_id=395, year=2024)}}">Jorts</a> in the finals in quite a competitive game.
+    Super Seniors (formerly 2023 convenors) has now won back to back championships.
+    The last team to win back to back championships was 2015 when Legendary "Those Guys" won their fourth straight tournament.
+    Time will tell if Super Seniors can go on a run.
+    However, there are some Super Fans out there that aren't talking 3-peat peat but a minimum 8peat!
+</p>
+<br>
+<br>
+<center>
+    <iframe
+        class="mobile-video"
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/NkLjN0UcaTg"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        title="Minimum 8-peat">
+    </iframe>
+</center>
+
+<br>
+<br>
+<p>
+    One player really stood out in the tournament - hitting 11 homeruns💣.
+    <a href="{{url_for('website.player_page', player_id=5596, year=year)}}">Brennan Lupyrypa</a> now sits only 3 back from <a href="{{url_for('website.player_page', player_id=355, year=year)}}">Jack Romano</a> for all-time homerun leader.
+    With the final week of season coming up, all eyes 👀 will be on Brennan to see if he can go down in MLSB history 📜!
+</p>
+<center>
+    <img src="{{ url_for('static', filename="pictures/posts/brennan.jpg") }}"  alt="" class="postImage" style="">
+</center>
+{% endblock %}
