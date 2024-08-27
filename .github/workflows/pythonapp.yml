@@ -49,7 +49,7 @@ jobs:
         run: |
           pip install coverage
           export FLASK_ENV="development"
-          coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/* -m unittest discover -s api/test
+          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m unittest discover -s api/test
           coverage report --fail-under=70
           coverage xml
           coverage html
@@ -82,7 +82,7 @@ jobs:
         run: |
           pip install coverage
           export FLASK_ENV="development"
-          coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/* -m pytest
+          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest
           coverage xml
           coverage html
       - name: Create Coverage report Artifact
@@ -116,8 +116,6 @@ jobs:
           node-version: '18.x'
       - name: UI Test with cypress
         run: |
-          export ADMIN="admin"
-          export PASSWORD="password"
           export FLASK_ENV="development"
           export CYPRESS_baseUrl=http://localhost:8080/
           # run the server just in-memory

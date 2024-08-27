@@ -45,19 +45,6 @@ export const login_convenor = () => {
     return cy.get<Player>(`@convenor`);
 }
 
-/**
- * A global step that creates a random user for the given roll and then
- * logins by making a POST request.
- * @param {string} role - the role of the user to log in as.
- * @example
- * Given I am logged in as administrator
- */
-export const login = (): void => {
-    cy.login();
-};
-Given(`I am logged in as an admin`, login);
-
-
 /** Login as a newly created player. */
 const login_as_player = (): void => {
     create_player(generate_player()).then((player: Player) => {

@@ -9,7 +9,6 @@ from api.routes import Routes
 from api.extensions import api, cache, DB, login_manager, tailsman, ckeditor
 from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
-from api.admin import admin_blueprint
 from api.website import website_blueprint
 from api.convenor import convenor_blueprint
 from api.testing_blueprint import testing_blueprint
@@ -105,7 +104,6 @@ def register_blueprint(app):
     app.register_blueprint(facebook_blueprint, url_prefix="/login")
     app.register_blueprint(google_blueprint, url_prefix="/login")
     app.register_blueprint(azure_blueprint, url_prefix="/login")
-    app.register_blueprint(admin_blueprint)
     app.register_blueprint(website_blueprint)
     app.register_blueprint(convenor_blueprint)
 
