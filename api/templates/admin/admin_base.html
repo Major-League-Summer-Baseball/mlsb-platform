@@ -14,7 +14,6 @@
    	<link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename="css/docAndAdmin/simple-sidebar.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/docAndAdmin/documentation.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/docAndAdmin/admin.css") }}" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/docAndAdmin/chosen.css") }}" rel="stylesheet">
     {% block header %}
@@ -123,7 +122,6 @@
                         {% block content %}{% endblock %}
                         <p><br/><br/><br/></p>
                         <a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=year) }}">About</a>
-                        <a class="btn btn-mini btn-link " href="{{ url_for('documentation.index_doc') }}">Documentation</a>
                         <a class="btn btn-mini btn-link " href="https://github.com/fras2560"> Author</a>
                         <a class="btn btn-mini btn-link " href="http://jquery.com/">jQuery</a>
                         <a class="btn btn-mini btn-link " href="http://twitter.github.io/bootstrap/">Bootstrap</a>
