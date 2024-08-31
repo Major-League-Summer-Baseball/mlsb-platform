@@ -158,18 +158,6 @@ def register_apis(app):
     from api.advanced.divisions_in_league import DivisionsLeagueAPI
     from api.advanced.league_event import LeagueEventViewAPI
 
-    # imports for bot apis
-    from api.bot.submit_scores import SubmitScoresAPI as BotSubmitScoresAPI
-    from api.bot.authenticate_captain import \
-        AuthenticateCaptainAPI as BotAuthenticateCaptainAPI
-    from api.bot.get_captain_games import \
-        CaptainGamesAPI as BotCaptainGamesAPI
-    from api.bot.get_upcoming_games import \
-        UpcomingGamesAPI as BotUpcomingGamesAPI
-    from api.bot.submit_transaction import \
-        SubmitTransactionAPI as BotSubmitTransactionAPI
-
-
     # basic routes
     api.add_resource(FunListAPI,
                     Routes['fun'],
@@ -262,23 +250,6 @@ def register_apis(app):
                     Routes['vleagueevents'] + "/<int:year>",
                     endpoint='vLeagueEvents')
 
-
-    # add bot routes
-    api.add_resource(BotAuthenticateCaptainAPI,
-                    Routes['botcaptain'],
-                    endpoint="botcaptain")
-    api.add_resource(BotSubmitScoresAPI,
-                    Routes['botsubmitscore'],
-                    endpoint="botsubmitscore")
-    api.add_resource(BotCaptainGamesAPI,
-                    Routes['botcaptaingames'],
-                    endpoint="botcaptaingames")
-    api.add_resource(BotUpcomingGamesAPI,
-                    Routes['botupcominggames'],
-                    endpoint="botupcominggames")
-    api.add_resource(BotSubmitTransactionAPI,
-                    Routes['bottransaction'],
-                    endpoint="bottransaction")
     api.init_app(app)
 
 
