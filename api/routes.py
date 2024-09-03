@@ -21,7 +21,6 @@ Routes['league_event_date'] = "/api/league_event_date"
 # advanced routes
 Routes['vplayer'] = "/api/view/players"
 Routes['vteam'] = "/api/view/teams"
-Routes['vgame'] = "/api/view/games"
 Routes['vplayerLookup'] = "/api/view/player_lookup"
 Routes['vfun'] = "/api/view/fun"
 Routes['vplayerteamLookup'] = "/api/view/players/team_lookup"
