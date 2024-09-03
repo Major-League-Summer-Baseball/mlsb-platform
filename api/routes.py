@@ -29,11 +29,3 @@ Routes['vleagueleaders'] = "/api/view/league_leaders"
 Routes['vschedule'] = "/api/view/schedule"
 Routes['vdivisions'] = "/api/view/divisions"
 Routes['vleagueevents'] = "/api/view/league_events"
-
-
-# Bot APIS
-Routes['botsubmitscore'] = "/api/bot/submit_score"
-Routes['botcaptain'] = "/api/bot/captain"
-Routes['botupcominggames'] = "/api/bot/upcoming_games"
-Routes['botcaptaingames'] = "/api/bot/captain/games"
-Routes['bottransaction'] = "/api/bot/transaction"
