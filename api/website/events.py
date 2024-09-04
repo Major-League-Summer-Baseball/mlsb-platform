@@ -6,7 +6,7 @@ from api.model import LeagueEvent, LeagueEventDate
 from api.website import website_blueprint
 from api.authentication import \
     get_user_information, api_require_login, are_logged_in, get_player_id
-from api.advanced.league_event import get_year_events
+from api.queries.league_events import get_year_events
 from api.variables import PICTURES
 import os.path
 import json

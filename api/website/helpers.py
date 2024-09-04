@@ -2,7 +2,7 @@
 """ Some helper functions for various pages. """
 from api.extensions import DB
 from api.model import Team, Player, League
-from api.advanced.players_stats import post as player_summary
+from api.queries.player import player_summary
 from api.cached_items import single_team
 
 

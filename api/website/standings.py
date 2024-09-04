@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related to the league's standings. """
 from flask import render_template, url_for, redirect
-from api.advanced.players_stats import post as player_summary
+from api.queries.player import player_summary
 from api.queries.team_records import \
     rank_teams_by_espys, rank_teams_by_record, \
     rank_teams_by_runs_for, rank_teams_by_stats

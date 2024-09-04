@@ -4,12 +4,12 @@ from datetime import date, datetime, time
 from flask import url_for
 from api.queries.team_records import get_team_records
 from api.extensions import cache, DB
-from api.restx.game import game_summary
+from api.queries.game import game_summary
 from api.model import Team, Sponsor, League, Espys, Fun, Game, Division
 from api.errors import LeagueDoesNotExist
 from api.variables import LONG_TERM_CACHE
 from api.tables import Tables
-from api.advanced.league_leaders import get_leaders, \
+from api.queries.leaders import get_leaders, \
     get_leaders_not_grouped_by_team, get_single_game_leader
 from api.routes import Routes
 from api.variables import PAGE_SIZE
