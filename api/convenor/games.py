@@ -2,7 +2,7 @@ from flask import render_template, request, session, url_for, redirect, \
     make_response, flash
 from sqlalchemy import or_, and_
 from datetime import date, time, datetime
-from api.advanced.import_league import LeagueList
+from api.importers.league import LeagueList
 from api.authentication import require_to_be_convenor
 from api.cached_items import handle_table_change
 from api.extensions import DB
