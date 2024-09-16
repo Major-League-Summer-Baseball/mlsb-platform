@@ -1,5 +1,5 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from .player import player
 from datetime import date
@@ -8,7 +8,6 @@ from api.model import Team
 from api.authentication import requires_admin
 from api.errors import TeamDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -128,7 +127,7 @@ class TeamListAPI(Resource):
         # return a pagination of teams
         page = request.args.get('page', 1, type=int)
         pagination = Team.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['team'])
+        result = pagination_response(pagination, url_for('rest.teams'))
         return result
 
     @requires_admin

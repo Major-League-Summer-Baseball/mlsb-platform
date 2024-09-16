@@ -11,7 +11,6 @@ from api.variables import LONG_TERM_CACHE
 from api.tables import Tables
 from api.queries.leaders import get_leaders, \
     get_leaders_not_grouped_by_team, get_single_game_leader
-from api.routes import Routes
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response_items
 import json

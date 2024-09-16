@@ -5,7 +5,6 @@ from api.extensions import DB
 from api.authentication import requires_admin
 from api.errors import DivisionDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from flask import request, url_for
 parser = reqparse.RequestParser()

@@ -6,7 +6,6 @@ from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables

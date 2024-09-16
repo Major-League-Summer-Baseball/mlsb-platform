@@ -1,12 +1,7 @@
-from flask import Flask, g, request, url_for
-from flask_restful.utils import cors
-from api.errors import ERRORS
+from flask import Flask, request
 from api.config import Config
 from werkzeug.middleware.proxy_fix import ProxyFix
-from os.path import join
-from api.variables import PICTURES, CSS_FOLDER, POSTS, FILES
-from api.routes import Routes
-from api.extensions import api, cache, DB, login_manager, tailsman, ckeditor
+from api.extensions import cache, DB, login_manager, tailsman, ckeditor
 from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
 from api.website import website_blueprint
@@ -16,7 +11,6 @@ from api.mock_database import init_database
 from api.commands import database_command
 import logging
 import sys
-import os
 
 
 def configure_app(app):
@@ -125,96 +119,6 @@ def register_apixs(app):
     apiX.init_app(app)
 
 
-def register_apis(app):
-    """Register all the apis"""
-    api.decorators = [
-        cors.crossdomain(origin='*', headers=['accept', 'Content-Type'])
-    ]
-
-    # imports for basic apis
-    from api.basic.player import PlayerAPI, PlayerListAPI
-    from api.basic.sponsor import SponsorAPI, SponsorListAPI
-    from api.basic.league import LeagueAPI, LeagueListAPI
-    from api.basic.team import TeamAPI, TeamListAPI
-    from api.basic.game import GameAPI, GameListAPI
-    from api.basic.bat import BatAPI, BatListAPI
-    from api.basic.epsys import EspyAPI, EspyListAPI
-    from api.basic.fun import FunAPI, FunListAPI
-    from api.basic.division import DivisionAPI, DivisionListAPI
-    from api.basic.league_event import LeagueEventAPI, LeagueEventListAPI
-    from api.basic.league_event_date import \
-        LeagueEventDateAPI, LeagueEventDateListAPI
-
-    # basic routes
-    api.add_resource(FunListAPI,
-                    Routes['fun'],
-                    endpoint="funs")
-    api.add_resource(FunAPI,
-                    Routes['fun'] + "/<int:year>",
-                    endpoint="fun")
-    api.add_resource(PlayerListAPI,
-                    Routes['player'],
-                    endpoint="players")
-    api.add_resource(PlayerAPI,
-                    Routes['player'] + "/<int:player_id>",
-                    endpoint="player")
-    api.add_resource(SponsorListAPI,
-                    Routes['sponsor'],
-                    endpoint="sponsors")
-    api.add_resource(SponsorAPI,
-                    Routes['sponsor'] + "/<int:sponsor_id>",
-                    endpoint="sponsor")
-    api.add_resource(DivisionListAPI,
-                    Routes['division'],
-                    endpoint="divisions")
-    api.add_resource(DivisionAPI,
-                    Routes['division'] + "/<int:division_id>",
-                    endpoint="division")
-    api.add_resource(LeagueListAPI,
-                    Routes['league'],
-                    endpoint="leagues")
-    api.add_resource(LeagueAPI,
-                    Routes['league'] + "/<int:league_id>",
-                    endpoint="league")
-    api.add_resource(LeagueEventListAPI,
-                    Routes['league_event'],
-                    endpoint="league_events")
-    api.add_resource(LeagueEventAPI,
-                    Routes['league_event'] + "/<int:league_event_id>",
-                    endpoint="league_event")
-    api.add_resource(LeagueEventDateListAPI,
-                    Routes['league_event_date'],
-                    endpoint="league_event_dates")
-    api.add_resource(LeagueEventDateAPI,
-                    Routes['league_event_date'] + "/<int:league_event_date_id>",
-                    endpoint="league_event_Date")
-    api.add_resource(TeamListAPI,
-                    Routes['team'],
-                    endpoint="teams")
-    api.add_resource(TeamAPI,
-                    Routes['team'] + "/<int:team_id>",
-                    endpoint="team")
-    api.add_resource(GameListAPI,
-                    Routes['game'],
-                    endpoint="games")
-    api.add_resource(GameAPI,
-                    Routes['game'] + "/<int:game_id>",
-                    endpoint="game")
-    api.add_resource(BatListAPI,
-                    Routes['bat'],
-                    endpoint="bats")
-    api.add_resource(BatAPI,
-                    Routes['bat'] + "/<int:bat_id>",
-                    endpoint="bat")
-    api.add_resource(EspyListAPI,
-                    Routes['espy'],
-                    endpoint="Espys")
-    api.add_resource(EspyAPI,
-                    Routes['espy'] + "/<int:espy_id>",
-                    endpoint="basic-espy")
-    api.init_app(app)
-
-
 def is_memory_database(url: str) -> bool:
     """Returns whether the database is in memory database."""
     return url.strip().lower() == "sqlite://"
@@ -231,7 +135,6 @@ def create_app():
     register_error_handlers(app)
     register_blueprint(app)
     register_extensions(app)
-    register_apis(app)
     register_apixs(app)
     register_commands(app)
     if is_memory_database(app.config["URL"]) and is_development(app):

@@ -8,7 +8,6 @@ from api.model import Fun
 from api.authentication import requires_admin
 from api.errors import FunDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables

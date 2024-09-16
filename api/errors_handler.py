@@ -13,7 +13,6 @@ from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist, \
     RequestDoesNotExist
 from api.model import JoinLeagueRequest, Team
 from api.logging import LOGGER
-from api.routes import Routes
 from api.cached_items import get_website_base_data as get_base_data
 from api.authentication import get_user_information
 from json import dumps
@@ -27,7 +26,6 @@ def handle_existing_league_request():
     year = date.today().year
     return render_template("website/pending_league_request.html",
                            base=get_base_data(year),
-                           route=Routes,
                            year=year,
                            is_pending=is_pending.pending,
                            user_info=get_user_information())
@@ -41,7 +39,6 @@ def handle_not_part_of_league():
              if team.year == year]
     return render_template("website/not_part_of_league.html",
                            base=get_base_data(year),
-                           route=Routes,
                            year=year,
                            teams=teams,
                            user_info=get_user_information())
