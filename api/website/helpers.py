@@ -44,9 +44,9 @@ def get_team(year, team_id: int) -> dict:
             'captain_id': result.player_id,
             'players': [player.json() for player in result.players],
             'record': record,
-            'wins': record[team_id]['wins'],
-            'losses': record[team_id]['losses'],
-            'ties': record[team_id]['ties'],
+            'wins': record['wins'],
+            'losses': record['losses'],
+            'ties': record['ties'],
             'stats': stats
         }
     return team

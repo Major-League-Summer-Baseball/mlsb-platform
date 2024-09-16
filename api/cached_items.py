@@ -334,7 +334,7 @@ def game_to_json(game, team_mapper):
 @cache.memoize(timeout=LONG_TERM_CACHE)
 def team_stats(team_id, year, league_id, division_id=None):
     if team_id is not None:
-        team = single_team(team_id)
+        team = [single_team(team_id)]
     else:
         team = multiple_teams(year, league_id, division_id=division_id)
     return team
@@ -345,7 +345,7 @@ def single_team(team_id):
     if team_query is None:
         return []
     records = get_team_records(team_id=team_id)
-    return records
+    return records[0]
 
 
 def multiple_teams(year, league_id, division_id=None):
