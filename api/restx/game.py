@@ -1,7 +1,7 @@
 from datetime import date, datetime, time, timedelta
 from typing import List
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 
 from api.models.game import Bat
 from api.models.league import Division, League
@@ -150,7 +150,7 @@ class GameListAPI(Resource):
         # return a pagination of games
         page = request.args.get('page', 1, type=int)
         pagination = Game.query.paginate(page, PAGE_SIZE, False)
-        return pagination_response(pagination, Routes['game'])
+        return pagination_response(pagination, url_for('rest.games'))
 
     @requires_admin
     @game_api.doc(responses={403: 'Not Authorized', 200: 'Created'})

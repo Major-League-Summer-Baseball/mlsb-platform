@@ -1,5 +1,5 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import League
@@ -93,7 +93,7 @@ class LeagueListAPI(Resource):
         # return a pagination of leagues
         page = request.args.get('page', 1, type=int)
         pagination = League.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['league'])
+        result = pagination_response(pagination, url_for('rest.leagues'))
         return result
 
     @requires_admin

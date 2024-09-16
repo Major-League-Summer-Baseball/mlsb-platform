@@ -1,5 +1,5 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
@@ -129,7 +129,7 @@ class PlayerListAPIX(Resource):
         # return a pagination of users
         page = request.args.get('page', 1, type=int)
         pagination = Player.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['player'])
+        result = pagination_response(pagination, url_for('rest.players'))
         return result
 
     @requires_admin
