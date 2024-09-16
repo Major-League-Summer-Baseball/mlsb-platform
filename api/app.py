@@ -144,18 +144,6 @@ def register_apis(app):
     from api.basic.league_event import LeagueEventAPI, LeagueEventListAPI
     from api.basic.league_event_date import \
         LeagueEventDateAPI, LeagueEventDateListAPI
-    from api.advanced.team_roster import TeamRosterAPI
-
-    # imports for advanced apis
-    from api.advanced.players_stats import PlayerStatsAPI
-    from api.advanced.team_stats import TeamStatsAPI
-    from api.advanced.player_lookup import PlayerLookupAPI
-    from api.advanced.fun import AdvancedFunAPI
-    from api.advanced.player_teams import PlayerTeamLookupAPI
-    from api.advanced.league_leaders import LeagueLeadersAPI
-    from api.advanced.schedule import ScheduleAPI
-    from api.advanced.divisions_in_league import DivisionsLeagueAPI
-    from api.advanced.league_event import LeagueEventViewAPI
 
     # basic routes
     api.add_resource(FunListAPI,
@@ -224,30 +212,6 @@ def register_apis(app):
     api.add_resource(EspyAPI,
                     Routes['espy'] + "/<int:espy_id>",
                     endpoint="basic-espy")
-    api.add_resource(TeamRosterAPI,
-                    Routes['team_roster'] + "/<int:team_id>",
-                    endpoint="teamrosters")
-
-    # add advanced routes
-    api.add_resource(PlayerStatsAPI, Routes['vplayer'], endpoint="vplayer")
-    api.add_resource(TeamStatsAPI, Routes['vteam'], endpoint="vteam")
-    api.add_resource(PlayerLookupAPI, Routes['vplayerLookup'],
-                    endpoint="vplayerlookup")
-    api.add_resource(AdvancedFunAPI, Routes['vfun'], endpoint="vfun")
-    api.add_resource(PlayerTeamLookupAPI, Routes['vplayerteamLookup'],
-                    endpoint='vplayerteamLookup')
-    api.add_resource(LeagueLeadersAPI, Routes['vleagueleaders'],
-                    endpoint='vleagueleaders')
-    api.add_resource(ScheduleAPI,
-                    Routes['vschedule'] + "/<int:year>" + "/<int:league_id>",
-                    endpoint='vSchedule')
-    api.add_resource(DivisionsLeagueAPI,
-                    Routes['vdivisions'] + "/<int:year>/<int:league_id>",
-                    endpoint='vDivisions')
-    api.add_resource(LeagueEventViewAPI,
-                    Routes['vleagueevents'] + "/<int:year>",
-                    endpoint='vLeagueEvents')
-
     api.init_app(app)
 
 

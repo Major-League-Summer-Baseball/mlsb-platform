@@ -1,6 +1,6 @@
 from api.model import League
 from api.test.BaseTest import TestSetup
-from api.advanced.import_league import \
+from api.importers.league import \
     LeagueList, parse_parts, BACKGROUND, HEADERS, INVALID_ROW, \
     extract_column_indices_lookup, extract_background, \
     extract_game, extract_games
