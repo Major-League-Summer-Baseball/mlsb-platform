@@ -22,7 +22,7 @@ def standings(league_id, year):
         divisions = []
     return render_template(
         "website/standings.html",
-        team_route=url_for('vteam'),
+        team_route=url_for('rest.team_stats'),
         league=league,
         divisions=divisions,
         title="Standings",

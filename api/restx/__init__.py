@@ -9,6 +9,8 @@ from .game import game_api
 from .bat import bat_api
 from .league_event import league_event_api
 from .league_event_date import league_event_date_api
+from .schedule import schedule_api
+from .team_stats import team_stats_api
 from flask_restx import Api
 apiX = Api(
     version="0.1",
@@ -33,3 +35,5 @@ apiX.add_namespace(game_api)
 apiX.add_namespace(bat_api)
 apiX.add_namespace(league_event_api)
 apiX.add_namespace(league_event_date_api)
+apiX.add_namespace(schedule_api)
+apiX.add_namespace(team_stats_api)

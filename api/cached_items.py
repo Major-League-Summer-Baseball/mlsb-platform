@@ -302,8 +302,7 @@ def pull_schedule(
             result['score'] = ""
         data.append(result)
     if url_route is None:
-        url_route = (Routes['vschedule'] + "/" + str(year) + "/" +
-                     str(league_id))
+        url_route = url_for('rest.schedule', year=year, league_id=league_id)
     return pagination_response_items(games, url_route, data)
 
 
@@ -345,16 +344,12 @@ def team_stats(team_id, year, league_id, division_id=None):
 def single_team(team_id):
     team_query = Team.query.get(team_id)
     if team_query is None:
-        return {}
+        return []
     records = get_team_records(team_id=team_id)
-    return {team_id: records[0]}
+    return records
 
 
 def multiple_teams(year, league_id, division_id=None):
-    teams = get_team_records(
+    return get_team_records(
         year=year, league_id=league_id, division_id=division_id
     )
-    data = {}
-    for team in teams:
-        data[team['team_id']] = team
-    return data

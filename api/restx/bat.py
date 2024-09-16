@@ -1,5 +1,5 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Bat
@@ -139,7 +139,7 @@ class BatListAPI(Resource):
         #  return a pagination of bats
         page = request.args.get('page', 1, type=int)
         pagination = Bat.query.paginate(page, PAGE_SIZE, False)
-        return pagination_response(pagination, Routes['bat'])
+        return pagination_response(pagination, url_for('rest.bats'))
 
     @requires_admin
     @bat_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
