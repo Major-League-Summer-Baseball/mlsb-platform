@@ -1,9 +1,6 @@
-from datetime import date
 import uuid
 import pytest
-from sqlalchemy import func
-from api.advanced.import_team import \
-    BACKGROUND, HEADERS ,TeamList
+from api.importers.team import BACKGROUND, HEADERS, TeamList
 from api.models.team import Team
 
 
@@ -100,7 +97,6 @@ def test_able_import_players_onto_existing_team(
     team_factory
 ):
     with mlsb_app.app_context():
-        
         captain = player_factory()
         league = league_factory()
         sponsor = sponsor_factory()

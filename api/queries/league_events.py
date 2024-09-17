@@ -1,6 +1,7 @@
 from datetime import datetime, date, time
 from api.model import LeagueEvent, LeagueEventDate
 
+
 def get_year_events(year: int) -> list[dict]:
     """ Get a list of the given year events """
     active = LeagueEvent.query.filter(LeagueEvent.active == True).all()

@@ -1,10 +1,7 @@
-from datetime import date, datetime, time, timedelta
 from typing import List
 from flask_restx import Resource, reqparse, Namespace, fields
 from flask import request, url_for
-
 from api.models.game import Bat
-from api.models.league import Division, League
 from api.models.player import Player
 from api.models.team import Team
 from .models import get_pagination
@@ -17,6 +14,8 @@ from api.variables import PAGE_SIZE
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
+
+
 parser = reqparse.RequestParser()
 parser.add_argument('home_team_id', type=int)
 parser.add_argument('away_team_id', type=int)
@@ -158,16 +157,16 @@ class GameListAPI(Resource):
     def post(self):
         # create a new game
         args = post_parser.parse_args()
-        date = None
-        time = None
+        d = None
+        t = None
         if args['date'] and args['time']:
-            date = args['date']
-            time = args['time']
+            d = args['date']
+            t = args['time']
         status = args.get('status', '')
         field = args.get('field', '')
         game = Game(
-            date,
-            time,
+            d,
+            t,
             args.get('home_team_id'),
             args.get('away_team_id'),
             args.get('league_id'),

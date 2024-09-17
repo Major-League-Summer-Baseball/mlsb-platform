@@ -1,9 +1,7 @@
 import pytest
 from flask import url_for
-from datetime import date, datetime
+from datetime import datetime
 from api.models.shared import split_datetime
-from api.tests.fixtures import random_name
-from api.model import Team
 from api.helper import loads
 
 
@@ -33,7 +31,6 @@ def test_able_get_schedule(
             team_factory(sponsor=sponsor_factory(), league=league),
         ]
         game_date, _ = split_datetime(datetime.today())
-        
         game_factory(
             teams[0],
             teams[1],

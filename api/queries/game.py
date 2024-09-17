@@ -6,6 +6,7 @@ from api.models.team import Team
 from api.extensions import DB
 from api.model import Game
 
+
 def game_summary(
     game_id=None,
     league_id=None,

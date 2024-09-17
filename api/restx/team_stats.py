@@ -1,16 +1,13 @@
 from flask_restx import Resource, reqparse, fields
-from flask import Response
-from json import dumps
-
 from flask_restx import Namespace
 from api.cached_items import team_stats as pull_team_stats
+
 
 parser = reqparse.RequestParser()
 parser.add_argument('year', type=int)
 parser.add_argument('league_id', type=int)
 parser.add_argument('team_id', type=int)
 parser.add_argument('division_id', type=int)
-
 
 team_stats_api = Namespace(
     "team_stats",
@@ -64,6 +61,7 @@ team_stats = team_stats_api.model('TeamStats', {
         description="The total runs scored against the team"
     ),
 })
+
 
 @team_stats_api.route('', endpoint='rest.team_stats')
 @team_stats_api.doc()

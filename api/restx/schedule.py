@@ -1,6 +1,5 @@
-from json import dumps
 from flask_restx import Resource, Namespace, fields
-from flask import Response, request
+from flask import request
 from .models import get_pagination
 from api.cached_items import pull_schedule
 
@@ -46,6 +45,7 @@ schedule_pagination = schedule_api.inherit("SchedulePagination", pagination, {
     'items': fields.List(fields.Nested(schedule_payload))
 })
 
+
 @schedule_api.route("/<int:year>/<int:league_id>", endpoint="rest.schedule")
 @schedule_api.doc(
     params={"year": "The schedule year", "league_id": "The id of the league"}
@@ -66,4 +66,3 @@ class ScheduleAPIX(Resource):
         return {'Allow': 'PUT'}, 200, \
                {'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET'}
-

@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from api.importers.league import BACKGROUND, HEADERS, INVALID_TEAM, TEAM_NOT_FOUND, LeagueList
+from api.importers.league import BACKGROUND, HEADERS, INVALID_TEAM, LeagueList
 
 
 @pytest.mark.rest
