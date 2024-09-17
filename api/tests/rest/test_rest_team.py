@@ -201,3 +201,164 @@ def test_get_team(
         assert data['year'] == year
         assert 'captain' in data
         assert data['captain']['player_id'] == captain.id
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_able_lookup_team_by_league_id(
+    mlsb_app,
+    client,
+    admin_header,
+    sponsor_factory,
+    league_factory,
+    team_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        league = league_factory()
+        sponsor = sponsor_factory()
+        color = random_name("Color")
+        captain = player_factory()
+        year = date.today().year
+        team = team_factory(
+            color=color,
+            sponsor=sponsor,
+            league=league,
+            captain=captain,
+            year=year
+        )
+        response = client.post(
+            url_for("rest.teamlookup"),
+            data={'league_id': league.id},
+            follow_redirects=True,
+            headers=admin_header
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert len(data) == 1
+        assert data[0]['team_id'] == team.id
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_able_lookup_team_by_year(
+    mlsb_app,
+    client,
+    admin_header,
+    sponsor_factory,
+    league_factory,
+    team_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        league = league_factory()
+        sponsor = sponsor_factory()
+        color = random_name("Color")
+        captain = player_factory()
+        year = date.today().year
+        team = team_factory(
+            color=color,
+            sponsor=sponsor,
+            league=league,
+            captain=captain,
+            year=year
+        )
+        response = client.post(
+            url_for("rest.teamlookup"),
+            data={'year': year},
+            follow_redirects=True,
+            headers=admin_header
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert len(data) >= 1
+        for team in data:
+            assert team['year'] == year
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_able_lookup_team_by_sponsor_id(
+    mlsb_app,
+    client,
+    admin_header,
+    sponsor_factory,
+    league_factory,
+    team_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        league = league_factory()
+        sponsor = sponsor_factory()
+        color = random_name("Color")
+        captain = player_factory()
+        year = date.today().year
+        team = team_factory(
+            color=color,
+            sponsor=sponsor,
+            league=league,
+            captain=captain,
+            year=year
+        )
+        response = client.post(
+            url_for("rest.teamlookup"),
+            data={'sponsor_id': sponsor.id},
+            follow_redirects=True,
+            headers=admin_header
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert len(data) == 1
+        assert data[0]['team_id'] == team.id
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('team_factory')
+def test_able_lookup_team_by_color(
+    mlsb_app,
+    client,
+    admin_header,
+    sponsor_factory,
+    league_factory,
+    team_factory,
+    player_factory
+):
+    with mlsb_app.app_context():
+        league = league_factory()
+        sponsor = sponsor_factory()
+        color = random_name("Color")
+        captain = player_factory()
+        year = date.today().year
+        team = team_factory(
+            color=color,
+            sponsor=sponsor,
+            league=league,
+            captain=captain,
+            year=year
+        )
+        response = client.post(
+            url_for("rest.teamlookup"),
+            data={'color': color},
+            follow_redirects=True,
+            headers=admin_header
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert len(data) == 1
+        assert data[0]['team_id'] == team.id
