@@ -39,13 +39,13 @@ player_payload = model_api.model('PlayerPayload', {
     )
 })
 
-player = model_api.model('Player', {
+player = model_api.inherit('Player', player_payload, {
     'player_id': fields.Integer(
         description="The id of the player",
     ),
 })
 
-team = model_api.model('Team', {
+team = model_api.inherit('Team', team_payload, {
     'team_id': fields.Integer(
         description="The id of the team"
     ),
