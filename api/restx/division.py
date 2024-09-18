@@ -24,6 +24,7 @@ division_payload = division_api.model('DivisionPayload', {
     ),
     'division_shortname': fields.String(
         description="The shortened name of the division",
+        required=False
     ),
 })
 division = division_api.inherit("Division", division_payload, {

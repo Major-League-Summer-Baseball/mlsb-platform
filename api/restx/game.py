@@ -56,10 +56,12 @@ game_payload = game_api.model('GamePayload', {
     ),
     'status': fields.String(
         description="The status of the game",
+        required=False,
     ),
     'field': fields.String(
         description="The status of the game",
-        enum=FIELDS
+        enum=FIELDS,
+        required=False,
     ),
     'date': fields.Date(
         description="The date of the espys",
