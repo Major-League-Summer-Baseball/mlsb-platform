@@ -1,7 +1,6 @@
 from flask_restx import Resource, reqparse, Namespace, fields
 from flask import request, url_for
-from .models import get_pagination
-from .player import player
+from .models import get_pagination, team, team_payload
 from datetime import date
 from api.extensions import DB
 from api.model import Team
@@ -52,35 +51,6 @@ team_lookup = team_api.model("TeamLookup", {
     'color': fields.String(
         description="Filter by color of the team",
         required=False
-    ),
-})
-team_payload = team_api.model("TeamPayload", {
-    'color': fields.String(
-        description="The color of the team"
-    ),
-    'sponsor_id': fields.Integer(
-        description="The id of the teams's sponsor"
-    ),
-    'league_id': fields.Integer(
-        description="The id of the league the team belongs to"
-    ),
-    'year': fields.Integer(
-        description="The year the team played"
-    )
-})
-team = team_api.inherit("Team", team_payload, {
-    'team_id': fields.Integer(
-        description="The id of the team"
-    ),
-    'team_name': fields.String(
-        description="The name of the team"
-    ),
-    'espys': fields.Integer(
-        description="The total espys points awarded to the team"
-    ),
-    'captain': fields.Nested(
-        player,
-        description="The name of the team"
     ),
 })
 pagination = get_pagination(team_api)

@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse, Namespace, fields
 from flask import request, url_for
 from sqlalchemy import func
-from .models import get_pagination
+from .models import get_pagination, player_payload, player, team
 from api.extensions import DB
 from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
 from api.authentication import requires_admin
@@ -54,28 +54,6 @@ player_lookup = player_api.model("PlayerLookup", {
         description="Filter by name of the player",
         required=False
     )
-})
-player_payload = player_api.model('PlayerPayload', {
-    'player_name': fields.String(
-        description="The name of the player",
-    ),
-    'gender': fields.String(
-        description="The gender of the player",
-        default="M",
-        enum=['F', 'M', 'T']
-    ),
-    'active': fields.Boolean(
-        description="Whether the player is active in the league or not",
-        default=True
-    ),
-    'email': fields.String(
-        description="The email of the player"
-    )
-})
-player = player_api.inherit("Player", player_payload, {
-    'player_id': fields.Integer(
-        description="The id of the player",
-    ),
 })
 pagination = get_pagination(player_api)
 player_pagination = player_api.inherit("PlayerPagination", pagination, {
@@ -206,6 +184,23 @@ class PlayerLookupAPI(Resource):
             )
         players = player_query.all()
         return [player.json() for player in players]
+
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
+
+@player_api.route("/<int:player_id>/teams", endpoint="rest.player.teams")
+class PlayerTeamsAPI(Resource):
+
+    @player_api.marshal_list_with(team)
+    def get(self, player_id):
+        # expose a single user
+        entry = Player.query.get(player_id)
+        if entry is None:
+            return []
+        return [team.json() for team in entry.teams]
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \

@@ -1,4 +1,5 @@
 from .fun import fun_api
+from .models import model_api
 from .player import player_api
 from .sponsor import sponsor_api
 from .espys import espys_api
@@ -24,16 +25,17 @@ apiX = Api(
         }
     },
 )
-apiX.add_namespace(fun_api)
-apiX.add_namespace(player_api)
-apiX.add_namespace(sponsor_api)
-apiX.add_namespace(espys_api)
-apiX.add_namespace(division_api)
-apiX.add_namespace(team_api)
-apiX.add_namespace(league_api)
-apiX.add_namespace(game_api)
+apiX.add_namespace(model_api)
 apiX.add_namespace(bat_api)
+apiX.add_namespace(division_api)
+apiX.add_namespace(espys_api)
+apiX.add_namespace(fun_api)
+apiX.add_namespace(game_api)
+apiX.add_namespace(league_api)
 apiX.add_namespace(league_event_api)
 apiX.add_namespace(league_event_date_api)
+apiX.add_namespace(player_api)
 apiX.add_namespace(schedule_api)
+apiX.add_namespace(sponsor_api)
+apiX.add_namespace(team_api)
 apiX.add_namespace(team_stats_api)
