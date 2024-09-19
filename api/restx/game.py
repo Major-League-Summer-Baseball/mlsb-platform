@@ -8,7 +8,7 @@ from .models import get_pagination
 from api.extensions import DB
 from api.variables import FIELDS, UNASSIGNED
 from api.model import Game
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import GameDoesNotExist, InvalidField, NotTeamCaptain, PlayerNotSubscribed, TeamDoesNotExist
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response
@@ -91,7 +91,7 @@ game_pagination = game_api.inherit("GamePagination", pagination, {
 @game_api.route("/<int:game_id>", endpoint="rest.game")
 @game_api.doc(params={"game_id": "The id of the game"})
 class GameAPI(Resource):
-
+    @game_api.doc(security=[])
     @game_api.marshal_with(game)
     def get(self, game_id):
         # expose a single game
@@ -100,7 +100,7 @@ class GameAPI(Resource):
             raise GameDoesNotExist(payload={'details': game_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @game_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @game_api.marshal_with(game)
     def delete(self, game_id):
@@ -112,7 +112,7 @@ class GameAPI(Resource):
         handle_table_change(Tables.GAME, item=game.json())
         return game.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @game_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @game_api.expect(game_payload)
     @game_api.marshal_with(game)
@@ -144,7 +144,7 @@ class GameAPI(Resource):
 
 @game_api.route("", endpoint="rest.games")
 class GameListAPI(Resource):
-
+    @game_api.doc(security=[])
     @game_api.marshal_with(game_pagination)
     def get(self):
         # return a pagination of games
@@ -152,7 +152,7 @@ class GameListAPI(Resource):
         pagination = Game.query.paginate(page, PAGE_SIZE, False)
         return pagination_response(pagination, url_for('rest.games'))
 
-    @requires_admin
+    @require_to_be_convenor
     @game_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @game_api.expect(game_payload)
     @game_api.marshal_with(game)

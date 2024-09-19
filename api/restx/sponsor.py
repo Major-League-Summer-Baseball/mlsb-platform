@@ -3,7 +3,7 @@ from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Sponsor
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import SponsorDoesNotExist
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response
@@ -54,7 +54,7 @@ sponsor_pagination = sponsor_api.inherit("SponsorPagination", pagination, {
 @sponsor_api.route("/<int:sponsor_id>", endpoint="rest.sponsor")
 @sponsor_api.doc(params={"sponsor_id": "The id of the sponsor"})
 class SponsorAPI(Resource):
-
+    @sponsor_api.doc(security=[])
     @sponsor_api.marshal_with(sponsor)
     def get(self, sponsor_id):
         # expose a single Sponsor
@@ -63,7 +63,7 @@ class SponsorAPI(Resource):
             raise SponsorDoesNotExist(payload={'details': sponsor_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @sponsor_api.marshal_with(sponsor)
     def delete(self, sponsor_id):
@@ -76,7 +76,7 @@ class SponsorAPI(Resource):
         handle_table_change(Tables.SPONSOR, item=sponsor.json())
         return sponsor.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @sponsor_api.expect(sponsor_payload)
     @sponsor_api.marshal_with(sponsor)
@@ -108,7 +108,7 @@ class SponsorAPI(Resource):
 
 @sponsor_api.route("", endpoint="rest.sponsors")
 class SponsorListAPI(Resource):
-
+    @sponsor_api.doc(security=[])
     @sponsor_api.marshal_with(sponsor_pagination)
     def get(self):
         # return a pagination of Sponsors
@@ -117,7 +117,7 @@ class SponsorListAPI(Resource):
         result = pagination_response(pagination, url_for('rest.sponsors'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @sponsor_api.expect(sponsor_payload)
     @sponsor_api.marshal_with(sponsor)

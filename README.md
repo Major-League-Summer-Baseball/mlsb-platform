@@ -58,8 +58,6 @@ deactivate # to deactivate the virtual environment
 The following variables are used by mlsb-platform and the defaults are in
 brackets:
 
-* ADMIN: the admin's user name ("admin")
-* PASSWORD: the admin password ("password")
 * DATABASE_URL: the postgres database to connect to ("sqlite://")
 * SECRET_KEY:a secret key used by Flask (randomly generated uuid)
 * REDIS_URL: the redis database to use for caching (uses simple cache)

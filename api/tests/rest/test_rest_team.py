@@ -9,17 +9,20 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 def test_able_create_team(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     league_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         color = random_name("Color")
@@ -31,8 +34,7 @@ def test_able_create_team(
                 "league_id": league.id,
                 'year': date.today().year
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -47,15 +49,18 @@ def test_able_create_team(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 def test_required_fields_of_team(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         sponsor = sponsor_factory()
         color = random_name("Color")
         response = client.post(
@@ -65,8 +70,7 @@ def test_required_fields_of_team(
                 "sponsor_id": sponsor.id,
                 'year': date.today().year
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -74,19 +78,22 @@ def test_required_fields_of_team(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
 def test_update_team(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     league_factory,
     team_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         color = random_name("Color")
@@ -97,8 +104,7 @@ def test_update_team(
             json={
                 "color": new_color,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -109,27 +115,29 @@ def test_update_team(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
 def test_delete_team(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     league_factory,
     team_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         color = random_name("Color")
         team = team_factory(color=color, sponsor=sponsor, league=league)
         response = client.delete(
             url_for("rest.team", team_id=team.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert Team.does_team_exist(team.id) is False
@@ -138,17 +146,11 @@ def test_delete_team(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_team(
-    mlsb_app,
-    client,
-    admin_header
-):
+def test_get_all_team(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.teams"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -166,7 +168,6 @@ def test_get_all_team(
 def test_get_team(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     league_factory,
     team_factory,
@@ -187,8 +188,7 @@ def test_get_team(
         )
         response = client.get(
             url_for("rest.team", team_id=team.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -209,10 +209,10 @@ def test_get_team(
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
 def test_able_lookup_team_by_league_id(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     league_factory,
     team_factory,
@@ -234,8 +234,7 @@ def test_able_lookup_team_by_league_id(
         response = client.post(
             url_for("rest.teamlookup"),
             data={'league_id': league.id},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -249,10 +248,10 @@ def test_able_lookup_team_by_league_id(
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
 def test_able_lookup_team_by_year(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     league_factory,
     team_factory,
@@ -274,8 +273,7 @@ def test_able_lookup_team_by_year(
         response = client.post(
             url_for("rest.teamlookup"),
             data={'year': year},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -290,10 +288,10 @@ def test_able_lookup_team_by_year(
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
 def test_able_lookup_team_by_sponsor_id(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     league_factory,
     team_factory,
@@ -315,8 +313,7 @@ def test_able_lookup_team_by_sponsor_id(
         response = client.post(
             url_for("rest.teamlookup"),
             data={'sponsor_id': sponsor.id},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -330,10 +327,10 @@ def test_able_lookup_team_by_sponsor_id(
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('player_factory')
 def test_able_lookup_team_by_color(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     league_factory,
     team_factory,
@@ -355,8 +352,7 @@ def test_able_lookup_team_by_color(
         response = client.post(
             url_for("rest.teamlookup"),
             data={'color': color},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

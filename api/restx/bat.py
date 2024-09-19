@@ -3,7 +3,7 @@ from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Bat
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import BatDoesNotExist
 from api.variables import PAGE_SIZE, BATS
 from api.helper import pagination_response
@@ -74,6 +74,7 @@ bat_pagination = bat_api.inherit("BatPagination", pagination, {
 @bat_api.doc(params={"bat_id": "The id of the bat"})
 class BatAPI(Resource):
 
+    @bat_api.doc(security=[])
     @bat_api.marshal_with(bat)
     def get(self, bat_id):
         entry = Bat.query.get(bat_id)
@@ -81,7 +82,7 @@ class BatAPI(Resource):
             raise BatDoesNotExist(payload={'details': bat_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @bat_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @bat_api.marshal_with(bat)
     def delete(self, bat_id):
@@ -94,7 +95,7 @@ class BatAPI(Resource):
         handle_table_change(Tables.BAT, item=bat.json())
         return bat.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @bat_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @bat_api.expect(bat_payload)
     @bat_api.marshal_with(bat)
@@ -133,6 +134,7 @@ class BatAPI(Resource):
 @bat_api.route("", endpoint="rest.bats")
 class BatListAPI(Resource):
 
+    @bat_api.doc(security=[])
     @bat_api.marshal_with(bat_pagination)
     def get(self):
         #  return a pagination of bats
@@ -140,7 +142,7 @@ class BatListAPI(Resource):
         pagination = Bat.query.paginate(page, PAGE_SIZE, False)
         return pagination_response(pagination, url_for('rest.bats'))
 
-    @requires_admin
+    @require_to_be_convenor
     @bat_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @bat_api.expect(bat_payload)
     @bat_api.marshal_with(bat)

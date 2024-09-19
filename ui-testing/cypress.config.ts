@@ -43,9 +43,6 @@ async function setupNodeEvents(
       },
     })
   );
-  // Make sure to return the config object as it might have been modified by the plugin.
-  config.env.PASSWORD = process.env.PASSWORD;
-  config.env.ADMIN = process.env.ADMIN;
   return config;
 }
 

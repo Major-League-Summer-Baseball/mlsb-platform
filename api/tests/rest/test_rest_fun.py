@@ -10,9 +10,11 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_able_create_fun(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_able_create_fun(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         count = randint(100, 300)
         year = date.today().year + 1
         response = client.post(
@@ -21,8 +23,7 @@ def test_able_create_fun(mlsb_app, client, admin_header):
                 "year": year,
                 "count": count
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -37,9 +38,11 @@ def test_able_create_fun(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_required_fields_of_fun(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_required_fields_of_fun(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         count = randint(100, 300)
         year = randint(2016, date.today().year)
         response = client.post(
@@ -47,8 +50,7 @@ def test_required_fields_of_fun(mlsb_app, client, admin_header):
             json={
                 "year": year,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
         response = client.post(
@@ -56,8 +58,7 @@ def test_required_fields_of_fun(mlsb_app, client, admin_header):
             json={
                 "count": count,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -65,9 +66,11 @@ def test_required_fields_of_fun(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_update_fun(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_update_fun(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         count = randint(100, 300)
         fun = Fun.query.filter(Fun.year == 2016).first()
         response = client.put(
@@ -75,8 +78,7 @@ def test_update_fun(mlsb_app, client, admin_header):
             json={
                 "count": count
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -91,14 +93,15 @@ def test_update_fun(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_delete_fun(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_delete_fun(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         fun = Fun.query.filter(Fun.year == 2016).first()
         response = client.delete(
             url_for("rest.fun", year=fun.year),
             follow_redirects=True,
-            headers=admin_header
         )
         assert response.status_code == 200
         fun_exist = Fun.query.filter(and_(
@@ -110,13 +113,11 @@ def test_delete_fun(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_fun(mlsb_app, client, admin_header):
+def test_get_all_fun(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.funs"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -128,13 +129,12 @@ def test_get_all_fun(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-def test_get_fun(mlsb_app, client, admin_header):
+def test_get_fun(mlsb_app, client):
     with mlsb_app.app_context():
         fun = Fun.query.filter(Fun.year == 2017).first()
         response = client.get(
             url_for("rest.fun", year=fun.year),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

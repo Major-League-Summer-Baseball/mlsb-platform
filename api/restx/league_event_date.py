@@ -3,7 +3,7 @@ from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import LeagueEventDate
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import LeagueEventDateDoesNotExist
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response
@@ -61,7 +61,7 @@ league_event_date_pagination = league_event_date_api.inherit(
     params={"league_event_date_id": "The id of the league event date"}
 )
 class LeagueEventDateAPI(Resource):
-
+    @league_event_date_api.doc(security=[])
     @league_event_date_api.marshal_with(league_event_date)
     def get(self, league_event_date_id):
         entry = LeagueEventDate.query.get(league_event_date_id)
@@ -70,7 +70,7 @@ class LeagueEventDateAPI(Resource):
             raise LeagueEventDateDoesNotExist(payload=payload)
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @league_event_date_api.doc(
         responses={403: 'Not Authorized', 200: 'Deleted'}
     )
@@ -85,7 +85,7 @@ class LeagueEventDateAPI(Resource):
         DB.session.commit()
         return league_event_date.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @league_event_date_api.doc(
         responses={403: 'Not Authorized', 200: 'Updated'}
     )
@@ -116,7 +116,7 @@ class LeagueEventDateAPI(Resource):
 
 @league_event_date_api.route("", endpoint="rest.league_event_dates")
 class LeagueEventDateListAPI(Resource):
-
+    @league_event_date_api.doc(security=[])
     @league_event_date_api.marshal_with(league_event_date_pagination)
     def get(self):
         page = request.args.get('page', 1, type=int)
@@ -125,7 +125,7 @@ class LeagueEventDateListAPI(Resource):
             pagination, url_for('rest.league_event_dates')
         )
 
-    @requires_admin
+    @require_to_be_convenor
     @league_event_date_api.doc(
         responses={403: 'Not Authorized', 200: 'Created'}
     )

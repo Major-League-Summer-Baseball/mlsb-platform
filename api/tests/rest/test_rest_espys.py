@@ -8,19 +8,22 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
 def test_able_create_espys(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         team = team_factory(
@@ -40,8 +43,7 @@ def test_able_create_espys(
                 "receipt": receipt,
                 "points": points,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -58,15 +60,18 @@ def test_able_create_espys(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 def test_required_fields_of_espys(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         sponsor = sponsor_factory()
         description = random_name("Description")
         receipt = random_name("Receipt")
@@ -79,8 +84,7 @@ def test_required_fields_of_espys(
                 "receipt": receipt,
                 "points": points,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -88,7 +92,8 @@ def test_required_fields_of_espys(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -96,13 +101,15 @@ def test_required_fields_of_espys(
 def test_update_espy(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
     espys_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         team = team_factory(
@@ -118,8 +125,7 @@ def test_update_espy(
             json={
                 "points": points
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -130,7 +136,8 @@ def test_update_espy(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -138,13 +145,15 @@ def test_update_espy(
 def test_delete_espy(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
     espys_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         team = team_factory(
@@ -156,8 +165,7 @@ def test_delete_espy(
         espy = espys_factory(team, sponsor=sponsor, description=description)
         response = client.delete(
             url_for("rest.espy", espy_id=espy.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert Espys.query.filter(Espys.id == espy.id).first() is None
@@ -166,17 +174,14 @@ def test_delete_espy(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
 def test_get_all_espys(
     mlsb_app,
-    client,
-    admin_header,
+    client
 ):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.espys"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -195,7 +200,6 @@ def test_get_all_espys(
 def test_get_espy(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -213,8 +217,7 @@ def test_get_espy(
         espy = espys_factory(team, sponsor=sponsor, description=description)
         response = client.get(
             url_for("rest.espy", espy_id=espy.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
