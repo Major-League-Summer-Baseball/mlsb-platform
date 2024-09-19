@@ -63,7 +63,7 @@ team = model_api.inherit('Team', team_payload, {
 
 
 def get_pagination(api: Namespace) -> Model:
-    """Add the pagination model to the given flask-restAPI"""
+    """Add the pagination model to the given flask-rest API"""
     return api.model("Pagination", {
         'has_next': fields.Boolean(
             default=False,
