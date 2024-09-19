@@ -162,6 +162,7 @@ class PlayerListAPIX(Resource):
                {'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'PUT,GET'}
 
+
 @player_api.route("lookup", endpoint="rest.playerlookup")
 class PlayerLookupAPI(Resource):
     @player_api.expect(player_lookup)

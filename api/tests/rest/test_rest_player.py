@@ -112,13 +112,11 @@ def test_delete_player(mlsb_app, client, admin_header, player_factory):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_player(mlsb_app, client, admin_header):
+def test_get_all_player(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.players"),
             follow_redirects=True,
-            headers=admin_header
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -131,13 +129,12 @@ def test_get_all_player(mlsb_app, client, admin_header):
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('player_factory')
-def test_get_player(mlsb_app, client, admin_header, player_factory):
+def test_get_player(mlsb_app, client, player_factory):
     with mlsb_app.app_context():
         player = player_factory()
         response = client.get(
             url_for("rest.player", player_id=player.id),
             follow_redirects=True,
-            headers=admin_header
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -149,34 +146,13 @@ def test_get_player(mlsb_app, client, admin_header, player_factory):
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('player_factory')
-def test_get_player(mlsb_app, client, admin_header, player_factory):
-    with mlsb_app.app_context():
-        player = player_factory()
-        response = client.get(
-            url_for("rest.player", player_id=player.id),
-            follow_redirects=True,
-            headers=admin_header
-        )
-        assert response.status_code == 200
-        data = loads(response.data)
-        assert data['player_id'] == player.id
-        assert data['email'] is None
-
-
-@pytest.mark.rest
-@pytest.mark.usefixtures('mlsb_app')
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('player_factory')
-def test_able_lookup_player_by_active(
-    mlsb_app, client, admin_header, player_factory
-):
+def test_able_lookup_player_by_active(mlsb_app, client, player_factory):
     with mlsb_app.app_context():
         player = player_factory()
         response = client.post(
             url_for("rest.playerlookup"),
             data={'active': 1},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -189,16 +165,13 @@ def test_able_lookup_player_by_active(
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('player_factory')
-def test_able_lookup_player_by_name(
-    mlsb_app, client, admin_header, player_factory
-):
+def test_able_lookup_player_by_name(mlsb_app, client, player_factory):
     with mlsb_app.app_context():
         player = player_factory()
         response = client.post(
             url_for("rest.playerlookup"),
             data={'player_name': player.name},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -210,16 +183,13 @@ def test_able_lookup_player_by_name(
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('player_factory')
-def test_able_lookup_player_by_email(
-    mlsb_app, client, admin_header, player_factory
-):
+def test_able_lookup_player_by_email(mlsb_app, client, player_factory):
     with mlsb_app.app_context():
         player = player_factory()
         response = client.post(
             url_for("rest.playerlookup"),
             data={'email': player.email},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -230,17 +200,12 @@ def test_able_lookup_player_by_email(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('player_factory')
-def test_not_able_lookup_player_by_nonexistent_email(
-    mlsb_app, client, admin_header, player_factory
-):
+def test_not_able_lookup_player_by_nonexistent_email(mlsb_app, client):
     with mlsb_app.app_context():
-        player = player_factory()
         response = client.post(
             url_for("rest.playerlookup"),
             data={'email': random_email()},
             follow_redirects=True,
-            headers=admin_header
         )
         assert response.status_code == 200
         data = loads(response.data)
