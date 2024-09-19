@@ -1,21 +1,24 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
-from .models import get_pagination
+from flask import request, url_for
+from sqlalchemy import func
+from .models import get_pagination, player_payload, player, team
 from api.extensions import DB
 from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
 from api.authentication import requires_admin
 from api.errors import PlayerDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
+
+
 parser = reqparse.RequestParser()
 parser.add_argument('player_name', type=str)
 parser.add_argument('gender', type=str)
 parser.add_argument('email', type=str)
 parser.add_argument('password', type=str)
 parser.add_argument('active', type=int)
+
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('player_name', type=str, required=True)
 post_parser.add_argument('gender', type=str)
@@ -23,31 +26,34 @@ post_parser.add_argument('email', type=str, required=True)
 post_parser.add_argument('password', type=str)
 post_parser.add_argument("active", type=int)
 
+
+lookup_parser = reqparse.RequestParser(bundle_errors=True)
+lookup_parser.add_argument('player_name', type=str)
+lookup_parser.add_argument('email', type=str)
+lookup_parser.add_argument("active", type=int)
+
+
 player_api = Namespace(
     "player",
     description="API for all the League's Players"
 )
-player_payload = player_api.model('PlayerPayload', {
-    'player_name': fields.String(
-        description="The name of the player",
-    ),
-    'gender': fields.String(
-        description="The gender of the player",
-        default="M",
-        enum=['F', 'M', 'T']
-    ),
-    'active': fields.Boolean(
-        description="Whether the player is active in the league or not",
-        default=True
+player_lookup = player_api.model("PlayerLookup", {
+    'active': fields.Integer(
+        description="Filter only active players",
+        example="1",
+        required=False,
+        max=1,
+        min=0,
+        default=0
     ),
     'email': fields.String(
-        description="The email of the player"
-    )
-})
-player = player_api.inherit("Player", player_payload, {
-    'player_id': fields.Integer(
-        description="The id of the player",
+        description="Filter by email of the player",
+        required=False
     ),
+    'player_name': fields.String(
+        description="Filter by name of the player",
+        required=False
+    )
 })
 pagination = get_pagination(player_api)
 player_pagination = player_api.inherit("PlayerPagination", pagination, {
@@ -129,7 +135,7 @@ class PlayerListAPIX(Resource):
         # return a pagination of users
         page = request.args.get('page', 1, type=int)
         pagination = Player.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['player'])
+        result = pagination_response(pagination, url_for('rest.players'))
         return result
 
     @requires_admin
@@ -150,6 +156,52 @@ class PlayerListAPIX(Resource):
         DB.session.commit()
         handle_table_change(Tables.PLAYER, item=player.json())
         return player.admin_json()
+
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
+
+@player_api.route("lookup", endpoint="rest.playerlookup")
+class PlayerLookupAPI(Resource):
+    @player_api.expect(player_lookup)
+    @player_api.marshal_list_with(player)
+    def post(self):
+        args = lookup_parser.parse_args()
+        email = args.get('email', None)
+        player_name = args.get('player_name', None)
+        player_query = Player.query
+        if email is not None:
+            player = Player.find_by_email(email)
+            if player is not None:
+                return [player.json()]
+            return []
+        if args['active'] and args['active'] == 1:
+            player_query = player_query.filter(Player.active == True)
+        if player_name is not None:
+            player_query = player_query.filter(
+                func.lower(Player.name).contains(player_name.lower())
+            )
+        players = player_query.all()
+        return [player.json() for player in players]
+
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
+
+@player_api.route("/<int:player_id>/teams", endpoint="rest.player.teams")
+class PlayerTeamsAPI(Resource):
+
+    @player_api.marshal_list_with(team)
+    def get(self, player_id):
+        # expose a single user
+        entry = Player.query.get(player_id)
+        if entry is None:
+            return []
+        return [team.json() for team in entry.teams]
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \

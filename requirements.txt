@@ -1,5 +1,4 @@
 Flask==2.2.3
-Flask-RESTful>=0.3
 Flask-SQLAlchemy==2.5.1
 Flask-Security==3.0.0
 Flask-Dance>=3.3.1

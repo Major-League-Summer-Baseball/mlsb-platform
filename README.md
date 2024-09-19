@@ -19,10 +19,6 @@ See the the Wiki Pages for [help](https://github.com/fras2560/mlsb-platform/wiki
 pip install -r requirements.txt
 export FLASK_ENV=development
 python -m flask --app api/app run --host=0.0.0.0
-# to run unittests
-python -m unittest discover -s api/test
-# want to run one suite
-python -m unittest discover -s api/test -p <TEST_SUITE>.py
 # to run pytests
 pytest
 # to run a particular grouping
@@ -112,13 +108,13 @@ docker system prune --volumes --force
 To run the whole suite of tests use:
 
 ```bash
-docker-compose exec mlsb python -m unittest discover -s api/test -p test*.py
+docker-compose exec mlsb python -m pytest
 ```
 
 To run a particular test suite use:
 
 ```bash
-docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>.py
+docker-compose exec mlsb python -m pytest api/tests/<FOLDER>
 ```
 
 ## Documentation/Style
@@ -142,7 +138,7 @@ flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclud
 There is one Github action that runs against pushes to main and development. Additionlly ran when a pull-request is open targeting main and development. It does the following:
 
 * Checks lint issues with flake8
-* Runs unittests and creates a coverage report (artifact)
+* Runs pytests and creates a coverage report (artifact)
 * Runs Cypress UI Tests and video report (artifact)
 
 Additionally there are two Github actions for main and development that deploys them on a commit. They are currently being deployed to fly.IO

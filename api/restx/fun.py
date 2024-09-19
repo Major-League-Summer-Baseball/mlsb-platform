@@ -1,5 +1,5 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from datetime import datetime
 from .models import get_pagination
 from api.extensions import DB
@@ -8,7 +8,6 @@ from api.model import Fun
 from api.authentication import requires_admin
 from api.errors import FunDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -106,7 +105,7 @@ class FunListAPI(Resource):
     def get(self):
         page = request.args.get('page', 1, type=int)
         pagination = Fun.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['fun'])
+        result = pagination_response(pagination, url_for('rest.funs'))
         return result
 
     @requires_admin

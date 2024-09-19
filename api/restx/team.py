@@ -1,59 +1,56 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
-from .models import get_pagination
-from .player import player
+from flask import request, url_for
+from .models import get_pagination, team, team_payload
 from datetime import date
 from api.extensions import DB
 from api.model import Team
 from api.authentication import requires_admin
 from api.errors import TeamDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
+
+
 parser = reqparse.RequestParser()
 parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
 parser.add_argument('league_id', type=int)
 parser.add_argument('year', type=int)
+
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('sponsor_id', type=int, required=True)
 post_parser.add_argument('color', type=str, required=True)
 post_parser.add_argument('league_id', type=int, required=True)
 post_parser.add_argument('year', type=int, required=True)
 
+lookup_parser = reqparse.RequestParser(bundle_errors=True)
+lookup_parser.add_argument('sponsor_id', type=int)
+lookup_parser.add_argument('color', type=str)
+lookup_parser.add_argument('league_id', type=int)
+lookup_parser.add_argument('year', type=int)
+
+
 team_api = Namespace(
     "team",
     description="API for all the League's Teams"
 )
-team_payload = team_api.model("TeamPayload", {
-    'color': fields.String(
-        description="The color of the team"
-    ),
+team_lookup = team_api.model("TeamLookup", {
     'sponsor_id': fields.Integer(
-        description="The id of the teams's sponsor"
-    ),
-    'league_id': fields.Integer(
-        description="The id of the league the team belongs to"
+        description="Filter by sponsors of the team",
+        required=False
     ),
     'year': fields.Integer(
-        description="The year the team played"
-    )
-})
-team = team_api.inherit("Team", team_payload, {
+        description="Filter by year of the team",
+        required=False
+    ),
     'team_id': fields.Integer(
-        description="The id of the team"
+        description="Filter by year of the team",
+        required=False
     ),
-    'team_name': fields.String(
-        description="The name of the team"
-    ),
-    'espys': fields.Integer(
-        description="The total espys points awarded to the team"
-    ),
-    'captain': fields.Nested(
-        player,
-        description="The name of the team"
+    'color': fields.String(
+        description="Filter by color of the team",
+        required=False
     ),
 })
 pagination = get_pagination(team_api)
@@ -128,7 +125,7 @@ class TeamListAPI(Resource):
         # return a pagination of teams
         page = request.args.get('page', 1, type=int)
         pagination = Team.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['team'])
+        result = pagination_response(pagination, url_for('rest.teams'))
         return result
 
     @requires_admin
@@ -154,6 +151,36 @@ class TeamListAPI(Resource):
         DB.session.commit()
         handle_table_change(Tables.TEAM, item=team.json())
         return team.json()
+
+    def option(self):
+        return {'Allow': 'PUT'}, 200, \
+               {'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'PUT,GET'}
+
+
+@team_api.route("lookup", endpoint="rest.teamlookup")
+class TeamLookupAPI(Resource):
+    @team_api.expect(team_lookup)
+    @team_api.marshal_list_with(team)
+    def post(self):
+        args = lookup_parser.parse_args()
+        color = args.get('color', None)
+        sponsor_id = args.get('sponsor_id', None)
+        league_id = args.get('league_id', None)
+        year = args.get('year', None)
+        team_query = Team.query
+
+        if league_id is not None:
+            team_query = team_query.filter(Team.league_id == league_id)
+        if year is not None:
+            team_query = team_query.filter(Team.year == year)
+        if sponsor_id is not None:
+            team_query = team_query.filter(Team.sponsor_id == sponsor_id)
+        if color is not None:
+            team_query = team_query.filter(Team.color.contains(color))
+
+        teams = team_query.all()
+        return [team.json() for team in teams]
 
     def option(self):
         return {'Allow': 'PUT'}, 200, \

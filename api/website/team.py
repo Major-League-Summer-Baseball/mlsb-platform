@@ -8,7 +8,7 @@ from api.extensions import DB
 from api.model import Team, Player, JoinLeagueRequest
 from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES, PLAYER_PAGE_SIZE
 from api.website.helpers import get_team
-from api.advanced.players_stats import post as player_summary
+from api.queries.player import player_summary
 from api.cached_items import get_team_map
 from api.authentication import \
     get_user_information, get_team_authorization, require_captain, require_login

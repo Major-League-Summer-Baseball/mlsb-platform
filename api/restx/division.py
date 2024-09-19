@@ -5,9 +5,8 @@ from api.extensions import DB
 from api.authentication import requires_admin
 from api.errors import DivisionDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from flask import request, url_for
 parser = reqparse.RequestParser()
 parser.add_argument('division_name', type=str)
 parser.add_argument('division_shortname', type=str)
@@ -25,6 +24,7 @@ division_payload = division_api.model('DivisionPayload', {
     ),
     'division_shortname': fields.String(
         description="The shortened name of the division",
+        required=False
     ),
 })
 division = division_api.inherit("Division", division_payload, {
@@ -94,7 +94,7 @@ class DivisionListAPI(Resource):
         # return a pagination of Divisions
         page = request.args.get('page', 1, type=int)
         pagination = Division.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['division'])
+        result = pagination_response(pagination, url_for('rest.divisions'))
         return result
 
     @requires_admin

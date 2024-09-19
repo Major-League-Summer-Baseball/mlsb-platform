@@ -6,7 +6,7 @@ from api.variables import UNASSIGNED
 from api.authentication import \
     get_user_information, require_captain, api_require_captain, \
     require_to_be_a_captain
-from api.bot.submit_scores import remove_submitted_score, submit_bats, \
+from api.restx.game import remove_submitted_score, submit_bats, \
     submit_score
 from api.model import Bat, Team, Game
 from api.errors import GameDoesNotExist, NotTeamCaptain, TeamDoesNotExist

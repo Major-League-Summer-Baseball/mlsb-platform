@@ -1,12 +1,11 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Sponsor
 from api.authentication import requires_admin
 from api.errors import SponsorDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -115,7 +114,7 @@ class SponsorListAPI(Resource):
         # return a pagination of Sponsors
         page = request.args.get('page', 1, type=int)
         pagination = Sponsor.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['sponsor'])
+        result = pagination_response(pagination, url_for('rest.sponsors'))
         return result
 
     @requires_admin

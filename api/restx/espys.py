@@ -1,12 +1,11 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Espys
 from api.authentication import requires_admin
 from api.errors import EspysDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -141,7 +140,7 @@ class EspyListAPI(Resource):
         # return a pagination of teams
         page = request.args.get('page', 1, type=int)
         pagination = Espys.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['espy'])
+        result = pagination_response(pagination, url_for('rest.espys'))
         return result
 
     @requires_admin

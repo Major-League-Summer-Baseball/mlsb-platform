@@ -1,12 +1,11 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import LeagueEvent
 from api.authentication import requires_admin
 from api.errors import LeagueEventDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 
 parser = reqparse.RequestParser()
@@ -111,7 +110,7 @@ class LeagueEventListAPI(Resource):
     def get(self):
         page = request.args.get('page', 1, type=int)
         pagination = LeagueEvent.query.paginate(page, PAGE_SIZE, False)
-        return pagination_response(pagination, Routes['league_event'])
+        return pagination_response(pagination, url_for('rest.league_events'))
 
     @requires_admin
     @league_event_api.doc(responses={403: 'Not Authorized', 200: 'Created'})

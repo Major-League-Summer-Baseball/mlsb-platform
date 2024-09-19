@@ -37,7 +37,7 @@ The following variables are used by Cypress during testing:
 
 ## Feature Files and Steps
 
-This project uses a [cucumber plugin](https://github.com/badeball/cypress-cucumber-preprocessor). The config file for the plugin is inside `package.json`. The big difference with the current setup is that steps are only scoped for each feature file. So for example `login.feature` will only look for step definitions inside the folder login. The only exception is that the global folder holds step definitions available anywhere. 
+This project uses a [cucumber plugin](https://github.com/badeball/cypress-cucumber-preprocessor). The config file for the plugin is inside `package.json`. The big difference with the current setup is that steps are only scoped for each feature file. So for example `login.feature` will only look for step definitions inside the folder login. The only exception is that the global folder holds step definitions available anywhere.
 
 ## Limitations
 

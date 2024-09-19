@@ -1,6 +1,6 @@
 from flask import render_template, request, session, url_for, redirect, \
     make_response, flash
-from api.advanced.import_team import TeamList
+from api.importers.team import TeamList
 from api.extensions import DB
 from api.models.join_league_request import JoinLeagueRequest
 from api.variables import FILES
