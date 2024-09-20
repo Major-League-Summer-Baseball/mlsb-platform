@@ -9,8 +9,7 @@ from flask_dance.contrib.azure import make_azure_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
-from flask import request, Blueprint, session, Response, redirect, \
-    url_for
+from flask import Blueprint, session, Response, redirect, url_for
 from api.extensions import DB
 from api.model import Player, OAuth, JoinLeagueRequest, Team
 from api.errors import OAuthException, NotPartOfLeagueException, \
@@ -19,9 +18,6 @@ from api.errors import OAuthException, NotPartOfLeagueException, \
 from api.logging import LOGGER
 import os
 
-
-ADMIN = os.environ.get('ADMIN', 'admin')
-PASSWORD = os.environ.get('PASSWORD', 'password')
 
 login_manager = LoginManager()
 login_manager.login_view = "website.loginpage"
@@ -300,12 +296,6 @@ def is_azure_supported() -> bool:
     return os.environ.get("AZURE_OAUTH_CLIENT_ID", "") != ""
 
 
-def check_auth(username: str, password: str) -> bool:
-    """Returns if a username password combination is valid.
-    """
-    return username == ADMIN and password == PASSWORD
-
-
 def authenticate() -> 'Response':
     """Sends a 401 response that enables basic auth"""
     return Response(
@@ -361,6 +351,7 @@ def api_require_captain(f: Callable) -> Callable:
 
 
 def require_login(f: Callable) -> Callable:
+    """Require to be logged in"""
     @wraps(f)
     def decorated(*args, **kwargs):
         if not are_logged_in():
@@ -370,6 +361,7 @@ def require_login(f: Callable) -> Callable:
 
 
 def require_captain(f: Callable) -> Callable:
+    """Require to be a captain of the team part of request."""
     @wraps(f)
     def decorated(*args, **kwargs):
         if not are_logged_in():
@@ -385,6 +377,7 @@ def require_captain(f: Callable) -> Callable:
 
 
 def require_to_be_a_captain(f: Callable) -> Callable:
+    """Require to be a captain of some team."""
     @wraps(f)
     def decorated(*args, **kwargs):
         if not are_logged_in():
@@ -407,22 +400,5 @@ def require_to_be_convenor(f: Callable) -> Callable:
             return redirect(url_for("website.loginpage"))
         if not current_user.is_convenor:
             raise NotLeagueConvenor(payload={"details": current_user.id})
-        return f(*args, **kwargs)
-    return decorated
-
-
-def requires_admin(f: Callable) -> Callable:
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if 'admin' in session and 'password' in session:
-            # check if user signed in already
-            logged = check_auth(session['admin'], session['password'])
-            if not logged:
-                return authenticate()
-        elif are_logged_in() and current_user.is_convenor:
-            return f(*args, **kwargs)
-        elif not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
         return f(*args, **kwargs)
     return decorated

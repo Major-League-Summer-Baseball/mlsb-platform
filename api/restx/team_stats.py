@@ -66,7 +66,7 @@ team_stats = team_stats_api.model('TeamStats', {
 @team_stats_api.route('', endpoint='rest.team_stats')
 @team_stats_api.doc()
 class TeamStatsAPIX(Resource):
-
+    @team_stats_api.doc(security=[])
     @team_stats_api.marshal_list_with(team_stats)
     @team_stats_api.expect(team_stats_payload)
     def post(self):

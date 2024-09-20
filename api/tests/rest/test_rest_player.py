@@ -8,9 +8,11 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_able_create_player(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_able_create_player(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         name = random_name("Rest")
         email = random_email()
         male = "M"
@@ -23,7 +25,6 @@ def test_able_create_player(mlsb_app, client, admin_header):
                 "gender": male
             },
             follow_redirects=True,
-            headers=admin_header
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -38,9 +39,11 @@ def test_able_create_player(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_required_fields_of_player(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_required_fields_of_player(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         name = random_name("Rest")
         email = random_email()
         male = "M"
@@ -51,8 +54,7 @@ def test_required_fields_of_player(mlsb_app, client, admin_header):
                 "active": True,
                 "gender": male
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
         response = client.post(
@@ -62,8 +64,7 @@ def test_required_fields_of_player(mlsb_app, client, admin_header):
                 "active": True,
                 "gender": male
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -71,10 +72,12 @@ def test_required_fields_of_player(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('player_factory')
-def test_update_player(mlsb_app, client, admin_header, player_factory):
+def test_update_player(mlsb_app, client, auth, convenor, player_factory):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         player = player_factory()
         new_email = random_email()
         response = client.put(
@@ -82,8 +85,7 @@ def test_update_player(mlsb_app, client, admin_header, player_factory):
             json={
                 "email": new_email
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -95,15 +97,16 @@ def test_update_player(mlsb_app, client, admin_header, player_factory):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('player_factory')
-def test_delete_player(mlsb_app, client, admin_header, player_factory):
+def test_delete_player(mlsb_app, client, auth, convenor, player_factory):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         player = player_factory()
         response = client.delete(
             url_for("rest.player", player_id=player.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert Player.does_player_exist(player.id) is False

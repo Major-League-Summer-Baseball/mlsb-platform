@@ -51,7 +51,7 @@ schedule_pagination = schedule_api.inherit("SchedulePagination", pagination, {
     params={"year": "The schedule year", "league_id": "The id of the league"}
 )
 class ScheduleAPIX(Resource):
-
+    @schedule_api.doc(security=[])
     @schedule_api.marshal_with(schedule_pagination)
     def get(self, year, league_id):
         page = request.args.get('page', 1, type=int)

@@ -4,7 +4,7 @@ from .models import get_pagination, team, team_payload
 from datetime import date
 from api.extensions import DB
 from api.model import Team
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import TeamDoesNotExist
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response
@@ -62,7 +62,7 @@ team_pagination = team_api.inherit("TeamPagination", pagination, {
 @team_api.route("/<int:team_id>", endpoint="rest.team")
 @team_api.doc(params={"team_id": "The id of the team"})
 class TeamAPI(Resource):
-
+    @team_api.doc(security=[])
     @team_api.marshal_with(team)
     def get(self, team_id):
         # expose a single team
@@ -71,7 +71,7 @@ class TeamAPI(Resource):
             raise TeamDoesNotExist(payload={'details': team_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @team_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @team_api.marshal_with(team)
     def delete(self, team_id):
@@ -85,7 +85,7 @@ class TeamAPI(Resource):
         handle_table_change(Tables.TEAM, item=team_json)
         return team_json
 
-    @requires_admin
+    @require_to_be_convenor
     @team_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @team_api.expect(team_payload)
     @team_api.marshal_with(team)
@@ -119,7 +119,7 @@ class TeamAPI(Resource):
 
 @team_api.route("", endpoint="rest.teams")
 class TeamListAPI(Resource):
-
+    @team_api.doc(security=[])
     @team_api.marshal_with(team_pagination)
     def get(self):
         # return a pagination of teams
@@ -128,7 +128,7 @@ class TeamListAPI(Resource):
         result = pagination_response(pagination, url_for('rest.teams'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @team_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @team_api.expect(team_payload)
     @team_api.marshal_with(team)

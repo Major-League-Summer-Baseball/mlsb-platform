@@ -8,7 +8,8 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -16,13 +17,15 @@ from api.helper import loads
 def test_able_create_game(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
     division_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         division = division_factory()
         league = league_factory()
         sponsor = sponsor_factory()
@@ -42,8 +45,7 @@ def test_able_create_game(
                 "time": game_time,
                 "field": field
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -61,7 +63,8 @@ def test_able_create_game(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -69,7 +72,8 @@ def test_able_create_game(
 def test_required_fields_of_game(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -94,8 +98,7 @@ def test_required_fields_of_game(
                 "time": game_time,
                 "field": field
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -109,8 +112,7 @@ def test_required_fields_of_game(
                 "time": game_time,
                 "field": field
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -124,8 +126,7 @@ def test_required_fields_of_game(
                 "time": game_time,
                 "field": field
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -139,8 +140,7 @@ def test_required_fields_of_game(
                 "time": game_time,
                 "field": field
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -148,7 +148,8 @@ def test_required_fields_of_game(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -157,7 +158,8 @@ def test_required_fields_of_game(
 def test_update_game(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -165,6 +167,7 @@ def test_update_game(
     game_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         division = division_factory()
         league = league_factory()
         sponsor = sponsor_factory()
@@ -186,8 +189,7 @@ def test_update_game(
                 "time": game_time,
                 "field": field
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
 
         assert response.status_code == 200
@@ -200,7 +202,8 @@ def test_update_game(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -209,7 +212,8 @@ def test_update_game(
 def test_delete_game(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -217,6 +221,7 @@ def test_delete_game(
     game_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         division = division_factory()
         league = league_factory()
         sponsor = sponsor_factory()
@@ -231,8 +236,7 @@ def test_delete_game(
 
         response = client.delete(
             url_for("rest.game", game_id=game.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert not Game.does_game_exist(game.id)
@@ -241,17 +245,11 @@ def test_delete_game(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_games(
-    mlsb_app,
-    client,
-    admin_header,
-):
+def test_get_all_games(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.games"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -271,7 +269,6 @@ def test_get_all_games(
 def test_get_game(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -293,8 +290,7 @@ def test_get_game(
 
         response = client.get(
             url_for("rest.game", game_id=game.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

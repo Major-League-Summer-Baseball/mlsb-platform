@@ -41,7 +41,6 @@ def test_able_get_one_team_stats(
         response = client.post(url, data={'team_id': team.id}, follow_redirects=True)
         assert response.status_code == 200
         data = loads(response.data)
-        print(data)
         assert len(data) == 1
         assert data[0]['team_id'] == team.id
 

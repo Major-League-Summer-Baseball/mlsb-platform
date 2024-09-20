@@ -4,7 +4,7 @@ from sqlalchemy import func
 from .models import get_pagination, player_payload, player, team
 from api.extensions import DB
 from api.model import JoinLeagueRequest as TeamRequest, Player, OAuth
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import PlayerDoesNotExist
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response
@@ -64,7 +64,7 @@ player_pagination = player_api.inherit("PlayerPagination", pagination, {
 @player_api.route("/<int:player_id>", endpoint="rest.player")
 @player_api.doc(params={"player_id": "The id of the player"})
 class PlayerAPIX(Resource):
-
+    @player_api.doc(security=[])
     @player_api.marshal_with(player)
     def get(self, player_id):
         # expose a single user
@@ -73,7 +73,7 @@ class PlayerAPIX(Resource):
             raise PlayerDoesNotExist(payload={'details': player_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @player_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @player_api.marshal_with(player)
     def delete(self, player_id):
@@ -94,7 +94,7 @@ class PlayerAPIX(Resource):
         handle_table_change(Tables.PLAYER, item=player.json())
         return player.admin_json()
 
-    @requires_admin
+    @require_to_be_convenor
     @player_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @player_api.expect(player_payload)
     @player_api.marshal_with(player)
@@ -129,7 +129,7 @@ class PlayerAPIX(Resource):
 
 @player_api.route("", endpoint="rest.players")
 class PlayerListAPIX(Resource):
-
+    @player_api.doc(security=[])
     @player_api.marshal_with(player_pagination)
     def get(self):
         # return a pagination of users
@@ -138,7 +138,7 @@ class PlayerListAPIX(Resource):
         result = pagination_response(pagination, url_for('rest.players'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @player_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @player_api.expect(player_payload)
     @player_api.marshal_with(player)

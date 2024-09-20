@@ -8,9 +8,11 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_able_create_sponsor(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_able_create_sponsor(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         name = random_name("Rest")
         response = client.post(
             url_for("rest.sponsors"),
@@ -20,8 +22,7 @@ def test_able_create_sponsor(mlsb_app, client, admin_header):
                 "description": None,
                 'active': True
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -36,9 +37,11 @@ def test_able_create_sponsor(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_required_fields_of_sponsor(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_required_fields_of_sponsor(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         response = client.post(
             url_for("rest.sponsors"),
             json={
@@ -47,7 +50,6 @@ def test_required_fields_of_sponsor(mlsb_app, client, admin_header):
                 'active': True
             },
             follow_redirects=True,
-            headers=admin_header
         )
         assert response.status_code == 400
 
@@ -55,10 +57,12 @@ def test_required_fields_of_sponsor(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
-def test_update_sponsor(mlsb_app, client, admin_header, sponsor_factory):
+def test_update_sponsor(mlsb_app, client, auth, convenor, sponsor_factory):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         sponsor = sponsor_factory()
         name = random_name("Rest")
         response = client.put(
@@ -66,8 +70,7 @@ def test_update_sponsor(mlsb_app, client, admin_header, sponsor_factory):
             json={
                 "sponsor_name": name
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -79,15 +82,16 @@ def test_update_sponsor(mlsb_app, client, admin_header, sponsor_factory):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
-def test_delete_sponsor(mlsb_app, client, admin_header, sponsor_factory):
+def test_delete_sponsor(mlsb_app, client, auth, convenor, sponsor_factory):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         sponsor = sponsor_factory()
         response = client.delete(
             url_for("rest.sponsor", sponsor_id=sponsor.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert Sponsor.does_sponsor_exist(sponsor.id) is False
@@ -96,13 +100,11 @@ def test_delete_sponsor(mlsb_app, client, admin_header, sponsor_factory):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_sponsor(mlsb_app, client, admin_header):
+def test_get_all_sponsor(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.sponsors"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -115,13 +117,12 @@ def test_get_all_sponsor(mlsb_app, client, admin_header):
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('sponsor_factory')
-def test_get_sponsor(mlsb_app, client, admin_header, sponsor_factory):
+def test_get_sponsor(mlsb_app, client, sponsor_factory):
     with mlsb_app.app_context():
         sponsor = sponsor_factory()
         response = client.get(
             url_for("rest.sponsor", sponsor_id=sponsor.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

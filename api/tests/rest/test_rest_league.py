@@ -8,17 +8,18 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_able_create_league(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_able_create_league(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         name = random_name("Rest")
         response = client.post(
             url_for("rest.leagues"),
             json={
                 "league_name": name,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -30,14 +31,15 @@ def test_able_create_league(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_required_fields_of_league(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_required_fields_of_league(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         response = client.post(
             url_for("rest.leagues"),
             json={},
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -45,10 +47,12 @@ def test_required_fields_of_league(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_factory')
-def test_update_league(mlsb_app, client, admin_header, league_factory):
+def test_update_league(mlsb_app, client, auth, convenor, league_factory):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         name = random_name("Rest")
         response = client.put(
@@ -56,8 +60,7 @@ def test_update_league(mlsb_app, client, admin_header, league_factory):
             json={
                 "league_name": name
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -69,15 +72,16 @@ def test_update_league(mlsb_app, client, admin_header, league_factory):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_factory')
-def test_delete_league(mlsb_app, client, admin_header, league_factory):
+def test_delete_league(mlsb_app, client, auth, convenor, league_factory):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league = league_factory()
         response = client.delete(
             url_for("rest.league", league_id=league.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert League.does_league_exist(league.id) is False
@@ -86,13 +90,11 @@ def test_delete_league(mlsb_app, client, admin_header, league_factory):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_league(mlsb_app, client, admin_header):
+def test_get_all_league(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.leagues"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -105,13 +107,12 @@ def test_get_all_league(mlsb_app, client, admin_header):
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('league_factory')
-def test_get_league(mlsb_app, client, admin_header, league_factory):
+def test_get_league(mlsb_app, client, league_factory):
     with mlsb_app.app_context():
         league = league_factory()
         response = client.get(
             url_for("rest.league", league_id=league.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

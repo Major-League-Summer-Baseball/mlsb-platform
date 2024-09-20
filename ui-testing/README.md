@@ -12,8 +12,6 @@ This sub-project to explore testing MLSB-platform in the browser with [Cypress](
 
 ```bash
 npm install
-export ADMIN=<ADMIN_USERNAME>
-export PASSWORD=<PASSWORD>
 # needed if mlsb url is not http://localhost:5000/
 export CYPRESS_baseUrl=<YOUR_MLSB_URL>
 # open the cypress app
@@ -32,8 +30,6 @@ Note: When running the tests from command line it will not run any with @ignore.
 The following variables are used by Cypress during testing:
 
 * `CYPRESS_baseUrl` : the URL of the MLSB instance under test (requied, example: `http://localhost:5000/` )
-* `ADMIN`: the admin username
-* `PASSWORD`: the admin password
 
 ## Feature Files and Steps
 

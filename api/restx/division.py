@@ -2,7 +2,7 @@ from flask_restx import Resource, reqparse, Namespace, fields
 from .models import get_pagination
 from api.model import Division
 from api.extensions import DB
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import DivisionDoesNotExist
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response
@@ -41,7 +41,7 @@ division_pagination = division_api.inherit("DivisionPagination", pagination, {
 @division_api.route("/<int:division_id>", endpoint="rest.division")
 @division_api.doc(params={"division_id": "The id of the division"})
 class DivisionAPI(Resource):
-
+    @division_api.doc(security=[])
     @division_api.marshal_with(division)
     def get(self, division_id):
         # expose a single Division
@@ -50,7 +50,7 @@ class DivisionAPI(Resource):
             raise DivisionDoesNotExist(payload={'details': division_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @division_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @division_api.marshal_with(division)
     def delete(self, division_id):
@@ -62,7 +62,7 @@ class DivisionAPI(Resource):
         DB.session.commit()
         return division.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @division_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @division_api.expect(division_payload)
     @division_api.marshal_with(division)
@@ -88,7 +88,7 @@ class DivisionAPI(Resource):
 
 @division_api.route("", endpoint="rest.divisions")
 class DivisionListAPI(Resource):
-
+    @division_api.doc(security=[])
     @division_api.marshal_with(division_pagination)
     def get(self):
         # return a pagination of Divisions
@@ -97,7 +97,7 @@ class DivisionListAPI(Resource):
         result = pagination_response(pagination, url_for('rest.divisions'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @division_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @division_api.expect(division_payload)
     @division_api.marshal_with(division)

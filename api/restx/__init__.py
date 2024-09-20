@@ -16,14 +16,33 @@ from flask_restx import Api
 apiX = Api(
     version="0.1",
     title="MLSB V2 API",
+    contact="dallas.fraser.waterloo@gmail.com",
     doc="/rest/swagger",
     prefix="/rest",
     endpoint="restx",
     authorizations={
-        "admin": {
-            "type": "basic",
-        }
+        "google": {
+            "type": "oauth2",
+            "flow": "implicit",
+            "authorizationUrl": "/login/google/authorized",
+        },
+        "github": {
+            "type": "oauth2",
+            "flow": "implicit",
+            "authorizationUrl": "/login/github/authorized",
+        },
+        "azure": {
+            "type": "oauth2",
+            "flow": "implicit",
+            "authorizationUrl": "/login/azure/authorized",
+        },
+        "facebook": {
+            "type": "oauth2",
+            "flow": "implicit",
+            "authorizationUrl": "/login/facebook/authorized",
+        },
     },
+    security=["google", "github", "azure", "facebook"],
 )
 apiX.add_namespace(model_api)
 apiX.add_namespace(bat_api)
