@@ -9,8 +9,7 @@ from flask_dance.contrib.azure import make_azure_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import LoginManager, current_user, login_user
-from flask import request, Blueprint, session, Response, redirect, \
-    url_for
+from flask import Blueprint, session, Response, redirect, url_for
 from api.extensions import DB
 from api.model import Player, OAuth, JoinLeagueRequest, Team
 from api.errors import OAuthException, NotPartOfLeagueException, \
