@@ -49,6 +49,7 @@ jobs:
         run: |
           pip install coverage
           export FLASK_ENV="development"
+          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest api/tests/website/test_team_captain.py -s
           coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest -s
           coverage xml
           coverage html
