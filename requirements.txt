@@ -13,5 +13,5 @@ Flask-Caching>=2.3.0
 redis>=3.1
 requests>=2.9
 SQLAlchemy-Utils>=0.41.2
-pytest>=7.4.3
+pytest>=8.3.3
 flask-ckeditor==1.0.0
