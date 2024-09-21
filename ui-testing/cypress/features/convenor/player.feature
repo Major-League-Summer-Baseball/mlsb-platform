@@ -28,7 +28,6 @@ Scenario: Able to respond to league request
       And I respond to their request
      Then I see request was accepted
 
-@focus
 Scenario: Able to merge player
     Given a players exists
      When I navigate to the "players" page
