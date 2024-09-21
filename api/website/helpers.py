@@ -37,9 +37,12 @@ def get_team(year, team_id: int) -> dict:
                 'sp': "{0:.3f}".format(sp)
             })
         record = single_team(team_id)
+        league_name = "No league"
+        if result.league_id is not None:
+            league_name = str(League.query.get(result.league_id))
         team = {
             'name': str(result),
-            'league': str(League.query.get(result.league_id)),
+            'league': league_name,
             'captain': str(captain),
             'captain_id': result.player_id,
             'players': [player.json() for player in result.players],

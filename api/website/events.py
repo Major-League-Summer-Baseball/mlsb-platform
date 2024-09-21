@@ -76,9 +76,10 @@ def events_page(year):
     events = get_year_events(year)
     if are_logged_in():
         for i in range(0, len(events)):
-            event = LeagueEventDate.query.get(
-                events[i]['league_event_date_id']
-            )
+            event = None
+            league_event_date_id = events[i]['league_event_date_id']
+            if league_event_date_id is not None:
+                event = LeagueEventDate.query.get(league_event_date_id)
             if event is None:
                 events[i]['registered'] = False
             else:

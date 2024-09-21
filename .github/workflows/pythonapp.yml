@@ -49,7 +49,7 @@ jobs:
         run: |
           pip install coverage
           export FLASK_ENV="development"
-          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest
+          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest -s
           coverage xml
           coverage html
       - name: Create Coverage report Artifact

@@ -263,7 +263,9 @@ class Team(DB.Model):
             True of player is the captain
             False otherwise
         """
-        player = Player.query.get(self.player_id)
+        player = None if self.player_id is None else Player.query.get(
+            self.player_id
+        )
         return (
             player is not None and
             player.name == player_name and

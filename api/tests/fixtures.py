@@ -164,11 +164,11 @@ def team_factory(
         league_id=league_id,
         year=year
     )
+    DB.session.add(team)
     for player in players:
         team.insert_player(player.id)
     if captain is not None:
         team.insert_player(captain.id, captain=True)
-    DB.session.add(team)
     DB.session.commit()
     return team
 
