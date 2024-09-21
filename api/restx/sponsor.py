@@ -113,7 +113,9 @@ class SponsorListAPI(Resource):
     def get(self):
         # return a pagination of Sponsors
         page = request.args.get('page', 1, type=int)
-        pagination = Sponsor.query.paginate(page, PAGE_SIZE, False)
+        pagination = Sponsor.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
         result = pagination_response(pagination, url_for('rest.sponsors'))
         return result
 

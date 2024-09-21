@@ -15,6 +15,7 @@ def mlsb_app():
     mlsb_app = create_app()
     mlsb_app.config.update({
         "SERVER_NAME": 'localhost:5000',
+        "TESTING": True
     })
 
     # other setups

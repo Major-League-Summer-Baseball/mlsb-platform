@@ -35,7 +35,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     ckeditor.init_app(app)
     app.config['CKEDITOR_PKG_TYPE'] = 'full'
-    if app.config["ENV"] != "development":
+    if not is_development(app):
         csp = {
             'default-src': [
                 '\'self\'',
@@ -126,7 +126,7 @@ def is_memory_database(url: str) -> bool:
 
 def is_development(app) -> bool:
     """Returns whether the app is in development mode."""
-    return app.config["ENV"] == "development" or app.config["DEBUG"]
+    return app.config["TESTING"] or app.config["DEBUG"]
 
 def create_app():
     app = Flask(__name__)

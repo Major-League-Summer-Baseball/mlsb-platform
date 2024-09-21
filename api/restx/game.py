@@ -149,7 +149,9 @@ class GameListAPI(Resource):
     def get(self):
         # return a pagination of games
         page = request.args.get('page', 1, type=int)
-        pagination = Game.query.paginate(page, PAGE_SIZE, False)
+        pagination = Game.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
         return pagination_response(pagination, url_for('rest.games'))
 
     @require_to_be_convenor

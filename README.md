@@ -18,7 +18,7 @@ See the the Wiki Pages for [help](https://github.com/fras2560/mlsb-platform/wiki
 ```bash
 pip install -r requirements.txt
 export FLASK_ENV=development
-python -m flask --app api/app run --host=0.0.0.0
+python -m flask --app api/app run --host=0.0.0.0 --debug
 # to run pytests
 pytest
 # to run a particular grouping

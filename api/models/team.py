@@ -60,9 +60,10 @@ class Team(DB.Model):
         'Espys', backref='team', lazy='dynamic'
     )
     sponsor_name = column_property(
-        select([Sponsor.nickname])
+        select(Sponsor.nickname)
         .where(Sponsor.id == sponsor_id)
         .correlate_except(Sponsor)
+        .scalar_subquery()
     )
 
     def __init__(

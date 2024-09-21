@@ -27,7 +27,7 @@ class Player(UserMixin, DB.Model):
     name = DB.Column(DB.String(80))
     email = DB.Column(DB.String(120), unique=True)
     gender = DB.Column(DB.String(1))
-    password = DB.Column(DB.String(120))
+    password = DB.Column(DB.String(240))
     bats = DB.relationship(
         'Bat', backref='player', lazy='dynamic'
     )
