@@ -72,6 +72,7 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
                                   result[player]['e'] +
                                   result[player]['go']
                                   )
+        bats = max(result[player]['bats'], 1)
         result[player]['avg'] = round(((result[player]['s'] +
                                         result[player]['ss'] +
                                         result[player]['d'] +
