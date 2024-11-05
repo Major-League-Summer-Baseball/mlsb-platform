@@ -138,8 +138,6 @@ def create_app():
     register_apixs(app)
     register_commands(app)
     need_database = is_memory_database(app.config["URL"])
-    print(f"Need database: {need_database}")
-    print(app.config)
     if is_memory_database(app.config["URL"]) and is_development(app):
         # if development with no db url use an in memory database
         # so must initialize it
