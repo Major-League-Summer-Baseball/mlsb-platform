@@ -111,8 +111,13 @@ def get_team_lookup(league, year=datetime.datetime.today().year):
     for team in league.teams:
         if team.year == year:
             teams[str(team)] = team.id
-            sponsor = str(Sponsor.query.get(team.sponsor_id))
-            teams[sponsor + " " + team.color] = team.id
+            team_parts = []
+            if team.sponsor_id is not None:
+                sponsor = Sponsor.query.get(team.sponsor_id)
+                if sponsor is not None:
+                    team_parts.append(str(sponsor))
+            team_parts.append(team.color)
+            teams[" ".join(team_parts) + " " + team.color] = team.id
     return teams
 
 

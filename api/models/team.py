@@ -60,9 +60,10 @@ class Team(DB.Model):
         'Espys', backref='team', lazy='dynamic'
     )
     sponsor_name = column_property(
-        select([Sponsor.nickname])
+        select(Sponsor.nickname)
         .where(Sponsor.id == sponsor_id)
         .correlate_except(Sponsor)
+        .scalar_subquery()
     )
 
     def __init__(
@@ -262,7 +263,9 @@ class Team(DB.Model):
             True of player is the captain
             False otherwise
         """
-        player = Player.query.get(self.player_id)
+        player = None if self.player_id is None else Player.query.get(
+            self.player_id
+        )
         return (
             player is not None and
             player.name == player_name and

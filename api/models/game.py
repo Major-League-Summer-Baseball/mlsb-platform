@@ -244,27 +244,29 @@ class Game(DB.Model):
 
     # use this column property sparingly
     away_team_score = column_property(
-        select([func.sum(Bat.rbi)])
+        select(func.sum(Bat.rbi))
         .where(
             and_(
                 (Bat.game_id == id),
                 (Bat.team_id == away_team_id)
             )
         )
-        .correlate_except(Bat),
+        .correlate_except(Bat)
+        .scalar_subquery(),
         deferred=True,
         group='summary'
     )
     # use this column property sparingly
     home_team_score = column_property(
-        select([func.sum(Bat.rbi)])
+        select(func.sum(Bat.rbi))
         .where(
             and_(
                 (Bat.game_id == id),
                 (Bat.team_id == home_team_id)
             )
         )
-        .correlate_except(Bat),
+        .correlate_except(Bat)
+        .scalar_subquery(),
         deferred=True,
         group='summary')
     hit_clause = or_(
@@ -274,7 +276,7 @@ class Game(DB.Model):
         (Bat.classification == 'hr')
     )
     home_team_hits = column_property(
-        select([func.count(Bat.id)])
+        select(func.count(Bat.id))
         .where(
             and_(
                 (Bat.game_id == id),
@@ -282,12 +284,13 @@ class Game(DB.Model):
                 hit_clause
             )
         )
-        .correlate_except(Bat),
+        .correlate_except(Bat)
+        .scalar_subquery(),
         deferred=True,
         group='summary'
     )
     away_team_hits = column_property(
-        select([func.count(Bat.id)])
+        select(func.count(Bat.id))
         .where(
             and_(
                 (Bat.game_id == id),
@@ -295,7 +298,8 @@ class Game(DB.Model):
                 hit_clause
             )
         )
-        .correlate_except(Bat),
+        .correlate_except(Bat)
+        .scalar_subquery(),
         deferred=True,
         group='summary'
     )
@@ -718,4 +722,4 @@ class Game(DB.Model):
 
 def generate_sum_of_case(condition: PropComparator, count) -> Alias:
     """Generate a func to sum the given condition"""
-    return func.sum(case([(condition, count)], else_=0))
+    return func.sum(case((condition, count), else_=0))

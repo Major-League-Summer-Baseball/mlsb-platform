@@ -146,6 +146,7 @@ def test_join_team_duplicated_request(
     client, mlsb_app, team_factory, join_league_request_factory
 ):
     with mlsb_app.app_context():
+
         team = team_factory()
         original_request = join_league_request_factory(team)
         url = url_for(
@@ -153,6 +154,9 @@ def test_join_team_duplicated_request(
             team_id=team.id,
         )
         name = f"player-{str(uuid.uuid4())}"
+        with client.session_transaction() as session:
+            # set the user oauth email
+            session["oauth_email"] = original_request.email
         response = client.post(
             url,
             data={
@@ -162,6 +166,7 @@ def test_join_team_duplicated_request(
             },
             follow_redirects=True
         )
-        assert response.status_code == 400
+        assert response.status_code == 200
+        assert "Your request is still pending" in str(response.data)
         result = JoinLeagueRequest.find_request(original_request.email)
         assert result.name == original_request.name

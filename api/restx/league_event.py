@@ -109,7 +109,9 @@ class LeagueEventListAPI(Resource):
     @league_event_api.marshal_with(league_event_pagination)
     def get(self):
         page = request.args.get('page', 1, type=int)
-        pagination = LeagueEvent.query.paginate(page, PAGE_SIZE, False)
+        pagination = LeagueEvent.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
         return pagination_response(pagination, url_for('rest.league_events'))
 
     @require_to_be_convenor

@@ -5,6 +5,7 @@ from api.model import \
     LeagueEvent, LeagueEventDate
 from api.variables import UNASSIGNED_EMAIL, HITS
 from api.tqdm import tqdm
+from sqlalchemy import text
 import click
 import datetime
 import random
@@ -317,22 +318,24 @@ def create_fresh_tables():
     """Creates fresh tables and deletes any previous information."""
     # delete old information
     DB.session.commit()
-    DB.engine.execute("DROP TABLE IF EXISTS flask_dance_oauth;")
-    DB.engine.execute("DROP TABLE IF EXISTS attendance;")
-    DB.engine.execute("DROP TABLE IF EXISTS league_event_date;")
-    DB.engine.execute("DROP TABLE IF EXISTS league_event;")
-    DB.engine.execute("DROP TABLE IF EXISTS join_league_request;")
-    DB.engine.execute("DROP TABLE IF EXISTS flask_dance_oauth;")
-    DB.engine.execute("DROP TABLE IF EXISTS fun;")
-    DB.engine.execute("DROP TABLE IF EXISTS roster;")
-    DB.engine.execute("DROP TABLE IF EXISTS bat;")
-    DB.engine.execute("DROP TABLE IF EXISTS espys;")
-    DB.engine.execute("DROP TABLE IF EXISTS game;")
-    DB.engine.execute("DROP TABLE IF EXISTS division;")
-    DB.engine.execute("DROP TABLE IF EXISTS team;")
-    DB.engine.execute("DROP TABLE IF EXISTS player;")
-    DB.engine.execute("DROP TABLE IF EXISTS sponsor;")
-    DB.engine.execute("DROP TABLE IF EXISTS league;")
+    with DB.engine.connect() as conn:
+        conn.execute(text("DROP TABLE IF EXISTS flask_dance_oauth;"))
+        conn.execute(text("DROP TABLE IF EXISTS attendance;"))
+        conn.execute(text("DROP TABLE IF EXISTS league_event_date;"))
+        conn.execute(text("DROP TABLE IF EXISTS league_event;"))
+        conn.execute(text("DROP TABLE IF EXISTS join_league_request;"))
+        conn.execute(text("DROP TABLE IF EXISTS flask_dance_oauth;"))
+        conn.execute(text("DROP TABLE IF EXISTS fun;"))
+        conn.execute(text("DROP TABLE IF EXISTS roster;"))
+        conn.execute(text("DROP TABLE IF EXISTS bat;"))
+        conn.execute(text("DROP TABLE IF EXISTS espys;"))
+        conn.execute(text("DROP TABLE IF EXISTS game;"))
+        conn.execute(text("DROP TABLE IF EXISTS division;"))
+        conn.execute(text("DROP TABLE IF EXISTS team;"))
+        conn.execute(text("DROP TABLE IF EXISTS player;"))
+        conn.execute(text("DROP TABLE IF EXISTS sponsor;"))
+        conn.execute(text("DROP TABLE IF EXISTS league;"))
+        conn.commit()
     DB.create_all()
 
 

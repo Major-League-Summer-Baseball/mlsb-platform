@@ -287,9 +287,11 @@ def pull_schedule(
         raise LeagueDoesNotExist(payload={'details': league_id})
     start = datetime.combine(date(year, 1, 1), time(0, 0))
     end = datetime.combine(date(year, 12, 30), time(23, 0))
-    games = (Game.query.filter(and_(Game.league_id == league_id,
-                                    Game.date.between(start, end)))
-             ).order_by("date").paginate(page, page_size, False)
+    games = (
+        Game.query.filter(
+            and_(Game.league_id == league_id, Game.date.between(start, end))
+        )
+    ).order_by("date").paginate(page=page, per_page=page_size, error_out=False)
     data = []
     for game in games.items:
         result = game_to_json(game, team_mapper)

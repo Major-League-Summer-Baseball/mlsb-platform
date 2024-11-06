@@ -11,6 +11,8 @@ DB_URL = (DB_URL.replace("postgres://", "postgresql://")
 
 class Config(object):
     URL = DB_URL
+    SERVER_NAME = os.environ.get("SERVER_NAME", None)
+    TESTING = os.environ.get("TESTING", False)
     SECRET_KEY = os.environ.get("SECRET_KEY", str(uuid1()))
     SQLALCHEMY_DATABASE_URI = DB_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
