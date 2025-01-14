@@ -1,7 +1,7 @@
 from datetime import date
 from flask import Response, session, render_template, redirect, url_for, \
     current_app
-from api.errors import InvalidField, NonUniqueEmail, TeamDoesNotExist, \
+from api.errors import ImageDoesNotExist, InvalidField, NonUniqueEmail, TeamDoesNotExist, \
     PlayerDoesNotExist, GameDoesNotExist, \
     LeagueDoesNotExist, SponsorDoesNotExist, \
     PlayerNotOnTeam, FunDoesNotExist, \
@@ -51,6 +51,7 @@ def handle_not_part_of_league():
 @current_app.errorhandler(PlayerNotSubscribed)
 @current_app.errorhandler(BadRequestError)
 @current_app.errorhandler(EspysDoesNotExist)
+@current_app.errorhandler(ImageDoesNotExist)
 @current_app.errorhandler(SponsorDoesNotExist)
 @current_app.errorhandler(DivisionDoesNotExist)
 @current_app.errorhandler(LeagueDoesNotExist)

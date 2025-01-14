@@ -4,9 +4,7 @@ from api.errors import InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
     PlayerNotOnTeam, SponsorDoesNotExist
 from api.validators import string_validator, year_validator
 from api.models.shared import notNone, validate
-from sqlalchemy.orm import column_property
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select
 from api.models.player import Player
 from api.models.league import League
 from api.models.sponsor import Sponsor
@@ -35,36 +33,28 @@ class Team(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     color = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
+    league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
+    year = DB.Column(DB.Integer)
+    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
     home_games = DB.relationship(
         'Game',
-        backref='home_team',
         lazy='dynamic',
+        back_populates='home_team',
         foreign_keys='[Game.home_team_id]'
     )
     away_games = DB.relationship(
         'Game',
-        backref='away_team',
         lazy='dynamic',
+        back_populates='away_team',
         foreign_keys='[Game.away_team_id]'
     )
+    bats = DB.relationship('Bat', lazy='dynamic')
+    captain = DB.relationship('Player', uselist=False)
+    espys = DB.relationship('Espys', lazy='dynamic')
     players = DB.relationship(
-        'Player', secondary=roster, backref=DB.backref('teams', lazy='dynamic')
+        'Player', secondary=roster, back_populates='teams'
     )
-    bats = DB.relationship(
-        'Bat', backref='team', lazy='dynamic'
-    )
-    league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
-    year = DB.Column(DB.Integer)
-    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
-    espys = DB.relationship(
-        'Espys', backref='team', lazy='dynamic'
-    )
-    sponsor_name = column_property(
-        select(Sponsor.nickname)
-        .where(Sponsor.id == sponsor_id)
-        .correlate_except(Sponsor)
-        .scalar_subquery()
-    )
+    sponsor = DB.relationship('Sponsor', back_populates='teams')
 
     def __init__(
         self,
@@ -127,8 +117,8 @@ class Team(DB.Model):
         """Returns the string representation."""
         name_parts = []
         fallback = f"Team: {self.id}"
-        if self.sponsor_name is not None:
-            name_parts.append(self.sponsor_name)
+        if self.sponsor is not None:
+            name_parts.append(str(self.sponsor))
         if self.color is not None:
             name_parts.append(self.color)
         return " ".join(name_parts) if len(name_parts) > 0 else fallback
@@ -139,17 +129,17 @@ class Team(DB.Model):
 
     def json(self, admin: bool = False) -> dict:
         """Returns a jsonserializable object."""
-        if admin:
-            captain = (None if self.player_id is None
-                       else Player.query.get(self.player_id).admin_json())
-        else:
-            captain = (None if self.player_id is None
-                       else Player.query.get(self.player_id).json())
+        captain = None
+        if self.captain is not None:
+            captain = (
+                self.captain.admin_json() if admin else self.captain.json()
+            )
         return {
             'team_id': self.id,
             'team_name': str(self),
             'color': self.color,
             'sponsor_id': self.sponsor_id,
+            'sponsor': None if self.sponsor_id is None else self.sponsor.json(),
             'league_id': self.league_id,
             'year': self.year,
             'espys': self.espys_total if self.espys_total is not None else 0,

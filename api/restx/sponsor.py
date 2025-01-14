@@ -1,5 +1,7 @@
 from flask_restx import Resource, reqparse, Namespace, fields
 from flask import request, url_for
+
+from .image import image
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Sponsor
@@ -15,11 +17,13 @@ parser.add_argument('sponsor_name', type=str)
 parser.add_argument('link', type=str)
 parser.add_argument('description', type=str)
 parser.add_argument('active', type=int)
+parser.add_argument('logo_id', type=int)
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('sponsor_name', type=str, required=True)
 post_parser.add_argument('link', type=str)
 post_parser.add_argument('description', type=str)
 post_parser.add_argument('active', type=int)
+post_parser.add_argument('logo_id', type=int)
 
 sponsor_api = Namespace(
     "sponsor",
@@ -38,12 +42,18 @@ sponsor_payload = sponsor_api.model('SponsorPayload', {
     'active': fields.Boolean(
         description="Whether the sponsor is actively sponsoring the league",
         default=True
+    ),
+    'logo_id': fields.Integer(
+        description='The id of the image to be sponsor logo',
+        default=None,
+        required=False
     )
 })
 sponsor = sponsor_api.inherit("Sponsor", sponsor_payload, {
     'sponsor_id': fields.Integer(
         description="The id of the sponsor"
-    )
+    ),
+    'logo': fields.Nested(image),
 })
 pagination = get_pagination(sponsor_api)
 sponsor_pagination = sponsor_api.inherit("SponsorPagination", pagination, {
@@ -92,9 +102,14 @@ class SponsorAPI(Resource):
         is_active = args.get("active", True)
         active = is_active == 1 if isinstance(is_active, int) else is_active
         description = args.get('description', None)
+        logo_id = args.get('logo_id', None)
 
         sponsor.update(
-            name=name, link=link, description=description, active=active
+            name=name,
+            link=link,
+            description=description,
+            active=active,
+            logo_id=logo_id,
         )
         DB.session.commit()
         handle_table_change(Tables.SPONSOR, item=sponsor.json())
@@ -132,9 +147,13 @@ class SponsorListAPI(Resource):
         is_active = args.get("active", True)
         active = is_active == 1 if isinstance(is_active, int) else is_active
         description = args.get('description', None)
-
+        logo_id = args.get('logo_id', None)
         sponsor = Sponsor(
-            sponsor_name, link=link, description=description, active=active
+            sponsor_name,
+            link=link,
+            description=description,
+            active=active,
+            logo_id=logo_id
         )
         DB.session.add(sponsor)
         DB.session.commit()

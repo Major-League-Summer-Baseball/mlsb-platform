@@ -109,15 +109,10 @@ class LeagueEventDate(DB.Model):
             date: the date of the event for some year
     """
     id = DB.Column(DB.Integer, primary_key=True)
-    event = DB.relationship('LeagueEvent',
-                            backref=DB.backref('event', uselist=False))
     league_event_id = DB.Column(DB.Integer, DB.ForeignKey('league_event.id'))
     date = DB.Column(DB.DateTime)
-    players = DB.relationship(
-        'Player',
-        secondary=attendance,
-        backref=DB.backref('events', lazy='dynamic')
-    )
+    event = DB.relationship('LeagueEvent')
+    players = DB.relationship('Player', secondary=attendance, lazy='dynamic')
 
     def __init__(self, date: str, time: str, league_event_id: int):
         """ League event date constructor. """
@@ -230,5 +225,5 @@ class LeagueEventDate(DB.Model):
             'description': self.event.description,
             'name': self.event.name,
             'active': self.event.active,
-            'attendance': len(self.players),
+            'attendance': self.players.count(),
         }

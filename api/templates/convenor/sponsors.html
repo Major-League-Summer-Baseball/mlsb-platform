@@ -10,6 +10,7 @@
                 hx-post="{{ url_for ('convenor.submit_sponsor') }}"
                 hx-push-url="true"
                 hx-target="#convenorBody"
+                id="sponsorForm{{sponsor.sponsor_id}}"
             >
                 <input
                     type="hidden"
@@ -22,6 +23,8 @@
                     value="{{sponsor.sponsor_name}}"
                     id='sponsorName{{sponsor.sponsor_id}}'
                     name="sponsor_name"
+                    placeholder="Sponsor Name"
+                    aria-label="Sponsor Name"
                 />
                 <input
                     class="input form-control"
@@ -29,6 +32,7 @@
                     id='sponsorLink{{sponsor.sponsor_id}}'
                     name="link"
                     placeholder="Link to Sponsor"
+                    aria-label="Link to Sponsor"
                 />
                 <input
                     class="input form-control"
@@ -36,7 +40,32 @@
                     id='sponsorDescription{{sponsor.sponsor_id}}'
                     name="description"
                     placeholder="Description"
+                    aria-label="Description"
                 />
+                {% if sponsor.logo_id %}
+                    <div 
+                        hx-target="this"
+                        hx-get="{{ url_for('convenor.get_image_control', category='sponsors', image_id=sponsor.logo_id)}}"
+                        hx-trigger="load"
+                        hx-swap="innerHTML"
+                        hx-push-url="false"
+                    >
+                        <span class="glyphicon glyphicon-refresh spinning"></span>
+                    </div>
+                {% else %}
+                    <div 
+                        hx-target="this"
+                        hx-get="{{ url_for('convenor.new_image_control', category='sponsors')}}"
+                        hx-trigger="load"
+                        hx-swap="innerHTML"
+                        hx-push-url="false"
+                    >
+                        <span
+                            class="glyphicon glyphicon-refresh spinning"
+                            aria-busy="true">
+                        </span>
+                    </div>
+                {% endif %}
                 {% if sponsor.active %}
                     <button
                         type="button"
@@ -75,6 +104,7 @@
         class="sponsor-container form-inline mt-3"
         action="{{ url_for ('convenor.submit_sponsor') }}"
         method="post"
+        id="sponsorFormNew"
         hx-post="{{ url_for ('convenor.submit_sponsor') }}"
         hx-push-url="true"
         hx-target="#convenorBody"
@@ -83,6 +113,7 @@
             class="input form-control"
             value=""
             id='newSponsorName'
+            aria-label="Sponsor Name"
             placeholder="Sponsor Name"
             name="sponsor_name"
             required
@@ -92,6 +123,7 @@
             value=""
             id='newSponsorLink'
             name="link"
+            aria-label="Link to Sponsor"
             placeholder="Link to Sponsor"
         />
         <input
@@ -100,7 +132,17 @@
             id='newSponsorDescription'
             name="description"
             placeholder="Description"
+            aria-label="Description"
         />
+        <div 
+            hx-target="this"
+            hx-get="{{ url_for('convenor.new_image_control', category='sponsors')}}"
+            hx-trigger="load"
+            hx-swap="innerHTML"
+            hx-push-url="false"
+        >
+            <span class="glyphicon glyphicon-refresh spinning"></span>
+        </div>
         <button type="submit" class="btn btn-success" id="sponsorCreate">
             Create
         </button>

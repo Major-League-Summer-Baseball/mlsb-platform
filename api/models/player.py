@@ -28,15 +28,13 @@ class Player(UserMixin, DB.Model):
     email = DB.Column(DB.String(120), unique=True)
     gender = DB.Column(DB.String(1))
     password = DB.Column(DB.String(240))
-    bats = DB.relationship(
-        'Bat', backref='player', lazy='dynamic'
-    )
-    team = DB.relationship(
-        'Team', backref='player', lazy='dynamic'
-    )
     active = DB.Column(DB.Boolean)
     kik = DB.Column(DB.String(120))
     is_convenor = DB.Column(DB.Boolean, default=False)
+    bats = DB.relationship('Bat', lazy='dynamic')
+    teams = DB.relationship(
+        'Team', secondary='roster', lazy='dynamic', back_populates='players'
+    )
 
     def __init__(
         self,

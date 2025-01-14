@@ -1,0 +1,67 @@
+<div class="whole-image-container" id="whole-image-container-{{id}}">
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            {{error}}
+        </div>
+    {% endif %}
+    {% if image %}
+        <img src="{{image.url}}" class="image-preview-tiny mr-5" alt="{{category}} image">
+        <input type="hidden" value="{{image.id}}" name="image_id" />
+    {% endif %}
+    <button
+        title="Add image"
+        class="btn btn-info"
+        title="{{category}} Image"
+        hx-trigger="click"
+        type="button"
+        _="
+            on click document.querySelector('#image-modal-{{id}}').showModal() end
+        "
+    >
+        <span class="glyphicon glyphicon-picture"></span>
+    </button>
+    <dialog id="image-modal-{{id}}">
+        <button
+            type="button"
+            class="close"
+            onclick="document.querySelector('#image-modal-{{id}}').close();"
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <h1>{{category|capitalize}} Image</h1>
+        <div class="image-container">
+            {% if image %}
+                <img src="{{image.url}}" class="image-preview" />
+            {% endif %}
+            <form
+                class="image-controls form-inline"
+                hx-target="#whole-image-container-{{id}}"
+                hx-swap="innerHTML"
+                hx-push-rul="false"
+                hx-post="{{ url_for('convenor.upload_image', category=category) }}"
+                method="post"
+                enctype="multipart/form-data">
+                <input type="hidden" value="{{image_id}}" name="image_id" />
+                <div>
+                    <label for='imageUpload{{id}}'>Choose image</label>
+                    <input
+                        type="file"
+                        id="imageUpload{{id}}"
+                        name="image"
+                        accept="image/png"
+                        required
+                    />
+                </div>
+                <button
+                    type="submit"
+                    class="btn btn-primary constrain-btn"
+                >
+                    Upload
+                </button>
+            </form>
+        </div>
+    </dialog>
+</div>

@@ -237,10 +237,16 @@ class Game(DB.Model):
     )
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     division_id = DB.Column(DB.Integer, DB.ForeignKey('division.id'))
-    bats = DB.relationship("Bat", backref="game", lazy='dynamic')
     date = DB.Column(DB.DateTime)
     status = DB.Column(DB.String(120))
     field = DB.Column(DB.String(120))
+    bats = DB.relationship("Bat", lazy='dynamic')
+    home_team = DB.relationship(
+        'Team', foreign_keys='[Game.home_team_id]'
+    )
+    away_team = DB.relationship(
+        'Team', foreign_keys='[Game.away_team_id]'
+    )
 
     # use this column property sparingly
     away_team_score = column_property(
@@ -269,19 +275,18 @@ class Game(DB.Model):
         .scalar_subquery(),
         deferred=True,
         group='summary')
-    hit_clause = or_(
-        (Bat.classification == 's'),
-        (Bat.classification == 'ss'),
-        (Bat.classification == 'd'),
-        (Bat.classification == 'hr')
-    )
     home_team_hits = column_property(
         select(func.count(Bat.id))
         .where(
             and_(
                 (Bat.game_id == id),
                 (Bat.team_id == home_team_id),
-                hit_clause
+                or_(
+                    (Bat.classification == 's'),
+                    (Bat.classification == 'ss'),
+                    (Bat.classification == 'd'),
+                    (Bat.classification == 'hr')
+                )
             )
         )
         .correlate_except(Bat)
@@ -295,7 +300,12 @@ class Game(DB.Model):
             and_(
                 (Bat.game_id == id),
                 (Bat.team_id == away_team_id),
-                hit_clause
+                or_(
+                    (Bat.classification == 's'),
+                    (Bat.classification == 'ss'),
+                    (Bat.classification == 'd'),
+                    (Bat.classification == 'hr')
+                )
             )
         )
         .correlate_except(Bat)

@@ -62,12 +62,18 @@ brackets:
 * SECRET_KEY:a secret key used by Flask (randomly generated uuid)
 * REDIS_URL: the redis database to use for caching (uses simple cache)
 * FLASK_ENV: whether running in development or production (no default)
-
+* AWS_ACCESS_KEY_ID: the access key id for the image storage (no default)
+* AWS_SCRET_ACCESS_KEY: the secret key for the image storage (no default)
+* AWS_REGION: the region for the image storage (no default)
+* AWS_ENDPOINT: the url to the image storage (no default)
+* BUCKET_NAME: the name of the bucket for the image storage (no default)
 The app does expect the the postgres database has had the tables initiated. To intiated the datbase can use
 
 ```bash
 python -m flask --app api/app init-db --create
 ```
+
+Local development will default the image storage to the pictures folder in the static folder. All the AWS variables need to be specified for app to use an external image storage.
 
 ## Developing Using Docker
 

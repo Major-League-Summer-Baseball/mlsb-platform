@@ -251,7 +251,7 @@ function renderPlusMinus(data, type, row, meta) {
         $("#MainHeader").prepend($('<img>',
           {
             id:'theImg',
-            src:"{{ url_for('website.sponsor_picture', name='Pabst') }}"
+            src:"{{ url_for('static', filename='default-images/pabst.png') }}"
           }
         ));
     })

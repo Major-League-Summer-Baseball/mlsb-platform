@@ -24,3 +24,8 @@ Scenario: Able to hide a sponsor
       And I hide the sponsor
      Then sponsor is no longer visible
 
+Scenario: Able to add a sponsor logo
+    Given a sponsor exists
+     When I navigate to the "sponsors" page
+      And I upload a new logo
+      Then I see the logo

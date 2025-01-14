@@ -2,6 +2,7 @@
 """ Some helper functions for various pages. """
 from api.extensions import DB
 from api.model import Team, Player, League
+from api.models.sponsor import Sponsor
 from api.queries.player import player_summary
 from api.cached_items import single_team
 
@@ -60,7 +61,8 @@ def get_teams(year: int) -> list:
     result = (
         DB.session
         .query(Team)
+        .outerjoin(Sponsor)
         .filter(Team.year == year)
-        .order_by(Team.sponsor_name).all()
+        .order_by(Sponsor.name).all()
     )
     return [{'id': team.id, 'name': str(team)} for team in result]
