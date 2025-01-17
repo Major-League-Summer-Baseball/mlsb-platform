@@ -28,4 +28,6 @@ Scenario: Able to add a sponsor logo
     Given a sponsor exists
      When I navigate to the "sponsors" page
       And I upload a new logo
-      Then I see the logo
+      And I click update
+     Then I see sponsor was updated
+      And I see the logo
