@@ -11,14 +11,17 @@ from api.helper import loads
 @pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_able_create_league_event_date(
     mlsb_app,
     client,
     auth,
     convenor,
-    league_event_factory
+    league_event_factory,
+    image_factory,
 ):
     with mlsb_app.app_context():
+        image = image_factory()
         auth.login(convenor.email)
         league_event = league_event_factory()
         event_date, event_time = split_datetime(datetime.today())
@@ -27,7 +30,8 @@ def test_able_create_league_event_date(
             json={
                 "league_event_id": league_event.id,
                 "date": event_date,
-                "time": event_time
+                "time": event_time,
+                "image_id": image.id,
             },
             follow_redirects=True
         )
@@ -36,6 +40,7 @@ def test_able_create_league_event_date(
         assert data['league_event_id'] == league_event.id
         assert data['date'] == event_date
         assert data['time'] == event_time
+        assert data['image_id'] == image.id
         assert isinstance(data['league_event_date_id'], int) is True
         assert LeagueEventDate.query.filter(
             LeagueEventDate.league_event_id == league_event.id
@@ -126,6 +131,44 @@ def test_update_league_event_date(
         assert data['date'] == event_date
         assert data['time'] == event_time
         assert data['league_event_date_id'] == league_event_date.id
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('league_event_date_factory')
+@pytest.mark.usefixtures('image_factory')
+def test_update_league_event_date_image(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_event_factory,
+    league_event_date_factory,
+    image_factory,
+):
+    with mlsb_app.app_context():
+        image = image_factory()
+        auth.login(convenor.email)
+        league_event = league_event_factory()
+        league_event_date = league_event_date_factory(league_event=league_event)
+        event_date, event_time = split_datetime(datetime.today())
+        response = client.put(
+            url_for(
+                "rest.league_event_date",
+                league_event_date_id=league_event_date.id
+            ),
+            json={
+                "image_id": image.id,
+            },
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert data['image_id'] == image.id
 
 
 @pytest.mark.rest

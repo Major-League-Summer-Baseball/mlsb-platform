@@ -14,6 +14,18 @@ ALTER TABLE [sponsor]
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
+ALTER TABLE IF EXISTS [league_event]
+    ADD CONSTRAINT league_event_image_id_fkey FOREIGN KEY (image_id)
+    REFERENCES [image] (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+ALTER TABLE IF EXISTS [league_event_date]
+    ADD CONSTRAINT league_event_date_image_id_fkey FOREIGN KEY (image_id)
+    REFERENCES [image] (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
 -- map all existing sponsors to its logos uploaded to tigris
 INSERT INTO image (url)
 SELECT 
@@ -32,6 +44,29 @@ SET logo_id = (
 	WHERE url = CONCAT(
 		'https://fly.storage.tigris.dev/image-store/sponsors/',
 		REPLACE(LOWER(TRIM(sponsor.name)), ' ', '_'),
+		'.png'
+	)
+);
+
+
+-- map all existing league event to their images uploaded to tigris
+INSERT INTO image (url)
+SELECT 
+	CONCAT(
+		'https://fly.storage.tigris.dev/image-store/events/',
+		REPLACE(LOWER(TRIM(name)), ' ', '_'),
+		'.png'
+	)
+FROM league_event
+WHERE name is not null and name <> ' '
+ORDER BY name;
+
+UPDATE league_event
+SET image_id = (
+	SELECT id FROM image
+	WHERE url = CONCAT(
+		'https://fly.storage.tigris.dev/image-store/events/',
+		REPLACE(LOWER(TRIM(league_event.name)), ' ', '_'),
 		'.png'
 	)
 );

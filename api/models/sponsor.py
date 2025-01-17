@@ -101,7 +101,7 @@ class Sponsor(DB.Model):
         self.link = notNone(link, self.link)
         self.active = notNone(active, self.active)
         self.nickname = notNone(nickname, self.nickname)
-        self.logo_id = logo_id
+        self.logo_id = notNone(logo_id, self.logo_id)
 
     def __repr__(self) -> str:
         """Returns the string representation of the sponsor."""

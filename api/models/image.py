@@ -23,5 +23,5 @@ class Image(DB.Model):
         }
 
     @classmethod
-    def does_image_exist(cls, sponsor_id: str) -> bool:
-        return Image.query.get(sponsor_id) is not None
+    def does_image_exist(cls, image_id: str) -> bool:
+        return Image.query.get(image_id) is not None

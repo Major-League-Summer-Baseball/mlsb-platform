@@ -36,7 +36,11 @@
             <div id="event{{event.league_event_id}}" class="tab-pane fade in">
                 <br>
                 <center>
-                    <img class="eventImage" src="{{ url_for('website.mlsb_event_image', year=year, league_event_id=event.league_event_id) }}">
+                    {% if event.image is not none %}
+                        <img class="eventImage" src="{{event.image.url}}">
+                    {% else %}
+                        <img class="eventImage" src="{{ url_for('static', filename='default-images/event.png') }}">
+                    {% endif %}
                 </center>
                 
                 <br>

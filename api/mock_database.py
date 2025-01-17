@@ -24,6 +24,7 @@ MOCK_EVENTS = [
             games makes for a day that you will never forget.
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/beerlympics.png",
         f"{CURRENT_YEAR}-07-01"
     ),
     (
@@ -36,6 +37,7 @@ MOCK_EVENTS = [
             to watch the boys of summer?
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/jays_game.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -48,6 +50,7 @@ MOCK_EVENTS = [
             this joyous day twice a year.
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/summerween.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -61,6 +64,7 @@ MOCK_EVENTS = [
             MLSB every year and takes place in the winter.
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/mystery_bus.png",
         f"{CURRENT_YEAR}-04-01"
     ),
     (
@@ -78,6 +82,7 @@ MOCK_EVENTS = [
             this one because it is going to be a wild weekend!
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/rafting.png",
         f"{CURRENT_YEAR}-07-08"
     ),
     (
@@ -95,6 +100,7 @@ MOCK_EVENTS = [
             Bring your tents because we will be camping out for the night!
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/grand_bender.png",
         f"{CURRENT_YEAR}-07-28"
     ),
     (
@@ -114,6 +120,7 @@ MOCK_EVENTS = [
             </a>
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/mlsb_alumni.png",
         f"{CURRENT_YEAR}-06-22"
     )
 ]
@@ -176,13 +183,18 @@ sponsors = [
 def mock_events():
     """Mock the events"""
     for event in tqdm(MOCK_EVENTS):
-        league_event = LeagueEvent(event[0], event[2], event[1])
+        event_image = Image(event[3])
+        DB.session.add(event_image)
+        DB.session.commit()
+        league_event = LeagueEvent(
+            event[0], event[2], event[1], image_id=event_image.id
+        )
         DB.session.add(league_event)
         DB.session.commit()
-        if event[3] is not None:
-            event_date = LeagueEventDate(event[3],
-                                         '12:00',
-                                         league_event.id)
+        if event[4] is not None:
+            event_date = LeagueEventDate(
+                event[4], '12:00', league_event.id
+            )
             DB.session.add(event_date)
             DB.session.commit()
 

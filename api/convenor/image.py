@@ -1,4 +1,5 @@
 from flask import redirect, render_template, request, session, url_for
+from datetime import date
 from api.authentication import require_to_be_convenor
 from api.convenor import allow_images_file, convenor_blueprint
 from api.model import Image
@@ -53,7 +54,11 @@ def upload_image(category):
     if using_aws_storage():
         endpoint = 'https://fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
-        bucket_path = f"{category}/{file.filename}"
+        bucket_path = (
+            f"{category}/{file.filename}"
+            if category != 'events-date'
+            else f"events/{date.today().year}/{file.filename}"
+        )
         svc.upload_file(filename, get_image_bucket(), bucket_path)
         url = f"{endpoint}/{get_image_bucket()}/{bucket_path}"
 
