@@ -38,6 +38,8 @@ league_event_date_payload = league_event_date_api.model(
         ),
         'image_id': fields.Integer(
             description="The image for the event for given date",
+            default=None,
+            required=False
         ),
     }
 )

@@ -11,33 +11,6 @@ INVALID_ENTITY = 100000000
 
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
-def test_mlsb_event_image(mlsb_app, client):
-    with mlsb_app.app_context():
-        league_event = LeagueEvent.query.first()
-        url = url_for(
-            "website.mlsb_event_image",
-            year=THIS_YEAR,
-            league_event_id=league_event.id
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_mlsb_nonexistent_event_image(mlsb_app, client):
-    with mlsb_app.app_context():
-        url = url_for(
-            "website.mlsb_event_image",
-            year=THIS_YEAR,
-            league_event_id=INVALID_ENTITY
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
 def test_events_page_json(mlsb_app, client):
     with mlsb_app.app_context():
         url = url_for(

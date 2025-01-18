@@ -34,7 +34,9 @@ league_event_payload = league_event_api.model('LeagueEventPayload', {
         description="Whether the event is active for the league"
     ),
     'image_id': fields.Integer(
-        description="The image for the event"
+        description="The image for the event",
+        default=None,
+        required=False
     )
 })
 league_event = league_event_api.inherit("LeagueEvent", league_event_payload, {
