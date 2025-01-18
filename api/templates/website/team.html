@@ -4,6 +4,9 @@
     <strong>Captain:</strong> {{team.captain}}<br/>
     <strong>League:</strong> {{team.league}}<br/>
     <strong>Record:</strong> {{team.wins}} - {{team.losses}} - {{team.ties}}<br/>
+    {% if team.image %}
+        <img src="{{team.image.url}}" class="team-picture"/>
+    {% endif %}
 </p>
 
 <h3 class="mt-2">

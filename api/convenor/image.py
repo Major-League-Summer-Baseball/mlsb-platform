@@ -26,6 +26,16 @@ def using_aws_storage():
         os.environ.get("BUCKET_NAME", "") != ""
 
 
+def get_bucket_path(category: str, filename: str) -> str:
+    """Returns the bucket path for given category"""
+    year = date.today().year
+    if category == 'event-date':
+        return f"events/{year}/{filename}"
+    elif category == 'teams':
+        return f"teams/{year}/{filename}"
+    return f"{category}/{filename}"
+
+
 @convenor_blueprint.route("image/upload/<category>", methods=['POST'])
 @require_to_be_convenor
 def upload_image(category):
@@ -54,11 +64,7 @@ def upload_image(category):
     if using_aws_storage():
         endpoint = 'https://fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
-        bucket_path = (
-            f"{category}/{file.filename}"
-            if category != 'events-date'
-            else f"events/{date.today().year}/{file.filename}"
-        )
+        bucket_path = get_bucket_path(category, file.filename)
         svc.upload_file(filename, get_image_bucket(), bucket_path)
         url = f"{endpoint}/{get_image_bucket()}/{bucket_path}"
 

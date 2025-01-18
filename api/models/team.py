@@ -1,7 +1,8 @@
 from datetime import date
 from api.extensions import DB
-from api.errors import InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
+from api.errors import ImageDoesNotExist, InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
     PlayerNotOnTeam, SponsorDoesNotExist
+from api.models.image import Image
 from api.validators import string_validator, year_validator
 from api.models.shared import notNone, validate
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -36,6 +37,7 @@ class Team(DB.Model):
     league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
     year = DB.Column(DB.Integer)
     player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
+    image_id = DB.Column(DB.Integer, DB.ForeignKey('image.id'), nullable=True)
     home_games = DB.relationship(
         'Game',
         lazy='dynamic',
@@ -55,13 +57,15 @@ class Team(DB.Model):
         'Player', secondary=roster, back_populates='teams'
     )
     sponsor = DB.relationship('Sponsor', back_populates='teams')
+    image = DB.relationship('Image', lazy=True)
 
     def __init__(
         self,
         color: str = None,
         sponsor_id: int = None,
         league_id: int = None,
-        year: int = date.today().year
+        year: int = date.today().year,
+        image_id: int = None,
     ):
         """ The constructor.
 
@@ -93,11 +97,18 @@ class Team(DB.Model):
             LeagueDoesNotExist(payload={'details': league_id}),
             required=False
         )
+        validate(
+            image_id,
+            lambda id: Image.does_image_exist(id),
+            ImageDoesNotExist(payload={'details': image_id}),
+            required=False
+        )
         self.__update(
             color=color,
             sponsor_id=sponsor_id,
             league_id=league_id,
-            year=year
+            year=year,
+            image_id=image_id
         )
 
     def __update(
@@ -105,12 +116,14 @@ class Team(DB.Model):
         color: str,
         sponsor_id: int,
         league_id: int,
-        year: int
+        year: int,
+        image_id: int
     ):
         self.color = notNone(color, self.color)
         self.sponsor_id = notNone(sponsor_id, self.sponsor_id)
         self.league_id = notNone(league_id, self.league_id)
         self.year = notNone(year, self.year)
+        self.image_id = notNone(image_id, self.image_id)
         self.kik = None
 
     def __repr__(self) -> str:
@@ -143,7 +156,9 @@ class Team(DB.Model):
             'league_id': self.league_id,
             'year': self.year,
             'espys': self.espys_total if self.espys_total is not None else 0,
-            'captain': captain
+            'captain': captain,
+            'image_id': self.image_id,
+            'image': None if self.image_id is None else self.image.json(),
         }
 
     def update(
@@ -151,7 +166,8 @@ class Team(DB.Model):
         color: str = None,
         sponsor_id: int = None,
         league_id: int = None,
-        year: int = None
+        year: int = None,
+        image_id: int = None,
     ) -> None:
         """Updates an existing team.
 
@@ -184,11 +200,18 @@ class Team(DB.Model):
             LeagueDoesNotExist(payload={'details': league_id}),
             required=False
         )
+        validate(
+            image_id,
+            lambda id: Image.does_image_exist(id),
+            ImageDoesNotExist(payload={'details': image_id}),
+            required=False
+        )
         self.__update(
             color=color,
             sponsor_id=sponsor_id,
             league_id=league_id,
-            year=year
+            year=year,
+            image_id=image_id,
         )
 
     def insert_player(self, player_id: int, captain: bool = False) -> None:

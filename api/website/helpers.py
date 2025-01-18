@@ -51,7 +51,9 @@ def get_team(year, team_id: int) -> dict:
             'wins': record['wins'],
             'losses': record['losses'],
             'ties': record['ties'],
-            'stats': stats
+            'stats': stats,
+            'image_id': result.image_id,
+            'image': None if result.image_id is None else result.image.json(),
         }
     return team
 

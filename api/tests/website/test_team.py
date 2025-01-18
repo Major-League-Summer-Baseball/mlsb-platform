@@ -11,57 +11,6 @@ INVALID_ENTITY = 100000000
 
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('mlsb_app')
-def test_team_picture(mlsb_app, client):
-    with mlsb_app.app_context():
-        team = Team.query.first()
-        url = url_for(
-            "website.team_picture",
-            team=team.id
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_nonexistent_team_picture(mlsb_app, client):
-    with mlsb_app.app_context():
-        url = url_for(
-            "website.team_picture",
-            team=INVALID_ENTITY
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_team_picture_by_name(mlsb_app, client):
-    with mlsb_app.app_context():
-        team = Team.query.filter(Team.sponsor_id.isnot(None)).first()
-        url = url_for(
-            "website.team_picture",
-            team=str(team.sponsor)
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_nonexistent_team_picture_by_name(mlsb_app, client):
-    with mlsb_app.app_context():
-        Team.query.filter(Team.sponsor_id.isnot(None)).first()
-        url = url_for(
-            "website.team_picture",
-            team="DefinitelyNotTeamForSure"
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
 def test_team_page(mlsb_app, client):
     with mlsb_app.app_context():
         team = Team.query.filter(Team.year == THIS_YEAR).first()

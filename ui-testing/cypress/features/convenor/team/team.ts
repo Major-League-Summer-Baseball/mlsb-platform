@@ -35,7 +35,7 @@ const fillOutTeamDetails = () => {
             cy.get('#sponsor').select(`${sponsor.sponsor_id}`);
             cy.get('#year').clear().type(`${data.year}`);
             cy.get('#color').clear().type(data.color);
-            cy.get('#submitTeam').click();
+            submitTeam();
         });
     });
 };
@@ -46,9 +46,30 @@ const updateTeamDetails = () => {
     const data = generateTeam();
     cy.get('#year').clear().type(`${data.year}`);
     cy.get('#color').clear().type(data.color);
-    cy.get('#submitTeam').click();
+    submitTeam()
 };
 When(`I update the team details`, updateTeamDetails);
+
+/** Add a team image */
+const addTeamImage = () => {
+    cy.fixture('test.png', null).as('TestImage');
+    cy
+        .findByRole('button', { name: /add image/i })
+        .click();
+    cy
+        .get('input[type="file"][name="image"]')
+        .selectFile('@TestImage');
+    cy
+        .findByRole('button', { name: /upload/i })
+        .click();
+};
+When(`I add a team image`, addTeamImage)
+
+/** Submit the change to the team */
+const submitTeam = () => {
+    cy.findByRole('button', { name: /update/i}).click();
+};
+When(`I click update`, submitTeam);
 
 /**  Add wrapped player to the team. */
 const addPlayerToTeam = () => {
@@ -111,3 +132,12 @@ const assertTeamTemplateDownload = () => {
     cy.readFile(path.join(downloadsFolder, "team_template.csv"));
 };
 Then(`the team template is downloaded`, assertTeamTemplateDownload);
+
+/** Assert the team has an image. */
+const assertTeamImage = () => {
+    cy
+        .findByRole('img')
+        .should('have.attr', 'src')
+        .should('include', 'test.png');
+};
+Then(`I see the added image`, assertTeamImage);

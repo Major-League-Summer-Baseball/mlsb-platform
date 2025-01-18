@@ -8,11 +8,17 @@ CREATE TABLE IF NOT EXISTS [image]
     CONSTRAINT image_pkey PRIMARY KEY (id)
 )
 
+ALTER TABLE IF EXISTS [sponsor]
+    ADD COLUMN logo_id integer;
+
 ALTER TABLE [sponsor]
     ADD CONSTRAINT sponsor_logo_id_fkey FOREIGN KEY (logo_id)
     REFERENCES [image] (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
+
+ALTER TABLE IF EXISTS [league_event]
+    ADD COLUMN image_id integer;
 
 ALTER TABLE IF EXISTS [league_event]
     ADD CONSTRAINT league_event_image_id_fkey FOREIGN KEY (image_id)
@@ -21,7 +27,19 @@ ALTER TABLE IF EXISTS [league_event]
     ON DELETE NO ACTION;
 
 ALTER TABLE IF EXISTS [league_event_date]
+    ADD COLUMN image_id integer;
+
+ALTER TABLE IF EXISTS [league_event_date]
     ADD CONSTRAINT league_event_date_image_id_fkey FOREIGN KEY (image_id)
+    REFERENCES [image] (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+ALTER TABLE IF EXISTS [team]
+    ADD COLUMN image_id integer;
+
+ALTER TABLE IF EXISTS [team]
+    ADD CONSTRAINT team_image_id_fkey FOREIGN KEY (image_id)
     REFERENCES [image] (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;

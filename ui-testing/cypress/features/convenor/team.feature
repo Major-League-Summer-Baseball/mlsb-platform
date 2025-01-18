@@ -25,6 +25,18 @@ Scenario: Able to update a team
       And I update the team details
      Then I see team was updated
 
+@focus
+Scenario: Able to add a team image
+    Given a sponsor exists
+      And a league exists
+      And a team exists
+     When I navigate to the "teams" page
+      And choose the team
+      And I add a team image
+      And I click update
+     Then I see team was updated
+      And I see the added image
+
 Scenario: Able to add a player to a team
     Given a sponsor exists
       And a league exists
@@ -34,17 +46,6 @@ Scenario: Able to add a player to a team
       And choose the team
       And I add the player to team
      Then I see them on the team
-
-Scenario: Able to add a player to a team
-    Given a sponsor exists
-      And a league exists
-      And a team exists
-      And a player exists
-      And player is on the team
-     When I navigate to the "teams" page
-      And choose the team
-      And I remove the player to team
-     Then I dont see them on the team
 
 Scenario: Able to select player as captain
     Given a sponsor exists

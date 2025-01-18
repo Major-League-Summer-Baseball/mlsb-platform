@@ -138,13 +138,15 @@ def submit_team():
     year = int(request.form.get("year"))
     color = request.form.get("color")
     team_id = request.form.get("team_id", None)
+    image_id = request.form.get('image_id', None)
     try:
         if is_empty(team_id):
             team = Team(
                 color=color,
                 sponsor_id=sponsor_id,
                 league_id=league_id,
-                year=year
+                year=year,
+                image_id=image_id
             )
             DB.session.add(team)
             flash("Team created")
@@ -158,7 +160,8 @@ def submit_team():
                 color=color,
                 sponsor_id=sponsor_id,
                 league_id=league_id,
-                year=year
+                year=year,
+                image_id=image_id
             )
             flash("Team updated")
             handle_table_change(Tables.TEAM)

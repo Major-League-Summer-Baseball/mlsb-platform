@@ -58,6 +58,11 @@ team = model_api.inherit('Team', team_payload, {
     'captain': fields.Nested(
         player,
         description="The captain of the team"
+    ),
+    'image_id': fields.Integer(
+        description='The id of the team image',
+        default=None,
+        required=False
     )
 })
 
