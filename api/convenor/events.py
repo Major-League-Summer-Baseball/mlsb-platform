@@ -49,9 +49,10 @@ def submit_event():
     name = request.form.get("name")
     description = request.form.get("description")
     league_event_id = request.form.get("league_event_id", None)
+    image_id = request.form.get('image_id', None)
     try:
         if is_empty(league_event_id):
-            league_event = LeagueEvent(name, description)
+            league_event = LeagueEvent(name, description, image_id=image_id)
             DB.session.add(league_event)
             flash("League event created")
         else:
@@ -60,7 +61,9 @@ def submit_event():
                 id = league_event_id
                 session['error'] = f"League Event does not exist {id}"
                 return redirect(url_for('convenor.error_page'))
-            league_event.update(name=name, description=description)
+            league_event.update(
+                name=name, description=description, image_id=image_id
+            )
             flash("League event updated")
     except Exception as e:
         session['error'] = str(e)
@@ -77,9 +80,12 @@ def submit_event_date(league_event_id: int):
     time = request.form.get("time")
     date = request.form.get("date")
     league_event_date_id = request.form.get("league_event_date_id", None)
+    image_id = request.form.get('image_id', None)
     try:
         if is_empty(league_event_date_id):
-            league_event_date = LeagueEventDate(date, time, league_event_id)
+            league_event_date = LeagueEventDate(
+                date, time, league_event_id, image_id=image_id
+            )
             DB.session.add(league_event_date)
             flash("League event date created")
         else:
@@ -88,7 +94,9 @@ def submit_event_date(league_event_id: int):
                 id = league_event_id
                 session['error'] = f"League Event Date does not exist {id}"
                 return redirect(url_for('convenor.error_page'))
-            league_event_date.update(date=date, time=time)
+            league_event_date.update(
+                date=date, time=time, image_id=image_id
+            )
             flash("League event date updated")
     except Exception as e:
         session['error'] = str(e)

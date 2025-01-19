@@ -1,44 +1,13 @@
 # -*- coding: utf-8 -*-
 """ MLSB Summer Events. """
-from flask import render_template, send_from_directory, Response
+from flask import render_template, Response
 from api.extensions import DB
-from api.model import LeagueEvent, LeagueEventDate
+from api.model import LeagueEventDate
 from api.website import website_blueprint
 from api.authentication import \
     get_user_information, api_require_login, are_logged_in, get_player_id
 from api.queries.league_events import get_year_events
-from api.variables import PICTURES
-import os.path
 import json
-NOT_FOUND = "sorry.png"
-EVENT_FOLDER = 'events'
-
-
-@website_blueprint.route(
-    "/website/event/<int:year>/image/<int:league_event_id>"
-)
-def mlsb_event_image(year, league_event_id):
-    # two potential file paths
-    filepath = os.path.join(PICTURES, EVENT_FOLDER)
-    year_filepath = os.path.join(filepath, str(year))
-
-    # does the event even exist
-    event = LeagueEvent.query.get(league_event_id)
-    if event is None:
-        return send_from_directory(filepath, NOT_FOUND)
-
-    filename = event.name.lower().replace(" ", "_").strip() + ".png"
-
-    # see if this has a particular image
-    if os.path.isfile(os.path.join(year_filepath, filename)):
-        return send_from_directory(year_filepath, filename)
-
-    # send the general event image
-    if os.path.isfile(os.path.join(filepath, filename)):
-        return send_from_directory(filepath, filename)
-
-    # no image can be found for the given event
-    return send_from_directory(filepath, NOT_FOUND)
 
 
 @website_blueprint.route("/website/event/<int:year>/json")

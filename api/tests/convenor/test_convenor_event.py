@@ -93,11 +93,13 @@ def test_league_event_only_convenor_page(
 @pytest.mark.usefixtures('league_event_factory')
 @pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('image_factory')
 def test_convenor_update_league_event(
-    mlsb_app, client, league_event_factory, auth, convenor
+    mlsb_app, client, league_event_factory, auth, convenor, image_factory,
 ):
     """Test convenor able to update league event."""
     with mlsb_app.app_context():
+        image = image_factory()
         league_event = league_event_factory()
         name = random_name("League Event")
         description = random_name("Description")
@@ -108,7 +110,8 @@ def test_convenor_update_league_event(
             data={
                 "name": name,
                 "description": description,
-                "league_event_id": league_event.id
+                "league_event_id": league_event.id,
+                "image_id": image.id
             }
         )
         data = response.data
@@ -117,6 +120,8 @@ def test_convenor_update_league_event(
         assert description in str(data)
         updated_event = LeagueEvent.query.get(league_event.id)
         assert updated_event.name == name
+        assert updated_event.description == description
+        assert updated_event.image_id == image.id
 
 
 @pytest.mark.convenor
@@ -124,9 +129,13 @@ def test_convenor_update_league_event(
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('convenor')
-def test_convenor_create_league_event(mlsb_app, client, auth, convenor):
+@pytest.mark.usefixtures('image_factory')
+def test_convenor_create_league_event(
+    mlsb_app, client, auth, convenor, image_factory,
+):
     """Test convenor able to update league event."""
     with mlsb_app.app_context():
+        image = image_factory()
         name = random_name("League Event")
         description = random_name("Description")
         auth.login(convenor.email)
@@ -136,12 +145,17 @@ def test_convenor_create_league_event(mlsb_app, client, auth, convenor):
             data={
                 "name": name,
                 "description": description,
+                "image_id": image.id,
             }
         )
         data = response.data
         assert not url_for("website.loginpage").endswith(response.request.path)
         assert name in str(data)
         assert description in str(data)
+        event = LeagueEvent.query.filter(LeagueEvent.name == name).first()
+        assert event is not None
+        assert event.description == description
+        assert event.image_id == image.id
 
 
 @pytest.mark.convenor
@@ -247,16 +261,19 @@ def test_only_convenor_change_league_event_not_visibility(
 @pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_event_factory')
 @pytest.mark.usefixtures('league_event_date_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_convenor_update_league_event_date(
     mlsb_app,
     client,
     auth,
     convenor,
     league_event_factory,
-    league_event_date_factory
+    league_event_date_factory,
+    image_factory,
 ):
     """Test convenor able to update league event."""
     with mlsb_app.app_context():
+        image = image_factory()
         league_event = league_event_factory()
         league_event_date = league_event_date_factory(league_event)
         event_date, event_time = split_datetime(datetime.today())
@@ -269,12 +286,14 @@ def test_convenor_update_league_event_date(
             data={
                 "time": event_time,
                 "date": event_date,
-                "league_event_date_id": league_event_date.id
+                "league_event_date_id": league_event_date.id,
+                "image_id": image.id
             }
         )
         assert not url_for("website.loginpage").endswith(response.request.path)
         updated_event_date = LeagueEventDate.query.get(league_event_date.id)
         data = updated_event_date.json()
+        assert updated_event_date.image_id == image.id
         assert data['time'] == event_time
         assert data['date'] == event_date
 
@@ -285,15 +304,18 @@ def test_convenor_update_league_event_date(
 @pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_convenor_create_league_event_date(
     mlsb_app,
     client,
     auth,
     convenor,
-    league_event_factory
+    league_event_factory,
+    image_factory,
 ):
     """Test convenor able to update league event."""
     with mlsb_app.app_context():
+        image = image_factory()
         league_event = league_event_factory()
         event_date, event_time = split_datetime(datetime.today())
         auth.login(convenor.email)
@@ -305,6 +327,7 @@ def test_convenor_create_league_event_date(
             data={
                 "time": event_time,
                 "date": event_date,
+                "image_id": image.id,
             }
         )
         assert not url_for("website.loginpage").endswith(response.request.path)
@@ -313,6 +336,7 @@ def test_convenor_create_league_event_date(
         ).first()
         assert updated_event_date is not None
         data = updated_event_date.json()
+        assert updated_event_date.image_id == image.id
         assert data['time'] == event_time
         assert data['date'] == event_date
 

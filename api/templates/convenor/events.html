@@ -8,6 +8,7 @@
         <form
             class="event-container form-inline"
             action="{{ url_for ('convenor.submit_event') }}"
+            id="leagueEventForm{{event.league_event_id}}"
             method="post"
         >
             <input
@@ -22,8 +23,30 @@
                 id='leagueEventName{{event.league_event_id}}'
                 name="name"
                 placeholder="League Event Name"
+                aria-label="League Event Name"
             />
             {{ ckeditor.create(name="description", value=event.description) }}
+            {% if event.image_id is not none %}
+                <div 
+                    hx-target="this"
+                    hx-get="{{ url_for('convenor.get_image_control', category='events', image_id=event.image_id)}}"
+                    hx-trigger="load"
+                    hx-swap="innerHTML"
+                    hx-push-url="false"
+                >
+                    <span class="glyphicon glyphicon-refresh spinning"></span>
+                </div>
+            {% else %}
+                <div 
+                    hx-target="this"
+                    hx-get="{{ url_for('convenor.new_image_control', category='events')}}"
+                    hx-trigger="load"
+                    hx-swap="innerHTML"
+                    hx-push-url="false"
+                >
+                    <span class="glyphicon glyphicon-refresh spinning"></span>
+                </div>
+            {% endif %}
             {% if event.active %}
                 <a
                     type="button"
@@ -71,6 +94,7 @@
         value=""
         id='newLeagueEventName'
         placeholder="League Event Name"
+        aria-label="League Event Name"
         name="name"
         required
     />
@@ -80,7 +104,20 @@
             Event Description - shows up event page
         </label>
     </div>
-    <button type="submit" class="btn btn-success constrain-btn" id="leagueEventCreate">
+    <div 
+        hx-target="this"
+        hx-get="{{ url_for('convenor.new_image_control', category='events')}}"
+        hx-trigger="load"
+        hx-swap="innerHTML"
+        hx-push-url="false"
+    >
+        <span class="glyphicon glyphicon-refresh spinning"></span>
+    </div>
+    <button
+        type="submit"
+        class="btn btn-success constrain-btn"
+        id="leagueEventCreate"
+    >
         Create
     </button>
 </form>

@@ -113,7 +113,7 @@ def get_team_map():
         team_map[team.id] = {}
         team_map[team.id]['team_name'] = str(team)
         team_map[team.id]['sponsor_id'] = team.sponsor_id
-        team_map[team.id]['sponsor_name'] = team.sponsor_name
+        team_map[team.id]['sponsor_name'] = str(team.sponsor)
     return team_map
 
 

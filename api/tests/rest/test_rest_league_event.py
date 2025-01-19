@@ -16,14 +16,17 @@ from api.helper import loads
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('image_factory')
 def test_able_create_league_event(
     mlsb_app,
     client,
     auth,
     convenor,
-    league_event_data
+    league_event_data,
+    image_factory,
 ):
     with mlsb_app.app_context():
+        image = image_factory()
         auth.login(convenor.email)
         name = random_name("Rest")
         description = random_name("Description")
@@ -34,7 +37,8 @@ def test_able_create_league_event(
             json={
                 "name": name,
                 "description": description,
-                "active": active
+                "active": active,
+                "image_id": image.id,
             },
             follow_redirects=True
         )
@@ -42,6 +46,7 @@ def test_able_create_league_event(
         data = loads(response.data)
         assert data['name'] == name
         assert data['description'] == description
+        assert data['image_id'] == image.id
         assert isinstance(data['league_event_id'], int) is True
         assert LeagueEvent.is_league_event(data['league_event_id']) is True
 
@@ -107,6 +112,41 @@ def test_update_league_event(
         assert data['league_event_id'] == league_event.id
         assert LeagueEvent.query.filter(
             LeagueEvent.name == name
+        ).first() is not None
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('image_factory')
+def test_update_league_event_image(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_event_factory,
+    image_factory,
+):
+    with mlsb_app.app_context():
+        image = image_factory()
+        auth.login(convenor.email)
+        league_event = league_event_factory()
+        response = client.put(
+            url_for("rest.league_event", league_event_id=league_event.id),
+            json={
+                "image_id": image.id,
+            },
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert data['image_id'] == image.id
+        assert data['league_event_id'] == league_event.id
+        assert LeagueEvent.query.filter(
+            LeagueEvent.image_id == image.id
         ).first() is not None
 
 

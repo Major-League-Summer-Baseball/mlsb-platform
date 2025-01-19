@@ -16,7 +16,7 @@ def get_single_game_leader(hit: str, year=None):
                   'id': int,
                   'hits': str,
                   'team_id': int,
-                  'team': str,
+                  'team': dict,
                   'year': int
                 }
     """
@@ -65,7 +65,7 @@ def get_single_game_leader(hit: str, year=None):
                 'id': player[2],
                 'name': player[3],
                 'year': team.year,
-                'team': str(team),
+                'team': team.json(),
                 'team_id': team.id,
                 'game_id': player[0],
                 'hits': player[5],
@@ -86,7 +86,7 @@ def get_leaders(hit, year=None):
                   'id': int,
                   'hits': str,
                   'team_id': int,
-                  'team': str,
+                  'team': dict,
                   'year': int
                 }
     """
@@ -132,7 +132,7 @@ def get_leaders(hit, year=None):
             'id': player.id,
             'hits': record[0],
             'team_id': team.id,
-            'team': str(team),
+            'team': team.json(),
             'year': team.year
         }
         leaders.append(result)
@@ -187,12 +187,13 @@ def get_leaders_not_grouped_by_team(hit, year=None):
         .limit(HALL_OF_FAME_SIZE)
     ).all()
     for player in players:
-        result = {'name': player[2],
-                  'id': player[1],
-                  'hits': player[0],
-                  'team_id': None,
-                  'team': None,
-                  'year': year
-                  }
+        result = {
+            'name': player[2],
+            'id': player[1],
+            'hits': player[0],
+            'team_id': None,
+            'team': None,
+            'year': year
+        }
         leaders.append(result)
     return leaders

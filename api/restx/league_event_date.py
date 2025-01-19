@@ -12,10 +12,12 @@ parser = reqparse.RequestParser()
 parser.add_argument('date', type=str)
 parser.add_argument('time', type=str)
 parser.add_argument('league_event_id', type=int)
+parser.add_argument('image_id', type=int)
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('date', type=str, required=True)
 post_parser.add_argument('time', type=str, required=True)
 post_parser.add_argument('league_event_id', type=int, required=True)
+post_parser.add_argument('image_id', type=int)
 
 league_event_date_api = Namespace(
     "league_event_date",
@@ -33,6 +35,11 @@ league_event_date_payload = league_event_date_api.model(
         'time': fields.String(
             description="The time of the league event (Format: HH-MM)",
             example="12:01"
+        ),
+        'image_id': fields.Integer(
+            description="The image for the event for given date",
+            default=None,
+            required=False
         ),
     }
 )
@@ -99,11 +106,15 @@ class LeagueEventDateAPI(Resource):
 
         args = parser.parse_args()
         league_event_id = args.get('league_event_id', None)
+        image_id = args.get('image_id', None)
         date = args.get('date', None)
         time = args.get('time', None)
 
         league_event_date.update(
-            league_event_id=league_event_id, date=date, time=time
+            league_event_id=league_event_id,
+            date=date,
+            time=time,
+            image_id=image_id,
         )
         DB.session.commit()
         return league_event_date.json()
@@ -139,8 +150,11 @@ class LeagueEventDateListAPI(Resource):
         league_event_id = args.get('league_event_id', None)
         date = args.get('date', None)
         time = args.get('time', None)
+        image_id = args.get('image_id', None)
 
-        league_event_date = LeagueEventDate(date, time, league_event_id)
+        league_event_date = LeagueEventDate(
+            date, time, league_event_id, image_id=image_id
+        )
         DB.session.add(league_event_date)
         DB.session.commit()
         return league_event_date.json()

@@ -29,9 +29,15 @@ def submit_sponsor():
     link = normalize_field(request.form.get("link", None))
     description = normalize_field(request.form.get("description", None))
     sponsor_id = request.form.get("sponsor_id", None)
+    logo_id = request.form.get('image_id', None)
     try:
         if is_empty(sponsor_id):
-            sponsor = Sponsor(sponsor_name, link=link, description=description)
+            sponsor = Sponsor(
+                sponsor_name,
+                link=link,
+                description=description,
+                logo_id=logo_id
+            )
             DB.session.add(sponsor)
             flash("Sponsor created")
         else:
@@ -40,7 +46,10 @@ def submit_sponsor():
                 session['error'] = f"Sponsor does not exist {sponsor_id}"
                 return redirect(url_for('convenor.error_page'))
             sponsor.update(
-                name=sponsor_name, link=link, description=description
+                name=sponsor_name,
+                link=link,
+                description=description,
+                logo_id=logo_id,
             )
             flash("sponsor updated")
     except Exception as e:

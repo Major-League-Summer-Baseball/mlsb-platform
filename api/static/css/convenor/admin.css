@@ -29,6 +29,10 @@ input[disabled] {
     padding-top: 12px;
 }
 
+.mr-5 {
+    padding-right: 4px;
+}
+
 .sponsors-container,
 .events-container,
 .leagues-container,
@@ -141,4 +145,18 @@ input[disabled] {
 
 .disabled {
     pointer-events:all !important;
-  }
+}
+.image-preview-tiny {
+    height: 40px;
+    width: 40px;
+}
+.image-preview {
+    height: 40px;
+    width: 40px;
+}
+
+.whole-image-container,
+.image-controls {
+    display: flex;
+    flex-direction: row;
+}

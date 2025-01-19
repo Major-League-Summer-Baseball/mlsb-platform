@@ -1,6 +1,8 @@
 import pytest
-from api.errors import InvalidField
+from api.errors import ImageDoesNotExist, InvalidField
 from api.model import LeagueEvent
+
+INVALID_ENTITY = -1
 
 
 @pytest.mark.parametrize("league_event_data", [
@@ -15,6 +17,31 @@ def test_create_league_event(mlsb_app, league_event_data):
             description=league_event_data[1],
             active=league_event_data[2]
         )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('image_factory')
+def test_create_league_event_with_image(mlsb_app, image_factory):
+    with mlsb_app.app_context():
+        image = image_factory()
+        LeagueEvent(
+            name='Some Event',
+            description='Some Description',
+            active=True,
+            image_id=image.id
+        )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+def test_create_league_event_with_invalid_image(mlsb_app):
+    with mlsb_app.app_context():
+        with pytest.raises(ImageDoesNotExist):
+            LeagueEvent(
+                name='Some Event',
+                description='Some Description',
+                active=True,
+                image_id=INVALID_ENTITY
+            )
 
 
 @pytest.mark.parametrize("invalid_league_event_data", [
@@ -54,6 +81,19 @@ def test_update_league_event(mlsb_app, league_event_data):
         )
 
 
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('image_factory')
+def test_can_update_league_event_with_valid_image(mlsb_app, image_factory):
+    with mlsb_app.app_context():
+        image = image_factory()
+        event = LeagueEvent(
+            name="Some League Event",
+            description="Description",
+            active=True
+        )
+        event.update(image_id=image.id)
+
+
 @pytest.mark.parametrize("invalid_league_event_data", [
     ("Invalid Active", "The description", 1),
     (1, "Invalid Event Name", False),
@@ -75,3 +115,15 @@ def test_cannot_update_invalid_league_event(
                 description=invalid_league_event_data[1],
                 active=invalid_league_event_data[2]
             )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+def test_cannot_update_league_event_with_invalid_image(mlsb_app):
+    with mlsb_app.app_context():
+        with pytest.raises(ImageDoesNotExist):
+            event = LeagueEvent(
+                name="Some League Event",
+                description="Description",
+                active=True
+            )
+            event.update(image_id=INVALID_ENTITY)

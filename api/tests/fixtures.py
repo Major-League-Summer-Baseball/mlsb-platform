@@ -7,6 +7,7 @@ from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
     LeagueEventDate, Team, League, Game, Division, Bat, Espys, Fun
+from api.models.image import Image
 
 
 @pytest.fixture(scope="session")
@@ -79,6 +80,14 @@ def factory_fixture(factory):
         return factory
     maker.__name__ = factory.__name__
     return maker
+
+
+@factory_fixture
+def image_factory(url='https://i.imgur.com/lZ0Nt92.jpeg') -> Image:
+    image = Image(url)
+    DB.session.add(image)
+    DB.session.commit()
+    return image
 
 
 @factory_fixture

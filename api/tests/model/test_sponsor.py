@@ -1,6 +1,8 @@
 import pytest
-from api.errors import InvalidField
+from api.errors import ImageDoesNotExist, InvalidField
 from api.model import Sponsor
+
+INVALID_ENTITY = -1
 
 
 @pytest.mark.parametrize("sponsor_data", [
@@ -14,6 +16,24 @@ def test_create_sponsor(mlsb_app, sponsor_data):
             link=sponsor_data[1],
             description=sponsor_data[2]
         )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('image_factory')
+def test_create_sponsor_with_image(mlsb_app, image_factory):
+    with mlsb_app.app_context():
+        image = image_factory()
+        Sponsor(
+            "Some sponsor",
+            logo_id=image.id
+        )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+def test_cannot_create_sponsor_with_invalid_image(mlsb_app):
+    with mlsb_app.app_context():
+        with pytest.raises(ImageDoesNotExist):
+            Sponsor("Some sponsor", logo_id=INVALID_ENTITY)
 
 
 @pytest.mark.parametrize("invalid_sponsor_data", [

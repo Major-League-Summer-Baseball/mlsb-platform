@@ -1,3 +1,4 @@
+boto3==1.35.94
 Flask==3.0.3
 Flask-Caching==2.3.0
 Flask-CKEditor==1.0.0

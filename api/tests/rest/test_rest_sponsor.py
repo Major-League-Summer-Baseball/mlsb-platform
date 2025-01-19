@@ -10,8 +10,12 @@ from api.helper import loads
 @pytest.mark.usefixtures('client')
 @pytest.mark.usefixtures('auth')
 @pytest.mark.usefixtures('convenor')
-def test_able_create_sponsor(mlsb_app, client, auth, convenor):
+@pytest.mark.usefixtures('image_factory')
+def test_able_create_sponsor(
+    mlsb_app, client, auth, convenor, image_factory
+):
     with mlsb_app.app_context():
+        image = image_factory()
         auth.login(convenor.email)
         name = random_name("Rest")
         response = client.post(
@@ -20,7 +24,8 @@ def test_able_create_sponsor(mlsb_app, client, auth, convenor):
                 "sponsor_name": name,
                 "link": None,
                 "description": None,
-                'active': True
+                'active': True,
+                'logo_id': image.id,
             },
             follow_redirects=True
         )
@@ -30,6 +35,8 @@ def test_able_create_sponsor(mlsb_app, client, auth, convenor):
         assert data['link'] is None
         assert data['description'] is None
         assert data['active'] is True
+        assert data['logo_id'] == image.id
+        assert data['logo']['url'] == image.url
         assert isinstance(data['sponsor_id'], int) is True
         assert Sponsor.does_sponsor_exist(data['sponsor_id']) is True
 

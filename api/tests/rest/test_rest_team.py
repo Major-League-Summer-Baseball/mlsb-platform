@@ -13,26 +13,30 @@ from api.helper import loads
 @pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_able_create_team(
     mlsb_app,
     client,
     auth,
     convenor,
     sponsor_factory,
-    league_factory
+    league_factory,
+    image_factory,
 ):
     with mlsb_app.app_context():
         auth.login(convenor.email)
         league = league_factory()
         sponsor = sponsor_factory()
         color = random_name("Color")
+        image = image_factory()
         response = client.post(
             url_for("rest.teams"),
             json={
                 "color": color,
                 "sponsor_id": sponsor.id,
                 "league_id": league.id,
-                'year': date.today().year
+                'year': date.today().year,
+                'image_id': image.id,
             },
             follow_redirects=True
         )
@@ -42,6 +46,7 @@ def test_able_create_team(
         assert data['sponsor_id'] == sponsor.id
         assert data['league_id'] == league.id
         assert data['year'] == date.today().year
+        assert data['image_id'] == image.id
         assert isinstance(data['team_id'], int) is True
         assert Team.does_team_exist(data['team_id']) is True
 
@@ -83,6 +88,7 @@ def test_required_fields_of_team(
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_update_team(
     mlsb_app,
     client,
@@ -90,7 +96,8 @@ def test_update_team(
     convenor,
     sponsor_factory,
     league_factory,
-    team_factory
+    team_factory,
+    image_factory,
 ):
     with mlsb_app.app_context():
         auth.login(convenor.email)
@@ -98,17 +105,20 @@ def test_update_team(
         sponsor = sponsor_factory()
         color = random_name("Color")
         new_color = random_name("New Color")
+        image = image_factory()
         team = team_factory(color=color, sponsor=sponsor, league=league)
         response = client.put(
             url_for("rest.team", team_id=team.id),
             json={
                 "color": new_color,
+                "image_id": image.id,
             },
             follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
         assert data['color'] == new_color
+        assert data['image_id'] == image.id
         assert Team.query.filter(Team.color == new_color).first is not None
 
 

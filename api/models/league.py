@@ -17,7 +17,7 @@ class Division(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120))
     shortname = DB.Column(DB.String(120))
-    games = DB.relationship('Game', backref='division', lazy='dynamic')
+    games = DB.relationship('Game', lazy='dynamic')
 
     def __init__(self, name: str, shortname: str = None):
         """The constructor
@@ -96,8 +96,8 @@ class League(DB.Model):
     """
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(120))
-    games = DB.relationship('Game', backref='league', lazy='dynamic')
-    teams = DB.relationship('Team', backref='league', lazy='dynamic')
+    games = DB.relationship('Game', lazy='dynamic')
+    teams = DB.relationship('Team', lazy='dynamic')
 
     def __init__(self, name: str = None):
         """The constructor.

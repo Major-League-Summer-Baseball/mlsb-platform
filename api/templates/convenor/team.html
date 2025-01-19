@@ -89,6 +89,35 @@
             </select>
         </div>
         <div class="flex-container justify-content-space-between">
+            <label>
+                Team Pic:
+            </label>
+            {% if team.image_id %}
+                <div 
+                    hx-target="this"
+                    hx-get="{{ url_for('convenor.get_image_control', category='teams', image_id=team.image_id)}}"
+                    hx-trigger="load"
+                    hx-swap="innerHTML"
+                    hx-push-url="false"
+                >
+                    <span class="glyphicon glyphicon-refresh spinning"></span>
+                </div>
+            {% else %}
+                <div 
+                    hx-target="this"
+                    hx-get="{{ url_for('convenor.new_image_control', category='teams')}}"
+                    hx-trigger="load"
+                    hx-swap="innerHTML"
+                    hx-push-url="false"
+                >
+                    <span
+                        class="glyphicon glyphicon-refresh spinning"
+                        aria-busy="true">
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="flex-container justify-content-space-between">
             <label for="league">
                 League:
             </label>

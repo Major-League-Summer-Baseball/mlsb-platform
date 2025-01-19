@@ -23,6 +23,7 @@ class Tables(Enum):
     SPONSOR = 'sponsor'
     PLAYER = 'player'
     TEAM = 'team'
+    IMAGE = 'image'
 
     def __str__(self):
         """Returns the string representation of the role"""

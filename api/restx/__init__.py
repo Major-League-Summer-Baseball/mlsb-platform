@@ -1,4 +1,5 @@
 from .fun import fun_api
+from .image import image_api
 from .models import model_api
 from .player import player_api
 from .sponsor import sponsor_api
@@ -45,6 +46,7 @@ apiX = Api(
     security=["google", "github", "azure", "facebook"],
 )
 apiX.add_namespace(model_api)
+apiX.add_namespace(image_api)
 apiX.add_namespace(bat_api)
 apiX.add_namespace(division_api)
 apiX.add_namespace(espys_api)

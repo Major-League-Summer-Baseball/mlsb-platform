@@ -17,12 +17,14 @@ parser.add_argument('sponsor_id', type=int)
 parser.add_argument('color', type=str)
 parser.add_argument('league_id', type=int)
 parser.add_argument('year', type=int)
+parser.add_argument('image_id', type=int)
 
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('sponsor_id', type=int, required=True)
 post_parser.add_argument('color', type=str, required=True)
 post_parser.add_argument('league_id', type=int, required=True)
 post_parser.add_argument('year', type=int, required=True)
+post_parser.add_argument('image_id', type=int)
 
 lookup_parser = reqparse.RequestParser(bundle_errors=True)
 lookup_parser.add_argument('sponsor_id', type=int)
@@ -51,7 +53,7 @@ team_lookup = team_api.model("TeamLookup", {
     'color': fields.String(
         description="Filter by color of the team",
         required=False
-    ),
+    )
 })
 pagination = get_pagination(team_api)
 team_pagination = team_api.inherit("TeamPagination", pagination, {
@@ -100,12 +102,14 @@ class TeamAPI(Resource):
         sponsor_id = args.get('sponsor_id', None)
         league_id = args.get('league_id', None)
         year = args.get('year', None)
+        image_id = args.get('image_id', None)
 
         team.update(
             color=color,
             sponsor_id=sponsor_id,
             league_id=league_id,
-            year=year
+            year=year,
+            image_id=image_id
         )
         DB.session.commit()
         handle_table_change(Tables.TEAM, item=team.json())
@@ -142,12 +146,14 @@ class TeamListAPI(Resource):
         sponsor_id = args.get('sponsor_id', None)
         league_id = args.get('league_id', None)
         year = args.get('year', date.today().year)
+        image_id = args.get('image_id', None)
 
         team = Team(
             color=color,
             sponsor_id=sponsor_id,
             league_id=league_id,
-            year=year
+            year=year,
+            image_id=image_id
         )
         DB.session.add(team)
         DB.session.commit()

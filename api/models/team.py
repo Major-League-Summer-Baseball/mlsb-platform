@@ -1,12 +1,11 @@
 from datetime import date
 from api.extensions import DB
-from api.errors import InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
+from api.errors import ImageDoesNotExist, InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
     PlayerNotOnTeam, SponsorDoesNotExist
+from api.models.image import Image
 from api.validators import string_validator, year_validator
 from api.models.shared import notNone, validate
-from sqlalchemy.orm import column_property
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select
 from api.models.player import Player
 from api.models.league import League
 from api.models.sponsor import Sponsor
@@ -35,43 +34,38 @@ class Team(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     color = DB.Column(DB.String(120))
     sponsor_id = DB.Column(DB.Integer, DB.ForeignKey('sponsor.id'))
+    league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
+    year = DB.Column(DB.Integer)
+    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
+    image_id = DB.Column(DB.Integer, DB.ForeignKey('image.id'), nullable=True)
     home_games = DB.relationship(
         'Game',
-        backref='home_team',
         lazy='dynamic',
+        back_populates='home_team',
         foreign_keys='[Game.home_team_id]'
     )
     away_games = DB.relationship(
         'Game',
-        backref='away_team',
         lazy='dynamic',
+        back_populates='away_team',
         foreign_keys='[Game.away_team_id]'
     )
+    bats = DB.relationship('Bat', lazy='dynamic')
+    captain = DB.relationship('Player', uselist=False)
+    espys = DB.relationship('Espys', lazy='dynamic')
     players = DB.relationship(
-        'Player', secondary=roster, backref=DB.backref('teams', lazy='dynamic')
+        'Player', secondary=roster, back_populates='teams'
     )
-    bats = DB.relationship(
-        'Bat', backref='team', lazy='dynamic'
-    )
-    league_id = DB.Column(DB.Integer, DB.ForeignKey('league.id'))
-    year = DB.Column(DB.Integer)
-    player_id = DB.Column(DB.Integer, DB.ForeignKey('player.id'))
-    espys = DB.relationship(
-        'Espys', backref='team', lazy='dynamic'
-    )
-    sponsor_name = column_property(
-        select(Sponsor.nickname)
-        .where(Sponsor.id == sponsor_id)
-        .correlate_except(Sponsor)
-        .scalar_subquery()
-    )
+    sponsor = DB.relationship('Sponsor', back_populates='teams')
+    image = DB.relationship('Image', lazy=True)
 
     def __init__(
         self,
         color: str = None,
         sponsor_id: int = None,
         league_id: int = None,
-        year: int = date.today().year
+        year: int = date.today().year,
+        image_id: int = None,
     ):
         """ The constructor.
 
@@ -103,11 +97,18 @@ class Team(DB.Model):
             LeagueDoesNotExist(payload={'details': league_id}),
             required=False
         )
+        validate(
+            image_id,
+            lambda id: Image.does_image_exist(id),
+            ImageDoesNotExist(payload={'details': image_id}),
+            required=False
+        )
         self.__update(
             color=color,
             sponsor_id=sponsor_id,
             league_id=league_id,
-            year=year
+            year=year,
+            image_id=image_id
         )
 
     def __update(
@@ -115,20 +116,22 @@ class Team(DB.Model):
         color: str,
         sponsor_id: int,
         league_id: int,
-        year: int
+        year: int,
+        image_id: int
     ):
         self.color = notNone(color, self.color)
         self.sponsor_id = notNone(sponsor_id, self.sponsor_id)
         self.league_id = notNone(league_id, self.league_id)
         self.year = notNone(year, self.year)
+        self.image_id = notNone(image_id, self.image_id)
         self.kik = None
 
     def __repr__(self) -> str:
         """Returns the string representation."""
         name_parts = []
         fallback = f"Team: {self.id}"
-        if self.sponsor_name is not None:
-            name_parts.append(self.sponsor_name)
+        if self.sponsor is not None:
+            name_parts.append(str(self.sponsor))
         if self.color is not None:
             name_parts.append(self.color)
         return " ".join(name_parts) if len(name_parts) > 0 else fallback
@@ -139,21 +142,23 @@ class Team(DB.Model):
 
     def json(self, admin: bool = False) -> dict:
         """Returns a jsonserializable object."""
-        if admin:
-            captain = (None if self.player_id is None
-                       else Player.query.get(self.player_id).admin_json())
-        else:
-            captain = (None if self.player_id is None
-                       else Player.query.get(self.player_id).json())
+        captain = None
+        if self.captain is not None:
+            captain = (
+                self.captain.admin_json() if admin else self.captain.json()
+            )
         return {
             'team_id': self.id,
             'team_name': str(self),
             'color': self.color,
             'sponsor_id': self.sponsor_id,
+            'sponsor': None if self.sponsor_id is None else self.sponsor.json(),
             'league_id': self.league_id,
             'year': self.year,
             'espys': self.espys_total if self.espys_total is not None else 0,
-            'captain': captain
+            'captain': captain,
+            'image_id': self.image_id,
+            'image': None if self.image_id is None else self.image.json(),
         }
 
     def update(
@@ -161,7 +166,8 @@ class Team(DB.Model):
         color: str = None,
         sponsor_id: int = None,
         league_id: int = None,
-        year: int = None
+        year: int = None,
+        image_id: int = None,
     ) -> None:
         """Updates an existing team.
 
@@ -194,11 +200,18 @@ class Team(DB.Model):
             LeagueDoesNotExist(payload={'details': league_id}),
             required=False
         )
+        validate(
+            image_id,
+            lambda id: Image.does_image_exist(id),
+            ImageDoesNotExist(payload={'details': image_id}),
+            required=False
+        )
         self.__update(
             color=color,
             sponsor_id=sponsor_id,
             league_id=league_id,
-            year=year
+            year=year,
+            image_id=image_id,
         )
 
     def insert_player(self, player_id: int, captain: bool = False) -> None:
