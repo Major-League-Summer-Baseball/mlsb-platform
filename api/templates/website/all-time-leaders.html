@@ -20,7 +20,12 @@
                     {{player.name}}
                 </a>
                 - <span data-cy="allTimeSingleGameHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}" >
+                {% if player.team is not none and player.team.sponsor is not none and player.team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{player.team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
+                
             </li>
         {% endfor %}
         </ul>
@@ -41,7 +46,11 @@
                     {{player.name}}
                 </a>
                 - <span data-cy="allTimeSingleSeasonHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
+                {% if player.team is not none and player.team.sponsor is not none and player.team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{player.team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ul>
@@ -60,7 +69,11 @@
                     {{player.name}}
                 </a>
                 - <span data-cy="allTimeCareerHomeruns">{{player.hits}}</span>
-                <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}">
+                {% if player.team is not none and player.team.sponsor is not none and player.team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{player.team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ul>
@@ -87,7 +100,11 @@
                     {{player.name}}
                 </a>
                  - <span data-cy="allTimeSingleGameSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
+                 {% if player.team is not none and player.team.sponsor is not none and player.team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{player.team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>
@@ -108,7 +125,11 @@
                     {{player.name}}
                 </a>
                  - <span data-cy="allTimeSingleSeasonSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=player.team_id) }}">
+                 {% if player.team is not none and player.team.sponsor is not none and player.team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{player.team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>
@@ -128,7 +149,11 @@
                     {{player.name}}
                 </a>
                  - <span data-cy="allTimeCareerSingles">{{player.hits}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=-1) }}">
+                {% if player.team is not none and player.team.sponsor is not none and player.team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{player.team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>
@@ -154,7 +179,11 @@
                     {{team.team_name}}
                  </a>
                  - <span data-cy="allTimeTeamEspysValue">{{team.total}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+                 {% if team is not none and team.sponsor is not none and team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>
@@ -176,7 +205,11 @@
                     {{team.team_name}}
                  </a>
                  - <span data-cy="allTimeTeamEspysValue">{{team.total}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+                 {% if team is not none and team.sponsor is not none and team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>
@@ -197,7 +230,11 @@
                     {{team.team_name}}
                  </a>
                  - <span data-cy="allTimeTeamEspysValue">{{team.total}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+                 {% if team is not none and team.sponsor is not none and team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>
@@ -218,7 +255,11 @@
                     {{team.team_name}}
                  </a>
                  - <span data-cy="allTimeTeamEspysValue">{{team.wins}}</span>
-                 <img class="leaderImage" src="{{ url_for('website.team_picture', team=team.team_id) }}" >
+                 {% if team is not none and team.sponsor is not none and team.sponsor.logo is not none %}
+                    <img class="leaderImage" src="{{team.sponsor.logo.url}}" >
+                {% else %}
+                    <img class="leaderImage" src="{{url_for('static', filename='default-images/team.png')}}" >
+                {% endif %}
             </li>
         {% endfor %}
         </ol>

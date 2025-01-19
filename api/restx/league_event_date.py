@@ -1,22 +1,23 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import LeagueEventDate
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import LeagueEventDateDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 
 parser = reqparse.RequestParser()
 parser.add_argument('date', type=str)
 parser.add_argument('time', type=str)
 parser.add_argument('league_event_id', type=int)
+parser.add_argument('image_id', type=int)
 post_parser = reqparse.RequestParser(bundle_errors=True)
 post_parser.add_argument('date', type=str, required=True)
 post_parser.add_argument('time', type=str, required=True)
 post_parser.add_argument('league_event_id', type=int, required=True)
+post_parser.add_argument('image_id', type=int)
 
 league_event_date_api = Namespace(
     "league_event_date",
@@ -34,6 +35,11 @@ league_event_date_payload = league_event_date_api.model(
         'time': fields.String(
             description="The time of the league event (Format: HH-MM)",
             example="12:01"
+        ),
+        'image_id': fields.Integer(
+            description="The image for the event for given date",
+            default=None,
+            required=False
         ),
     }
 )
@@ -62,7 +68,7 @@ league_event_date_pagination = league_event_date_api.inherit(
     params={"league_event_date_id": "The id of the league event date"}
 )
 class LeagueEventDateAPI(Resource):
-
+    @league_event_date_api.doc(security=[])
     @league_event_date_api.marshal_with(league_event_date)
     def get(self, league_event_date_id):
         entry = LeagueEventDate.query.get(league_event_date_id)
@@ -71,7 +77,7 @@ class LeagueEventDateAPI(Resource):
             raise LeagueEventDateDoesNotExist(payload=payload)
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @league_event_date_api.doc(
         responses={403: 'Not Authorized', 200: 'Deleted'}
     )
@@ -86,7 +92,7 @@ class LeagueEventDateAPI(Resource):
         DB.session.commit()
         return league_event_date.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @league_event_date_api.doc(
         responses={403: 'Not Authorized', 200: 'Updated'}
     )
@@ -100,11 +106,15 @@ class LeagueEventDateAPI(Resource):
 
         args = parser.parse_args()
         league_event_id = args.get('league_event_id', None)
+        image_id = args.get('image_id', None)
         date = args.get('date', None)
         time = args.get('time', None)
 
         league_event_date.update(
-            league_event_id=league_event_id, date=date, time=time
+            league_event_id=league_event_id,
+            date=date,
+            time=time,
+            image_id=image_id,
         )
         DB.session.commit()
         return league_event_date.json()
@@ -117,14 +127,18 @@ class LeagueEventDateAPI(Resource):
 
 @league_event_date_api.route("", endpoint="rest.league_event_dates")
 class LeagueEventDateListAPI(Resource):
-
+    @league_event_date_api.doc(security=[])
     @league_event_date_api.marshal_with(league_event_date_pagination)
     def get(self):
         page = request.args.get('page', 1, type=int)
-        pagination = LeagueEventDate.query.paginate(page, PAGE_SIZE, False)
-        return pagination_response(pagination, Routes['league_event'])
+        pagination = LeagueEventDate.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
+        return pagination_response(
+            pagination, url_for('rest.league_event_dates')
+        )
 
-    @requires_admin
+    @require_to_be_convenor
     @league_event_date_api.doc(
         responses={403: 'Not Authorized', 200: 'Created'}
     )
@@ -136,8 +150,11 @@ class LeagueEventDateListAPI(Resource):
         league_event_id = args.get('league_event_id', None)
         date = args.get('date', None)
         time = args.get('time', None)
+        image_id = args.get('image_id', None)
 
-        league_event_date = LeagueEventDate(date, time, league_event_id)
+        league_event_date = LeagueEventDate(
+            date, time, league_event_id, image_id=image_id
+        )
         DB.session.add(league_event_date)
         DB.session.commit()
         return league_event_date.json()

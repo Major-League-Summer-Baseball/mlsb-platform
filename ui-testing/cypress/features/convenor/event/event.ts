@@ -15,10 +15,19 @@ When(`I fill out the league events details`, fillOutLeagueEventDetails);
 const updateLeagueEventDetails = () => {
     const updatedEvent = generateLeagueEvent();
     cy.get<LeagueEvent>('@leagueEvent').then((leagueEvent: LeagueEvent) => {
-        cy.get(`#leagueEventName${leagueEvent.league_event_id}`).clear().type(updatedEvent.name);
-        leagueEvent.name = updatedEvent.name;
-        cy.wrap(leagueEvent).as('leagueEvent');
-        cy.get(`#leagueEventSubmit${leagueEvent.league_event_id}`).click()
+        cy
+        .get(`#leagueEventForm${leagueEvent.league_event_id}`)
+        .within(() => {
+            cy
+                .findByRole('textbox', { name: /league event name/i })
+                .clear()
+                .type(updatedEvent.name);
+            leagueEvent.name = updatedEvent.name;
+            cy.wrap(leagueEvent).as('leagueEvent');
+            cy
+                .findByRole('button', { name: /update/i })
+                .click();
+        });
     });
 };
 When(`I update the league event details`, updateLeagueEventDetails);
@@ -26,7 +35,13 @@ When(`I update the league event details`, updateLeagueEventDetails);
 /** Hide the wrapped league event. */
 const hideLeagueEvent = () => {
     cy.get<LeagueEvent>('@leagueEvent').then((leagueEvent: LeagueEvent) => {
-        cy.get(`#leagueEventHide${leagueEvent.league_event_id}`).click();
+        cy
+            .get(`#leagueEventForm${leagueEvent.league_event_id}`)
+            .within(() => {
+                cy
+                    .findByRole('link', { name: /visible/i })
+                    .click();
+            });
     });
 };
 When(`I hide the league event`, hideLeagueEvent);
@@ -34,7 +49,13 @@ When(`I hide the league event`, hideLeagueEvent);
 /** See league event dates for wrapped league event. */
 const seeLeagueEventDates = () => {
     cy.get<LeagueEvent>('@leagueEvent').then((leagueEvent: LeagueEvent) => {
-        cy.get(`#leagueEventSeeDates${leagueEvent.league_event_id}`).click();
+        cy
+            .get(`#leagueEventForm${leagueEvent.league_event_id}`)
+            .within(() => {
+                cy
+                    .findByRole('link', { name: /see dates/i})
+                    .click();
+            });
     });
 };
 When(`see dates for the league event`, seeLeagueEventDates);
@@ -43,17 +64,78 @@ When(`see dates for the league event`, seeLeagueEventDates);
 const enterLeagueEventDate = () => {
     const eventDate = generateLeagueEventDate();
     cy.get<LeagueEvent>('@leagueEvent').then((leagueEvent: LeagueEvent) => {
-        cy.get(`#newDate`).type(eventDate.date);
-        cy.get(`#newTime`).type(eventDate.time);
-        cy.get(`#leagueEventDateCreate`).click();
+        cy
+        .get(`#leagueEventDateForm`)
+        .within(() => {
+            cy.get(`input[type="date"]`).type(eventDate.date);
+            cy.get(`input[type="time"]`).type(eventDate.time);
+            cy.findByRole('button', { name: /create/i }).click();
+        });
+        
     });
 };
 When(`I enter a new date`, enterLeagueEventDate);
 
+/** Click update for the wrapped league event. */
+const updateSponsor = () => {
+    cy.get<LeagueEvent>('@leagueEvent').then((event: LeagueEvent) => {
+        cy
+            .get(`#leagueEventForm${event.league_event_id}`)
+            .within(() => {
+                cy
+                    .findByRole('button', { name: /update/i })
+                    .click();
+            });
+    });
+};
+When(`I click update`, updateSponsor);
+
+/** Update an image for the league event */
+const uploadLeagueEventImage = () => {
+    cy.get<LeagueEvent>('@leagueEvent').then((event: LeagueEvent) => {
+        cy.fixture('test.png', null).as('TestImage');
+        cy
+            .get(`#leagueEventForm${event.league_event_id}`)
+            .within(() => {
+                cy
+                    .findByRole('button', { name: /add image/i })
+                    .click();
+                cy
+                    .get('input[type="file"][name="image"]')
+                    .selectFile('@TestImage');
+                cy
+                    .findByRole('button', { name: /upload/i })
+                    .click();
+            });
+    });
+}
+When(`I upload an image to the league event`, uploadLeagueEventImage);
+
 /** Assert the wrapped league event is hidden. */
 const assertLeagueEventHidden = () => {
     cy.get<LeagueEvent>('@leagueEvent').then((leagueEvent: LeagueEvent) => {
-        cy.get(`#leagueEventShow${leagueEvent.league_event_id}`).should('be.visible');
+        cy
+        .get(`#leagueEventForm${leagueEvent.league_event_id}`)
+        .within(() => {
+            cy
+                .findByRole('link', { name: /hidden/i })
+                .should('be.visible');
+        });
     });
 };
 Then(`I see league event is hidden`, assertLeagueEventHidden);
+
+/** Assert the league event image was added. */
+const assertLeagueEventImage = () => {
+    cy.get<LeagueEvent>('@leagueEvent').then((event: LeagueEvent) => {
+        cy
+            .get(`#leagueEventForm${event.league_event_id}`)
+            .within(() => {
+                cy
+                    .findByRole('img')
+                    .should('have.attr', 'src')
+                    .should('include', 'test.png');
+            });
+    });
+};
+Then(`I see the event image`, assertLeagueEventImage);

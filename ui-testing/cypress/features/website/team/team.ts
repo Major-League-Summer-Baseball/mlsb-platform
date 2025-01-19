@@ -1,21 +1,19 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import { getCurrentYear } from '../../global/helper';
-import { create_player, generate_player } from '../../global/login';
+import { generate_player } from '../../global/login';
 import { Pagination } from '../../../interfaces/pagination';
 import { Team } from '../../../interfaces/team';
-import { Player } from '../../../interfaces/player';
-import { JoinLeagueRequest } from '../../../interfaces/league';
 
 /** The current year. */
 const YEAR = (new Date()).getFullYear();
 
 /** Create a team. */
 const find_team = (): void => {
-    cy.request(`/api/teams`).then((response) => {
+    cy.request('POST', `/rest/teamlookup`, {year: getCurrentYear()}).then((response) => {
         expect(response.isOkStatusCode).to.be.true;
-        const paginated_teams: Pagination = response.body;
-        expect(paginated_teams.total).to.be.greaterThan(0);
-        cy.wrap(paginated_teams.items[0]).as('team');
+        const teams: Team[] = response.body;
+        expect(teams).length.to.greaterThan(0);
+        cy.wrap(teams[0]).as('team');
     })
 };
 Given(`some team exists`, find_team);

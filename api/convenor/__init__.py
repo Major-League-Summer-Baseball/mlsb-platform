@@ -5,7 +5,13 @@ import pkgutil
 import inspect
 
 ALLOWED_EXTENSIONS = set(['csv'])
+ALLOWED_IMAGE_EXTENSIONS = set(['png'])
 convenor_blueprint = Blueprint("convenor", __name__, url_prefix="/convenor")
+
+
+def allow_images_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
 
 
 def allowed_file(filename):

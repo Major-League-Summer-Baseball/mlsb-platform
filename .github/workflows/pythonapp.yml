@@ -33,39 +33,6 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/*,api/tests/conftest.py,api/model.py --ignore=E712,W503,W504
 
-  unit-test:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Test with python unittest
-        run: |
-          pip install coverage
-          export FLASK_ENV="development"
-          coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/* -m unittest discover -s api/test
-          coverage report --fail-under=70
-          coverage xml
-          coverage html
-      - name: Create Coverage report Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: htmlcov
-      - name: Upload Coverage report to CodeCov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage.xml
-          flags: unittests # optional
-          name: unittest
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   pytest:
     runs-on: ubuntu-20.04
     steps:
@@ -82,7 +49,8 @@ jobs:
         run: |
           pip install coverage
           export FLASK_ENV="development"
-          coverage run --omit */api/test/*,initDB.py,tqdm.py,api/admin/__init__.py,venv/* -m pytest
+          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest api/tests/website/test_team_captain.py -s
+          coverage run --omit */api/test/*,initDB.py,tqdm.py,venv/* -m pytest -s
           coverage xml
           coverage html
       - name: Create Coverage report Artifact
@@ -116,12 +84,9 @@ jobs:
           node-version: '18.x'
       - name: UI Test with cypress
         run: |
-          export ADMIN="admin"
-          export PASSWORD="password"
-          export FLASK_ENV="development"
           export CYPRESS_baseUrl=http://localhost:8080/
           # run the server just in-memory
-          nohup python -m flask --app api/app run --host=0.0.0.0 --port=8080 2>&1 &
+          nohup python -m flask --app api/app run --host=0.0.0.0 --port=8080 --debug 2>&1 &
           # now run the cypres tests against it
           cd ui-testing
           npm install

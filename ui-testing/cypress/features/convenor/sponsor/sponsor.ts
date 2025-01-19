@@ -5,9 +5,19 @@ import { generateSponsor } from "../../global/convenor";
 /** Fill out the sponsor details for adding a sponsor. */
 const fillOutSponsorDetails = () => {
     const sponsor = generateSponsor();
-    cy.get("#newSponsorName").type(sponsor.sponsor_name);
-    cy.get("#newSponsorLink").type(sponsor.link);
-    cy.get("#newSponsorDescription").type(sponsor.description);
+    cy
+        .get('#sponsorFormNew')
+        .within(() => {
+            cy
+                .findByRole('textbox', { name: /sponsor name/i })
+                .type(sponsor.sponsor_name);
+            cy
+                .findByRole('textbox', { name: /link to sponsor/i })
+                .type(sponsor.link);
+            cy
+                .findByRole('textbox', { name: /description/i })
+                .type(sponsor.description);
+        });
     cy.wrap(sponsor).as("sponsor");
 };
 When(`I fill out the sponsor details`, fillOutSponsorDetails);
@@ -16,9 +26,20 @@ When(`I fill out the sponsor details`, fillOutSponsorDetails);
 const updatetSponsorDetails = () => {
     const newDetails = generateSponsor();
     cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
-        cy.get(`#sponsorName${sponsor.sponsor_id}`).type(newDetails.sponsor_name);
-        cy.get(`#sponsorLink${sponsor.sponsor_id}`).type(newDetails.link);
-        cy.get(`#sponsorDescription${sponsor.sponsor_id}`).type(newDetails.description);
+        cy
+            .get(`#sponsorForm${sponsor.sponsor_id}`)
+            .within(() => {
+                cy
+                    .findByRole('textbox', { name: /sponsor name/i })
+                    .type(newDetails.sponsor_name);
+                cy
+                    .findByRole('textbox', { name: /link to sponsor/i })
+                    .type(newDetails.link);
+                cy
+                    .findByRole('textbox', { name: /description/i })
+                    .type(newDetails.description);
+                
+            });
         newDetails.sponsor_id = sponsor.sponsor_id;
         cy.wrap(newDetails).as("sponsor");
     });
@@ -27,14 +48,26 @@ When(`I update the sponsor details`, updatetSponsorDetails);
 
 /** Submit the sponsor form. */
 const submitSponsor = () => {
-    cy.get("#sponsorCreate").click();
+    cy
+        .get('#sponsorFormNew')
+        .within(() => {
+            cy
+                .findByRole('button', { name: /create/i })
+                .click();
+        });
 };
 When(`I submit sponsor`, submitSponsor);
 
 /** Click update for the wrapped sponsor. */
 const updateSponsor = () => {
     cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
-        cy.get(`#sponsorSubmit${sponsor.sponsor_id}`).click();
+        cy
+            .get(`#sponsorForm${sponsor.sponsor_id}`)
+            .within(() => {
+                cy
+                    .findByRole('button', { name: /update/i })
+                    .click();
+            });
     });
 };
 When(`I click update`, updateSponsor);
@@ -42,15 +75,62 @@ When(`I click update`, updateSponsor);
 /** Hide the wrapped sponsor. */
 const hideSponsor = () => {
     cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
-        cy.get(`#sponsorInactive${sponsor.sponsor_id}`).click();
+        cy
+            .get(`#sponsorForm${sponsor.sponsor_id}`)
+            .within(() => {
+                cy
+                    .findByRole('button', { name: /visible/i })
+                    .click();
+            });
     });
 };
 When(`I hide the sponsor`, hideSponsor);
 
+/** Upload the sponsor logo */
+const uploadSponsorLogo = () => {
+    cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
+        cy.fixture('test.png', null).as('TestImage');
+        cy
+            .get(`#sponsorForm${sponsor.sponsor_id}`)
+            .within(() => {
+                cy
+                    .findByRole('button', { name: /add image/i })
+                    .click();
+                cy
+                    .get('input[type="file"][name="image"]')
+                    .selectFile('@TestImage');
+                cy
+                    .findByRole('button', { name: /upload/i })
+                    .click();
+            });
+    });
+};
+When(`I upload a new logo`, uploadSponsorLogo);
+
 /** Assert the wrapped sponsor is hidden. */
 const assertHiddenSponsor = () => {
     cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
-        cy.get(`#sponsorActive${sponsor.sponsor_id}`).should('be.visible');
+        cy
+            .get(`#sponsorForm${sponsor.sponsor_id}`)
+            .within(() => {
+                cy
+                    .findByRole('button', { name: /hidden/i })
+                    .should('be.visible');
+            });
     });
 };
 Then(`sponsor is no longer visible`, assertHiddenSponsor);
+
+const assertSponsorImage = () => {
+    cy.get<Sponsor>('@sponsor').then((sponsor: Sponsor) => {
+        cy
+            .get(`#sponsorForm${sponsor.sponsor_id}`)
+            .within(() => {
+                cy
+                    .findByRole('img')
+                    .should('have.attr', 'src')
+                    .should('include', 'test.png');
+            });
+    });
+};
+Then (`I see the logo`, assertSponsorImage);

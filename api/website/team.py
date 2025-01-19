@@ -1,41 +1,19 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related a team. """
 from datetime import date
-from flask import redirect, render_template, send_from_directory, url_for
+from flask import redirect, render_template, url_for
 from sqlalchemy import not_
 from api.errors import PlayerNotOnTeam, RequestDoesNotExist, TeamDoesNotExist
 from api.extensions import DB
 from api.model import Team, Player, JoinLeagueRequest
-from api.variables import NOTFOUND, UNASSIGNED_EMAIL, PICTURES, PLAYER_PAGE_SIZE
+from api.variables import UNASSIGNED_EMAIL, PLAYER_PAGE_SIZE
 from api.website.helpers import get_team
-from api.advanced.players_stats import post as player_summary
-from api.cached_items import get_team_map
+from api.queries.player import player_summary
 from api.authentication import \
     get_user_information, get_team_authorization, require_captain, require_login
 from api.website import website_blueprint
 from flask_login import current_user
 from flask import request
-import os.path
-
-
-@website_blueprint.route("/website/team/picture/<int:team>")
-@website_blueprint.route("/website/team/picture/<team>")
-def team_picture(team):
-    name = team if team is not None and team != "None" else "notFound"
-    if isinstance(team, int):
-        team_id = int(team)
-        team = get_team_map().get(team_id, None)
-        if team is not None and team['sponsor_name'] is not None:
-            name = team['sponsor_name']
-        else:
-            name = "notFound"
-    name = name.lower().replace(" ", "_") + ".png"
-    f = os.path.join(PICTURES, "sponsors", name)
-    fp = os.path.join(PICTURES, "sponsors")
-    if os.path.isfile(f):
-        return send_from_directory(fp, name)
-    else:
-        return send_from_directory(fp, NOTFOUND)
 
 
 @website_blueprint.route("/website/teams/<int:year>/<int:team_id>")

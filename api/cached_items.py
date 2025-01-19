@@ -4,14 +4,13 @@ from datetime import date, datetime, time
 from flask import url_for
 from api.queries.team_records import get_team_records
 from api.extensions import cache, DB
-from api.advanced.game_stats import post as game_summary
+from api.queries.game import game_summary
 from api.model import Team, Sponsor, League, Espys, Fun, Game, Division
 from api.errors import LeagueDoesNotExist
 from api.variables import LONG_TERM_CACHE
 from api.tables import Tables
-from api.advanced.league_leaders import get_leaders, \
+from api.queries.leaders import get_leaders, \
     get_leaders_not_grouped_by_team, get_single_game_leader
-from api.routes import Routes
 from api.variables import PAGE_SIZE
 from api.helper import pagination_response_items
 import json
@@ -114,7 +113,7 @@ def get_team_map():
         team_map[team.id] = {}
         team_map[team.id]['team_name'] = str(team)
         team_map[team.id]['sponsor_id'] = team.sponsor_id
-        team_map[team.id]['sponsor_name'] = team.sponsor_name
+        team_map[team.id]['sponsor_name'] = str(team.sponsor)
     return team_map
 
 
@@ -288,9 +287,11 @@ def pull_schedule(
         raise LeagueDoesNotExist(payload={'details': league_id})
     start = datetime.combine(date(year, 1, 1), time(0, 0))
     end = datetime.combine(date(year, 12, 30), time(23, 0))
-    games = (Game.query.filter(and_(Game.league_id == league_id,
-                                    Game.date.between(start, end)))
-             ).order_by("date").paginate(page, page_size, False)
+    games = (
+        Game.query.filter(
+            and_(Game.league_id == league_id, Game.date.between(start, end))
+        )
+    ).order_by("date").paginate(page=page, per_page=page_size, error_out=False)
     data = []
     for game in games.items:
         result = game_to_json(game, team_mapper)
@@ -302,8 +303,7 @@ def pull_schedule(
             result['score'] = ""
         data.append(result)
     if url_route is None:
-        url_route = (Routes['vschedule'] + "/" + str(year) + "/" +
-                     str(league_id))
+        url_route = url_for('rest.schedule', year=year, league_id=league_id)
     return pagination_response_items(games, url_route, data)
 
 
@@ -336,7 +336,7 @@ def game_to_json(game, team_mapper):
 @cache.memoize(timeout=LONG_TERM_CACHE)
 def team_stats(team_id, year, league_id, division_id=None):
     if team_id is not None:
-        team = single_team(team_id)
+        team = [single_team(team_id)]
     else:
         team = multiple_teams(year, league_id, division_id=division_id)
     return team
@@ -345,16 +345,12 @@ def team_stats(team_id, year, league_id, division_id=None):
 def single_team(team_id):
     team_query = Team.query.get(team_id)
     if team_query is None:
-        return {}
+        return []
     records = get_team_records(team_id=team_id)
-    return {team_id: records[0]}
+    return records[0]
 
 
 def multiple_teams(year, league_id, division_id=None):
-    teams = get_team_records(
+    return get_team_records(
         year=year, league_id=league_id, division_id=division_id
     )
-    data = {}
-    for team in teams:
-        data[team['team_id']] = team
-    return data

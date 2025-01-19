@@ -1,12 +1,13 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
+
+from .image import image
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Sponsor
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import SponsorDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -16,11 +17,13 @@ parser.add_argument('sponsor_name', type=str)
 parser.add_argument('link', type=str)
 parser.add_argument('description', type=str)
 parser.add_argument('active', type=int)
+parser.add_argument('logo_id', type=int)
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('sponsor_name', type=str, required=True)
 post_parser.add_argument('link', type=str)
 post_parser.add_argument('description', type=str)
 post_parser.add_argument('active', type=int)
+post_parser.add_argument('logo_id', type=int)
 
 sponsor_api = Namespace(
     "sponsor",
@@ -39,12 +42,18 @@ sponsor_payload = sponsor_api.model('SponsorPayload', {
     'active': fields.Boolean(
         description="Whether the sponsor is actively sponsoring the league",
         default=True
+    ),
+    'logo_id': fields.Integer(
+        description='The id of the image to be sponsor logo',
+        default=None,
+        required=False
     )
 })
 sponsor = sponsor_api.inherit("Sponsor", sponsor_payload, {
     'sponsor_id': fields.Integer(
         description="The id of the sponsor"
-    )
+    ),
+    'logo': fields.Nested(image),
 })
 pagination = get_pagination(sponsor_api)
 sponsor_pagination = sponsor_api.inherit("SponsorPagination", pagination, {
@@ -55,7 +64,7 @@ sponsor_pagination = sponsor_api.inherit("SponsorPagination", pagination, {
 @sponsor_api.route("/<int:sponsor_id>", endpoint="rest.sponsor")
 @sponsor_api.doc(params={"sponsor_id": "The id of the sponsor"})
 class SponsorAPI(Resource):
-
+    @sponsor_api.doc(security=[])
     @sponsor_api.marshal_with(sponsor)
     def get(self, sponsor_id):
         # expose a single Sponsor
@@ -64,7 +73,7 @@ class SponsorAPI(Resource):
             raise SponsorDoesNotExist(payload={'details': sponsor_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @sponsor_api.marshal_with(sponsor)
     def delete(self, sponsor_id):
@@ -77,7 +86,7 @@ class SponsorAPI(Resource):
         handle_table_change(Tables.SPONSOR, item=sponsor.json())
         return sponsor.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @sponsor_api.expect(sponsor_payload)
     @sponsor_api.marshal_with(sponsor)
@@ -93,9 +102,14 @@ class SponsorAPI(Resource):
         is_active = args.get("active", True)
         active = is_active == 1 if isinstance(is_active, int) else is_active
         description = args.get('description', None)
+        logo_id = args.get('logo_id', None)
 
         sponsor.update(
-            name=name, link=link, description=description, active=active
+            name=name,
+            link=link,
+            description=description,
+            active=active,
+            logo_id=logo_id,
         )
         DB.session.commit()
         handle_table_change(Tables.SPONSOR, item=sponsor.json())
@@ -109,16 +123,18 @@ class SponsorAPI(Resource):
 
 @sponsor_api.route("", endpoint="rest.sponsors")
 class SponsorListAPI(Resource):
-
+    @sponsor_api.doc(security=[])
     @sponsor_api.marshal_with(sponsor_pagination)
     def get(self):
         # return a pagination of Sponsors
         page = request.args.get('page', 1, type=int)
-        pagination = Sponsor.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['sponsor'])
+        pagination = Sponsor.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
+        result = pagination_response(pagination, url_for('rest.sponsors'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @sponsor_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @sponsor_api.expect(sponsor_payload)
     @sponsor_api.marshal_with(sponsor)
@@ -131,9 +147,13 @@ class SponsorListAPI(Resource):
         is_active = args.get("active", True)
         active = is_active == 1 if isinstance(is_active, int) else is_active
         description = args.get('description', None)
-
+        logo_id = args.get('logo_id', None)
         sponsor = Sponsor(
-            sponsor_name, link=link, description=description, active=active
+            sponsor_name,
+            link=link,
+            description=description,
+            active=active,
+            logo_id=logo_id
         )
         DB.session.add(sponsor)
         DB.session.commit()

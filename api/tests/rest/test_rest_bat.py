@@ -7,7 +7,8 @@ from api.helper import loads
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -17,7 +18,8 @@ from api.helper import loads
 def test_able_create_bat(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -26,6 +28,7 @@ def test_able_create_bat(
     game_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         player = player_factory()
         division = division_factory()
         league = league_factory()
@@ -53,8 +56,7 @@ def test_able_create_bat(
                 "rbi": rbi,
 
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
 
         assert response.status_code == 200
@@ -71,7 +73,8 @@ def test_able_create_bat(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -81,7 +84,8 @@ def test_able_create_bat(
 def test_required_fields_of_bat(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -90,6 +94,7 @@ def test_required_fields_of_bat(
     game_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         player = player_factory()
         division = division_factory()
         league = league_factory()
@@ -115,8 +120,7 @@ def test_required_fields_of_bat(
                 "hit": hit,
                 "rbi": rbi,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -128,8 +132,7 @@ def test_required_fields_of_bat(
                 "hit": hit,
                 "rbi": rbi,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -141,8 +144,7 @@ def test_required_fields_of_bat(
                 "hit": hit,
                 "rbi": rbi,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -154,8 +156,7 @@ def test_required_fields_of_bat(
                 "team_id": home_team.id,
                 "rbi": rbi,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -163,7 +164,8 @@ def test_required_fields_of_bat(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -174,7 +176,8 @@ def test_required_fields_of_bat(
 def test_update_bat(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -184,6 +187,7 @@ def test_update_bat(
     bat_factory,
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         player = player_factory()
         division = division_factory()
         league = league_factory()
@@ -209,7 +213,6 @@ def test_update_bat(
                 "rbi": rbi,
             },
             follow_redirects=True,
-            headers=admin_header
         )
 
         assert response.status_code == 200
@@ -221,7 +224,8 @@ def test_update_bat(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('league_factory')
@@ -232,7 +236,8 @@ def test_update_bat(
 def test_delete_bat(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -242,6 +247,7 @@ def test_delete_bat(
     bat_factory,
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         player = player_factory()
         division = division_factory()
         league = league_factory()
@@ -260,8 +266,7 @@ def test_delete_bat(
 
         response = client.delete(
             url_for("rest.bat", bat_id=bat.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert not Bat.does_bat_exist(bat.id)
@@ -270,17 +275,11 @@ def test_delete_bat(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_bats(
-    mlsb_app,
-    client,
-    admin_header,
-):
+def test_get_all_bats(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.bats"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -302,7 +301,6 @@ def test_get_all_bats(
 def test_get_bat(
     mlsb_app,
     client,
-    admin_header,
     sponsor_factory,
     team_factory,
     league_factory,
@@ -330,8 +328,7 @@ def test_get_bat(
 
         response = client.get(
             url_for("rest.bat", bat_id=bat.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

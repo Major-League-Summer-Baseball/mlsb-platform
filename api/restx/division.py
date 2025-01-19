@@ -2,12 +2,11 @@ from flask_restx import Resource, reqparse, Namespace, fields
 from .models import get_pagination
 from api.model import Division
 from api.extensions import DB
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import DivisionDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
-from flask import request
+from flask import request, url_for
 parser = reqparse.RequestParser()
 parser.add_argument('division_name', type=str)
 parser.add_argument('division_shortname', type=str)
@@ -25,6 +24,7 @@ division_payload = division_api.model('DivisionPayload', {
     ),
     'division_shortname': fields.String(
         description="The shortened name of the division",
+        required=False
     ),
 })
 division = division_api.inherit("Division", division_payload, {
@@ -41,7 +41,7 @@ division_pagination = division_api.inherit("DivisionPagination", pagination, {
 @division_api.route("/<int:division_id>", endpoint="rest.division")
 @division_api.doc(params={"division_id": "The id of the division"})
 class DivisionAPI(Resource):
-
+    @division_api.doc(security=[])
     @division_api.marshal_with(division)
     def get(self, division_id):
         # expose a single Division
@@ -50,7 +50,7 @@ class DivisionAPI(Resource):
             raise DivisionDoesNotExist(payload={'details': division_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @division_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @division_api.marshal_with(division)
     def delete(self, division_id):
@@ -62,7 +62,7 @@ class DivisionAPI(Resource):
         DB.session.commit()
         return division.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @division_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @division_api.expect(division_payload)
     @division_api.marshal_with(division)
@@ -88,16 +88,18 @@ class DivisionAPI(Resource):
 
 @division_api.route("", endpoint="rest.divisions")
 class DivisionListAPI(Resource):
-
+    @division_api.doc(security=[])
     @division_api.marshal_with(division_pagination)
     def get(self):
         # return a pagination of Divisions
         page = request.args.get('page', 1, type=int)
-        pagination = Division.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['division'])
+        pagination = Division.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
+        result = pagination_response(pagination, url_for('rest.divisions'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @division_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @division_api.expect(division_payload)
     @division_api.marshal_with(division)

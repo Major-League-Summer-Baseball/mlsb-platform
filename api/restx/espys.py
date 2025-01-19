@@ -1,12 +1,11 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import Espys
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import EspysDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -70,7 +69,7 @@ espys_pagination = espys_api.inherit("EspysPagination", pagination, {
 @espys_api.route("/<int:espy_id>", endpoint="rest.espy")
 @espys_api.doc(params={"espy_id": "The id of the espy points"})
 class EspyAPI(Resource):
-
+    @espys_api.doc(security=[])
     @espys_api.marshal_with(espys)
     def get(self, espy_id):
         # expose a single team
@@ -79,7 +78,7 @@ class EspyAPI(Resource):
             raise EspysDoesNotExist(payload={'details': espy_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @espys_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @espys_api.marshal_with(espys)
     def delete(self, espy_id):
@@ -92,7 +91,7 @@ class EspyAPI(Resource):
         handle_table_change(Tables.ESPYS, item=espy.json())
         return espy.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @espys_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @espys_api.expect(espys_payload)
     @espys_api.marshal_with(espys)
@@ -135,16 +134,18 @@ class EspyAPI(Resource):
 
 @espys_api.route("", endpoint="rest.espys")
 class EspyListAPI(Resource):
-
+    @espys_api.doc(security=[])
     @espys_api.marshal_with(espys_pagination)
     def get(self):
         # return a pagination of teams
         page = request.args.get('page', 1, type=int)
-        pagination = Espys.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['espy'])
+        pagination = Espys.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
+        result = pagination_response(pagination, url_for('rest.espys'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @espys_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @espys_api.expect(espys_payload)
     @espys_api.marshal_with(espys)

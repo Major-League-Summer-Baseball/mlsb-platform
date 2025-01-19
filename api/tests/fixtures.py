@@ -1,6 +1,5 @@
 import pytest
 import uuid
-from base64 import b64encode
 from json import dumps
 from datetime import date
 from flask import url_for
@@ -8,18 +7,7 @@ from api.app import create_app
 from api.extensions import DB
 from api.model import JoinLeagueRequest, Sponsor, Player, LeagueEvent, \
     LeagueEventDate, Team, League, Game, Division, Bat, Espys, Fun
-import os
-
-
-ADMIN = os.environ.get('ADMIN', 'admin')
-PASSWORD = os.environ.get('PASSWORD', 'password')
-
-
-@pytest.fixture(scope="session")
-def admin_header():
-    """The header to use for the admin authentication"""
-    encode = b64encode(bytes(ADMIN + ':' + PASSWORD, "utf-8")).decode("ascii")
-    return {'Authorization': 'Basic %s' % encode}
+from api.models.image import Image
 
 
 @pytest.fixture(scope="session")
@@ -28,6 +16,7 @@ def mlsb_app():
     mlsb_app = create_app()
     mlsb_app.config.update({
         "SERVER_NAME": 'localhost:5000',
+        "TESTING": True
     })
 
     # other setups
@@ -91,6 +80,14 @@ def factory_fixture(factory):
         return factory
     maker.__name__ = factory.__name__
     return maker
+
+
+@factory_fixture
+def image_factory(url='https://i.imgur.com/lZ0Nt92.jpeg') -> Image:
+    image = Image(url)
+    DB.session.add(image)
+    DB.session.commit()
+    return image
 
 
 @factory_fixture
@@ -176,11 +173,11 @@ def team_factory(
         league_id=league_id,
         year=year
     )
+    DB.session.add(team)
     for player in players:
         team.insert_player(player.id)
     if captain is not None:
         team.insert_player(captain.id, captain=True)
-    DB.session.add(team)
     DB.session.commit()
     return team
 

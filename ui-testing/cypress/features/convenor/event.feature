@@ -20,12 +20,21 @@ Scenario: Able to edit a league event
       And I update the league event details
      Then I see "league event" was "updated"
 
+Scenario: Able to add an image to a league event
+    Given a league event exists
+     When I navigate to the "events" page
+      And I upload an image to the league event
+      And I click update
+     Then I see "league event" was "updated"
+      And I see the event image
+
 Scenario: Able to hide a league event
     Given a league event exists
      When I navigate to the "events" page
       And I hide the league event
      Then I see league event is hidden
 
+@focus
 Scenario: Able to add new date
     Given a league event exists
      When I navigate to the "events" page

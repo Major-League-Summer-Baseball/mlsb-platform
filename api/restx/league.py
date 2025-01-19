@@ -1,12 +1,11 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from .models import get_pagination
 from api.extensions import DB
 from api.model import League
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import LeagueDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -40,7 +39,7 @@ league_pagination = league_api.inherit("LeaguePagination", pagination, {
 @league_api.route("/<int:league_id>", endpoint="rest.league")
 @league_api.doc(params={"league_id": "The id of the league"})
 class LeagueAPI(Resource):
-
+    @league_api.doc(security=[])
     @league_api.marshal_with(league)
     def get(self, league_id):
         # expose a single League
@@ -49,7 +48,7 @@ class LeagueAPI(Resource):
             raise LeagueDoesNotExist(payload={'details': league_id})
         return entry.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @league_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @league_api.marshal_with(league)
     def delete(self, league_id):
@@ -62,7 +61,7 @@ class LeagueAPI(Resource):
         handle_table_change(Tables.LEAGUE, item=league.json())
         return league.json()
 
-    @requires_admin
+    @require_to_be_convenor
     @league_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @league_api.expect(league_payload)
     @league_api.marshal_with(league)
@@ -87,16 +86,18 @@ class LeagueAPI(Resource):
 
 @league_api.route("", endpoint="rest.leagues")
 class LeagueListAPI(Resource):
-
+    @league_api.doc(security=[])
     @league_api.marshal_with(league_pagination)
     def get(self):
         # return a pagination of leagues
         page = request.args.get('page', 1, type=int)
-        pagination = League.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['league'])
+        pagination = League.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
+        result = pagination_response(pagination, url_for('rest.leagues'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @league_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @league_api.expect(league_payload)
     @league_api.marshal_with(league)

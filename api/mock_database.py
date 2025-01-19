@@ -2,9 +2,10 @@
 from api.extensions import DB
 from api.model import \
     Player, Sponsor, League, Fun, Game, Team, Espys, Bat, Division, \
-    LeagueEvent, LeagueEventDate
+    LeagueEvent, LeagueEventDate, Image
 from api.variables import UNASSIGNED_EMAIL, HITS
 from api.tqdm import tqdm
+from sqlalchemy import text
 import click
 import datetime
 import random
@@ -23,6 +24,7 @@ MOCK_EVENTS = [
             games makes for a day that you will never forget.
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/beerlympics.png",
         f"{CURRENT_YEAR}-07-01"
     ),
     (
@@ -35,6 +37,7 @@ MOCK_EVENTS = [
             to watch the boys of summer?
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/jays_game.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -47,6 +50,7 @@ MOCK_EVENTS = [
             this joyous day twice a year.
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/summerween.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -60,6 +64,7 @@ MOCK_EVENTS = [
             MLSB every year and takes place in the winter.
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/mystery_bus.png",
         f"{CURRENT_YEAR}-04-01"
     ),
     (
@@ -77,6 +82,7 @@ MOCK_EVENTS = [
             this one because it is going to be a wild weekend!
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/rafting.png",
         f"{CURRENT_YEAR}-07-08"
     ),
     (
@@ -94,6 +100,7 @@ MOCK_EVENTS = [
             Bring your tents because we will be camping out for the night!
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/grand_bender.png",
         f"{CURRENT_YEAR}-07-28"
     ),
     (
@@ -113,21 +120,81 @@ MOCK_EVENTS = [
             </a>
         </p>
         """,
+        "https://fly.storage.tigris.dev/image-store/events/mlsb_alumni.png",
         f"{CURRENT_YEAR}-06-22"
     )
+]
+sponsors = [
+    {
+        "name": "Beertown",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/beertown.png"
+    },
+    {
+        "name": "Kik",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/kik.png"
+    },
+    {
+        "name": "Pabst",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/pabst.png"
+    },
+    {
+        "name": "Spitz",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/spitz.png"
+    },
+    {
+        "name": "Tilt",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/tilt.png"
+    },
+    {
+        "name": "Sportszone",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/sportszone.png"
+    },
+    {
+        "name": "Sleeman",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/sleeman.png"
+    },
+    {
+        "name": "Ripshot",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/ripshot.png"
+    },
+    {
+        "name": "Night School",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/night_school.png"
+    },
+    {
+        "name": "Heaven",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/heaven.png"
+    },
+    {
+        "name": "GE",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/ge.png"
+    },
+    {
+        "name": "Gatorade",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/gatorade.png"
+    },
+    {
+        "name": "Chef on Call",
+        "url": "https://fly.storage.tigris.dev/image-store/sponsors/chef_on_call.png"
+    }
 ]
 
 
 def mock_events():
     """Mock the events"""
     for event in tqdm(MOCK_EVENTS):
-        league_event = LeagueEvent(event[0], event[2], event[1])
+        event_image = Image(event[3])
+        DB.session.add(event_image)
+        DB.session.commit()
+        league_event = LeagueEvent(
+            event[0], event[2], event[1], image_id=event_image.id
+        )
         DB.session.add(league_event)
         DB.session.commit()
-        if event[3] is not None:
-            event_date = LeagueEventDate(event[3],
-                                         '12:00',
-                                         league_event.id)
+        if event[4] is not None:
+            event_date = LeagueEventDate(
+                event[4], '12:00', league_event.id
+            )
             DB.session.add(event_date)
             DB.session.commit()
 
@@ -141,12 +208,17 @@ def mock_fun_count():
 
 def mock_sponsors():
     """Mock the sponsors"""
+    for sponsor in sponsors:
+        # add the sponsor images
+        logo = Image(sponsor['url'])
+        DB.session.add(logo)
+        sponsor['logo'] = logo
+    DB.session.commit()
     sponsor_lookup = {}
-    for index, name in enumerate(["Beertown", "Kik", "Pabst", "Spitz", "Tilt",
-                                  "Sportszone", "Sleeman", "Ripshot",
-                                  "Night School", "Heaven", "GE", "Gatorade",
-                                  "Chef on Call"]):
-        sponsor = Sponsor(name)
+    for index, sponsor_info in enumerate(sponsors):
+        sponsor = Sponsor(
+            sponsor_info['name'], logo_id=sponsor_info['logo'].id
+        )
         DB.session.add(sponsor)
         sponsor_lookup[index + 1] = sponsor
     DB.session.commit()
@@ -317,22 +389,25 @@ def create_fresh_tables():
     """Creates fresh tables and deletes any previous information."""
     # delete old information
     DB.session.commit()
-    DB.engine.execute("DROP TABLE IF EXISTS flask_dance_oauth;")
-    DB.engine.execute("DROP TABLE IF EXISTS attendance;")
-    DB.engine.execute("DROP TABLE IF EXISTS league_event_date;")
-    DB.engine.execute("DROP TABLE IF EXISTS league_event;")
-    DB.engine.execute("DROP TABLE IF EXISTS join_league_request;")
-    DB.engine.execute("DROP TABLE IF EXISTS flask_dance_oauth;")
-    DB.engine.execute("DROP TABLE IF EXISTS fun;")
-    DB.engine.execute("DROP TABLE IF EXISTS roster;")
-    DB.engine.execute("DROP TABLE IF EXISTS bat;")
-    DB.engine.execute("DROP TABLE IF EXISTS espys;")
-    DB.engine.execute("DROP TABLE IF EXISTS game;")
-    DB.engine.execute("DROP TABLE IF EXISTS division;")
-    DB.engine.execute("DROP TABLE IF EXISTS team;")
-    DB.engine.execute("DROP TABLE IF EXISTS player;")
-    DB.engine.execute("DROP TABLE IF EXISTS sponsor;")
-    DB.engine.execute("DROP TABLE IF EXISTS league;")
+    with DB.engine.connect() as conn:
+        conn.execute(text("DROP TABLE IF EXISTS flask_dance_oauth;"))
+        conn.execute(text("DROP TABLE IF EXISTS attendance;"))
+        conn.execute(text("DROP TABLE IF EXISTS league_event_date;"))
+        conn.execute(text("DROP TABLE IF EXISTS league_event;"))
+        conn.execute(text("DROP TABLE IF EXISTS join_league_request;"))
+        conn.execute(text("DROP TABLE IF EXISTS flask_dance_oauth;"))
+        conn.execute(text("DROP TABLE IF EXISTS fun;"))
+        conn.execute(text("DROP TABLE IF EXISTS roster;"))
+        conn.execute(text("DROP TABLE IF EXISTS bat;"))
+        conn.execute(text("DROP TABLE IF EXISTS espys;"))
+        conn.execute(text("DROP TABLE IF EXISTS game;"))
+        conn.execute(text("DROP TABLE IF EXISTS division;"))
+        conn.execute(text("DROP TABLE IF EXISTS team;"))
+        conn.execute(text("DROP TABLE IF EXISTS player;"))
+        conn.execute(text("DROP TABLE IF EXISTS sponsor;"))
+        conn.execute(text("DROP TABLE IF EXISTS league;"))
+        conn.execute(text("DROP TABLE IF EXISTS image;"))
+        conn.commit()
     DB.create_all()
 
 

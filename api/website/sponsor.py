@@ -1,42 +1,23 @@
 # -*- coding: utf-8 -*-
 """ Pages and routes related to the sponsors of the league. """
-from flask import render_template, send_from_directory
+from flask import render_template
 from sqlalchemy.sql import func
 from datetime import datetime
 from api.extensions import DB
 from api.model import Team, Sponsor, Espys
-from api.variables import PICTURES, NOTFOUND
 from api.website.helpers import get_teams
 from api.cached_items import get_sponsor_map
 from api.authentication import get_user_information
 from api.website import website_blueprint
-import os.path
 import json
-
-
-@website_blueprint.route("/website/sponsor/picture/<int:name>")
-@website_blueprint.route("/website/sponsor/picture/<name>")
-def sponsor_picture(name):
-    if isinstance(name, int):
-        sponsor_id = int(name)
-        sponsor = get_sponsor_map().get(sponsor_id, None)
-        if sponsor is not None:
-            name = sponsor['sponsor_name']
-        else:
-            name = "notFound"
-    name = name.strip().lower().replace(" ", "_").replace(".", "_") + ".png"
-    f = os.path.join(PICTURES, "sponsors", name)
-    fp = os.path.join(PICTURES, "sponsors")
-    if os.path.isfile(f):
-        return send_from_directory(fp, name)
-    else:
-        return send_from_directory(fp, NOTFOUND)
 
 
 @website_blueprint.route("/website/sponsors_list/<int:year>")
 def sponsors_page(year):
+    sponsors = get_sponsor_map().values()
     return render_template(
         "website/sponsors.html",
+        sponsors=sponsors,
         title="Sponsors",
         year=year,
         user_info=get_user_information()

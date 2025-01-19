@@ -2,7 +2,6 @@ import pytest
 from datetime import date
 from flask import url_for
 from api.helper import loads
-from api.model import Sponsor
 
 THIS_YEAR = date.today().year
 INVALID_ENTITY = 100000000
@@ -69,49 +68,6 @@ def test_sponsors_page(mlsb_app, client):
         url = url_for(
             "website.sponsors_page",
             year=THIS_YEAR,
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_sponsor_picture_by_id(mlsb_app, client):
-    with mlsb_app.app_context():
-        # get some sponsor
-        sponsor = Sponsor.query.first()
-        url = url_for(
-            "website.sponsor_picture",
-            year=THIS_YEAR,
-            name=sponsor.id
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_sponsor_picture_by_name(mlsb_app, client):
-    with mlsb_app.app_context():
-        # get some sponsor
-        sponsor = Sponsor.query.first()
-        url = url_for(
-            "website.sponsor_picture",
-            year=THIS_YEAR,
-            name=sponsor.name
-        )
-        response = client.get(url, follow_redirects=True)
-        assert response.status_code == 200
-
-
-@pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('mlsb_app')
-def test_nonexistent_sponsor_picture(mlsb_app, client):
-    with mlsb_app.app_context():
-        url = url_for(
-            "website.sponsor_picture",
-            year=THIS_YEAR,
-            name="X"
         )
         response = client.get(url, follow_redirects=True)
         assert response.status_code == 200

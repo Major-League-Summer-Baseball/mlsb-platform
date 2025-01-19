@@ -1,6 +1,8 @@
 import pytest
-from api.errors import InvalidField, LeagueEventDoesNotExist, PlayerDoesNotExist, PlayerNotOnTeam
+from api.errors import ImageDoesNotExist, InvalidField, LeagueEventDoesNotExist, PlayerDoesNotExist, PlayerNotOnTeam
 from api.model import LeagueEventDate
+
+INVALID_ENTITY = -1
 
 
 @pytest.mark.parametrize("league_event_date_data", [
@@ -21,6 +23,42 @@ def test_create_league_event_date(
             time=league_event_date_data[1],
             league_event_id=league_event.id
         )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('image_factory')
+def test_create_league_event_date_with_image(
+    mlsb_app,
+    league_event_factory,
+    image_factory
+):
+    with mlsb_app.app_context():
+        image = image_factory()
+        league_event = league_event_factory("League Event", "Description")
+        LeagueEventDate(
+            date="2022-10-01",
+            time="1:01",
+            league_event_id=league_event.id,
+            image_id=image.id
+        )
+
+
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('league_event_factory')
+def test_cannot_create_league_event_date_with_nonexistent_image(
+    mlsb_app,
+    league_event_factory
+):
+    with mlsb_app.app_context():
+        league_event = league_event_factory("League Event", "Description")
+        with pytest.raises(ImageDoesNotExist):
+            LeagueEventDate(
+                date="2022-10-01",
+                time="1:01",
+                league_event_id=league_event.id,
+                image_id=INVALID_ENTITY
+            )
 
 
 @pytest.mark.parametrize("invalid_league_event_date_data", [
@@ -57,7 +95,7 @@ def test_cannot_create_league_event_date_non_existent_event(
             LeagueEventDate(
                 date=league_event_date_data[0],
                 time=league_event_date_data[1],
-                league_event_id=-1
+                league_event_id=INVALID_ENTITY
             )
 
 
@@ -82,6 +120,27 @@ def test_update_league_event_date(
         league_event_date.update(
             date=league_event_date_data[0],
             time=league_event_date_data[1]
+        )
+
+
+@pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('image_factory')
+@pytest.mark.usefixtures('mlsb_app')
+def test_can_update_league_event_date_image(
+    mlsb_app,
+    league_event_factory,
+    image_factory
+):
+    with mlsb_app.app_context():
+        image = image_factory()
+        league_event = league_event_factory("League Event", "Description")
+        league_event_date = LeagueEventDate(
+            date="2022-10-01",
+            time="10:00",
+            league_event_id=league_event.id
+        )
+        league_event_date.update(
+            image_id=image.id
         )
 
 
@@ -125,7 +184,26 @@ def test_cannot_update_league_event_date_non_existent_event(
                 league_event_id=league_event.id
             )
             league_event_date.update(
-                league_event_id=-1
+                league_event_id=INVALID_ENTITY
+            )
+
+
+@pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('mlsb_app')
+def test_cannot_update_league_event_date_non_existent_image(
+    mlsb_app,
+    league_event_factory,
+):
+    with mlsb_app.app_context():
+        with pytest.raises(ImageDoesNotExist):
+            league_event = league_event_factory("League Event", "Description")
+            league_event_date = LeagueEventDate(
+                date="2022-10-01",
+                time="10:00",
+                league_event_id=league_event.id
+            )
+            league_event_date.update(
+                image_id=INVALID_ENTITY
             )
 
 

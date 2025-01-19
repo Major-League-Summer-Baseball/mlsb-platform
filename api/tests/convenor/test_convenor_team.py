@@ -15,18 +15,21 @@ NON_EXISTENT = 99999999
 @pytest.mark.usefixtures('player_factory')
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('sponsor_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_convenor_create_team(
     mlsb_app,
     client,
     auth,
     convenor,
     league_factory,
-    sponsor_factory
+    sponsor_factory,
+    image_factory,
 ):
     """Test convenor able to add team."""
     with mlsb_app.app_context():
         league = league_factory()
         sponsor = sponsor_factory()
+        image = image_factory()
         color = "Pink"
         year = date.today().year
         auth.login(convenor.email)
@@ -37,7 +40,8 @@ def test_convenor_create_team(
                 'league_id': league.id,
                 'sponsor_id': sponsor.id,
                 'year': year,
-                'color': "Pink"
+                'color': "Pink",
+                'image_id': image.id,
             }
         )
         assert not url_for("website.loginpage").endswith(response.request.path)
@@ -47,6 +51,7 @@ def test_convenor_create_team(
         assert team.color == color
         assert team.sponsor_id == sponsor.id
         assert team.year == year
+        assert team.image_id == image.id
 
 
 @pytest.mark.convenor
@@ -169,6 +174,7 @@ def test_convenor_cannot_remove_nonexistent_team(
 @pytest.mark.usefixtures('league_factory')
 @pytest.mark.usefixtures('sponsor_factory')
 @pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('image_factory')
 def test_convenor_update_team(
     mlsb_app,
     client,
@@ -176,12 +182,14 @@ def test_convenor_update_team(
     convenor,
     league_factory,
     sponsor_factory,
-    team_factory
+    team_factory,
+    image_factory,
 ):
     """Test convenor able to add team."""
     with mlsb_app.app_context():
         league = league_factory()
         sponsor = sponsor_factory()
+        image = image_factory()
         color = "Pink"
         year = date.today().year
         auth.login(convenor.email)
@@ -194,7 +202,8 @@ def test_convenor_update_team(
                 'sponsor_id': sponsor.id,
                 'year': year,
                 'color': "Pink",
-                'team_id': team.id
+                'team_id': team.id,
+                'image_id': image.id,
             }
         )
         assert not url_for("website.loginpage").endswith(response.request.path)
@@ -204,6 +213,7 @@ def test_convenor_update_team(
         assert team.color == color
         assert team.sponsor_id == sponsor.id
         assert team.year == year
+        assert team.image_id == image.id
 
 
 @pytest.mark.convenor

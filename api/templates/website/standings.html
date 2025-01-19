@@ -205,21 +205,9 @@ function loadLeague(year, league_id){
     })
 }
 
-function convert_teams_formatting(teams_map) {
-  var teams = []
-  for (var prop in teams_map) {
-    if (Object.prototype.hasOwnProperty.call(teams_map, prop)) {
-      team = teams_map[prop];
-      team['team_id'] = prop;
-      teams.push(team);
-    }
-  }
-  return teams;
-}
-
 function display_table(teams, selector) {
   var table = $(selector).DataTable({
-                  "data": convert_teams_formatting(teams),
+                  "data": teams,
                   "responsive": true,
                   "pageLength": 25,
                   "order": [[1, "desc"]],
@@ -263,7 +251,7 @@ function renderPlusMinus(data, type, row, meta) {
         $("#MainHeader").prepend($('<img>',
           {
             id:'theImg',
-            src:"{{ url_for('website.sponsor_picture', name='Pabst') }}"
+            src:"{{ url_for('static', filename='default-images/pabst.png') }}"
           }
         ));
     })

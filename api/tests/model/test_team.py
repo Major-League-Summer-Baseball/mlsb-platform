@@ -1,8 +1,10 @@
 from datetime import date
 import pytest
-from api.errors import InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
+from api.errors import ImageDoesNotExist, InvalidField, LeagueDoesNotExist, PlayerDoesNotExist, \
     PlayerNotOnTeam, SponsorDoesNotExist
 from api.model import Team
+
+INVALID_ENTITY = -1
 
 
 @pytest.mark.usefixtures('mlsb_app')
@@ -23,19 +25,27 @@ def test_team_cannot_be_nonexistent_league(mlsb_app):
     ("Color", 2023),
 ])
 @pytest.mark.usefixtures('mlsb_app')
-def test_create_team(mlsb_app, team_data):
+@pytest.mark.usefixtures('image_factory')
+def test_create_team(mlsb_app, team_data, image_factory):
     with mlsb_app.app_context():
-        Team(color=team_data[0], year=team_data[1])
+        image = image_factory()
+        Team(
+            color=team_data[0], year=team_data[1], image_id=image.id
+        )
 
 
 @pytest.mark.parametrize("team_data", [
     ("Color", 2023),
 ])
 @pytest.mark.usefixtures('mlsb_app')
-def test_update_team(mlsb_app, team_data):
+@pytest.mark.usefixtures('image_factory')
+def test_update_team(mlsb_app, team_data, image_factory):
     with mlsb_app.app_context():
+        image = image_factory()
         team = Team(color="Some Color", year=2016)
-        team.update(color=team_data[0], year=team_data[1])
+        team.update(
+            color=team_data[0], year=team_data[1], image_id=image.id
+        )
         assert team.color == team_data[0]
         assert team.year == team_data[1]
 
@@ -61,6 +71,14 @@ def test_cannot_update_invalid_team(mlsb_app, invalid_team_data):
         team = Team(color="Some Color", year=2016)
         with pytest.raises(InvalidField):
             team.update(color=invalid_team_data[0], year=invalid_team_data[1])
+
+
+@pytest.mark.usefixtures('mlsb_app')
+def test_cannot_update_invalid_image(mlsb_app):
+    with mlsb_app.app_context():
+        team = Team(color="Some Color", year=2016)
+        with pytest.raises(ImageDoesNotExist):
+            team.update(image_id=INVALID_ENTITY)
 
 
 @pytest.mark.usefixtures('team_factory')

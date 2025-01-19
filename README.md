@@ -18,11 +18,7 @@ See the the Wiki Pages for [help](https://github.com/fras2560/mlsb-platform/wiki
 ```bash
 pip install -r requirements.txt
 export FLASK_ENV=development
-python -m flask --app api/app run --host=0.0.0.0
-# to run unittests
-python -m unittest discover -s api/test
-# want to run one suite
-python -m unittest discover -s api/test -p <TEST_SUITE>.py
+python -m flask --app api/app run --host=0.0.0.0 --debug
 # to run pytests
 pytest
 # to run a particular grouping
@@ -62,18 +58,22 @@ deactivate # to deactivate the virtual environment
 The following variables are used by mlsb-platform and the defaults are in
 brackets:
 
-* ADMIN: the admin's user name ("admin")
-* PASSWORD: the admin password ("password")
 * DATABASE_URL: the postgres database to connect to ("sqlite://")
 * SECRET_KEY:a secret key used by Flask (randomly generated uuid)
 * REDIS_URL: the redis database to use for caching (uses simple cache)
 * FLASK_ENV: whether running in development or production (no default)
-
+* AWS_ACCESS_KEY_ID: the access key id for the image storage (no default)
+* AWS_SCRET_ACCESS_KEY: the secret key for the image storage (no default)
+* AWS_REGION: the region for the image storage (no default)
+* AWS_ENDPOINT: the url to the image storage (no default)
+* BUCKET_NAME: the name of the bucket for the image storage (no default)
 The app does expect the the postgres database has had the tables initiated. To intiated the datbase can use
 
 ```bash
 python -m flask --app api/app init-db --create
 ```
+
+Local development will default the image storage to the pictures folder in the static folder. All the AWS variables need to be specified for app to use an external image storage.
 
 ## Developing Using Docker
 
@@ -112,13 +112,13 @@ docker system prune --volumes --force
 To run the whole suite of tests use:
 
 ```bash
-docker-compose exec mlsb python -m unittest discover -s api/test -p test*.py
+docker-compose exec mlsb python -m pytest
 ```
 
 To run a particular test suite use:
 
 ```bash
-docker-compose exec mlsb python -m unittest discover -s api/test -p <TEST_SUITE>.py
+docker-compose exec mlsb python -m pytest api/tests/<FOLDER>
 ```
 
 ## Documentation/Style
@@ -142,7 +142,7 @@ flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclud
 There is one Github action that runs against pushes to main and development. Additionlly ran when a pull-request is open targeting main and development. It does the following:
 
 * Checks lint issues with flake8
-* Runs unittests and creates a coverage report (artifact)
+* Runs pytests and creates a coverage report (artifact)
 * Runs Cypress UI Tests and video report (artifact)
 
 Additionally there are two Github actions for main and development that deploys them on a commit. They are currently being deployed to fly.IO
@@ -170,3 +170,11 @@ flyctl certs list --app mlsb
 # check specific certificate
 flyctl certs show mlsb.ca --app mlsb
 ```
+
+## Production Architecture
+
+### Files/Image Storage
+
+Both the staging and production apps use Tigris to store the images/files. It still uses the pictures folder to save the file before uploading to Tigris. The urls to Tigris are stored in Image database table. Images are used for sponsors, teams and league events.
+
+Tigris can be accessed by going to Fly.io and the left-hand side there is Tigris Object Storage option. Clicking that will take ones to Tigris and can see all the images.

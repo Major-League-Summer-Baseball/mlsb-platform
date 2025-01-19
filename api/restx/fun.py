@@ -1,14 +1,13 @@
 from flask_restx import Resource, reqparse, Namespace, fields
-from flask import request
+from flask import request, url_for
 from datetime import datetime
 from .models import get_pagination
 from api.extensions import DB
 from api.validators import string_validator
 from api.model import Fun
-from api.authentication import requires_admin
+from api.authentication import require_to_be_convenor
 from api.errors import FunDoesNotExist
 from api.variables import PAGE_SIZE
-from api.routes import Routes
 from api.helper import pagination_response
 from api.cached_items import handle_table_change
 from api.tables import Tables
@@ -53,7 +52,7 @@ fun_pagination = fun_api.inherit("FunPagination", pagination, {
 @fun_api.route("/<int:year>", endpoint="rest.fun")
 @fun_api.doc(params={"year": "The year the fun occurred"})
 class FunAPIX(Resource):
-
+    @fun_api.doc(security=[])
     @fun_api.marshal_with(fun)
     def get(self, year):
         entry = Fun.query.filter(Fun.year == year).first()
@@ -61,7 +60,7 @@ class FunAPIX(Resource):
             raise FunDoesNotExist(payload={'details': year})
         return entry
 
-    @requires_admin
+    @require_to_be_convenor
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Deleted'})
     @fun_api.marshal_with(fun)
     def delete(self, year):
@@ -77,7 +76,7 @@ class FunAPIX(Resource):
         handle_table_change(Tables.FUN, item=fun_json)
         return fun_year
 
-    @requires_admin
+    @require_to_be_convenor
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Updated'})
     @fun_api.expect(fun_payload)
     @fun_api.marshal_with(fun)
@@ -101,15 +100,17 @@ class FunAPIX(Resource):
 
 @fun_api.route("", endpoint="rest.funs")
 class FunListAPI(Resource):
-
+    @fun_api.doc(security=[])
     @fun_api.marshal_with(fun_pagination)
     def get(self):
         page = request.args.get('page', 1, type=int)
-        pagination = Fun.query.paginate(page, PAGE_SIZE, False)
-        result = pagination_response(pagination, Routes['fun'])
+        pagination = Fun.query.paginate(
+            page=page, per_page=PAGE_SIZE, error_out=False
+        )
+        result = pagination_response(pagination, url_for('rest.funs'))
         return result
 
-    @requires_admin
+    @require_to_be_convenor
     @fun_api.doc(responses={403: 'Not Authorized', 200: 'Created'})
     @fun_api.expect(fun_payload)
     @fun_api.marshal_with(fun)

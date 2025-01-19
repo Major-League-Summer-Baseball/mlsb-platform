@@ -4,6 +4,7 @@ PDNESC = 404
 TDNESC = 404
 LDNESC = 404
 GDNESC = 404
+IDNESC = 404
 SDNESC = 404
 BDNESC = 404
 JLRDNESC = 404
@@ -98,6 +99,11 @@ class DivisionDoesNotExist(BaseException):
 class SponsorDoesNotExist(BaseException):
     status_code = SDNESC
     message = "Sponsor does not exist"
+
+
+class ImageDoesNotExist(BaseException):
+    status_code = IDNESC
+    message = "Image does not exist"
 
 
 class TeamAlreadyHasCaptain(BaseException):
@@ -204,6 +210,10 @@ ERRORS = {
     'SponsorDoesNotExist': {
         'message': SponsorDoesNotExist.message,
         'status_code': SponsorDoesNotExist.status_code,
+    },
+    'ImageDoesNotExist': {
+        'message': ImageDoesNotExist.message,
+        'status_code': ImageDoesNotExist.status_code,
     },
     'GameDoesNotExist': {
         'message': GameDoesNotExist.message,

@@ -11,11 +11,11 @@ const YEAR = (new Date()).getFullYear();
 
 /** Create a team. */
 const find_team = (): void => {
-    cy.request(`/api/teams`).then((response) => {
+    cy.request('POST', `/rest/teamlookup`, {year: getCurrentYear()}).then((response) => {
         expect(response.isOkStatusCode).to.be.true;
-        const paginated_teams: Pagination = response.body;
-        expect(paginated_teams.total).to.be.greaterThan(0);
-        cy.wrap(paginated_teams.items[0]).as('team');
+        const teams: Team[] = response.body;
+        expect(teams).length.to.greaterThan(0);
+        cy.wrap(teams[0]).as('team');
     })
 };
 Given(`some team exists`, find_team);
@@ -176,7 +176,7 @@ Then(`I see the team page`, assert_team_page);
 /** Assert a player account was created from accepting join league request. */
 const assert_player_created = (): void => {
     cy.get<Player>('@player').then((player: Player) => {
-        cy.request('POST', `/api/view/player_lookup`, {email: player.email}).then((response) => {
+        cy.request('POST', `/rest/playerlookup`, {email: player.email}).then((response) => {
             expect(response.isOkStatusCode).to.be.true;
             expect(response.body).length.to.greaterThan(0);
             cy.wrap(response.body[0]).as('player');
@@ -188,7 +188,7 @@ Then(`a player is added to the league`, assert_player_created);
 /** Assert a player account was not created from rejecting join league request.*/
 const assert_player_not_created = (): void => {
     cy.get<Player>('@player').then((player: Player) => {
-        cy.request('POST', `/api/view/player_lookup`, {email: player.email}).then((response) => {
+        cy.request('POST', `/rest/playerlookup`, {email: player.email}).then((response) => {
             expect(response.isOkStatusCode).to.be.true;
             expect(response.body.length).equal(0);
             cy.wrap(response.body[0]).as('player');
@@ -201,10 +201,11 @@ Then(`a player is not added to the league`, assert_player_not_created);
 const assert_player_on_team = (): void => {
     cy.get<Player>('@player').then((player: Player) => {
         cy.get<Team>('@team').then((team: Team) => {
-            cy.request('POST', `/api/view/players/team_lookup`, {player_id: player.player_id}).then((response) => {
+            cy.request(`/rest/player/${player.player_id}/teams`).then((response) => {
                 expect(response.isOkStatusCode).to.be.true;
                 expect(response.body).length.to.greaterThan(0);
-                expect(response.body[0].team_id).to.be.equal(team.team_id);
+                const foundTeam = response.body.some((t) => t.team_id === team.team_id);
+                expect(foundTeam).to.be.true;
             });
         })
         
@@ -217,9 +218,10 @@ const assert_player_not_on_team = (): void => {
     cy.get<Player>('@player').then((player: Player) => {
         cy.get<Team>('@team').then((team: Team) => {
             cy.get(`#player${player.player_id}`).should("not.exist");
-            cy.request('POST', `/api/view/players/team_lookup`, {player_id: player.player_id}).then((response) => {
+            cy.request(`/rest/player/${player.player_id}/teams`).then((response) => {
                 expect(response.isOkStatusCode).to.be.true;
-                expect(response.body.length).length.to.equal(0);
+                const foundTeam = response.body.some((t) => t.team_id === team.team_id);
+                expect(foundTeam).to.be.false;
             });
         })
         

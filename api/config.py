@@ -11,12 +11,19 @@ DB_URL = (DB_URL.replace("postgres://", "postgresql://")
 
 class Config(object):
     URL = DB_URL
+    SERVER_NAME = os.environ.get("SERVER_NAME", None)
+    TESTING = os.environ.get("TESTING", False)
     SECRET_KEY = os.environ.get("SECRET_KEY", str(uuid1()))
     SQLALCHEMY_DATABASE_URI = DB_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True
     }
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
+    AWS_ENDPOINT_URL_S3 = os.environ.get("AWS_ENDPOINT_URL_S3", "")
+    AWS_REGION = os.environ.get("AWS_REGION", "")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+    BUCKET_NAME = os.environ.get("BUCKET_NAME", "")
     AZURE_OAUTH_CLIENT_ID = os.environ.get("AZURE_OAUTH_CLIENT_ID", "")
     AZURE_OAUTH_CLIENT_SECRET = os.environ.get("AZURE_OAUTH_CLIENT_SECRET", "")
     GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")

@@ -14,14 +14,20 @@ from api.helper import loads
 ])
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('image_factory')
 def test_able_create_league_event(
     mlsb_app,
     client,
-    admin_header,
-    league_event_data
+    auth,
+    convenor,
+    league_event_data,
+    image_factory,
 ):
     with mlsb_app.app_context():
+        image = image_factory()
+        auth.login(convenor.email)
         name = random_name("Rest")
         description = random_name("Description")
         active = league_event_data[0]
@@ -31,15 +37,16 @@ def test_able_create_league_event(
             json={
                 "name": name,
                 "description": description,
-                "active": active
+                "active": active,
+                "image_id": image.id,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
         assert data['name'] == name
         assert data['description'] == description
+        assert data['image_id'] == image.id
         assert isinstance(data['league_event_id'], int) is True
         assert LeagueEvent.is_league_event(data['league_event_id']) is True
 
@@ -47,9 +54,11 @@ def test_able_create_league_event(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_required_fields_of_league_event(mlsb_app, client, admin_header):
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_required_fields_of_league_event(mlsb_app, client, auth, convenor):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         name = random_name("Rest")
         description = random_name("Description")
         response = client.post(
@@ -58,8 +67,7 @@ def test_required_fields_of_league_event(mlsb_app, client, admin_header):
                 "name": name,
                 "active": True
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -69,8 +77,7 @@ def test_required_fields_of_league_event(mlsb_app, client, admin_header):
                 "description": description,
                 "active": True
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 400
 
@@ -78,15 +85,18 @@ def test_required_fields_of_league_event(mlsb_app, client, admin_header):
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_event_factory')
 def test_update_league_event(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     league_event_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league_event = league_event_factory()
         name = random_name("Rest")
         response = client.put(
@@ -94,8 +104,7 @@ def test_update_league_event(
             json={
                 "name": name,
             },
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -109,20 +118,57 @@ def test_update_league_event(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_event_factory')
+@pytest.mark.usefixtures('image_factory')
+def test_update_league_event_image(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_event_factory,
+    image_factory,
+):
+    with mlsb_app.app_context():
+        image = image_factory()
+        auth.login(convenor.email)
+        league_event = league_event_factory()
+        response = client.put(
+            url_for("rest.league_event", league_event_id=league_event.id),
+            json={
+                "image_id": image.id,
+            },
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert data['image_id'] == image.id
+        assert data['league_event_id'] == league_event.id
+        assert LeagueEvent.query.filter(
+            LeagueEvent.image_id == image.id
+        ).first() is not None
+
+
+@pytest.mark.rest
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
 @pytest.mark.usefixtures('league_event_factory')
 def test_delete_league_event(
     mlsb_app,
     client,
-    admin_header,
+    auth,
+    convenor,
     league_event_factory
 ):
     with mlsb_app.app_context():
+        auth.login(convenor.email)
         league_event = league_event_factory()
         response = client.delete(
             url_for("rest.league_event", league_event_id=league_event.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         assert LeagueEvent.is_league_event(league_event.id) is False
@@ -131,13 +177,11 @@ def test_delete_league_event(
 @pytest.mark.rest
 @pytest.mark.usefixtures('mlsb_app')
 @pytest.mark.usefixtures('client')
-@pytest.mark.usefixtures('admin_header')
-def test_get_all_league_event(mlsb_app, client, admin_header):
+def test_get_all_league_event(mlsb_app, client):
     with mlsb_app.app_context():
         response = client.get(
             url_for("rest.league_events"),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)
@@ -153,15 +197,13 @@ def test_get_all_league_event(mlsb_app, client, admin_header):
 def test_get_league_event(
     mlsb_app,
     client,
-    admin_header,
     league_event_factory
 ):
     with mlsb_app.app_context():
         league_event = league_event_factory()
         response = client.get(
             url_for("rest.league_event", league_event_id=league_event.id),
-            follow_redirects=True,
-            headers=admin_header
+            follow_redirects=True
         )
         assert response.status_code == 200
         data = loads(response.data)

@@ -1,6 +1,6 @@
 from flask import render_template, request, session, url_for, redirect, \
     make_response, flash
-from api.advanced.import_team import TeamList
+from api.importers.team import TeamList
 from api.extensions import DB
 from api.models.join_league_request import JoinLeagueRequest
 from api.variables import FILES
@@ -138,13 +138,15 @@ def submit_team():
     year = int(request.form.get("year"))
     color = request.form.get("color")
     team_id = request.form.get("team_id", None)
+    image_id = request.form.get('image_id', None)
     try:
         if is_empty(team_id):
             team = Team(
                 color=color,
                 sponsor_id=sponsor_id,
                 league_id=league_id,
-                year=year
+                year=year,
+                image_id=image_id
             )
             DB.session.add(team)
             flash("Team created")
@@ -158,7 +160,8 @@ def submit_team():
                 color=color,
                 sponsor_id=sponsor_id,
                 league_id=league_id,
-                year=year
+                year=year,
+                image_id=image_id
             )
             flash("Team updated")
             handle_table_change(Tables.TEAM)

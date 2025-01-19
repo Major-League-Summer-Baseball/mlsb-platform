@@ -1,8 +1,12 @@
 {% extends "website/new-base.html" %}
 {% block content %}
     {% for sponsor in sponsors %}
-        <a href="{{url_for('website.sponsor_page', year=year, sponsor_id=sponsor.id) }}" title="{{sponsor.name}}">
-            <img src="{{ url_for('website.sponsor_picture', name=sponsor.id) }}" class="big-sponsor" style="" alt="{{sponsor.name}}">
+        <a href="{{url_for('website.sponsor_page', year=year, sponsor_id=sponsor.sponsor_id) }}" title="{{sponsor.sponsor_name}}">
+            {% if sponsor.logo is none %}
+                <img src="{{ url_for('static', filename="default-images/sponsor.png") }}" class="big-sponsor" alt="Sponsor {{sponsor.sponsor_name}} logo not found">
+            {% else %}
+                <img src="{{sponsor.logo.url}}" class="big-sponsor" alt="{{sponsor.sponsor_name}} Logo">
+            {% endif %}
         </a>
      {% endfor %}
 {% endblock %}
