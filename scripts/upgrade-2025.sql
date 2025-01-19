@@ -1,46 +1,53 @@
-ALTER TABLE [player]
-ALTER COLUMN [password] varchar(240);
+ALTER TABLE player
+	ALTER COLUMN password TYPE varchar(240);
 
-CREATE TABLE IF NOT EXISTS [image]
+CREATE SEQUENCE image_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE TABLE IF NOT EXISTS image
 (
     id integer NOT NULL DEFAULT nextval('image_id_seq'::regclass),
     url text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT image_pkey PRIMARY KEY (id)
-)
+);
 
-ALTER TABLE IF EXISTS [sponsor]
+ALTER TABLE IF EXISTS sponsor
     ADD COLUMN logo_id integer;
 
-ALTER TABLE [sponsor]
+ALTER TABLE sponsor
     ADD CONSTRAINT sponsor_logo_id_fkey FOREIGN KEY (logo_id)
-    REFERENCES [image] (id) MATCH SIMPLE
+    REFERENCES image (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
-ALTER TABLE IF EXISTS [league_event]
+ALTER TABLE IF EXISTS league_event
     ADD COLUMN image_id integer;
 
-ALTER TABLE IF EXISTS [league_event]
+ALTER TABLE IF EXISTS league_event
     ADD CONSTRAINT league_event_image_id_fkey FOREIGN KEY (image_id)
-    REFERENCES [image] (id) MATCH SIMPLE
+    REFERENCES image (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
-ALTER TABLE IF EXISTS [league_event_date]
+ALTER TABLE IF EXISTS league_event_date
     ADD COLUMN image_id integer;
 
-ALTER TABLE IF EXISTS [league_event_date]
+ALTER TABLE IF EXISTS league_event_date
     ADD CONSTRAINT league_event_date_image_id_fkey FOREIGN KEY (image_id)
-    REFERENCES [image] (id) MATCH SIMPLE
+    REFERENCES image (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
-ALTER TABLE IF EXISTS [team]
+ALTER TABLE IF EXISTS team
     ADD COLUMN image_id integer;
 
-ALTER TABLE IF EXISTS [team]
+ALTER TABLE IF EXISTS team
     ADD CONSTRAINT team_image_id_fkey FOREIGN KEY (image_id)
-    REFERENCES [image] (id) MATCH SIMPLE
+    REFERENCES image (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
