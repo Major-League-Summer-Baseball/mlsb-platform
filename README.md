@@ -170,3 +170,11 @@ flyctl certs list --app mlsb
 # check specific certificate
 flyctl certs show mlsb.ca --app mlsb
 ```
+
+## Production Architecture
+
+### Files/Image Storage
+
+Both the staging and production apps use Tigris to store the images/files. It still uses the pictures folder to save the file before uploading to Tigris. The urls to Tigris are stored in Image database table. Images are used for sponsors, teams and league events.
+
+Tigris can be accessed by going to Fly.io and the left-hand side there is Tigris Object Storage option. Clicking that will take ones to Tigris and can see all the images.
