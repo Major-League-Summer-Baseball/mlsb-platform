@@ -2,7 +2,6 @@ import pytest
 from datetime import date
 from flask import url_for
 from api.helper import loads
-from api.model import LeagueEvent
 from api.tests.fixtures import random_email
 
 THIS_YEAR = date.today().year
