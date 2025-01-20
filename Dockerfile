@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.9-buster
 
 WORKDIR ./mlsb-platform
 LABEL maintainer "Dallas Fraser <dallas.fraser.waterloo@gmail.com>"
