@@ -25,7 +25,26 @@
                 placeholder="League Event Name"
                 aria-label="League Event Name"
             />
-            {{ ckeditor.create(name="description", value=event.description) }}
+            <div class="quill-editor">
+                <div
+                    class="quill-textarea"
+                    id="quillTextarea{{event.league_event_id}}">
+                </div>
+                <textarea
+                    class="hidden"
+                    id="eventDescription{{event.image_id}}"
+                    name="description"
+                    _="
+                        on load
+                            call createQuillEditor(
+                                'quillTextarea{{event.league_event_id}}',
+                                'eventDescription{{event.image_id}}',
+                                `{{event.description}}`,
+                                'Enter event description'
+                            )
+                    ">
+                </textarea>
+            </div>
             {% if event.image_id is not none %}
                 <div 
                     hx-target="this"
@@ -85,6 +104,7 @@
     {% endfor %}
 </div>
 <form
+    id="leagueEventFormNew"
     class="event-container form-inline mt-3"
     action="{{ url_for ('convenor.submit_event') }}"
     method="post"
@@ -99,7 +119,26 @@
         required
     />
     <div>
-        {{ ckeditor.create(name="description") }}
+        <div class="quill-editor">
+            <div
+                class="quill-textarea"
+                id="quillTextareaNew">
+            </div>
+            <textarea
+                class="hidden"
+                id="eventDescriptionNew"
+                name="description"
+                _="
+                    on load
+                        call createQuillEditor(
+                            'quillTextareaNew',
+                            'eventDescriptionNew',
+                            ``,
+                            'Enter event description'
+                        )
+                ">
+            </textarea>
+        </div>
         <label class="mt-2">
             Event Description - shows up event page
         </label>
@@ -121,5 +160,4 @@
         Create
     </button>
 </form>
-{{ ckeditor.load(pkg_type="basic") }}
 {% endblock %}
