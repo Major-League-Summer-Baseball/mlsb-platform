@@ -5,7 +5,6 @@
     Contains the index page and other things for crawlers/facebook
 """
 __all__ = []
-import sys
 from flask import \
     redirect, render_template, send_from_directory, url_for, Blueprint, request
 from datetime import date
