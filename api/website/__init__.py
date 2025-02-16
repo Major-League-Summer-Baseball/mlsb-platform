@@ -12,6 +12,7 @@ from api import app
 from api.cached_items import get_upcoming_games, get_leagues
 from api.authentication import get_user_information
 import pkgutil
+import importlib
 import inspect
 
 website_blueprint = Blueprint("website", __name__, url_prefix="/")
@@ -103,11 +104,16 @@ def rules_fields(year):
 
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    module = loader.find_module(name).load_module(name)
+    # Import the module dynamically using importlib
+    module = importlib.import_module(f"api.website.{name}")
 
-    for name, value in inspect.getmembers(module):
-        if name.startswith('__'):
+    # Loop over the members of the module and add non-dunder ones to globals()
+    for member_name, value in inspect.getmembers(module):
+        if member_name.startswith('__'):
             continue
 
-        globals()[name] = value
-        __all__.append(name)
+        # Add the value to globals() with the member name
+        globals()[member_name] = value
+
+        # Add the member name to __all__
+        __all__.append(member_name)
