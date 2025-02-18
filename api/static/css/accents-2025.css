@@ -1,0 +1,120 @@
+.sponsor-banner {
+    background-color: rgb(225, 0, 15, 0.5);
+}
+
+.games-container {
+    background-color: rgba(0, 40, 109, 0.5);
+}
+
+.navbar .icon-bar {
+    background-color: #e1000f;
+}
+
+.fun-div {
+    color: #00286d;
+}
+
+.fun-meter {
+    color: #e1000f;
+}
+
+.fun-meter text.liquidFillGaugeText {
+  fill: #A9A9A9;
+}
+
+.fun-meter text.liquidFilledGaugeText {
+  fill: white;
+}
+
+.fun-meter circle {
+  fill: #e1000f;
+}
+
+.fun-meter .CircleColor {
+  fill: #e1000f;
+}
+
+.fun-meter .WaveColor {
+  fill: #00286d;
+}
+
+
+p.accent{
+  color:#00286d;
+}
+
+.leaderTitle{
+  color: #00286d;
+}
+
+.btn-primary {
+  background: #e1000f;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #e1000f;
+}
+
+.btn-secondary {
+  background: #00286d;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: rgb(225, 0, 15, 0.5);
+}
+
+li.presentation a{
+  background-color: #00286d;
+  color: white;
+}
+
+li.presentation a:hover{
+  background-color: rgba(168, 168, 168, 0.3);
+  color: #e1000f;
+}
+
+.active .presentation a{
+  background-color: #e1000f;
+  color: #00286d;
+}
+
+#listing>li.active>a{
+  background-color: #e1000f;
+  color: white;
+}
+
+.footer {
+  border-top: 5px solid #e1000f;
+}
+
+nav.accent{
+  background-color: #00286d;
+  border-color: #00286d;
+}
+
+div.accent{
+  background-color:#00286d;
+}
+
+
+div.secondary{
+  background-color: #e1000f;
+}
+
+a {
+  color: #00286d;
+}
+
+a:hover, a:focus {
+  color: rgb(225, 0, 15, 0.5);
+}
+
+#bottom {
+  border-bottom: 5px solid #00286d;
+}
+
+#bottom ul li a {
+  color: #e1000f  ;
+}
