@@ -55,7 +55,7 @@ ALTER TABLE IF EXISTS team
 INSERT INTO image (url)
 SELECT 
 	CONCAT(
-		'https://fly.storage.tigris.dev/image-store/sponsors/',
+		'https://image-store.fly.storage.tigris.dev/sponsors/',
 		REPLACE(LOWER(TRIM(name)), ' ', '_'),
 		'.png'
 	)
@@ -67,7 +67,7 @@ UPDATE sponsor
 SET logo_id = (
 	SELECT id FROM image
 	WHERE url = CONCAT(
-		'https://fly.storage.tigris.dev/image-store/sponsors/',
+		'https://image-store.fly.storage.tigris.dev/sponsors/',
 		REPLACE(LOWER(TRIM(sponsor.name)), ' ', '_'),
 		'.png'
 	)
@@ -78,7 +78,7 @@ SET logo_id = (
 INSERT INTO image (url)
 SELECT 
 	CONCAT(
-		'https://fly.storage.tigris.dev/image-store/events/',
+		'https://image-store.fly.storage.tigris.dev/events/',
 		REPLACE(LOWER(TRIM(name)), ' ', '_'),
 		'.png'
 	)
@@ -90,7 +90,7 @@ UPDATE league_event
 SET image_id = (
 	SELECT id FROM image
 	WHERE url = CONCAT(
-		'https://fly.storage.tigris.dev/image-store/events/',
+		'https://image-store.fly.storage.tigris.dev/events/',
 		REPLACE(LOWER(TRIM(league_event.name)), ' ', '_'),
 		'.png'
 	)
