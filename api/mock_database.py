@@ -224,6 +224,7 @@ def mock_sponsors():
     DB.session.commit()
     return sponsor_lookup
 
+
 def mock_blog_posts():
     """Mock blog posts"""
     author = Player("Author", "author@mlsb.ca", gender="F")
@@ -240,6 +241,7 @@ def mock_blog_posts():
     )
     DB.session.add(blog_post)
     DB.session.commit()
+
 
 def mock_teams_games(league, division, sponsor_lookup):
     """
