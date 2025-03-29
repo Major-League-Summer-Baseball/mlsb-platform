@@ -59,7 +59,7 @@ def delete_blog_post(blog_post_id: int):
     DB.session.delete(blog_post)
     DB.session.commit()
     flash("Blog post was removed")
-    return redirect(url_for('convenor.blog_posts_page'))    
+    return redirect(url_for('convenor.blog_posts_page'))
 
 
 @convenor_blueprint.route("blogpost/submit", methods=["POST"])
