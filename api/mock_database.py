@@ -37,7 +37,7 @@ MOCK_EVENTS = [
             to watch the boys of summer?
         </p>
         """,
-        "https://image-storefly.storage.tigris.dev/events/jays_game.png",
+        "https://image-store.fly.storage.tigris.dev/events/jays_game.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -50,7 +50,7 @@ MOCK_EVENTS = [
             this joyous day twice a year.
         </p>
         """,
-        "https://image-storefly.storage.tigris.dev/events/summerween.png",
+        "https://image-store.fly.storage.tigris.dev/events/summerween.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -64,7 +64,7 @@ MOCK_EVENTS = [
             MLSB every year and takes place in the winter.
         </p>
         """,
-        "https://image-storefly.storage.tigris.dev/events/mystery_bus.png",
+        "https://image-store.fly.storage.tigris.dev/events/mystery_bus.png",
         f"{CURRENT_YEAR}-04-01"
     ),
     (
@@ -82,7 +82,7 @@ MOCK_EVENTS = [
             this one because it is going to be a wild weekend!
         </p>
         """,
-        "https://image-storefly.storage.tigris.dev/events/rafting.png",
+        "https://image-store.fly.storage.tigris.dev/events/rafting.png",
         f"{CURRENT_YEAR}-07-08"
     ),
     (
@@ -100,7 +100,7 @@ MOCK_EVENTS = [
             Bring your tents because we will be camping out for the night!
         </p>
         """,
-        "https://image-storefly.storage.tigris.dev/events/grand_bender.png",
+        "https://image-store.fly.storage.tigris.dev/events/grand_bender.png",
         f"{CURRENT_YEAR}-07-28"
     ),
     (
@@ -120,62 +120,62 @@ MOCK_EVENTS = [
             </a>
         </p>
         """,
-        "https://image-storefly.storage.tigris.dev/events/mlsb_alumni.png",
+        "https://image-store.fly.storage.tigris.dev/events/mlsb_alumni.png",
         f"{CURRENT_YEAR}-06-22"
     )
 ]
 sponsors = [
     {
         "name": "Beertown",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/beertown.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/beertown.png"
     },
     {
         "name": "Kik",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/kik.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/kik.png"
     },
     {
         "name": "Pabst",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/pabst.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/pabst.png"
     },
     {
         "name": "Spitz",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/spitz.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/spitz.png"
     },
     {
         "name": "Tilt",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/tilt.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/tilt.png"
     },
     {
         "name": "Sportszone",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/sportszone.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/sportszone.png"
     },
     {
         "name": "Sleeman",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/sleeman.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/sleeman.png"
     },
     {
         "name": "Ripshot",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/ripshot.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/ripshot.png"
     },
     {
         "name": "Night School",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/night_school.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/night_school.png"
     },
     {
         "name": "Heaven",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/heaven.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/heaven.png"
     },
     {
         "name": "GE",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/ge.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/ge.png"
     },
     {
         "name": "Gatorade",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/gatorade.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/gatorade.png"
     },
     {
         "name": "Chef on Call",
-        "url": "https://image-storefly.storage.tigris.dev/sponsors/chef_on_call.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/chef_on_call.png"
     }
 ]
 
