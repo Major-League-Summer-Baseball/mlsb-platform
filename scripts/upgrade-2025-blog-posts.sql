@@ -56,7 +56,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'MLSB Bot',
-		'This summer MLSB is excited to introduce the MLSB bot: your knees stop ship to everything MLSB. You''ll get game day updates, tournament blasts, even check the lineup for the summers sweetest events and order food from some...',
+		'This summer MLSB is excited to introduce the MLSB bot: your knees stop ship to everything MLSB. You''ll get game day updates, tournament blasts, even check the lineup for the summers sweetest events and order food from some of your favourite sponsors',
 		'
 		<p>
         	This summer MLSB is excited to introduce the MLSB bot: your knees stop ship to everything MLSB. You''ll get game day updates, tournament blasts, even check the lineup for the summers sweetest events and order food from some of your favourite sponsors all from the palm of your hand.
@@ -76,7 +76,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'Vince & JP - Fired up!',
-		'Hey playas, time for the first player feature of the summer - introducing JP and Vince of Morty''s Magenta.  Although it''s only been a month, these two have made their mark on MLSB. They''ve definitely made up for lost time, seeing as they didn''t get their shit together for last summers league....',
+		'Hey playas, time for the first player feature of the summer - introducing JP and Vince of Morty''s Magenta.  Although it''s only been a month, these two have made their mark on MLSB. They''ve definitely made up for lost time, seeing as they didn''t get their shit together for last summers league.',
 		'
 		<p>
         	Hey playas, time for the first player feature of the summer - introducing JP and Vince of Morty''s Magenta.  Although it''s only been a month, these two have made their mark on MLSB. They''ve definitely made up for lost time, seeing as they didn''t get their shit together for last summers league.
@@ -104,7 +104,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'ellu6790@mylaurier.ca') AS AuthorId,
 		'Rory',
-		'Hi friends, for the remainder of the summer we will be bringing you weekly wrap ups of the action that took place on the field and player feature(s) to keep you entertained. Player Feature - Rory ''Gramps'' Landy...',
+		'Hi friends, for the remainder of the summer we will be bringing you weekly wrap ups of the action that took place on the field and player feature(s) to keep you entertained. Player Feature - Rory ''Gramps'' Landy.',
 		'
 			<p> Hi friends, for the remainder of the summer we will be bringing you weekly wrap ups of the action that took place on the field and player feature(s) to keep you entertained. </p>
 			<h5><strong>Player Feature - Rory ''Gramps'' Landy</strong></h5> 
@@ -140,7 +140,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'ellu6790@mylaurier.ca') AS AuthorId,
 		'Ladies',
-		'Hola nos amigos! (We''re pretty excited about passing spanish). This week''s player feature is a tad late because Mitchell''s mom just got married and was unable to plan around our schedule (selfish) and he just got back. He also wouldn''t let me do the full write up without his supervision....rude. ANYWAY, this is dedicated to our dear, sweet friends, Gillian Geremia, Jenna Furguiele, Joanna Christopolous, and Katrina Litsos... aka the MOPPheads...',
+		'Hola nos amigos! (We''re pretty excited about passing spanish). This week''s player feature is a tad late because Mitchell''s mom just got married and was unable to plan around our schedule (selfish) and he just got back. He also wouldn''t let me do the full write up without his supervision....rude. ANYWAY, this is dedicated to our dear, sweet friends, Gillian Geremia, Jenna Furguiele, Joanna Christopolous, and Katrina Litsos... aka the MOPPheads.',
 		'
 			<p>
 				Hola nos amigos! (We''re pretty excited about passing spanish). This week''s player feature is a tad late because Mitchell''s mom just got married and was unable to plan around our schedule (selfish) and he just got back. He also wouldn''t let me do the full write up without his supervision....rude. ANYWAY, this is dedicated to our dear, sweet friends, Gillian Geremia, Jenna Furguiele, Joanna Christopolous, and Katrina Litsos... aka the MOPPheads. 
@@ -173,7 +173,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'ellu6790@mylaurier.ca') AS AuthorId,
 		'Season Round Up',
-		'Last Friday MSLB held the third of four tournaments and it saw some alumni come back for a taste of past glory. They looked a bit rusty (a lot) but they eased that pain with some wobbly pops. In the top division SportZone Pink continued their dominant streak winning their third straight tournament. The final game was a close one with <strong>Claudia Vanderholst</strong> walking it off with a single down the third base line against Pabst Blue...',
+		'Last Friday MSLB held the third of four tournaments and it saw some alumni come back for a taste of past glory. They looked a bit rusty (a lot) but they eased that pain with some wobbly pops. In the top division SportZone Pink continued their dominant streak winning their third straight tournament. The final game was a close one with <strong>Claudia Vanderholst</strong> walking it off with a single down the third base line against Pabst Blue.',
 		'
 			<p>Last Friday MSLB held the third of four tournaments and it saw some alumni come back for a taste of past glory. They looked a bit rusty (a lot) but they eased that pain with some wobbly pops. In the top division SportZone Pink continued their dominant streak winning their third straight tournament. The final game was a close one with <strong>Claudia Vanderholst</strong> walking it off with a single down the third base line against Pabst Blue. In the fourth year division Stark and Perri merged with Mel''s Mauve to cruise to a title. In the third year division Chainsaw Chocolate merged with Morty''s Magenta and came out on top. Congratulations!</p>
 			<p>As the final week dawns over us, the playoff race is heating up and teams are vying for position. With make up games set to take place this week along with the last tournament of the year there is lots of softball to play. </p>
@@ -231,7 +231,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'Batting App',
-		'Announcing a new feature for MLSB and MLSB-Alumni. It will allow captains to keep track of everyone stats on their team. This will hopefully allows those great hitters who don''t hit homeruns to highlight their skills...',
+		'Announcing a new feature for MLSB and MLSB-Alumni. It will allow captains to keep track of everyone stats on their team. This will hopefully allows those great hitters who don''t hit homeruns to highlight their skills.',
 		'
 			<h3>Batting App - Keep track of stats</h3>
 			<p>
@@ -320,7 +320,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'Alumni Tournament - July 22nd, 2023',
-		'The weather is starting to warm up and soon enough Waterloo Park will be buzzing again. All of MLSB is officially back again this summer and the includes MLSB Alumni. It is more than just a tournament but a full weekend packed with softball, beer and good times...',
+		'The weather is starting to warm up and soon enough Waterloo Park will be buzzing again. All of MLSB is officially back again this summer and the includes MLSB Alumni. It is more than just a tournament but a full weekend packed with softball, beer and good times.',
 		'
 			<p>
 			    The weather is starting to warm up and soon enough Waterloo Park will be buzzing again. All of MLSB is <strong>officially back again</strong> this summer and the includes MLSB Alumni. 
@@ -365,7 +365,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'Waterloo Park Construction',
-		'Summer is here and so is the construction. It looks like our Waterloo Park will be affected. In particular Diamond 1 will be affected....',
+		'Summer is here and so is the construction. It looks like our Waterloo Park will be affected. In particular Diamond 1 will be affected.',
 		'
 			<p>
 			    Summer is here and so is the construction. It looks like our Waterloo Park will be affected. In particular Diamond 1 will be affected.
@@ -401,7 +401,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'One hell of a summer',
-		'Summer is here and so is the construction. It looks like our Waterloo Park will be affected. In particular Diamond 1 will be affected....',
+		'Summer is here and so is the construction. It looks like our Waterloo Park will be affected. In particular Diamond 1 will be affected.',
 		'
 			<p>
 			    Sadly, summer is coming to end. MLSB took a huge step forward this summer with the league growing to 50 teams.
@@ -443,7 +443,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'MLSB Alumni - July 20th, 2024',
-		'The weather is starting to warm up and soon enough Waterloo Park will be buzzing again. All of MLSB is officially back again this summer and the includes MLSB Alumni. It is more than just a tournament but a full weekend packed with softball, beer and good times. People have been known to call in sick on Monday....',
+		'The weather is starting to warm up and soon enough Waterloo Park will be buzzing again. All of MLSB is officially back again this summer and the includes MLSB Alumni. It is more than just a tournament but a full weekend packed with softball, beer and good times. People have been known to call in sick on Monday.',
 		'
 			<h3>Alumni back again - July 20th</h3>
 			<p>
@@ -498,7 +498,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'MLSB Hall of Fame',
-		'The website was created 8 years ago. Since then, there have been <strong>4497 players, 2684 games and 6014 home runs hit</strong>. Over 80 sponsors have stepped up to help keep the league going. A total of "1696 fun" has been had 🍺!...',
+		'The website was created 8 years ago. Since then, there have been <strong>4497 players, 2684 games and 6014 home runs hit</strong>. Over 80 sponsors have stepped up to help keep the league going. A total of "1696 fun" has been had 🍺!',
 		'
 			<p>
 			    The website was created 8 years ago.
@@ -569,7 +569,7 @@ INSERT INTO blog_post (author_id, title, summary, html, image_id, date)
 SELECT
 		(SELECT id FROM player WHERE email ilike 'dallas.fraser.waterloo@gmail.com') AS AuthorId,
 		'Champions',
-		'Another beautiful hot sunny 🌞 day for the MLSB Alumni Tournament🍻. Ten teams showed up and there were too many home runs to count. However, one team was able to go undefeated on the day and hit in 82 runs⚾...',
+		'Another beautiful hot sunny 🌞 day for the MLSB Alumni Tournament🍻. Ten teams showed up and there were too many home runs to count. However, one team was able to go undefeated on the day and hit in 82 runs⚾.',
 		'
 		<p>
 		    Another beautiful hot sunny 🌞 day for the MLSB Alumni Tournament🍻.
