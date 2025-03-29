@@ -8,12 +8,16 @@ __all__ = []
 from flask import \
     redirect, render_template, send_from_directory, url_for, Blueprint, request
 from datetime import date
+
+from sqlalchemy import desc
 from api import app
 from api.cached_items import get_upcoming_games, get_leagues
 from api.authentication import get_user_information
 import pkgutil
 import importlib
 import inspect
+
+from api.models.blog_post import BlogPost
 
 website_blueprint = Blueprint("website", __name__, url_prefix="/")
 
@@ -39,6 +43,20 @@ def inject_current_year():
 def reroute():
     year = date.today().year
     return redirect(url_for("website.index", year=year))
+
+
+@website_blueprint.route("/website/<int:year>")
+def index(year):
+    posts = BlogPost.query.order_by(desc(BlogPost.date)).limit(4).all()
+    return render_template(
+        "website/index.html",
+        title="Recent news",
+        year=year,
+        games=get_upcoming_games(year),
+        posts=[post.json() for post in posts],
+        show_more=True,
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/about")

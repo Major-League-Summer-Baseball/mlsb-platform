@@ -1,0 +1,24 @@
+{% extends "website/new-base.html" %}
+{% block content %}
+    <a
+        href="{{url_for('website.blog_posts', year=year)}}"
+        hx-get="{{url_for('website.blog_posts', year=year)}}"
+        hx-target="#website-body"
+        hx-push-url="true"
+    >
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Back
+    </a>
+    <div class="article__author">
+        <h4>Author: {{post.author.player_name}}</h4>
+        <h4>Date: {{post.date}}</h4>
+    </div>
+    <div class="article__body">
+        {{post.html|safe}}
+    </div>
+    {% if post.image is not none %}
+        <center>
+            <img src="{{post.image.url}}"  alt="{{post.title}}" class="article__image">
+        </center>
+    {% endif %}
+
+{% endblock %}
