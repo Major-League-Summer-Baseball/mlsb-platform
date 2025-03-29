@@ -3,6 +3,16 @@
 <h1>
     Blog Posts
 </h1>
+<a
+    id="newBlogPostLink"
+    class="btn btn-primary mt-1"
+    action="{{ url_for ('convenor.new_blog_post_page') }}"
+    hx-get="{{ url_for ('convenor.new_blog_post_page') }}"
+    hx-target="#convenorBody"
+    hx-push-url="true"
+    >
+New Post
+</a>
 <div class="posts-container">
     {% for post in posts %}
     <div class="post-container">
@@ -27,6 +37,15 @@
             <button action="submit" class="btn btn-primary">
                 Edit
             </button>
+            <a
+                class="btn btn-danger"
+                action="{{ url_for('convenor.delete_blog_post', blog_post_id=post.blog_post_id)}}"
+                hx-delete="{{ url_for('convenor.delete_blog_post', blog_post_id=post.blog_post_id)}}"
+                hx-push-url="true"
+                hx-target="#convenorBody"
+            >
+                Delete
+            </a>
         </form>
     </div>
     

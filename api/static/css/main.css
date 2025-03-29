@@ -769,17 +769,19 @@ a {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: baseline;
 }
 
 .article {
+  flex-basis: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  max-width: 40%;
+  max-width: 50%;
+  min-width: 50%
 }
 
 .article__body iframe{

@@ -8,7 +8,7 @@ from api.model import BlogPost
 from api.models.shared import split_datetime
 
 
-@convenor_blueprint.route("blogposts")
+@convenor_blueprint.route("blogposts", methods=['DELETE', 'GET'])
 @require_to_be_convenor
 def blog_posts_page():
     """A page for editing/creating blog_posts"""
@@ -50,6 +50,18 @@ def new_blog_post_page():
     )
 
 
+@convenor_blueprint.route("blogpost/delete/<int:blog_post_id>", methods=["DELETE"])
+def delete_blog_post(blog_post_id: int):
+    blog_post = BlogPost.query.get(blog_post_id)
+    if blog_post is None:
+        session['error'] = f"Blog post does not exist {blog_post_id}"
+        return redirect(url_for('convenor.error_page'))
+    DB.session.delete(blog_post)
+    DB.session.commit()
+    flash("Blog post was removed")
+    return redirect(url_for('convenor.blog_posts_page'))
+
+
 @convenor_blueprint.route("blogpost/submit", methods=["POST"])
 @require_to_be_convenor
 def submit_blog_post():
@@ -61,6 +73,9 @@ def submit_blog_post():
     html = request.form.get("html")
     blog_post_id = request.form.get("blog_post_id", None)
     (date, time) = split_datetime(datetime.today())
+    if image_id is None:
+        session['error'] = 'Image is required'
+        return redirect(url_for('convenor.error_page'))
     try:
         if is_empty(blog_post_id):
             post = BlogPost(author_id, title, summary, html, image_id, time, date)
