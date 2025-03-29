@@ -18,7 +18,7 @@ class BlogPost(DB.Model):
     date = DB.Column(DB.DateTime, nullable=False)
     author = DB.relationship('Player', lazy=True)
     image = DB.relationship('Image', lazy=True)
-    
+
     def __init__(
         self,
         author_id: int,

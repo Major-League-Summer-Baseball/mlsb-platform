@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import render_template, request, flash, redirect, url_for, session
 from sqlalchemy import desc
 from api.authentication import get_player_id, require_to_be_convenor
-from api.convenor import convenor_blueprint, normalize_field, is_empty
+from api.convenor import convenor_blueprint, is_empty
 from api.extensions import DB
 from api.model import BlogPost
 from api.models.shared import split_datetime
@@ -18,6 +18,7 @@ def blog_posts_page():
         posts=posts,
     )
 
+
 @convenor_blueprint.route("blogposts/edit")
 @require_to_be_convenor
 def edit_blog_post_page():
@@ -31,6 +32,7 @@ def edit_blog_post_page():
         'convenor/blogpost.html',
         post=blog.json()
     )
+
 
 @convenor_blueprint.route("blogposts/new")
 @require_to_be_convenor
@@ -46,6 +48,7 @@ def new_blog_post_page():
             "image_id": None,
         }
     )
+
 
 @convenor_blueprint.route("blogpost/submit", methods=["POST"])
 @require_to_be_convenor

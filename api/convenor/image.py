@@ -66,7 +66,6 @@ def upload_inline_image():
         svc.upload_file(filename, get_image_bucket(), bucket_path)
         url = f"{endpoint}/{bucket_path}"
 
-
     image = Image(url)
     DB.session.add(image)
     DB.session.commit()

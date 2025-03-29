@@ -1,5 +1,5 @@
 import pytest
-from api.errors import ImageDoesNotExist, InvalidField, PlayerDoesNotExist
+from api.errors import ImageDoesNotExist, PlayerDoesNotExist
 from api.model import BlogPost
 from api.models.shared import convert_date
 
@@ -36,7 +36,6 @@ def test_create_blog_post(mlsb_app, player_factory, image_factory):
         assert blog.date == convert_date(BLOG_DATE, BLOG_TIME)
 
 
-
 @pytest.mark.usefixtures('image_factory')
 @pytest.mark.usefixtures('mlsb_app')
 def test_blog_post_requires_author(mlsb_app, image_factory):
@@ -52,6 +51,7 @@ def test_blog_post_requires_author(mlsb_app, image_factory):
                 date=BLOG_DATE,
                 time=BLOG_TIME
             )
+
 
 @pytest.mark.usefixtures('player_factory')
 @pytest.mark.usefixtures('mlsb_app')
@@ -128,6 +128,7 @@ def test_update_blog_post_requires_valid_author(mlsb_app, player_factory, image_
                 date=BLOG_DATE,
                 time=BLOG_TIME
             )
+
 
 @pytest.mark.usefixtures('image_factory')
 @pytest.mark.usefixtures('player_factory')

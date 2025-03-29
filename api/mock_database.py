@@ -2,7 +2,7 @@
 from api.extensions import DB
 from api.model import \
     Player, Sponsor, League, Fun, Game, Team, Espys, Bat, Division, \
-    LeagueEvent, LeagueEventDate, Image
+    LeagueEvent, LeagueEventDate, Image, BlogPost
 from api.variables import UNASSIGNED_EMAIL, HITS
 from api.tqdm import tqdm
 from sqlalchemy import text
@@ -224,6 +224,22 @@ def mock_sponsors():
     DB.session.commit()
     return sponsor_lookup
 
+def mock_blog_posts():
+    """Mock blog posts"""
+    author = Player("Author", "author@mlsb.ca", gender="F")
+    image = Image("https://image-store.fly.storage.tigris.dev/posts/launch.jpg")
+    DB.session.add(author)
+    DB.session.add(image)
+    DB.session.commit()
+    blog_post = BlogPost(
+        author.id,
+        'Launch',
+        "Get ready MLSBer's!!! Today we launch the official MLSB website",
+        "<p>Get ready MLSBer's!!! Today we launch the official MLSB website</p>",
+        image_id=image.id
+    )
+    DB.session.add(blog_post)
+    DB.session.commit()
 
 def mock_teams_games(league, division, sponsor_lookup):
     """
@@ -485,6 +501,7 @@ def init_database(mock, create):
         mock_teams_games(league, mock_division(), sponsor_lookup)
         mock_teams_games(league, mock_division(
             division="Tuesday & Thursday"), sponsor_lookup)
+        mock_blog_posts()
     return
 
 
