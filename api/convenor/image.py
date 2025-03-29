@@ -1,4 +1,4 @@
-from flask import redirect, render_template, request, session, url_for
+from flask import make_response, jsonify, redirect, render_template, request, session, url_for
 from datetime import date
 from api.authentication import require_to_be_convenor
 from api.convenor import allow_images_file, convenor_blueprint
@@ -36,6 +36,42 @@ def get_bucket_path(category: str, filename: str) -> str:
     return f"{category}/{filename}"
 
 
+@convenor_blueprint.route("image/upload/inline", methods=['POST'])
+@require_to_be_convenor
+def upload_inline_image():
+    if 'image' not in request.files:
+        return make_response(jsonify({'message': 'No image file'}), 400)
+
+    print(request.files)
+    file = request.files['image']
+
+    # If the user doesn't select a file
+    if file.filename == '':
+        return make_response(jsonify({'message': 'No image file'}), 400)
+
+    # Check if the file is allowed
+    if file and not allow_images_file(file.filename):
+        return make_response(jsonify({'message': 'File ext not allowed - use png'}), 400)
+
+    # use local static pictures folder
+    print(file)
+    filename = os.path.join(PICTURES, file.filename)
+    file.save(filename)
+    url = url_for('static', filename=f'pictures/{file.filename}')
+
+    if using_aws_storage():
+        endpoint = f'https://{get_bucket_path()}.fly.storage.tigris.dev'
+        svc = boto3.client('s3', endpoint_url=endpoint)
+        bucket_path = get_bucket_path('inline', file.filename)
+        svc.upload_file(filename, get_image_bucket(), bucket_path)
+        url = f"{endpoint}/{bucket_path}"
+
+    image = Image(url)
+    DB.session.add(image)
+    DB.session.commit()
+    return make_response(jsonify({'url': url}), 200)
+
+
 @convenor_blueprint.route("image/upload/<category>", methods=['POST'])
 @require_to_be_convenor
 def upload_image(category):
@@ -62,11 +98,11 @@ def upload_image(category):
     url = url_for('static', filename=f'pictures/{category}/{file.filename}')
 
     if using_aws_storage():
-        endpoint = 'https://fly.storage.tigris.dev'
+        endpoint = f'https://{get_bucket_path()}.fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
         bucket_path = get_bucket_path(category, file.filename)
         svc.upload_file(filename, get_image_bucket(), bucket_path)
-        url = f"{endpoint}/{get_image_bucket()}/{bucket_path}"
+        url = f"{endpoint}/{bucket_path}"
 
     image = None
     if image_id is not None and image_id != 'None':

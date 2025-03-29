@@ -2,6 +2,7 @@
     Originally held all models but moved to models.
     Kept to prevent the need to fix all imports
 """
+from api.models.blog_post import BlogPost
 from api.models.espys import Espys
 from api.models.fun import Fun
 from api.models.game import Game, Bat

@@ -1,6 +1,7 @@
 import pytest
 import os
 from io import BytesIO
+from api.helper import loads
 from api.model import Image
 from flask import url_for
 from api.variables import PICTURES
@@ -162,3 +163,29 @@ def test_cannot_use_any_image_extension(
         assert response.status_code == 200
         data = response.data
         assert 'File ext not allowed - use png' in str(data)
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+def test_upload_inline_image(
+    mlsb_app, client, auth, convenor
+):
+    """Test able to upload a inline image."""
+    with mlsb_app.app_context():
+        auth.login(convenor.email)
+        data = dict(
+            image=(BytesIO(b'test'), TEST_IMAGE),
+        )
+        response = client.post(
+            url_for("convenor.upload_inline_image"),
+            content_type='multipart/form-data',
+            data=data,
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        data = loads(response.data)
+        assert data['url'] is not None
+        assert data['url'].endswith(TEST_IMAGE)

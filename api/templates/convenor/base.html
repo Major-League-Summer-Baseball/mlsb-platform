@@ -111,6 +111,16 @@
                     Fun
                   </a>
                 </li>
+                <li class="indent-nav editsSidebar">
+                  <a
+                    href="{{ url_for('convenor.blog_posts_page') }}"
+                    hx-get="{{ url_for('convenor.blog_posts_page') }}"
+                    hx-target="#convenorBody"
+                    hx-push-url="true"
+                  >
+                    Blog posts
+                  </a>
+                </li>
             </ul>
         </div><!-- /#sidebar-wrapper -->
         <!-- Page Content -->
@@ -171,6 +181,14 @@
                           >
                           Fun
                         </a>
+                        <a
+                          href="{{ url_for('convenor.blog_posts_page') }}"
+                          hx-get="{{ url_for('convenor.blog_posts_page') }}"
+                          hx-target="#convenorBody"
+                          hx-push-url="true"
+                        >
+                        Blog Posts
+                      </a>
                 </div>
                 <div class="row">
                     <div class="col-lg-12" id="convenorBody">
@@ -197,31 +215,80 @@
     </div><!-- /#wrapper -->
   </body>
   <script>
-      function createQuillEditorAux(editorId, inputId, value, placeholder) {
+    function inLineImageHandler(quill) {
+      const fileInput = document.createElement('input');
+      fileInput.setAttribute('type', 'file');
+      fileInput.setAttribute('accept', 'image/*');
+      
+      fileInput.click();
+  
+      fileInput.onchange = function () {
+        const file = fileInput.files[0];
+        
+        if (file) {
+          var formData = new FormData();
+          formData.append('image', file);
+          fetch(`{{ url_for ('convenor.upload_inline_image') }}`, {
+            method: 'POST',
+            body: formData
+          })
+          .then((response => response.json()))
+          .then(data => {
+            const imageUrl = data.url;
+            const range = quill.getSelection();
+            quill.insertEmbed(range.index, 'image', imageUrl);
+          })
+          .catch(error => {
+            console.error('Error uploading image:', error);
+          })
+          .finally(() => {
+            fileInput.remove();
+          });
+        } else {
+          fileInput.remove();
+        }
+      };
+    }
+    function createQuillEditorAux(editorId, inputId, value, placeholder, allowImages) {
+        const modules = (allowImages) ? {
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }], 
+            ['link', 'image'],
+          ],
+        } : {};
         const quill = new Quill(`#${editorId}`, {
           placeholder: placeholder,
-          theme: 'snow'
+          theme: 'snow',
+          modules,
         });
         quill.on('text-change', function(delta, oldDelta, source) {
-            $(`#${inputId}`).val(quill.container.firstChild.innerHTML);
+          $(`#${inputId}`).val(quill.container.firstChild.innerHTML);
         });
         if (value && value != 'None') {
-            const delta = quill.clipboard.convert({ html: value });
-            quill.setContents(delta, 'silent')
+          const delta = quill.clipboard.convert({ html: value });
+          quill.setContents(delta, 'silent')
         }
+        if (allowImages) {
+          const handler = inLineImageHandler.bind(null, quill);
+          quill.getModule('toolbar').addHandler('image', handler);
+        }
+        return quill;
       }
 
-      function createQuillEditor(editorId, inputId, value, placeholder) {
-        if (document.readyState === "complete") {
-            createQuillEditorAux(editorId, inputId, value, placeholder);
-        } else {
-            // Wait for the load event
-            window.addEventListener("load", function () {
-                createQuillEditorAux(editorId, inputId, value, placeholder);
-            });
-        }
-        
+
+    function createQuillEditor(editorId, inputId, value, placeholder, allowImages) {
+      if (document.readyState === "complete") {
+        return createQuillEditorAux(editorId, inputId, value, placeholder, allowImages);
+      } else {
+        // Wait for the load event
+        window.addEventListener("load", function () {
+          return createQuillEditorAux(editorId, inputId, value, placeholder, allowImages);
+        });
       }
+    }
+
   </script>
   <footer class="footer text-center">
     <a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=year) }}">About</a>
