@@ -2,7 +2,7 @@
 from api.extensions import DB
 from api.model import \
     Player, Sponsor, League, Fun, Game, Team, Espys, Bat, Division, \
-    LeagueEvent, LeagueEventDate, Image
+    LeagueEvent, LeagueEventDate, Image, BlogPost
 from api.variables import UNASSIGNED_EMAIL, HITS
 from api.tqdm import tqdm
 from sqlalchemy import text
@@ -24,7 +24,7 @@ MOCK_EVENTS = [
             games makes for a day that you will never forget.
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/beerlympics.png",
+        "https://image-store.fly.storage.tigris.dev//events/beerlympics.png",
         f"{CURRENT_YEAR}-07-01"
     ),
     (
@@ -37,7 +37,7 @@ MOCK_EVENTS = [
             to watch the boys of summer?
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/jays_game.png",
+        "https://image-store.fly.storage.tigris.dev/events/jays_game.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -50,7 +50,7 @@ MOCK_EVENTS = [
             this joyous day twice a year.
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/summerween.png",
+        "https://image-store.fly.storage.tigris.dev/events/summerween.png",
         f"{CURRENT_YEAR}-06-01"
     ),
     (
@@ -64,7 +64,7 @@ MOCK_EVENTS = [
             MLSB every year and takes place in the winter.
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/mystery_bus.png",
+        "https://image-store.fly.storage.tigris.dev/events/mystery_bus.png",
         f"{CURRENT_YEAR}-04-01"
     ),
     (
@@ -82,7 +82,7 @@ MOCK_EVENTS = [
             this one because it is going to be a wild weekend!
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/rafting.png",
+        "https://image-store.fly.storage.tigris.dev/events/rafting.png",
         f"{CURRENT_YEAR}-07-08"
     ),
     (
@@ -100,7 +100,7 @@ MOCK_EVENTS = [
             Bring your tents because we will be camping out for the night!
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/grand_bender.png",
+        "https://image-store.fly.storage.tigris.dev/events/grand_bender.png",
         f"{CURRENT_YEAR}-07-28"
     ),
     (
@@ -120,62 +120,62 @@ MOCK_EVENTS = [
             </a>
         </p>
         """,
-        "https://fly.storage.tigris.dev/image-store/events/mlsb_alumni.png",
+        "https://image-store.fly.storage.tigris.dev/events/mlsb_alumni.png",
         f"{CURRENT_YEAR}-06-22"
     )
 ]
 sponsors = [
     {
         "name": "Beertown",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/beertown.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/beertown.png"
     },
     {
         "name": "Kik",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/kik.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/kik.png"
     },
     {
         "name": "Pabst",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/pabst.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/pabst.png"
     },
     {
         "name": "Spitz",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/spitz.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/spitz.png"
     },
     {
         "name": "Tilt",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/tilt.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/tilt.png"
     },
     {
         "name": "Sportszone",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/sportszone.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/sportszone.png"
     },
     {
         "name": "Sleeman",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/sleeman.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/sleeman.png"
     },
     {
         "name": "Ripshot",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/ripshot.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/ripshot.png"
     },
     {
         "name": "Night School",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/night_school.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/night_school.png"
     },
     {
         "name": "Heaven",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/heaven.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/heaven.png"
     },
     {
         "name": "GE",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/ge.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/ge.png"
     },
     {
         "name": "Gatorade",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/gatorade.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/gatorade.png"
     },
     {
         "name": "Chef on Call",
-        "url": "https://fly.storage.tigris.dev/image-store/sponsors/chef_on_call.png"
+        "url": "https://image-store.fly.storage.tigris.dev/sponsors/chef_on_call.png"
     }
 ]
 
@@ -223,6 +223,24 @@ def mock_sponsors():
         sponsor_lookup[index + 1] = sponsor
     DB.session.commit()
     return sponsor_lookup
+
+
+def mock_blog_posts():
+    """Mock blog posts"""
+    author = Player("Author", "author@mlsb.ca", gender="F")
+    image = Image("https://image-store.fly.storage.tigris.dev/posts/launch.jpg")
+    DB.session.add(author)
+    DB.session.add(image)
+    DB.session.commit()
+    blog_post = BlogPost(
+        author.id,
+        'Launch',
+        "Get ready MLSBer's!!! Today we launch the official MLSB website",
+        "<p>Get ready MLSBer's!!! Today we launch the official MLSB website</p>",
+        image_id=image.id
+    )
+    DB.session.add(blog_post)
+    DB.session.commit()
 
 
 def mock_teams_games(league, division, sponsor_lookup):
@@ -390,6 +408,7 @@ def create_fresh_tables():
     # delete old information
     DB.session.commit()
     with DB.engine.connect() as conn:
+        conn.execute(text("DROP TABLE IF EXISTS blog_post;"))
         conn.execute(text("DROP TABLE IF EXISTS flask_dance_oauth;"))
         conn.execute(text("DROP TABLE IF EXISTS attendance;"))
         conn.execute(text("DROP TABLE IF EXISTS league_event_date;"))
@@ -484,6 +503,7 @@ def init_database(mock, create):
         mock_teams_games(league, mock_division(), sponsor_lookup)
         mock_teams_games(league, mock_division(
             division="Tuesday & Thursday"), sponsor_lookup)
+        mock_blog_posts()
     return
 
 

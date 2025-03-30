@@ -6,8 +6,15 @@ import { LeagueEvent } from "../../../interfaces/league_event";
 const fillOutLeagueEventDetails = () => {
     const leagueEvent = generateLeagueEvent();
     cy.get("#newLeagueEventName").type(leagueEvent.name);
-    // unable to fill in ckeditor
-    // skipping test for now
+    cy.get("#quillTextareaNew").should('be.visible').then(($quillContainer) => {
+        const quillEditor = $quillContainer.find('.ql-editor')[0];
+        if (quillEditor) {
+        cy.wrap(quillEditor).type(leagueEvent.description);
+        } else {
+        // Handle the case when Quill editor is not found
+        throw new Error('Quill editor not found within the selected element');
+        }
+    });
 };
 When(`I fill out the league events details`, fillOutLeagueEventDetails);
 
@@ -77,7 +84,7 @@ const enterLeagueEventDate = () => {
 When(`I enter a new date`, enterLeagueEventDate);
 
 /** Click update for the wrapped league event. */
-const updateSponsor = () => {
+const updateLeagueEvent = () => {
     cy.get<LeagueEvent>('@leagueEvent').then((event: LeagueEvent) => {
         cy
             .get(`#leagueEventForm${event.league_event_id}`)
@@ -88,7 +95,19 @@ const updateSponsor = () => {
             });
     });
 };
-When(`I click update`, updateSponsor);
+When(`I click update`, updateLeagueEvent);
+
+/** Click submit for a new eventupdate for the wrapped league event. */
+const submitLeagueEvent = () => {
+    cy
+        .get(`#leagueEventFormNew`)
+        .within(() => {
+            cy
+                .findByRole('button', { name: /create/i })
+                .click();
+        });
+};
+When(`I submit league event`, submitLeagueEvent);
 
 /** Update an image for the league event */
 const uploadLeagueEventImage = () => {

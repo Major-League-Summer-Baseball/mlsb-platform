@@ -12,10 +12,10 @@ Scenario: A list of active sponsors are displayed
     And I can navigate through the list of sponsors
 
 Scenario: Summaries of news items are displayed
-    When I navigate to "2016" home page
+    When I navigate to the home page
     Then there is a list of news items
 
 Scenario: Able to view a news item
-    When I navigate to "2016" home page
+    When I navigate to the home page
         And I click on "Launch" news item
     Then I see details about website launch

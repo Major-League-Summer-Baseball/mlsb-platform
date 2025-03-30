@@ -1,7 +1,7 @@
 from flask import Flask, request
 from api.config import Config
 from werkzeug.middleware.proxy_fix import ProxyFix
-from api.extensions import cache, DB, login_manager, tailsman, ckeditor
+from api.extensions import cache, DB, login_manager, tailsman
 from api.authentication import github_blueprint, facebook_blueprint,\
     google_blueprint, azure_blueprint, login_manager
 from api.website import website_blueprint
@@ -33,8 +33,6 @@ def register_extensions(app):
     cache.init_app(app)
     DB.init_app(app)
     login_manager.init_app(app)
-    ckeditor.init_app(app)
-    app.config['CKEDITOR_PKG_TYPE'] = 'full'
     if not is_development(app):
         csp = {
             'default-src': [

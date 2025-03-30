@@ -8,11 +8,16 @@ __all__ = []
 from flask import \
     redirect, render_template, send_from_directory, url_for, Blueprint, request
 from datetime import date
+
+from sqlalchemy import desc
 from api import app
 from api.cached_items import get_upcoming_games, get_leagues
 from api.authentication import get_user_information
 import pkgutil
+import importlib
 import inspect
+
+from api.models.blog_post import BlogPost
 
 website_blueprint = Blueprint("website", __name__, url_prefix="/")
 
@@ -38,6 +43,20 @@ def inject_current_year():
 def reroute():
     year = date.today().year
     return redirect(url_for("website.index", year=year))
+
+
+@website_blueprint.route("/website/<int:year>")
+def index(year):
+    posts = BlogPost.query.order_by(desc(BlogPost.date)).limit(4).all()
+    return render_template(
+        "website/index.html",
+        title="Recent news",
+        year=year,
+        games=get_upcoming_games(year),
+        posts=[post.json() for post in posts],
+        show_more=True,
+        user_info=get_user_information()
+    )
 
 
 @website_blueprint.route("/about")
@@ -103,11 +122,16 @@ def rules_fields(year):
 
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    module = loader.find_module(name).load_module(name)
+    # Import the module dynamically using importlib
+    module = importlib.import_module(f"api.website.{name}")
 
-    for name, value in inspect.getmembers(module):
-        if name.startswith('__'):
+    # Loop over the members of the module and add non-dunder ones to globals()
+    for member_name, value in inspect.getmembers(module):
+        if member_name.startswith('__'):
             continue
 
-        globals()[name] = value
-        __all__.append(name)
+        # Add the value to globals() with the member name
+        globals()[member_name] = value
+
+        # Add the member name to __all__
+        __all__.append(member_name)

@@ -37,6 +37,7 @@ input[disabled] {
 .events-container,
 .leagues-container,
 .divisions-container,
+.posts-container,
 .fun-container {
     display: flex;
     flex-direction: column;
@@ -54,7 +55,8 @@ input[disabled] {
 .sponsor-container,
 .event-container,
 .division-container,
-.league-container
+.league-container,
+.post-container
  {
     display: flex;
     flex-direction: row;
@@ -159,4 +161,12 @@ input[disabled] {
 .image-controls {
     display: flex;
     flex-direction: row;
+}
+
+.quill-editor {
+    min-height: 190px;
+}
+
+.quill-textarea {
+    max-height: 80%;
 }

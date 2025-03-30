@@ -79,6 +79,6 @@ Then(`I can navigate through the list of sponsors`, navigateSponsorsList);
  * Then I see details about website launch
  */
 export const assertLaunchNews = (): void => {
-    cy.get('h4').contains('Launch');
+    cy.findByRole('heading', { name: 'Launch'});
 };
 Then(`I see details about website launch`, assertLaunchNews);

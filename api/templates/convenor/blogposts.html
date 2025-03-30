@@ -1,0 +1,54 @@
+{% extends "convenor/base.html" %}
+{% block content %}
+<h1>
+    Blog Posts
+</h1>
+<a
+    id="newBlogPostLink"
+    class="btn btn-primary mt-1"
+    action="{{ url_for ('convenor.new_blog_post_page') }}"
+    hx-get="{{ url_for ('convenor.new_blog_post_page') }}"
+    hx-target="#convenorBody"
+    hx-push-url="true"
+    >
+New Post
+</a>
+<div class="posts-container">
+    {% for post in posts %}
+    <div class="post-container">
+        <p>
+            <strong>
+                {{post.title}}
+            </strong>
+            
+            by
+            {{post.author.player_name}}
+            ({{post.date}})
+        </p>
+        <form
+            method="get"
+            id="editBlogPostForm"
+            action="{{ url_for('convenor.edit_blog_post_page')}}"
+            hx-get="{{ url_for('convenor.edit_blog_post_page')}}"
+            hx-push-url="true"
+            hx-target="#convenorBody"
+        >
+            <input type="hidden" name="blog_post_id" value="{{post.blog_post_id}}" id="blogPostId{{post.blog_post_id}}">
+            <button action="submit" class="btn btn-primary">
+                Edit
+            </button>
+            <a
+                class="btn btn-danger"
+                action="{{ url_for('convenor.delete_blog_post', blog_post_id=post.blog_post_id)}}"
+                hx-delete="{{ url_for('convenor.delete_blog_post', blog_post_id=post.blog_post_id)}}"
+                hx-push-url="true"
+                hx-target="#convenorBody"
+            >
+                Delete
+            </a>
+        </form>
+    </div>
+    
+    {% endfor %}
+</div>
+{% endblock %}
