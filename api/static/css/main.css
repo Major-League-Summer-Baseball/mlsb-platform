@@ -771,6 +771,7 @@ a {
   flex-direction: row;
   justify-content: center;
   align-items: baseline;
+  gap: 20px;
 }
 
 .article {
@@ -780,8 +781,7 @@ a {
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  max-width: 50%;
-  min-width: 50%
+  max-width: 300px;
 }
 
 .article__body iframe{
@@ -792,8 +792,8 @@ a {
 .article__body img,
 .article__image {
   display: block;
-  max-width: 600px;
-  max-width: 400px;
+  width: 250px;
+  height: 250px;
   border-radius: 25px;
   padding: 10px;
   margin: auto;
