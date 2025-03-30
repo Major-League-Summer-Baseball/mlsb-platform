@@ -47,7 +47,7 @@ def reroute():
 
 @website_blueprint.route("/website/<int:year>")
 def index(year):
-    posts = BlogPost.query.order_by(desc(BlogPost.date)).limit(4).all()
+    posts = BlogPost.query.order_by(desc(BlogPost.date)).limit(6).all()
     return render_template(
         "website/index.html",
         title="Recent news",
