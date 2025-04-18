@@ -27,7 +27,7 @@ def get_single_game_leader(hit: str, year=None):
         d2 = date(year, 12, 30)
     else:
         # get all players
-        d1 = date(2014, 1, 1)
+        d1 = date(2016, 1, 1)
         d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
