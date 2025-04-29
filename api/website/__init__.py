@@ -6,11 +6,10 @@
 """
 __all__ = []
 from flask import \
-    redirect, render_template, send_from_directory, url_for, Blueprint, request
+    redirect, render_template, send_from_directory, url_for, Blueprint, request, current_app
 from datetime import date
 
 from sqlalchemy import desc
-from api import app
 from api.cached_items import get_upcoming_games, get_leagues
 from api.authentication import get_user_information
 import pkgutil
@@ -90,7 +89,7 @@ def terms_and_conditions():
 def azure_verify():
     """A route for verifying domain to azure."""
     return send_from_directory(
-        app.static_folder,
+        current_app.static_folder,
         "microsoft-identity-association.json"
     )
 
@@ -98,7 +97,7 @@ def azure_verify():
 @website_blueprint.route("/robots.txt")
 def robot():
     """A route for the google web crawler."""
-    return send_from_directory(app.static_folder, "robots.txt")
+    return send_from_directory(current_app.static_folder, "robots.txt")
 
 
 @website_blueprint.route("/website/leagueNotFound/<int:year>")

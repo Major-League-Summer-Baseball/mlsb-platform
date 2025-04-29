@@ -60,11 +60,11 @@ def upload_inline_image():
     url = url_for('static', filename=f'pictures/{file.filename}')
 
     if using_aws_storage():
-        endpoint = f'https://{get_bucket_path()}.fly.storage.tigris.dev'
+        endpoint = f'https://fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
         bucket_path = get_bucket_path('inline', file.filename)
         svc.upload_file(filename, get_image_bucket(), bucket_path)
-        url = f"{endpoint}/{bucket_path}"
+        url = f"https://{get_image_bucket()}.fly.storage.tigris.dev/{bucket_path}"
 
     image = Image(url)
     DB.session.add(image)
@@ -98,11 +98,11 @@ def upload_image(category):
     url = url_for('static', filename=f'pictures/{category}/{file.filename}')
 
     if using_aws_storage():
-        endpoint = f'https://{get_bucket_path()}.fly.storage.tigris.dev'
+        endpoint = f'https://fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
         bucket_path = get_bucket_path(category, file.filename)
         svc.upload_file(filename, get_image_bucket(), bucket_path)
-        url = f"{endpoint}/{bucket_path}"
+        url = f"https://{get_image_bucket()}.fly.storage.tigris.dev/{bucket_path}"
 
     image = None
     if image_id is not None and image_id != 'None':
