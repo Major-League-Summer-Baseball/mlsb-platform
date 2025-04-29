@@ -60,7 +60,7 @@ def upload_inline_image():
     url = url_for('static', filename=f'pictures/{file.filename}')
 
     if using_aws_storage():
-        endpoint = f'https://fly.storage.tigris.dev'
+        endpoint = 'https://fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
         bucket_path = get_bucket_path('inline', file.filename)
         svc.upload_file(filename, get_image_bucket(), bucket_path)
@@ -98,7 +98,7 @@ def upload_image(category):
     url = url_for('static', filename=f'pictures/{category}/{file.filename}')
 
     if using_aws_storage():
-        endpoint = f'https://fly.storage.tigris.dev'
+        endpoint = 'https://fly.storage.tigris.dev'
         svc = boto3.client('s3', endpoint_url=endpoint)
         bucket_path = get_bucket_path(category, file.filename)
         svc.upload_file(filename, get_image_bucket(), bucket_path)
