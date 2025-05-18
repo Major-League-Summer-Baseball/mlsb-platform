@@ -25,7 +25,7 @@ pytest
 pytest api/tests/<FOLDER>
 # run flake linter
 pip install flake8
-flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/*,api/tests/conftest.py,api/model.py --ignore=E712,W503,W504
+flake8 . --count --max-complexity=20 --max-line-length=127 --statistics --exclude=api/__init__.py,api/tqdm.py,api/commands.py,api/app.py,venv/*,ui-testing/*,api/tests/conftest.py,api/model.py --ignore=E712,W503,W504,C901
 
 ```
 
@@ -155,7 +155,7 @@ Finally, there is a Github action for creating a docker image for pushes to main
 # list all routes for app
 flask --app api/app routes
 # import a season stats from csv
-flask --app api/app/ import-season <SPONSOR_CSV_FILE> <TEAM_STANDINGS_CSV_FILE> <HOMERUNS_CSV_FILE> <SPECIAL_SINGLES_CSV_FILE>
+flask --app api/app import-season <league_name> <division_name> <year> <SPONSOR_CSV_FILE> <TEAM_STANDINGS_CSV_FILE> <HOMERUNS_CSV_FILE> <SPECIAL_SINGLES_CSV_FILE>
 ```
 
 ## Fly IO Commands

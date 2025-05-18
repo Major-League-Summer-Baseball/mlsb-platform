@@ -18,6 +18,7 @@ CACHE_TIMEOUT = 600
 # the UNASSIGNED player id used for bats that are not assigned to a player
 UNASSIGNED = 1
 UNASSIGNED_EMAIL = "unassignedBats@mlsb.ca"
+UNASSIGNED_TEAM = 'unassigned-team'
 
 # the hits that are available
 HITS = ["s", "ss", "d", "hr", "t"]

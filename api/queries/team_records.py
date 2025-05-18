@@ -4,7 +4,7 @@ from api.models.espys import Espys
 from api.models.team import Team
 from api.models.game import Bat, Game
 from api.extensions import DB
-from api.variables import HALL_OF_FAME_SIZE
+from api.variables import HALL_OF_FAME_SIZE, UNASSIGNED_TEAM
 
 
 def get_team_records(
@@ -63,7 +63,9 @@ def get_team_records(
         query = query.filter(Team.year == year)
 
     # order by wins
-    query = query.order_by(desc(home_record.c.wins + away_record.c.wins))
+    query = query.filter(
+        func.lower(Team.color) != UNASSIGNED_TEAM
+    ).order_by(desc(home_record.c.wins + away_record.c.wins))
 
     # limit results
     if limit is not None:
