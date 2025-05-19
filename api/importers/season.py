@@ -255,7 +255,6 @@ def set_teams_map(
                     )
                 )
 
-
             teams[normalize_team_name(team)] = {
                 'team': team,
                 'homeruns': [],
@@ -405,7 +404,7 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
                 game_scores[i]['score'] == len(game_scores[i]['homeruns'])
                 for i in range(len(game_scores))
             ):
-                logger.error(f'Homeruns exceed runs for team ')
-                raise Exception(f'Homeruns exceed runs for')
+                logger.error(f'Homeruns exceed runs for team {team['team']}')
+                raise Exception(f'Homeruns exceed runs for {team['team']}')
             game_index = (game_index + 1) % len(game_scores)
     return game_scores
