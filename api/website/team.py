@@ -73,9 +73,11 @@ def player_page(year, player_id):
     stats = []
     for entry in years:
         player = {}
-        summary = player_summary(year=entry[0],
-                                 team_id=entry[1],
-                                 player_id=player_id)
+        summary = player_summary(
+            year=entry[0],
+            team_id=entry[1],
+            player_id=player_id
+        )
         if name in summary:
             player = summary[name]
         else:

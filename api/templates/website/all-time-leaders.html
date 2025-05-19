@@ -57,7 +57,7 @@
     </div>
     <div class="col-xs-12 col-sm-6">
         <h4 class="leaderSubTitle">
-            Career<a href="#" data-toggle="toolip" title="For those who played too long">[?]</a>
+            Career <a href="{{ url_for('website.top_hundred_players_all_time', year=year, stat='hr')}}"><span class="glyphicon glyphicon-chevron-down" aria-label="Top 100" title="Top 100"></span></a>
         </h4>
         <ul class="listgroup leadersList sleemanList allTimeCareer">
         {% for player in hrAllSeason %}
@@ -137,7 +137,7 @@
 
     <div class="col-xs-12 col-sm-6" >
         <h4 class="leaderSubTitle">
-        Career
+        Career <a href="{{ url_for('website.top_hundred_players_all_time', year=year, stat='ss')}}"><span class="glyphicon glyphicon-chevron-down" aria-label="Top 100" title="Top 100"></span></a>
         </h4>
         <ol class="listgroup leadersList sapporList allTimeCareer">
         {% for player in ssAllSeason %}
@@ -156,6 +156,9 @@
                 {% endif %}
             </li>
         {% endfor %}
+        <li class="list-group-item leaderPoint">
+            <a href="{{ url_for('website.top_hundred_players_all_time', year=year, stat='ss')}}">Top 100</a>
+        </li>
         </ol>
     </div>
 </div>
@@ -265,7 +268,4 @@
         </ol>
     </div>
 </div>
-{% endblock %}
-{% block script %}
-</script>
 {% endblock %}

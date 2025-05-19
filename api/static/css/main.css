@@ -284,6 +284,10 @@ p.primary{
   text-align: center;
 }
 
+.back-button {
+  margin-left: 30px;
+}
+
 .leadersList li{
   margin: 0px 0px 24px;
   line-height: 18px;
