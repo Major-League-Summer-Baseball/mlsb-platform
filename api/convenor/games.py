@@ -140,7 +140,7 @@ def games_page():
             Game.home_team_hits == 0)
         )
     games = [game.json() for game in games.order_by(Game.date).all()]
-    years = [year for year in range(2016, date.today().year + 1)]
+    years = [year for year in range(2015, date.today().year + 1)]
     leagues = [league.json() for league in League.query.all()]
     return render_template(
         "convenor/games.html",

@@ -38,7 +38,7 @@ def teams_page():
         for team in team_query.order_by(Team.year).all()
     ]
     teams.sort(key=lambda t: t['team_name'].strip())
-    years = [year for year in range(2016, date.today().year + 1)]
+    years = [year for year in range(2015, date.today().year + 1)]
     return render_template(
         "convenor/teams.html",
         teams=teams,
