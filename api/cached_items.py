@@ -118,14 +118,16 @@ def get_team_map():
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
-def get_league_leaders(stat, year=None, group_by_team=False, single_game=False):
+def get_league_leaders(
+    stat, year=None, group_by_team=False, single_game=False, limit=None
+):
     """Get the league leaders for the given stat"""
     if single_game:
         return get_single_game_leader(stat, year=year)
     elif group_by_team:
-        return get_leaders_not_grouped_by_team(stat, year=year)
+        return get_leaders_not_grouped_by_team(stat, year=year, limit=limit)
     else:
-        return get_leaders(stat, year=year)
+        return get_leaders(stat, year=year, limit=limit)
 
 
 @cache.memoize(timeout=LONG_TERM_CACHE)
