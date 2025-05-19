@@ -89,6 +89,21 @@ def all_time_leaders_page(year):
         user_info=get_user_information()
     )
 
+@website_blueprint.route("/website/hall-of-fame/top/<stat>/<int:year>")
+def top_hundred_players_all_time(stat, year):
+    if stat == 'hr':
+        players = get_league_leaders("hr", group_by_team=True, limit=100)
+    else:
+        players = get_league_leaders("ss", group_by_team=True, limit=100)
+    return render_template(
+        "website/top-hundred-players.html",
+        stat_title= 'Homeruns' if stat == 'hr' else 'Sapporo Singles',
+        players=players,
+        title="Hall of Fame",
+        year=year,
+        user_info=get_user_information()
+    )
+
 
 @website_blueprint.route("/website/espysbreakdown/<int:year>")
 def espys_breakdown_request(year):
