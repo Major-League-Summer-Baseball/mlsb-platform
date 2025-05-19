@@ -7,6 +7,7 @@ from sqlalchemy.sql.expression import and_
 from api.extensions import DB
 from api.model import Sponsor, Team, League, Player, Division, Game, Bat
 from typing import List, TypedDict
+from api.models.espys import Espys
 from api.variables import UNASSIGNED_EMAIL, UNASSIGNED_TEAM
 
 
@@ -136,7 +137,8 @@ def save_team_record(
         team_id: int,
         score: TeamGamesScore,
     ):
-        game = Game(f'{year}-05-{index}', '12:00', team_id, unknown_team.id, league.id, division.id)
+        game_date = f'{year}-05-{index}'
+        game = Game(game_date, '12:00', team_id, unknown_team.id, league.id, division.id)
         DB.session.add(game)
         DB.session.commit()
         for player_id in score['singles']:
@@ -155,10 +157,10 @@ def save_team_record(
         return
 
     for team in team_map.values():
-        logger.info(team)
         team_season = create_team_season(team, logger)
         for index, game in enumerate(team_season):
-            add_game_score(index, team.id, game)
+            add_game_score(index + 1, team['team'].id, game)
+        logger.info(team_season)
         logger.info(f'Add games for {team} and hr/ss for its players')
     return
 
@@ -169,6 +171,7 @@ def add_players_to_team__map(
     special_singles_csv: str,
     logger
 ):
+    logger.info(team_map)
     """Find/Create the various players."""
     def parse_file(file, stat, gender):
         with open(file, newline='') as stat_file:
@@ -190,15 +193,17 @@ def add_players_to_team__map(
                         gender=gender
                     )
                     DB.session.add(player)
+                    DB.session.commit()
                     logger.info(f'Added player {player}')
                 team[stat].append({
                     'player': player,
                     'homeruns': int(row.get('hr', 0)),
                     'singles': int(row.get('ss', 0))
                 })
+                team['team'].insert_player(player.id)
+                DB.session.commit()
     parse_file(homeruns_csv, 'homeruns', 'm')
     parse_file(special_singles_csv, 'singles', 'f')
-    DB.session.commit()
 
 
 def set_teams_map(
@@ -237,7 +242,20 @@ def set_teams_map(
                     year=year
                 )
                 DB.session.add(team)
+                DB.session.commit()
                 logger.info(f'Created team {team}')
+            espys = int(row['espys'])
+            if team.espys_total < espys:
+                DB.session.add(
+                    Espys(
+                        team.id,
+                        points=espys,
+                        description='Season total',
+                        date=f"{year}-05-01"
+                    )
+                )
+
+
             teams[normalize_team_name(team)] = {
                 'team': team,
                 'homeruns': [],
@@ -251,7 +269,6 @@ def set_teams_map(
                     'espys': int(row['espys']),
                 }
             }
-    DB.session.commit()
     logger.info('Parsed Teams data')
     return teams
 
@@ -307,7 +324,6 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
             'score': tie_score,
             'other_score': tie_score,
         })
-        logger.info(game_scores)
 
     # evenly distribute rest of the scores
     for game in range(total_games - ties):
@@ -329,18 +345,17 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
     run_against_indices = loss_indices if losses > 0 else win_indices
     index = 0
     while runs_for > 0:
-        game_scores[index]['score'] += 1
+        game_scores[run_for_indices[index]]['score'] += 1
         index = (index + 1) % len(run_for_indices)
         runs_for -= 1
     index = 0
     while runs_against > 0:
-        game_scores[index]['other_score'] += 1
+        game_scores[run_against_indices[index]]['other_score'] += 1
         index = (index + 1) % len(run_against_indices)
         runs_against -= 1
 
     if team['record']['runs_for'] >= team['record']['runs_allowed'] and len(loss_indices) > 0:
         # wins should be setup properly so handle losses
-        logger.info('Handling losses')
         win_index = 0
         winning_game = game_scores[win_indices[win_index]]
         for loss_index in loss_indices:
@@ -356,7 +371,6 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
                 winning_game['other_score'] -= 1
     elif team['record']['runs_for'] <= team['record']['runs_allowed'] and len(win_indices) > 0:
         # losses should be setup properly so handle wins
-        logger.info('Handling wins')
         loss_index = 0
         losing_game = game_scores[loss_indices[loss_index]]
         for win_index in win_indices:
@@ -368,28 +382,22 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
                         logger.error('Not enough run for for losses')
                         raise Exception('Not enough run for for losses')
                     losing_game = game_scores[loss_indices[loss_index]]
-                    logger.info(losing_game)
                 winning_game['score'] += 1
                 losing_game['score'] -= 1
-                logger.info(f'Moved run for from losing game {loss_index} to winning game {win_index}')
-            logger.info(winning_game)
-            logger.info(losing_game)
+
     # distribute singles across games
     for player in team['singles']:
         singles = player['singles']
         game_index = 0
         while singles > 0:
             singles -= 1
-            logger.info(game_index)
             game_scores[game_index]['singles'].append(player['player'].id)
             game_index = (game_index + 1) % len(game_scores)
-    logger.info(game_scores)
     # distribute homeruns acrss games
     for player in team['homeruns']:
         homeruns = player['homeruns']
         game_index = 0
         while homeruns > 0:
-            logger.info(game_index)
             if (len(game_scores[game_index]['homeruns']) <= game_scores[game_index]['score']):
                 homeruns -= 1
                 game_scores[game_index]['homeruns'].append(player['player'].id)
@@ -400,5 +408,4 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
                 logger.error(f'Homeruns exceed runs for team ')
                 raise Exception(f'Homeruns exceed runs for')
             game_index = (game_index + 1) % len(game_scores)
-    logger.info(game_scores)
     return game_scores
