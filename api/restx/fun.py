@@ -33,7 +33,7 @@ fun_payload = fun_api.model('FunPayload', {
         description="The total count of all the fun"
     ),
     'year': fields.Integer(
-        min=2016,
+        min=2015,
         max=datetime.now().year,
         description="The year the fun occurred"
     ),

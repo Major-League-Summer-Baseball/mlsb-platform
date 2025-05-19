@@ -8,7 +8,7 @@ from api.website import website_blueprint
 from api.convenor import convenor_blueprint
 from api.testing_blueprint import testing_blueprint
 from api.mock_database import init_database
-from api.commands import database_command
+from api.commands import database_command, import_season_command
 import logging
 import sys
 
@@ -103,6 +103,7 @@ def register_blueprint(app):
 def register_commands(app):
     """Register command line tasks."""
     app.cli.add_command(database_command)
+    app.cli.add_command(import_season_command)
 
 
 def configure_logger(app):

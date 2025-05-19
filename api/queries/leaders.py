@@ -27,7 +27,7 @@ def get_single_game_leader(hit: str, year=None):
         d2 = date(year, 12, 30)
     else:
         # get all players
-        d1 = date(2014, 1, 1)
+        d1 = date(2015, 1, 1)
         d2 = date(date.today().year, 12, 30)
     start = datetime.combine(d1, t)
     end = datetime.combine(d2, t)
@@ -75,7 +75,7 @@ def get_single_game_leader(hit: str, year=None):
     return leaders
 
 
-def get_leaders(hit, year=None):
+def get_leaders(hit, year=None, limit=None):
     """Returns the top X leaders for the given stats grouped by teams
         Parameters:
           hit: the type of hit classification to get the leaders for
@@ -122,7 +122,7 @@ def get_leaders(hit, year=None):
         .group_by(Team)
         .order_by(func.count(Bat.player_id).desc())
         .order_by(Team.year)
-        .limit(HALL_OF_FAME_SIZE)
+        .limit(HALL_OF_FAME_SIZE if limit is None else limit)
     ).all()
     for record in records:
         team = record[2]
@@ -139,7 +139,7 @@ def get_leaders(hit, year=None):
     return leaders
 
 
-def get_leaders_not_grouped_by_team(hit, year=None):
+def get_leaders_not_grouped_by_team(hit, year=None, limit=None):
     """Returns the top X leaders for the given stats not grouped by teams
         Parameters:
           hit: the type of hit classification to get the leaders for
@@ -184,7 +184,7 @@ def get_leaders_not_grouped_by_team(hit, year=None):
         .group_by(Player)
         .group_by(Bat.classification)
         .order_by(func.count(Bat.player_id).desc())
-        .limit(HALL_OF_FAME_SIZE)
+        .limit(HALL_OF_FAME_SIZE if limit is None else limit)
     ).all()
     for player in players:
         result = {
