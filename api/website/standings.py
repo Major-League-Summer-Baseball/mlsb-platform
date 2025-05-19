@@ -45,8 +45,8 @@ def stats_page(year):
 
 @website_blueprint.route("/website/leaders/<int:year>")
 def leaders_page(year):
-    women = get_league_leaders("ss", year=year)[:5]
-    men = get_league_leaders("hr", year=year)[:5]
+    women = get_league_leaders("ss", year=year)[:10]
+    men = get_league_leaders("hr", year=year)[:10]
     return render_template(
         "website/new-leaders.html",
         men=men,
