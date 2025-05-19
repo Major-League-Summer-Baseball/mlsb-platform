@@ -404,7 +404,8 @@ def create_team_season(team: TeamInfo, logger) -> list[TeamGamesScore]:
                 game_scores[i]['score'] == len(game_scores[i]['homeruns'])
                 for i in range(len(game_scores))
             ):
-                logger.error(f'Homeruns exceed runs for team {team['team']}')
-                raise Exception(f'Homeruns exceed runs for {team['team']}')
+                team_name = str(team['team'])
+                logger.error(f'Homeruns exceed runs for team {team_name}')
+                raise Exception(f'Homeruns exceed runs for {team_name}')
             game_index = (game_index + 1) % len(game_scores)
     return game_scores
