@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from api.model import Bat, split_datetime, Game
 from flask import url_for
 import io
@@ -176,6 +176,126 @@ def test_convenor_cannot_remove_game_with_scores(
 @pytest.mark.usefixtures('division_factory')
 @pytest.mark.usefixtures('team_factory')
 @pytest.mark.usefixtures('game_factory')
+def test_convenor_remove_games(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory
+):
+    """Test convenor can bulk remove games."""
+    with mlsb_app.app_context():
+        home_team = team_factory()
+        away_team = team_factory()
+        league = league_factory()
+        division = division_factory()
+        game_date, game_time = split_datetime(datetime.today())
+        games = [
+            game_factory(
+                home_team,
+                away_team,
+                league,
+                division,
+                date=game_date,
+                time=game_time
+            ),
+            game_factory(
+                away_team,
+                home_team,
+                league,
+                division,
+                date=game_date,
+                time=game_time
+            ),
+        ]
+        auth.login(convenor.email)
+        response = client.delete(
+            url_for("convenor.delete_games"),
+            data={'game_ids': [game.id for game in games]},
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        assert not url_for("website.loginpage").endswith(response.request.path)
+        for game in games:
+            assert Game.query.get(game.id) is None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+@pytest.mark.usefixtures('bat_factory')
+@pytest.mark.usefixtures('player_factory')
+def test_convenor_cannot_bulk_remove_game_with_scores(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory,
+    bat_factory,
+    player_factory
+):
+    """Test convenor cannot bulk remove a game with scores."""
+    with mlsb_app.app_context():
+        home_team = team_factory()
+        away_team = team_factory()
+        league = league_factory()
+        division = division_factory()
+        game_date, game_time = split_datetime(datetime.today())
+        games = [
+            game_factory(
+                home_team,
+                away_team,
+                league,
+                division,
+                date=game_date,
+                time=game_time
+            ),
+            game_factory(
+                away_team,
+                home_team,
+                league,
+                division,
+                date=game_date,
+                time=game_time
+            ),
+        ]
+        player = player_factory()
+        bat_factory(games[0], player, home_team,)
+        bat_factory(games[1], player, home_team,)
+
+        auth.login(convenor.email)
+        response = client.delete(
+            url_for("convenor.delete_games"),
+            data={'game_ids': [game.id for game in games]},
+            follow_redirects=True
+        )
+        assert response.status_code == 200
+        assert url_for("convenor.error_page").endswith(response.request.path)
+        assert Game.query.get(games[0].id) is not None
+        assert Game.query.get(games[1].id) is not None
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
 def test_convenor_games_page(
     mlsb_app,
     client,
@@ -259,6 +379,153 @@ def test_convenor_games_filter_team_page(
             url_for("convenor.games_page", team_id=home_team.id),
             follow_redirects=True,
         )
+        assert response.status_code == 200
+        games_container = get_games_container(str(response.data))
+        assert str(home_team) in games_container
+        assert str(away_team) in games_container
+        assert str(other_team) not in games_container
+        assert not url_for("website.loginpage").endswith(response.request.path)
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+def test_convenor_games_page_filter_by_date(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory
+):
+    """Test convenor can view games filtered by start date."""
+    with mlsb_app.app_context():
+        home_team = team_factory()
+        away_team = team_factory()
+        other_team = team_factory()
+        league = league_factory()
+        division = division_factory()
+        today_game_date, _ = split_datetime(datetime.today())
+        yesterday_date, game_time = split_datetime(
+            datetime.today() - timedelta(days=1)
+        )
+
+        game_factory(
+            other_team,
+            away_team,
+            league,
+            division,
+            date=yesterday_date,
+            time=game_time
+        )
+        game_factory(
+            home_team,
+            away_team,
+            league,
+            division,
+            date=today_game_date,
+            time=game_time
+        )
+        auth.login(convenor.email)
+
+        response = client.get(
+            url_for("convenor.games_page", date=today_game_date),
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        games_container = get_games_container(str(response.data))
+        assert str(home_team) in games_container
+        assert str(away_team) in games_container
+        assert str(other_team) not in games_container
+        assert not url_for("website.loginpage").endswith(response.request.path)
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+def test_convenor_games_page_filter_by_time(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory
+):
+    """Test convenor can view games by time of day."""
+    # cannot test since sqlite does not support
+    # casting and dont want target based dialect
+    pass
+
+
+@pytest.mark.convenor
+@pytest.mark.usefixtures('client')
+@pytest.mark.usefixtures('mlsb_app')
+@pytest.mark.usefixtures('auth')
+@pytest.mark.usefixtures('convenor')
+@pytest.mark.usefixtures('league_factory')
+@pytest.mark.usefixtures('division_factory')
+@pytest.mark.usefixtures('team_factory')
+@pytest.mark.usefixtures('game_factory')
+def test_convenor_games_page_filter_by_day_of_week(
+    mlsb_app,
+    client,
+    auth,
+    convenor,
+    league_factory,
+    division_factory,
+    team_factory,
+    game_factory
+):
+    """Test convenor can view games by day of the week."""
+    with mlsb_app.app_context():
+        home_team = team_factory()
+        away_team = team_factory()
+        other_team = team_factory()
+        league = league_factory()
+        division = division_factory()
+        t = '11:45'
+        monday_game = '2025-05-19'
+        tuesday_game = '2025-05-20'
+
+        game_factory(
+            other_team,
+            away_team,
+            league,
+            division,
+            date=tuesday_game,
+            time=t
+        )
+        game_factory(
+            home_team,
+            away_team,
+            league,
+            division,
+            date=monday_game,
+            time=t
+        )
+        auth.login(convenor.email)
+        monday = 1
+        response = client.get(
+            url_for("convenor.games_page", day=monday),
+            follow_redirects=True,
+        )
+
         assert response.status_code == 200
         games_container = get_games_container(str(response.data))
         assert str(home_team) in games_container
