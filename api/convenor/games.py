@@ -1,7 +1,7 @@
 from flask import render_template, request, session, url_for, redirect, \
     make_response, flash
-from sqlalchemy import or_, and_
-from datetime import date, time, datetime
+from sqlalchemy import or_, and_, func, cast, Time
+from datetime import date, time, datetime, timedelta
 from api.importers.league import LeagueList
 from api.authentication import require_to_be_convenor
 from api.cached_items import handle_table_change
@@ -116,6 +116,9 @@ def edit_game_page(game_id: int):
 def games_page():
     year = int(request.args.get('year', date.today().year))
     team_id = request.args.get('team_id', None)
+    start_filter = request.args.get('date', None)
+    time_of_day = request.args.get('time', None)
+    day_of_week = request.args.get('day', None)
     pending_score = request.args.get('pending_score', "off") == "on"
 
     start = datetime.combine(date(year, 1, 1), time(0, 0))
@@ -126,6 +129,7 @@ def games_page():
         for team in Team.query.filter(Team.year == year).all()
     ]
     teams.sort(key=lambda t: t['team_name'].strip())
+
     if is_empty(team_id):
         team_id = None
     else:
@@ -134,11 +138,34 @@ def games_page():
             Game.away_team_id == team_id,
             Game.home_team_id == team_id
         ))
+
     if pending_score:
         games = games.filter(or_(
             Game.away_team_hits == 0,
             Game.home_team_hits == 0)
         )
+
+    if not is_empty(start_filter):
+        games = games.filter(
+            Game.date >= datetime.strptime(start_filter, '%Y-%m-%d')
+        )
+
+    if not is_empty(time_of_day):
+        time_date = datetime.strptime(time_of_day, '%H:%M')
+        start_time = (time_date - timedelta(minutes=5)).strftime('%H:%M')
+        end_time = (time_date + timedelta(minutes=5)).strftime('%H:%M')
+        # casting is not supported by sqlite
+        # cannot add a unit test
+        games = games.filter(
+            and_(
+                cast(Game.date, Time) > start_time,
+                cast(Game.date, Time) < end_time
+            )
+        )
+
+    if not is_empty(day_of_week):
+        games = games.filter(func.extract('dow', Game.date) == day_of_week)
+
     games = [game.json() for game in games.order_by(Game.date).all()]
     years = [year for year in range(2015, date.today().year + 1)]
     leagues = [league.json() for league in League.query.all()]
@@ -151,7 +178,10 @@ def games_page():
         selected_year=year,
         team_id=team_id,
         template=url_for('convenor.game_template'),
-        pending_score=pending_score
+        pending_score=pending_score,
+        date=start_filter,
+        time=time_of_day,
+        day=day_of_week
     )
 
 
@@ -272,6 +302,7 @@ def delete_games():
     flash("Games were removed")
     handle_table_change(Tables.GAME)
     return redirect(url_for("convenor.games_page"))
+
 
 @convenor_blueprint.route(
     "games/<int:game_id>/bat/<int:bat_id>", methods=["DELETE"]
