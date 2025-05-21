@@ -254,6 +254,25 @@ def delete_game(game_id: int):
     return redirect(url_for("convenor.games_page"))
 
 
+@convenor_blueprint.route("games/bulk/delete", methods=["DELETE", "POST"])
+@require_to_be_convenor
+def delete_games():
+    """Delete a list of games."""
+    game_ids = request.form.getlist('game_ids')
+    for game_id in game_ids:
+        game = Game.query.get(game_id)
+        if game is None:
+            session['error'] = f"Game does not exist {game_id}"
+            return redirect(url_for('convenor.error_page'))
+        if game.bats.first() is not None:
+            session['error'] = f"Please remove bats before deleting game {game_id}"
+            return redirect(url_for('convenor.error_page'))
+        DB.session.delete(game)
+    DB.session.commit()
+    flash("Games were removed")
+    handle_table_change(Tables.GAME)
+    return redirect(url_for("convenor.games_page"))
+
 @convenor_blueprint.route(
     "games/<int:game_id>/bat/<int:bat_id>", methods=["DELETE"]
 )
