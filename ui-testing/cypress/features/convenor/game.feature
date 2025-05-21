@@ -31,3 +31,11 @@ Scenario: Able to remove a game
       And choose the game
       And I remove the game
      Then I see game was removed
+
+Scenario: Able to bulk remove games on certain of the week
+     Given a game exists on a saturday
+     When I navigate to the "games" page
+      And filter to the home team
+      And filter to only "Saturday"
+      And I remove all the games
+     Then all the games were removed

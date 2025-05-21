@@ -28,6 +28,30 @@ const downloadGameTemplate = () => {
 };
 When(`select game template`, downloadGameTemplate);
 
+const filterToTeam = () => {
+    cy.get<Team>('@home_team').then((homeTeam: Team) => {
+        cy.findByRole('combobox', { name: /by team/i }).select(homeTeam.team_name);
+        cy.location('search').should('include', `team_id=${homeTeam.team_id}`);
+    });
+};
+When(`filter to the home team`, filterToTeam);
+
+const filterByDayOfWeek = (day: string) => {
+    const dayFilter = cy.findByRole('combobox', { name: /by day of week/i });
+    dayFilter.should('be.enabled')
+    dayFilter.select(day);
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayIndex = days.indexOf(day.toLowerCase());
+    cy.location('search').should('include', `day=${dayIndex}`);
+};
+When(`filter to only {string}`, filterByDayOfWeek);
+
+const bulkDeleteGames = () => {
+    cy.findByRole('button', { name: /delete games/i}).click();
+    cy.findByRole('button', { name: /delete pending games/i }).click();
+};
+When(`I remove all the games`, bulkDeleteGames);
+
 /** Fill out game details. */
 const fillOutGameDetails = () => {
     const data = generateGame();
@@ -67,3 +91,8 @@ const assertGameTemplateDownload = () => {
     cy.readFile(path.join(downloadsFolder, "team_template.csv"));
 };
 Then(`the game template is downloaded`, assertGameTemplateDownload);
+
+const assertGamesRemoved = () => {
+    cy.findByText('Games were removed').should('be.visible')
+}
+Then(`all the games were removed`, assertGamesRemoved);

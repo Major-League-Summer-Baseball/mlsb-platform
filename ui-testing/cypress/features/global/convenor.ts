@@ -266,6 +266,47 @@ const createGame = () => {
 }
 Given(`a game exists`, createGame);
 
+const getNextDay = (dayName) => {
+    var date = new Date();
+    var now = date.getDay();
+    var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    var day = days.indexOf(dayName.toLowerCase());
+
+    // Find the difference between the current day and the one you want
+    // If it's the same day as today (or a negative number), jump to the next week
+    var diff = day - now;
+    diff = diff < 1 ? 7 + diff : diff;
+    var nextDayTimestamp = date.getTime() + (1000 * 60 * 60 * 24 * diff);
+    return new Date(nextDayTimestamp);
+};
+
+const createSaturdayGame = () => {
+    createTwoTeams();
+    createDivision();
+    cy.get<Team>('@home_team').then((homeTeam: Team) => {
+        cy.get<Team>('@away_team').then((awayTeam: Team) => {
+            cy.get<Division>('@division').then((division: Division) => {
+                cy.request('POST', '/rest/game', {
+                    'home_team_id': homeTeam.team_id,
+                    'away_team_id': awayTeam.team_id,
+                    'league_id': homeTeam.league_id,
+                    'division_id': division.division_id,
+                    'status': '',
+                    'field': 'WP1',
+                    'time': '11:00',
+                    'date': getDateString(getNextDay('saturday'))
+                }).then((response) => {
+                    expect(response.isOkStatusCode).to.be.true;
+                    const game: Game = response.body;
+                    cy.wrap(game).as('game');
+                });
+            });
+        });
+    });
+}
+Given(`a game exists on a saturday`, createSaturdayGame);
+
+
 /** Add a player to a team. */
 const addPlayerToTeam = () => {
     cy.get<Player>('@player').then((player: Player) => {
