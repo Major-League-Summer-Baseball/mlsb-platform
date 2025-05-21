@@ -170,3 +170,23 @@ input[disabled] {
 .quill-textarea {
     max-height: 80%;
 }
+
+.glyphicon--danger {
+    color: #c9302c;
+}
+
+.glyphicon--lg {
+    font-size: 18px;
+}
+
+.glyphicon--actionable:hover {
+    cursor: pointer;
+}
+
+.button-holder {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 10px
+}

@@ -109,13 +109,14 @@
             hx-push-url="true"
             hx-target="#convenorBody"
         >
-            <label>
-                Filter by year:
+            <label for="yearFilter">
+                By year:
             </label>
             <select
                 class="form-control"
                 name="year"
                 onchange="this.form.submit()"
+                id="yearFilter"
             >
                 {% for year in years %}
                     {% if selected_year == year %}
@@ -129,13 +130,122 @@
                     {% endif %}
                 {% endfor %}
             </select>
+            <label class="mt-2" for="date">
+                After date
+            </label>
+                {% if date %}
+                    <input
+                        type="date"
+                        value="{{date}}"
+                        id="date"
+                        name="date"
+                        min="2015-01-01"
+                        onchange="this.form.submit()"
+                        required
+                    />
+                {% else %}
+                    <input
+                        type="date"
+                        value=""
+                        id="date"
+                        name="date"
+                        min="2015-01-01"
+                        onchange="this.form.submit()"
+                        required
+                    />
+                {% endif %}
+            <br>
+            <label class="mt-2" for="dayFilter">
+                By day of week
+            </label>
+            <select
+                    class="form-control"
+                    name="day"
+                    id="dayFilter"
+                    onchange="this.form.submit()"
+                >
+
+                {% if day is none %}
+                    <option value="" selected>
+                        ---
+                    </option>
+                {% else %}
+                    <option value="">
+                        ---
+                    </option>
+                {% endif %}
+                {% if day == '0' %}
+                    <option value="0" selected>Sunday</option>
+                {% else %}
+                    <option value="0">Sunday</option>
+                {% endif %}
+                {% if day == '1' %}
+                    <option value="1" selected>Monday</option>
+                {% else %}
+                    <option value="1">Monday</option>
+                {% endif %}
+                {% if day == '2' %}
+                    <option value="2" selected>Tuesday</option>
+                {% else %}
+                    <option value="2">Tuesday</option>
+                {% endif %}
+                {% if day == '3' %}
+                    <option value="3" selected>Wednesday</option>
+                {% else %}
+                    <option value="3">Wednesday</option>
+                {% endif %}
+                {% if day == '4' %}
+                    <option value="4" selected>Thursday</option>
+                {% else %}
+                    <option value="4">Thursday</option>
+                {% endif %}
+                {% if day == '5' %}
+                    <option value="5" selected>Friday</option>
+                {% else %}
+                    <option value="5">Friday</option>
+                {% endif %}
+                {% if day == '6' %}
+                    <option value="6" selected>Saturday</option>
+                {% else %}
+                    <option value="6">Saturday</option>
+                {% endif %}
+            </select>
+
+            <label class="mt-2" for="time">
+                By time of day
+            </label>
+            {% if time %}
+                <input
+                    type="time"
+                    value="{{time}}"
+                    id="time"
+                    name="time"
+                    min="08:00"
+                    max="23:00"
+                    onchange="this.form.submit()"
+                    required
+                />
+            {% else %}
+                <input
+                    type="time"
+                    value=""
+                    id="time"
+                    name="time"
+                    min="08:00"
+                    max="23:00"
+                    onchange="this.form.submit()"
+                    required
+                />
+            {% endif %}
+            <br>
             {% if teams|length > 0 %}
-                <label class="mt-2">
-                    Filter by team
+                <label class="mt-2" for="teamIdFilter">
+                    By team
                 </label>
                 <select
                     class="form-control"
                     name="team_id"
+                    id="teamIdFilter"
                     onchange="this.form.submit()"
                 >
                     {% if team_id is none %}
@@ -201,7 +311,6 @@
                         hx-target="#convenorBody"
                         hx-push-url="true"
                     >
-                        
                         <span class="badge">
                             {{game.field}}
                         </span>
@@ -212,10 +321,75 @@
                         {{game.date}} 
                         {{game.time}}
                     </a>
+                    
                 {% endfor %}
             </div>
         {% endif%}
         
         
+    </div>
+
+    <div class="bulk-delete">
+        <button
+            class="btn btn-danger"
+            hx-trgger="click"
+            type="button"
+            _="
+                on click document.querySelector('#deleteGamesModal').showModal() end
+            "
+            id="deleteGamesButton"
+        >
+            Delete Games
+        </button>
+        <span
+            class="glyphicon glyphicon-info-sign"
+            aria-hidden="true"
+            title="Delete all above games without a score"
+        ></span>
+        <dialog id="deleteGamesModal">
+            <button
+                type="button"
+                class="close"
+                onclick="document.querySelector('#deleteGamesModal').close();"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <form
+                id="deleteGames"
+                method="post"
+                enctype=""
+                action="{{ url_for('convenor.delete_games') }}"
+                hx-delete="{{ url_for('convenor.delete_games') }}"
+                hx-target="#convenorBody"
+                hx-push-url="true"
+                hx-swap="innerHtml scroll:window:top"
+            >
+                {% for game in games %}
+                    {% if not game.has_score %}
+                        <input type="hidden" name="game_ids" value="{{game.game_id}}">
+                    {% endif %}
+                {% endfor %}
+                <h4>Are you sure</h4>
+                <p>You will delete all the games with no scores that is currently displayed?</p>
+                <br/>
+                <div class="button-holder">
+                    <button
+                        id="confirmDeleteGames"
+                        type="submit"
+                        class="btn btn-danger"
+                    >
+                        Delete Pending Games
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-default float-right"
+                        onclick="document.querySelector('#deleteGamesModal').close();"
+                        id="cancelGamesTemplate"
+                    >
+                        Close
+                    </button>
+                </div>
+            </form>
+        </dialog>
     </div>
 {% endblock %}

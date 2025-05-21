@@ -508,7 +508,8 @@ class Game(DB.Model):
             'date': self.date.strftime("%Y-%m-%d"),
             'time': self.date.strftime("%H:%M"),
             'status': self.status,
-            'field': self.field
+            'field': self.field,
+            'has_score': self.bats.count() > 0
         }
 
     def summary(self) -> dict:
