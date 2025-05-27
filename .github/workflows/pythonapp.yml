@@ -3,14 +3,10 @@ name: MLSB Pull-Request Reviews
 on:
   pull_request:
     branches:
-      - master
       - main
-      - development
   push:
     branches: 
-      - master
       - main
-      - development
 
 jobs:
   build:
