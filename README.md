@@ -145,7 +145,7 @@ There is one Github action that runs against pushes to main and development. Add
 * Runs pytests and creates a coverage report (artifact)
 * Runs Cypress UI Tests and video report (artifact)
 
-Additionally there is a Github actions for deploying staging server main and development that deploys them on a commit. They are currently being deployed to fly.IO
+Additionally there is a Github actions for deploying staging server on commits to main. For releases to production one can dispatch a Github action from main to deploy changes on main. They are currently being deployed to fly.IO
 
 Finally, there is a Github action for creating a docker image for pushes to main. No real use of the docker images at this moment.
 
