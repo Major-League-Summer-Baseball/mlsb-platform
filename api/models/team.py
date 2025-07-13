@@ -12,8 +12,8 @@ from api.models.sponsor import Sponsor
 
 roster = DB.Table(
     'roster',
-    DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id')),
-    DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'))
+    DB.Column('player_id', DB.Integer, DB.ForeignKey('player.id'), primary_key=True),
+    DB.Column('team_id', DB.Integer, DB.ForeignKey('team.id'), primary_key=True)
 )
 
 
