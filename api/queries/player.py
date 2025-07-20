@@ -69,7 +69,7 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
             result[player]['ss'] +
             result[player]['d'] +
             result[player]['hr'] +
-            result[player]['t'] + 
+            result[player]['t'] +
             result[player]['k'] +
             result[player]['fo'] +
             result[player]['fc'] +
