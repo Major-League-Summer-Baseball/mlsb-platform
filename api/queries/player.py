@@ -46,6 +46,7 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
                 'd': 0,
                 'hr': 0,
                 'ss': 0,
+                't': 0,
                 'k': 0,
                 'fo': 0,
                 'fc': 0,
@@ -66,6 +67,7 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
                                   result[player]['ss'] +
                                   result[player]['d'] +
                                   result[player]['hr'] +
+                                  result[player]['t'] + 
                                   result[player]['k'] +
                                   result[player]['fo'] +
                                   result[player]['fc'] +
@@ -75,6 +77,7 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
         bats = max(result[player]['bats'], 1)
         result[player]['avg'] = round(((result[player]['s'] +
                                         result[player]['ss'] +
+                                        result[player]['t'] +
                                         result[player]['d'] +
                                         result[player]['hr']) /
                                        result[player]['bats']), 3)
