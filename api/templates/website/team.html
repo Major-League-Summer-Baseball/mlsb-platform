@@ -248,13 +248,14 @@
 <table class="display" id="teamTable" cellspacing="0" width="100%">
     <thead>
         <th data-priority="1">Player</th>
-        <th>Ave.</th>
-        <th>SP</th>
+        <th>AB</th>
         <th>S</th>
         <th data-priority="3">SS</th>
         <th>D</th>
+        <th>T</th>
         <th data-priority="2">HR</th>
-        <th>AB</th>
+        <th>AVE</th>
+        <th>SLG</th>
     </thead>
     <tbody>
         {% for player in team.stats %}
@@ -264,13 +265,14 @@
                         {{player.name}}
                     </a>
                 </td>
-                <td>{{player.ba}}</td>
-                <td>{{player.sp}}</td>
+                <td>{{player.bats}}</td>
                 <td>{{player.s}}</td>
                 <td>{{player.ss}}</td>
                 <td>{{player.d}}</td>
+                <td>{{player.t}}</td>
                 <td>{{player.hr}}</td>
-                <td>{{player.bats}}</td>
+                <td>{{player.ba}}</td>
+                <td>{{player.sp}}</td>
             </tr>
         {% endfor %}
     </tbody>

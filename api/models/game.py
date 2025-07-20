@@ -284,6 +284,7 @@ class Game(DB.Model):
                 or_(
                     (Bat.classification == 's'),
                     (Bat.classification == 'ss'),
+                    (Bat.classification == 't'),
                     (Bat.classification == 'd'),
                     (Bat.classification == 'hr')
                 )
@@ -303,6 +304,7 @@ class Game(DB.Model):
                 or_(
                     (Bat.classification == 's'),
                     (Bat.classification == 'ss'),
+                    (Bat.classification == 't'),
                     (Bat.classification == 'd'),
                     (Bat.classification == 'hr')
                 )
