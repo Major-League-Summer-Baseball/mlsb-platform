@@ -56,6 +56,7 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
                 'rbi': 0,
                 'bats': 0,
                 'avg': 0.000,
+                'sp': 0.000,
                 'name': player[0]
             }
         result[player[3]][player[1]] = player[2]
@@ -63,24 +64,43 @@ def player_summary(year=None, team_id=None, league_id=None, player_id=None):
     final_result = {}
     for player in result:
         # calculate the bats and average
-        result[player]['bats'] = (result[player]['s'] +
-                                  result[player]['ss'] +
-                                  result[player]['d'] +
-                                  result[player]['hr'] +
-                                  result[player]['t'] + 
-                                  result[player]['k'] +
-                                  result[player]['fo'] +
-                                  result[player]['fc'] +
-                                  result[player]['e'] +
-                                  result[player]['go']
-                                  )
+        result[player]['bats'] = (
+            result[player]['s'] +
+            result[player]['ss'] +
+            result[player]['d'] +
+            result[player]['hr'] +
+            result[player]['t'] + 
+            result[player]['k'] +
+            result[player]['fo'] +
+            result[player]['fc'] +
+            result[player]['e'] +
+            result[player]['go']
+        )
         bats = max(result[player]['bats'], 1)
-        result[player]['avg'] = round(((result[player]['s'] +
-                                        result[player]['ss'] +
-                                        result[player]['t'] +
-                                        result[player]['d'] +
-                                        result[player]['hr']) /
-                                       result[player]['bats']), 3)
+        result[player]['avg'] = round(
+            (
+                (
+                    result[player]['s'] +
+                    result[player]['ss'] +
+                    result[player]['t'] +
+                    result[player]['d'] +
+                    result[player]['hr']
+                ) / result[player]['bats']
+            ),
+            3
+        )
+        result[player]['sp'] = round(
+            (
+                (
+                    result[player]['s'] +
+                    result[player]['ss'] +
+                    result[player]['d'] * 2 +
+                    result[player]['t'] * 3 +
+                    result[player]['hr'] * 4
+                ) / result[player]['bats']
+            ),
+            3
+        )
         player_name = result[player].pop('name', None)
         final_result[player_name] = result[player]
     return final_result

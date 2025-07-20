@@ -71,6 +71,23 @@ def player_page(year, player_id):
     for team in player.teams:
         years.append((team.year, team.id))
     stats = []
+    career = {
+        's': 0,
+        'd': 0,
+        't': 0,
+        'hr': 0,
+        'ss': 0,
+        'k': 0,
+        'fo': 0,
+        'fc': 0,
+        'e': 0,
+        'go': 0,
+        'id': player_id,
+        'rbi': 0,
+        'avg': 0.000,
+        'sp': 0.000,
+        'bats': 0
+    }
     for entry in years:
         player = {}
         summary = player_summary(
@@ -84,6 +101,7 @@ def player_page(year, player_id):
             player = {
                 's': 0,
                 'd': 0,
+                't': 0,
                 'hr': 0,
                 'ss': 0,
                 'k': 0,
@@ -94,17 +112,48 @@ def player_page(year, player_id):
                 'id': player_id,
                 'rbi': 0,
                 'avg': 0.000,
+                'sp': 0.000,
                 'bats': 0
             }
         player['team'] = str(Team.query.get(entry[1]))
         player['team_id'] = entry[1]
         player['year'] = entry[0]
         stats.append(player)
+        career['s'] += player['s']
+        career['ss'] += player['ss']
+        career['d'] += player['d']
+        career['t'] += player['t']
+        career['hr'] += player['hr']
+        career['k'] += player['k']
+        career['rbi'] += player['rbi']
+        career['bats'] += player['bats']
+    if career['bats'] > 0:
+        career['avg'] = round(
+            (
+                career['s'] +
+                career['ss'] +
+                career['d'] +
+                career['t'] +
+                career['hr']
+            ) / career['bats'],
+            3
+        )
+        career['sp'] = round(
+            (
+                career['s'] +
+                career['ss'] +
+                career['d'] * 2 +
+                career['t'] * 3 +
+                career['hr'] * 4
+            ) / career['bats'],
+            3
+        )
     return render_template(
         "website/player.html",
         stats=stats,
         title="Player Stats",
         name=name,
+        career=career,
         year=year,
         user_info=get_user_information()
     )
