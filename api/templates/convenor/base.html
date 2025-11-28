@@ -1,5 +1,5 @@
 {% if not snippet %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     {% if title %}
@@ -13,12 +13,8 @@
     <meta name="author" content="Dallas Fraser">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
-   	<link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
+   	<link href="{{ url_for('static', filename="bootstrap/bootstrap.min.css") }}" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename="css/convenor/simple-sidebar.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/convenor/documentation.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/convenor/admin.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="css/convenor/chosen.css") }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
     {% block header %}
@@ -30,11 +26,8 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- bootstrap js -->
-    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/chosen.jquery.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.bundle.min.js") }}"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10" language="JavaScript"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
@@ -294,9 +287,8 @@
     <a class="btn btn-mini btn-link " href="{{ url_for('website.about', year=year) }}">About</a>
     <a class="btn btn-mini btn-link " href="/rest/swagger">Documentation</a>
     <a class="btn btn-mini btn-link " href="https://github.com/fras2560"> Author</a>
-    <a class="btn btn-mini btn-link " href="https://jquery.com/">jQuery</a>
-    <a class="btn btn-mini btn-link " href="https://getbootstrap.com/docs/3.4/">Bootstrap 3</a>
-    <a class="btn btn-mini btn-link " href="https://flask.palletsprojects.com/en/2.0.x/config/">Flask 2</a>
+    <a class="btn btn-mini btn-link " href="https://getbootstrap.com/docs/5.3">Bootstrap 5</a>
+    <a class="btn btn-mini btn-link " href="https://flask.palletsprojects.com/en/stable/">Flask 3</a>
     <a class="btn btn-mini btn-link " href="https://htmx.org/">HTMX</a>
   </footer>
 </html>
