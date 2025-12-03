@@ -29,10 +29,10 @@ class BaseException(Exception):
     status_code = FDNESC
     message = "Fun count does not exist"
 
-    def __init__(self, status_code=None, payload=None):
+    def __init__(self, status_code=None, payload=None, message=None):
         Exception.__init__(self)
 
-        self.message = self.message
+        self.message = self.message if message is None else message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
