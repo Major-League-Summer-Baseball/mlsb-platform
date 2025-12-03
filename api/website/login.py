@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Holds views related to login, authentication and join leagues"""
+from email.utils import parseaddr
 from flask import render_template, session, request, url_for, redirect
 from flask_login import \
     current_user, logout_user, login_required, login_user
@@ -17,7 +18,7 @@ from api.website import website_blueprint
 
 @website_blueprint.route("/authenticate")
 def need_to_login():
-    """A route used to indicate the user needs to authenicate for some page."""
+    """A route used to indicate the user needs to authenticate for some page."""
     year = date.today().year
     return render_template(
         "website/login.html",
@@ -60,10 +61,15 @@ def join_league():
     """A form submission to ask to join the league."""
     # ensure given an email
     email = session.get("oauth_email", None)
+    formatted_email = parseaddr(email)
     if email is None:
         # it should have been stored after authenicating
         message = "Sorry, the authentication provider did not give an email"
-        raise OAuthException(message)
+        raise OAuthException(message=message)
+    elif formatted_email[1] == '':
+        # it should have been stored after authenicating
+        message = f"Sorry, the given email - {email} seemed to be invalid"
+        raise OAuthException(message=message)
     # double check the player email has not be taken
     player = Player.query.filter(Player.email == email).first()
     if player is not None:
