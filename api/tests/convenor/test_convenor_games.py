@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from api.model import Bat, split_datetime, Game
 from flask import url_for
 import io
@@ -500,8 +500,10 @@ def test_convenor_games_page_filter_by_day_of_week(
         league = league_factory()
         division = division_factory()
         t = '11:45'
-        monday_game = '2025-05-19'
-        tuesday_game = '2025-05-20'
+        today = date.today()
+        monday = today - timedelta(days=today.weekday())
+        monday_game = monday.strftime("%Y-%m-%d")
+        tuesday_game = (monday + timedelta(days=1)).strftime("%Y-%m-%d")
 
         game_factory(
             other_team,
@@ -528,6 +530,8 @@ def test_convenor_games_page_filter_by_day_of_week(
 
         assert response.status_code == 200
         games_container = get_games_container(str(response.data))
+        print(home_team)
+        print(games_container)
         assert str(home_team) in games_container
         assert str(away_team) in games_container
         assert str(other_team) not in games_container
