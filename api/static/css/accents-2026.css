@@ -1,0 +1,120 @@
+.sponsor-banner {
+    background-color: rgba(240, 210, 144, 0.5);
+}
+
+.games-container {
+    background-color: rgba(187, 59, 31, 0.5);
+}
+
+.navbar .icon-bar {
+    background-color: #c03c39;
+}
+
+.fun-div {
+    color: #efd291;
+}
+
+.fun-meter {
+    color: #c03c39;
+}
+
+.fun-meter text.liquidFillGaugeText {
+  fill: #A9A9A9;
+}
+
+.fun-meter text.liquidFilledGaugeText {
+  fill: white;
+}
+
+.fun-meter circle {
+  fill: #c03c39;
+}
+
+.fun-meter .CircleColor {
+  fill: #c03c39;
+}
+
+.fun-meter .WaveColor {
+  fill: #efd291;
+}
+
+
+p.accent{
+  color:#312720;
+}
+
+.leaderTitle{
+  color: #efd291;
+}
+
+.btn-primary {
+  background: #c03c39;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #c03c39;
+}
+
+.btn-secondary {
+  background: #efd291;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: rgb(225, 0, 15, 0.5);
+}
+
+li.presentation a{
+  background-color: #efd291;
+  color: white;
+}
+
+li.presentation a:hover{
+  background-color: rgba(168, 168, 168, 0.3);
+  color: #c03c39;
+}
+
+.active .presentation a{
+  background-color: #c03c39;
+  color: #efd291;
+}
+
+#listing>li.active>a{
+  background-color: #c03c39;
+  color: white;
+}
+
+.footer {
+  border-top: 5px solid #c03c39;
+}
+
+nav.accent{
+  background-color: #efd291;
+  border-color: #efd291;
+}
+
+div.accent{
+  background-color:#efd291;
+}
+
+
+div.secondary{
+  background-color: #c03c39;
+}
+
+a {
+  color: #312720;
+}
+
+a:hover, a:focus {
+  color: rgb(225, 0, 15, 0.5);
+}
+
+#bottom {
+  border-bottom: 5px solid #312720;
+}
+
+#bottom ul li a {
+  color: #c03c39  ;
+}
