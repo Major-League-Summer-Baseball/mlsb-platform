@@ -98,7 +98,7 @@ def top_hundred_players_all_time(stat, year):
         players = get_league_leaders("ss", group_by_team=True, limit=100)
     return render_template(
         "website/top-hundred-players.html",
-        stat_title='Homeruns' if stat == 'hr' else 'Sapporo Singles',
+        stat_title='Homeruns' if stat == 'hr' else 'Sidelaunch Singles',
         players=players,
         title="Hall of Fame",
         year=year,

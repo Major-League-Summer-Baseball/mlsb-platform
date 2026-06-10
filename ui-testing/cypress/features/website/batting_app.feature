@@ -42,12 +42,12 @@ Scenario: Players hits a sacrifice-fly
     Then the score is 1
      And there is 1 out
 
-Scenario: Only eligble players can get Sapporo Singles
+Scenario: Only eligble players can get Sidelaunch Singles
     When the batter is eligible
      And the batter hits a "SS"
     Then the batter advances to "first"
 
-Scenario: Non-eligble players do not see Sapporo Singles
+Scenario: Non-eligble players do not see Sidelaunch Singles
     When the batter is not eligible
     Then they cannot hit a "SS"
 
